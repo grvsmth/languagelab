@@ -1,0 +1,16 @@
+*~
+admin/
+django_environ.py
+media/
+jslib/
+data/*
+*.log
+venv
+migrations/
+templatetags
+__pycache__
+*.pyc
+logs/*
+/static/*
+nohup.out
+
