@@ -1,6 +1,12 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
-from languagelab.api.serializers import UserSerializer, GroupSerializer
+
+from languagelab.api.models import Language
+from languagelab.api.serializers import (
+    GroupSerializer,
+    LanguageSerializer,
+    UserSerializer
+    )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -17,3 +23,10 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+
+class LanguageViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for viewing available languages
+    """
+    queryset = Language.objects.all()
+    serializer_class = LanguageSerializer
