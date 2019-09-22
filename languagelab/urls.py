@@ -18,14 +18,19 @@ from django.urls import include, path
 from rest_framework import routers
 
 from languagelab.api import views
+from languagelab.settings import API_VERSION
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 router.register(r'languages', views.LanguageViewSet)
+router.register(r'media', views.MediaItemViewSet)
+router.register(r'exercises', views.ExerciseViewSet)
+router.register(r'lessons', views.LessonViewSet)
+router.register(r'queueItems', views.QueueItemViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api/{}/'.format(API_VERSION), include(router.urls)),
     path('admin/', admin.site.urls),
     path(
         'api-auth/',

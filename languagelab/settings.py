@@ -21,8 +21,8 @@ APP_DIR = path.dirname((path.abspath(__file__)))
 
 set_environ()
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
+VERSION = "0.2.0"
+API_VERSION = "0.2"
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = environ.get('DJANGO_SECRET_KEY')
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'taggit',
     'languagelab',
 ]
 
