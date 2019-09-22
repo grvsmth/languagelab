@@ -1,5 +1,9 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
+from taggit_serializer.serializers import (
+    TagListSerializerField,
+    TaggitSerializer
+    )
 
 from languagelab.api.models import (
     Exercise, Language, Lesson, MediaItem, QueueItem
@@ -24,7 +28,9 @@ class LanguageSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['name', 'code']
 
 
-class MediaItemSerializer(serializers.HyperlinkedModelSerializer):
+class MediaItemSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
+    tags = TagListSerializerField()
+
     class Meta:
         model = MediaItem
         fields = [
@@ -62,7 +68,9 @@ class ExerciseSerializer(serializers.HyperlinkedModelSerializer):
             'created'
             ]
 
-class LessonSerializer(serializers.HyperlinkedModelSerializer):
+class LessonSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
+    tags = TagListSerializerField()
+
     class Meta:
         model = Lesson
         fields = [
