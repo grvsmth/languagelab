@@ -1,32 +1,54 @@
 <!DOCTYPE html>
 <html>
     <head>
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css"
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     </head>
     <body>
-        <div class="container">
-        <h2>Test</h2>
+        <div class="container-fluid">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="navbar-brand" href="#">LanguageLab</a>
+                <button class="navbar-toggler" type="button"
+                data-toggle="collapse" data-target="#navContent"
+                aria-controls="navContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#" id="queueLink">
+                                Queue
+                                <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="exercisesLink">
+                                Exercises
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="lessonsLink">
+                                Lessons
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="mediaLink">
+                                Media
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        <h1>Test</h1>
         <p id="resultsP">Results will go here: </p>
         </div>
-        <script>
-            const fetchData = function(url) {
-                return new Promise((resolve, reject) => {
-                    fetch(url).then((res) => {
-                        resolve(res.json());
-                    }, (err) => {
-                        reject(err);
-                    });
-                });
-            };
-
-            const userUrl = "https://languagelab-dev.grieve-smith.com/api/0.2/media/";
-            fetchData(userUrl).then((res) => {
-                console.log(res);
-                const resultsJson = JSON.stringify(res);
-                document.body.querySelector("#resultsP").append(resultsJson);
-                }, (err) => {
-                console.error(err);
-            });
-        </script>
     </body>
+    <script src="/static/js/jquery-3.4.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script type="module">
+        import languageLab from "./languageLab.js";
+
+        window.addEventListener("DOMContentLoaded", languageLab.init)
+    </script>
 </html>
