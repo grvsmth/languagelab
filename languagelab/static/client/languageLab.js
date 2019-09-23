@@ -12,8 +12,6 @@ exports.init = function() {
         exports.addClick(anchor.id, exports.handleClick);
     });
 
-    resultsDiv.innerHTML = "Initialized";
-    console.log("Initialized");
 };
 
 exports.showLoading = function() {
@@ -29,8 +27,6 @@ exports.hideLoading = function() {
 };
 
 exports.handleClick = function(event) {
-    console.log(event);
-    console.log(event.target.id);
     const apiUrl = [
         config.api.baseUrl, config.api.endpoint[event.target.id]
         ].join("/");
