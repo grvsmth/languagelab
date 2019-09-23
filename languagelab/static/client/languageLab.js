@@ -5,14 +5,27 @@ const exports = {};
 
 exports.init = function() {
     const navAnchors = document.body.querySelectorAll("#navContent a");
-    const resultsP = document.querySelector("#resultsP");
+    const loadingDiv = document.body.querySelectorAll("loadingDiv");
+    const resultsDiv = document.body.querySelector("#resultsDiv");
 
     navAnchors.forEach((anchor) => {
         exports.addClick(anchor.id, exports.handleClick);
     });
 
-    resultsP.innerHTML = "Initialized";
+    resultsDiv.innerHTML = "Initialized";
     console.log("Initialized");
+};
+
+exports.showLoading = function() {
+    loadingDiv.querySelector("span").innerHTML = "Loading...";
+    loadingDiv.classList.add("spinner-border");
+    loadingDiv.classList.remove("hidden");
+};
+
+exports.hideLoading = function() {
+    loadingDiv.querySelector("span").innerHTML = "";
+    loadingDiv.classList.remove("spinner-border");
+    loadingDiv.classList.add("hidden");
 };
 
 exports.handleClick = function(event) {
@@ -21,10 +34,12 @@ exports.handleClick = function(event) {
     const apiUrl = [
         config.api.baseUrl, config.api.endpoint[event.target.id]
         ].join("/");
-    resultsP.innerHTML = "Loading data from " + apiUrl;
+
+    exports.showLoading();
     apiClient.fetchData(apiUrl).then((res) => {
         const resultsJson = JSON.stringify(res);
-        resultsP.innerHTML = resultsJson;
+        resultsDiv.innerHTML = resultsJson;
+        exports.hideLoading();
     }, (err) => {
         console.error(err);
     });
