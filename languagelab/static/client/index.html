@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css"
+    </head>
+    <body>
+        <div class="container">
+        <h2>Test</h2>
+        <p id="resultsP">Results will go here: </p>
+        </div>
+        <script>
+            const fetchData = function(url) {
+                return new Promise((resolve, reject) => {
+                    fetch(url).then((res) => {
+                        resolve(res.json());
+                    }, (err) => {
+                        reject(err);
+                    });
+                });
+            };
+
+            const userUrl = "https://languagelab-dev.grieve-smith.com/api/0.2/media/";
+            fetchData(userUrl).then((res) => {
+                console.log(res);
+                const resultsJson = JSON.stringify(res);
+                document.body.querySelector("#resultsP").append(resultsJson);
+                }, (err) => {
+                console.error(err);
+            });
+        </script>
+    </body>
+</html>
