@@ -6,7 +6,7 @@ const config = {
             "exercisesLink": "exercises",
             "languagesLink": "languages",
             "lessonsLink": "lessons",
-            "queueLink": "queue"
+            "queueLink": "queueItems"
         }
     }
 };

@@ -11,6 +11,7 @@ exports.init = function() {
     navAnchors.forEach((anchor) => {
         exports.addClick(anchor.id, exports.handleClick);
     });
+    exports.addClick("fetchLanguagesLink", apiClient.fetchLanguages);
 
 };
 

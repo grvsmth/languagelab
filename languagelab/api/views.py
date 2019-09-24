@@ -1,5 +1,8 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
+from rest_framework.decorators import action
+
+from languagelab.api.iso639client import getIso639
 
 from languagelab.api.models import (
     Exercise, Language, Lesson, MediaItem, QueueItem
@@ -39,12 +42,18 @@ class LanguageViewSet(viewsets.ModelViewSet):
     queryset = Language.objects.all()
     serializer_class = LanguageSerializer
 
+    @action(detail=False, methods=['post'])
+    def updateAll(self, request):
+        getIso639()
+
+
 class MediaItemViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing media items
     """
     queryset = MediaItem.objects.all()
     serializer_class = MediaItemSerializer
+
 
 class ExerciseViewSet(viewsets.ModelViewSet):
     """
@@ -53,12 +62,14 @@ class ExerciseViewSet(viewsets.ModelViewSet):
     queryset = Exercise.objects.all()
     serializer_class = ExerciseSerializer
 
+
 class LessonViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing lessons
     """
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+
 
 class QueueItemViewSet(viewsets.ModelViewSet):
     """
