@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User, Group
+from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
 
-from languagelab.api.iso639client import getIso639
+from languagelab.api.iso639client import getIso639, makeLanguage
 
 from languagelab.api.models import (
     Exercise, Language, Lesson, MediaItem, QueueItem
@@ -44,7 +45,15 @@ class LanguageViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def updateAll(self, request):
-        getIso639()
+        counter = 0
+        res = getIso639()
+
+        for entry in res:
+            language = makeLanguage(entry)
+            language.save()
+            counter += 1
+
+        return JsonResponse({"success": "true", "items": counter})
 
 
 class MediaItemViewSet(viewsets.ModelViewSet):
