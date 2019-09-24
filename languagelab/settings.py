@@ -31,16 +31,23 @@ API_VERSION = "0.2"
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = environ.get('DJANGO_SECRET_KEY')
 
+# We are setting this because we are also setting DEFAULT_PERMISSION_CLASSES to
+# ['rest_framework.permissions.IsAuthenticated']
+CORS_ORIGIN_ALLOW_ALL = True
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_LIST = loads(environ.get('DJANGO_ALLOWED_HOSTS'))
 ALLOWED_HOSTS = ['localhost', environ.get('DJANGO_HOST')] + ALLOWED_LIST
 
+CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,6 +61,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
