@@ -1,5 +1,5 @@
 import config from "./config.js";
-import ApiClient from "./apiClient.js";
+import apiClient from "./apiClient.js";
 
 const exports = {};
 
@@ -9,13 +9,10 @@ exports.init = function() {
     const loadingDiv = document.body.querySelectorAll("loadingDiv");
     const resultsDiv = document.body.querySelector("#resultsDiv");
 
-    const apiClient = new ApiClient();
-    console.log("apiClient.csrftoken = ", apiClient.csrftoken);
-
     navAnchors.forEach((anchor) => {
-        exports.addClick(anchor.id, exports.handleClick.bind({}, apiClient));
+        exports.addClick(anchor.id, exports.handleClick);
     });
-    exports.addClick("fetchLanguagesLink", apiClient.fetchLanguages.bind(apiClient));
+    exports.addClick("fetchLanguagesLink", apiClient.fetchLanguages);
 
 };
 
@@ -31,7 +28,7 @@ exports.hideLoading = function() {
     loadingDiv.classList.add("hidden");
 };
 
-exports.handleClick = function(apiClient, event) {
+exports.handleClick = function(event) {
     event.preventDefault();
     const apiUrl = [
         config.api.baseUrl, config.api.endpoint[event.target.id]

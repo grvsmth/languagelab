@@ -1,6 +1,8 @@
 import config from "./config.js";
 
-const extractCookie = function(cookieKey) {
+const exports = {};
+
+exports.extractCookie = function(cookieKey) {
     var cookieValue;
     if (!document.cookie || document.cookie == '') {
         return;
@@ -17,37 +19,29 @@ const extractCookie = function(cookieKey) {
     return cookieValue;
 };
 
-export default class ApiClient {
-    constructor() {
-        const csrftoken = extractCookie("csrftoken");
-        console.log("csrftoken =", csrftoken);
-        this.csrftoken = csrftoken;
-    }
-
-    fetchData(url, options={}) {
-        return new Promise((resolve, reject) => {
-           fetch(url, options).then((res) => {
-                resolve(res.json());
-            }, (err) => {
-                reject(err);
-            });
-        });
-    }
-
-    fetchLanguages() {
-        console.log("csrftoken = ", this.csrftoken);
-        const apiUrl = [config.api.baseUrl, "languages", "updateAll/"].join("/");
-        const options = {
-            "method": "POST", "mode": "cors",
-            "headers": {"X-CSRFToken": this.csrftoken}
-        };
-
-        console.log("apiUrl", apiUrl);
-        this.fetchData(apiUrl, options).then((res) => {
-            console.log(res);
+exports.fetchData = function(url, options={}) {
+    return new Promise((resolve, reject) => {
+       fetch(url, options).then((res) => {
+            resolve(res.json());
         }, (err) => {
-            console.error(err);
+            reject(err);
         });
-    }
-
+    });
 }
+
+exports.updateLanguages = function() {
+    const csrftoken = exports.extractCookie("csrftoken");
+    const apiUrl = [config.api.baseUrl, "languages", "updateAll/"].join("/");
+    const options = {
+        "method": "POST", "mode": "cors",
+        "headers": {"X-CSRFToken": csrftoken}
+    };
+
+    exports.fetchData(apiUrl, options).then((res) => {
+        console.log(res);
+    }, (err) => {
+        console.error(err);
+    });
+}
+
+export default exports;
