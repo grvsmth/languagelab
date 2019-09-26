@@ -55,12 +55,13 @@ exports.patch = function(data, endpoint, id=null) {
         "body": JSON.stringify(data)
     };
 
-    exports.fetchData(apiUrl, options).then((res) => {
-        console.log(res);
-    }, (err) => {
-        console.error(err);
+    return new Promise((resolve, reject) => {
+        exports.fetchData(apiUrl, options).then((res) => {
+            resolve(res);
+        }, (err) => {
+            reject(err);
+        });
     });
-
 };
 
 export default exports;

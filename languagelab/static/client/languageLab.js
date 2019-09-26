@@ -28,34 +28,6 @@ exports.hideLoading = function() {
     loadingDiv.classList.add("hidden");
 };
 
-exports.appendCol = function(parentElement, data) {
-    const colDiv = document.createElement("div");
-    colDiv.classList.add("col-sm");
-    colDiv.innerHTML = data;
-    parentElement.appendChild(colDiv);
-};
-
-exports.headerRow = function(item) {
-    const itemDiv = document.createElement("div");
-    Object.keys(item).forEach((columnName) => {
-        exports.appendCol(itemDiv, columnName);
-    });
-    itemDiv.classList.add("row");
-    console.log("itemDiv", itemDiv);
-    return itemDiv;
-};
-
-exports.resultsRows = function(results) {
-    resultsDiv.appendChild(exports.headerRow(results[0]));
-    results.forEach((item) => {
-        const itemDiv = document.createElement("div");
-        Object.values(item).forEach((cellContents) => {
-            exports.appendCol(itemDiv, cellContents);
-        });
-        itemDiv.classList.add("row");
-        resultsDiv.appendChild(itemDiv);
-    });
-};
 
 exports.cardLink = function(linkText, classList=[]) {
     const linkDiv = document.createElement("a");
@@ -70,7 +42,11 @@ exports.checkClick = function(event) {
     const payload = {[event.target.value]: event.target.checked};
 
     const idPart = event.target.id.split(".");
-    apiClient.patch(payload, idPart[0], idPart[2]);
+    apiClient.patch(payload, idPart[0], idPart[2]).then((res) => {
+        console.log(res);
+    }, (err) => {
+        console.error(err);
+    });
 };
 
 exports.makeCheckbox = function(endpoint, value, labelText, itemId, checked) {
@@ -95,58 +71,64 @@ exports.makeCheckbox = function(endpoint, value, labelText, itemId, checked) {
     return itemCheckboxes;
 };
 
-exports.resultsCards = function(results) {
-    results.forEach((item) => {
-        const uploaded = new moment(item.uploaded).format(config.dateTimeFormat);
+exports.resultsCard = function(type, item) {
+    const uploaded = new moment(item.uploaded).format(config.dateTimeFormat);
 
-        const itemCard = document.createElement("div");
-        itemCard.classList.add("card", "bg-light");
-        const cardBody = document.createElement("div")
-        cardBody.classList.add("card-body");
+    const itemCard = document.createElement("div");
+    itemCard.classList.add("card", "bg-light");
+    itemCard.id = [type, item.id].join(".");
 
-        const itemTitle = document.createElement("h5");
-        itemTitle.classList.add("card-title");
+    const cardBody = document.createElement("div")
+    cardBody.classList.add("card-body");
 
-        const formatText = config.formatName[item.format];
+    const itemTitle = document.createElement("h5");
+    itemTitle.classList.add("card-title");
 
-        const nameText = `${item.name} (${formatText}, ${item.duration})`;
-        itemTitle.appendChild(document.createTextNode(nameText));
-        cardBody.appendChild(itemTitle);
+    const formatText = config.formatName[item.format];
 
-        const itemSubtitle = document.createElement("h6");
-        itemSubtitle.classList.add("card-subtitle", "text-muted");
-        const subtitleText = `${item.creator} (added ${uploaded})`;
-        itemSubtitle.appendChild(document.createTextNode(subtitleText));
-        cardBody.appendChild(itemSubtitle);
+    const nameText = `${item.name} (${formatText}, ${item.duration})`;
+    itemTitle.appendChild(document.createTextNode(nameText));
+    cardBody.appendChild(itemTitle);
 
-        // TODO tags
+    const itemSubtitle = document.createElement("h6");
+    itemSubtitle.classList.add("card-subtitle", "text-muted");
+    const subtitleText = `${item.creator} (added ${uploaded})`;
+    itemSubtitle.appendChild(document.createTextNode(subtitleText));
+    cardBody.appendChild(itemSubtitle);
 
-        const rightsSpan = document.createElement("span");
-        rightsSpan.classList.add("card-text", "mr-2");
-        rightsSpan.appendChild(document.createTextNode(item.rights));
-        cardBody.appendChild(rightsSpan);
+    // TODO tags
 
-        cardBody.appendChild(
-            exports.makeCheckbox(
-                "media", "isAvailable", "available", item.id, item.isAvailable
+    const rightsSpan = document.createElement("span");
+    rightsSpan.classList.add("card-text", "mr-2");
+    rightsSpan.appendChild(document.createTextNode(item.rights));
+    cardBody.appendChild(rightsSpan);
+
+    cardBody.appendChild(
+        exports.makeCheckbox(
+            "media", "isAvailable", "available", item.id, item.isAvailable
+        )
+    );
+
+    cardBody.appendChild(
+        exports.makeCheckbox(
+            "media", "isPublic", "public", item.id, item.isPublic
             )
-        );
+    );
 
-        cardBody.appendChild(
-            exports.makeCheckbox(
-                "media", "isPublic", "public", item.id, item.isPublic
-                )
-        );
+    const linkDiv = document.createElement("div");
+    linkDiv.appendChild(exports.cardLink("edit", ["text-primary"]));
+    linkDiv.appendChild(exports.cardLink("delete", ["text-danger"]));
+    cardBody.appendChild(linkDiv);
 
-        const linkDiv = document.createElement("div");
-        linkDiv.appendChild(exports.cardLink("edit", ["text-primary"]));
-        linkDiv.appendChild(exports.cardLink("delete", ["text-danger"]));
-        cardBody.appendChild(linkDiv);
+    itemCard.appendChild(cardBody);
 
-        itemCard.appendChild(cardBody);
+    return itemCard;
+}
 
-        resultsDiv.appendChild(itemCard);
-    });
+exports.resultsCards = function(type, results) {
+    results.forEach(
+        (item) => resultsDiv.appendChild(exports.resultsCard(type, item))
+    );
 };
 
 exports.handleClick = function(event) {
@@ -159,7 +141,7 @@ exports.handleClick = function(event) {
     apiClient.fetchData(apiUrl).then((res) => {
         console.log("results", res.results);
         resultsDiv.innerHTML = "";
-        exports.resultsCards(res.results);
+        exports.resultsCards("media", res.results);
         exports.hideLoading();
     }, (err) => {
         console.error(err);
