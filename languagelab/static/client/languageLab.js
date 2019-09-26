@@ -43,9 +43,11 @@ exports.checkClick = function(event) {
 
     const idPart = event.target.id.split(".");
     apiClient.patch(payload, idPart[0], idPart[2]).then((res) => {
-        console.log(res);
+        console.log(res.type, res.response);
+        const mediaCard = document.body.querySelector(`#${res.type}.${res.response.id}`);
+        mediaCard = exports.resultsCard(res.type, res.response);
     }, (err) => {
-        console.error(err);
+        console.error(err.type, err.error);
     });
 };
 

@@ -57,9 +57,9 @@ exports.patch = function(data, endpoint, id=null) {
 
     return new Promise((resolve, reject) => {
         exports.fetchData(apiUrl, options).then((res) => {
-            resolve(res);
+            resolve({"type": endpoint, "response": res});
         }, (err) => {
-            reject(err);
+            reject({"type": endpoint, "error": err});
         });
     });
 };
