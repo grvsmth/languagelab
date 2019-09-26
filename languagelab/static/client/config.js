@@ -10,13 +10,9 @@ const config = {
             "queueLink": "queueItems"
         }
     },
-    "media": {
-        "columnName": {
-            "name": "Name",
-            "uploaded": "Uploaded",
-            "creator": "Creator",
-            "language": "Language"
-        }
+    "formatName": {
+        "au": "audio",
+        "vi": "video"
     }
 };
 

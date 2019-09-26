@@ -9,13 +9,10 @@ exports.extractCookie = function(cookieKey) {
     }
     document.cookie.split(';').forEach((cookie) => {
         let cookiePiece = cookie.split("=");
-        console.log("cookiePiece = ", cookiePiece)
         if (cookiePiece[0].trim() === cookieKey) {
-            console.log("returning ", cookiePiece[1]);
             cookieValue = cookiePiece[1];
         }
     });
-    console.log("cookieValue = ", cookieValue);
     return cookieValue;
 };
 
@@ -27,13 +24,14 @@ exports.fetchData = function(url, options={}) {
             reject(err);
         });
     });
-}
+};
 
 exports.updateLanguages = function() {
     const csrftoken = exports.extractCookie("csrftoken");
-    const apiUrl = [config.api.baseUrl, "languages", "updateAll/"].join("/");
+    const apiUrl = [config.api.baseUrl, "languages", "updateAll", ""].join("/");
     const options = {
-        "method": "POST", "mode": "cors",
+        "method": "POST",
+        "mode": "cors",
         "headers": {"X-CSRFToken": csrftoken}
     };
 
@@ -42,6 +40,27 @@ exports.updateLanguages = function() {
     }, (err) => {
         console.error(err);
     });
-}
+};
+
+exports.patch = function(data, endpoint, id=null) {
+    console.log(`apiclient.patch(${endpoint}, ${id})`);
+    const csrftoken = exports.extractCookie("csrftoken");
+    const apiUrl = [config.api.baseUrl, endpoint, id, ""].join("/");
+    const options = {
+        "method": "PATCH",
+        "headers": {
+            "X-CSRFToken": csrftoken,
+            'Content-Type': 'application/json'
+        },
+        "body": JSON.stringify(data)
+    };
+
+    exports.fetchData(apiUrl, options).then((res) => {
+        console.log(res);
+    }, (err) => {
+        console.error(err);
+    });
+
+};
 
 export default exports;

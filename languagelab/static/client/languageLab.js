@@ -64,8 +64,39 @@ exports.cardLink = function(linkText, classList=[]) {
     return linkDiv;
 };
 
+exports.checkClick = function(event) {
+    event.preventDefault();
+    console.dir(event.target);
+    const payload = {[event.target.value]: event.target.checked};
+
+    const idPart = event.target.id.split(".");
+    apiClient.patch(payload, idPart[0], idPart[2]);
+};
+
+exports.makeCheckbox = function(endpoint, value, labelText, itemId, checked) {
+    const itemCheckboxes = document.createElement("div");
+    itemCheckboxes.classList.add("form-check", "form-check-inline");
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.classList.add("form-check-input");
+    checkbox.id = [endpoint, value, itemId].join(".");
+    checkbox.value = value;
+    checkbox.checked = checked;
+    checkbox.addEventListener("click", exports.checkClick);
+    itemCheckboxes.appendChild(checkbox);
+
+    const labelElement = document.createElement("label");
+    labelElement.for = checkbox.id;
+    labelElement.classList.add("form-check-label");
+    labelElement.appendChild(document.createTextNode(labelText));
+    itemCheckboxes.appendChild(labelElement);
+
+    return itemCheckboxes;
+};
+
 exports.resultsCards = function(results) {
-    results.forEach((item, index) => {
+    results.forEach((item) => {
         const uploaded = new moment(item.uploaded).format(config.dateTimeFormat);
 
         const itemCard = document.createElement("div");
@@ -75,7 +106,11 @@ exports.resultsCards = function(results) {
 
         const itemTitle = document.createElement("h5");
         itemTitle.classList.add("card-title");
-        itemTitle.appendChild(document.createTextNode(item.name));
+
+        const formatText = config.formatName[item.format];
+
+        const nameText = `${item.name} (${formatText}, ${item.duration})`;
+        itemTitle.appendChild(document.createTextNode(nameText));
         cardBody.appendChild(itemTitle);
 
         const itemSubtitle = document.createElement("h6");
@@ -84,24 +119,24 @@ exports.resultsCards = function(results) {
         itemSubtitle.appendChild(document.createTextNode(subtitleText));
         cardBody.appendChild(itemSubtitle);
 
-        const itemCheckboxes = document.createElement("div");
-        itemCheckboxes.classList.add("form-check", "form-check-inline");
+        // TODO tags
 
-        const availableCheckbox = document.createElement("input");
-        availableCheckbox.type = "checkbox";
-        availableCheckbox.classList.add("form-check-input");
-        availableCheckbox.id = `isAvailable.${index}`;
-        availableCheckbox.value = "isAvailable";
-        availableCheckbox.checked = item.isAvailable == true;
-        itemCheckboxes.appendChild(availableCheckbox);
+        const rightsSpan = document.createElement("span");
+        rightsSpan.classList.add("card-text", "mr-2");
+        rightsSpan.appendChild(document.createTextNode(item.rights));
+        cardBody.appendChild(rightsSpan);
 
-        const availableLabel = document.createElement("label");
-        availableLabel.for = availableCheckbox.id;
-        availableLabel.classList.add("form-check-label");
-        availableLabel.appendChild(document.createTextNode("available"));
-        itemCheckboxes.appendChild(availableLabel);
+        cardBody.appendChild(
+            exports.makeCheckbox(
+                "media", "isAvailable", "available", item.id, item.isAvailable
+            )
+        );
 
-        cardBody.appendChild(itemCheckboxes);
+        cardBody.appendChild(
+            exports.makeCheckbox(
+                "media", "isPublic", "public", item.id, item.isPublic
+                )
+        );
 
         const linkDiv = document.createElement("div");
         linkDiv.appendChild(exports.cardLink("edit", ["text-primary"]));

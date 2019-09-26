@@ -13,19 +13,19 @@ from languagelab.api.models import (
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'groups']
+        fields = ['id', 'url', 'username', 'email', 'groups']
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
-        fields = ['url', 'name']
+        fields = ['id', 'url', 'name']
 
 
 class LanguageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Language
-        fields = ['name', 'code']
+        fields = ['id', 'name', 'code']
 
 
 class MediaItemSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
@@ -34,6 +34,7 @@ class MediaItemSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializ
     class Meta:
         model = MediaItem
         fields = [
+            'id',
             'format',
             'name',
             'creator',
@@ -54,6 +55,7 @@ class ExerciseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Exercise
         fields = [
+            'id',
             'name',
             'creator',
             'media',
@@ -74,6 +76,7 @@ class LessonSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer)
     class Meta:
         model = Lesson
         fields = [
+            'id',
             'name',
             'creator',
             'level',
@@ -90,6 +93,7 @@ class QueueItemSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = QueueItem
         fields = [
+            'id',
             'user',
             'exercise',
             'rank',
