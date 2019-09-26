@@ -57,27 +57,39 @@ exports.resultsRows = function(results) {
     });
 };
 
+exports.cardLink = function(innerHTML, classList=[]) {
+    const linkDiv = document.createElement("a");
+    linkDiv.classList.add("card-link", ...classList);
+    linkDiv.innerHTML = innerHTML;
+    return linkDiv;
+};
+
 exports.resultsCards = function(results) {
     results.forEach((item) => {
         const uploaded = new moment(item.uploaded).format(config.dateTimeFormat);
 
         const itemCard = document.createElement("div");
-        itemCard.classList.add("card");
+        itemCard.classList.add("card", "bg-light");
         const cardBody = document.createElement("div")
         cardBody.classList.add("card-body");
-        itemCard.appendChild(cardBody);
 
         const itemTitle = document.createElement("h5");
         itemTitle.classList.add("card-title");
         itemTitle.innerHTML = item.name;
-        itemCard.appendChild(itemTitle);
+        cardBody.appendChild(itemTitle);
 
         const itemSubtitle = document.createElement("h6");
         itemSubtitle.classList.add("card-subtitle", "text-muted");
-        itemSubtitle.innerHTML = `${item.creator} (uploaded ${uploaded})`;
-        itemCard.appendChild(itemSubtitle);
+        itemSubtitle.innerHTML = `${item.creator} (added ${uploaded})`;
+        cardBody.appendChild(itemSubtitle);
 
-        // const item
+        const editLink = exports.cardLink("edit", ["text-primary"]);
+        cardBody.appendChild(editLink);
+
+        const deleteLink = exports.cardLink("delete", ["text-danger"]);
+        cardBody.appendChild(deleteLink);
+
+        itemCard.appendChild(cardBody);
 
         resultsDiv.appendChild(itemCard);
     });
