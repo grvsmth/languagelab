@@ -41,11 +41,12 @@ exports.checkClick = function(event) {
     console.dir(event.target);
     const payload = {[event.target.value]: event.target.checked};
 
-    const idPart = event.target.id.split(".");
+    const idPart = event.target.id.split("_");
     apiClient.patch(payload, idPart[0], idPart[2]).then((res) => {
         console.log(res.type, res.response);
-        const mediaCard = document.body.querySelector(`#${res.type}.${res.response.id}`);
-        mediaCard = exports.resultsCard(res.type, res.response);
+        const mediaCard = document.body.querySelector(`#${res.type}_${res.response.id}`);
+        const newCard = exports.resultsCard(res.type, res.response);
+        mediaCard.parentNode.replaceChild(newCard, mediaCard);
     }, (err) => {
         console.error(err.type, err.error);
     });
@@ -58,7 +59,7 @@ exports.makeCheckbox = function(endpoint, value, labelText, itemId, checked) {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.classList.add("form-check-input");
-    checkbox.id = [endpoint, value, itemId].join(".");
+    checkbox.id = [endpoint, value, itemId].join("_");
     checkbox.value = value;
     checkbox.checked = checked;
     checkbox.addEventListener("click", exports.checkClick);
@@ -78,7 +79,7 @@ exports.resultsCard = function(type, item) {
 
     const itemCard = document.createElement("div");
     itemCard.classList.add("card", "bg-light");
-    itemCard.id = [type, item.id].join(".");
+    itemCard.id = [type, item.id].join("_");
 
     const cardBody = document.createElement("div")
     cardBody.classList.add("card-body");
