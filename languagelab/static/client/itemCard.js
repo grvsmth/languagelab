@@ -1,7 +1,10 @@
 import config from "./config.js";
 import apiClient from "./apiClient.js";
 
-const exports = {"resultsCard": {}};
+const exports = {
+    "resultsCard": {},
+    "formCard": {}
+};
 
 
 exports.cardLink = function(itemType, itemId, text, classList=[], handler=null) {
@@ -32,6 +35,50 @@ exports.checkClick = function(event) {
     });
 };
 
+exports.editClick = function(event) {
+    console.log("editClick()", event.target.id);
+    const idPart = event.target.id.split("_");
+    const itemType = idPart[0];
+
+    const mediaCard = event.target.parentNode.parentNode;
+    const newCard = exports.formCard[itemType]({});
+    mediaCard.parentNode.replaceChild(newCard, mediaCard);
+};
+
+exports.deleteClick = function(event) {
+    console.log(`deleteClick(${event.target.id})`);
+};
+
+exports.itemTitle = function(itemName, itemFormat, itemDuration) {
+    const itemTitle = document.createElement("h5");
+    itemTitle.classList.add("card-title");
+
+    const formatText = config.formatName[itemFormat];
+
+    const nameText = `${itemName} (${formatText}, ${itemDuration})`;
+    itemTitle.appendChild(document.createTextNode(nameText));
+
+    return itemTitle;
+};
+
+exports.itemSubtitle = function(creator, uploaded) {
+    const itemSubtitle = document.createElement("h6");
+    itemSubtitle.classList.add("card-subtitle", "text-muted");
+
+    const uploadedText = new moment(uploaded).format(config.dateTimeFormat);
+    const subtitleText = `${creator} (added ${uploadedText})`;
+    itemSubtitle.appendChild(document.createTextNode(subtitleText));
+
+    return itemSubtitle;
+};
+
+exports.rightsSpan = function(rightsText) {
+    const rightsSpan = document.createElement("span");
+    rightsSpan.classList.add("card-text", "mr-2");
+    rightsSpan.appendChild(document.createTextNode(rightsText));
+    return rightsSpan;
+}
+
 exports.makeCheckbox = function(endpoint, value, labelText, itemId, checked) {
     const itemCheckboxes = document.createElement("div");
     itemCheckboxes.classList.add("form-check", "form-check-inline");
@@ -54,22 +101,6 @@ exports.makeCheckbox = function(endpoint, value, labelText, itemId, checked) {
     return itemCheckboxes;
 };
 
-exports.rightsSpan = function(rightsText) {
-    const rightsSpan = document.createElement("span");
-    rightsSpan.classList.add("card-text", "mr-2");
-    rightsSpan.appendChild(document.createTextNode(rightsText));
-    return rightsSpan;
-}
-
-exports.editClick = function(event) {
-    console.log("editClick()", event.target.id);
-
-};
-
-exports.deleteClick = function(event) {
-    console.log(`deleteClick(${event.target.id})`);
-};
-
 exports.linkDiv = function(itemType, itemId) {
     const linkDiv = document.createElement("div");
     const editLink = exports.cardLink(
@@ -82,17 +113,6 @@ exports.linkDiv = function(itemType, itemId) {
     return linkDiv;
 }
 
-exports.itemSubtitle = function(creator, uploaded) {
-    const itemSubtitle = document.createElement("h6");
-    itemSubtitle.classList.add("card-subtitle", "text-muted");
-
-    const uploadedText = new moment(uploaded).format(config.dateTimeFormat);
-    const subtitleText = `${creator} (added ${uploadedText})`;
-    itemSubtitle.appendChild(document.createTextNode(subtitleText));
-
-    return itemSubtitle;
-}
-
 exports.resultsCard.media = function(item) {
 
     const itemCard = document.createElement("div");
@@ -102,39 +122,69 @@ exports.resultsCard.media = function(item) {
     const cardBody = document.createElement("div")
     cardBody.classList.add("card-body");
 
-    const itemTitle = document.createElement("h5");
-    itemTitle.classList.add("card-title");
-
-    const formatText = config.formatName[item.format];
-
-    const nameText = `${item.name} (${formatText}, ${item.duration})`;
-    itemTitle.appendChild(document.createTextNode(nameText));
-    cardBody.appendChild(itemTitle);
-
-
-    cardBody.appendChild(exports.itemSubtitle(item.creator, item.uploaded));
-
     // TODO tags
 
-    cardBody.appendChild(exports.rightsSpan(item.rights));
-
-    cardBody.appendChild(
+    cardBody.append(
+        exports.itemTitle(item.name, item.format, item.duration),
+        exports.itemSubtitle(item.creator, item.uploaded),
+        exports.rightsSpan(item.rights),
         exports.makeCheckbox(
             "media", "isAvailable", "available", item.id, item.isAvailable
-        )
-    );
-
-    cardBody.appendChild(
+        ),
         exports.makeCheckbox(
             "media", "isPublic", "public", item.id, item.isPublic
-            )
+        ),
+        exports.linkDiv("media", item.id)
     );
-
-    cardBody.appendChild(exports.linkDiv("media", item.id));
 
     itemCard.appendChild(cardBody);
 
     return itemCard;
 }
+
+exports.nameInput = function(itemType, itemName, itemId) {
+    const itemTitle = document.createElement("div");
+    itemTitle.classList.add("form-group");
+
+    const titleId = [itemType, "name", itemId].join("_");
+    const itemLabel = document.createElement("label");
+    itemLabel.for = titleId;
+    itemLabel.append(document.createTextNode("Name"));
+
+    const itemInput = document.createElement("input");
+    itemInput.classList.add("form-control");
+    itemInput.value = itemName;
+    itemInput.id = titleId;
+    itemInput.placeholder = "name";
+
+    itemTitle.append(itemLabel, itemInput);
+    return itemTitle;
+};
+
+exports.formCard.media = function(item={}) {
+    const itemCard = document.createElement("div");
+    itemCard.classList.add("card", "bg-info");
+
+    if (item.hasOwnProperty("id")) {
+        item = {
+            "id": "form",
+            "name": ""
+        }
+    }
+    itemCard.id = ["media", item.id].join("_");
+
+    const cardBody = document.createElement("div");
+    cardBody.classList.add("card-body");
+
+    const cardForm = document.createElement("form");
+    cardBody.append(cardForm);
+
+    cardForm.append(
+        exports.nameInput("media", item.name, item.id)
+    );
+
+    itemCard.append(cardBody);
+    return itemCard;
+};
 
 export default exports;
