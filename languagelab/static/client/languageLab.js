@@ -34,7 +34,7 @@ exports.hideLoading = function() {
 
 exports.resultsCards = function(type, results) {
     results.forEach(
-        (item) => resultsDiv.appendChild(itemCard.resultsCard(type, item))
+        (item) => resultsDiv.appendChild(itemCard.resultsCard[type](item))
     );
 };
 
