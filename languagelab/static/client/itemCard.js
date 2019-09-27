@@ -4,10 +4,15 @@ import apiClient from "./apiClient.js";
 const exports = {"resultsCard": {}};
 
 
-exports.cardLink = function(linkText, classList=[]) {
+exports.cardLink = function(itemType, itemId, text, classList=[], handler=null) {
     const linkDiv = document.createElement("a");
+    const idText = encodeURIComponent(text);
+    linkDiv.id = [itemType, idText, itemId].join("_");
     linkDiv.classList.add("card-link", ...classList);
-    linkDiv.appendChild(document.createTextNode(linkText));
+    linkDiv.appendChild(document.createTextNode(text));
+    if (handler) {
+        linkDiv.addEventListener("click", handler);
+    }
     return linkDiv;
 };
 
@@ -49,8 +54,46 @@ exports.makeCheckbox = function(endpoint, value, labelText, itemId, checked) {
     return itemCheckboxes;
 };
 
+exports.rightsSpan = function(rightsText) {
+    const rightsSpan = document.createElement("span");
+    rightsSpan.classList.add("card-text", "mr-2");
+    rightsSpan.appendChild(document.createTextNode(rightsText));
+    return rightsSpan;
+}
+
+exports.editClick = function(event) {
+    console.log("editClick()", event.target.id);
+
+};
+
+exports.deleteClick = function(event) {
+    console.log(`deleteClick(${event.target.id})`);
+};
+
+exports.linkDiv = function(itemType, itemId) {
+    const linkDiv = document.createElement("div");
+    const editLink = exports.cardLink(
+        itemType, itemId, "edit", ["text-primary"], exports.editClick
+        );
+    const deleteLink = exports.cardLink(
+        itemType, itemId, "delete", ["text-danger"], exports.deleteClick
+        );
+    linkDiv.append(editLink, deleteLink);
+    return linkDiv;
+}
+
+exports.itemSubtitle = function(creator, uploaded) {
+    const itemSubtitle = document.createElement("h6");
+    itemSubtitle.classList.add("card-subtitle", "text-muted");
+
+    const uploadedText = new moment(uploaded).format(config.dateTimeFormat);
+    const subtitleText = `${creator} (added ${uploadedText})`;
+    itemSubtitle.appendChild(document.createTextNode(subtitleText));
+
+    return itemSubtitle;
+}
+
 exports.resultsCard.media = function(item) {
-    const uploaded = new moment(item.uploaded).format(config.dateTimeFormat);
 
     const itemCard = document.createElement("div");
     itemCard.classList.add("card", "bg-light");
@@ -68,18 +111,12 @@ exports.resultsCard.media = function(item) {
     itemTitle.appendChild(document.createTextNode(nameText));
     cardBody.appendChild(itemTitle);
 
-    const itemSubtitle = document.createElement("h6");
-    itemSubtitle.classList.add("card-subtitle", "text-muted");
-    const subtitleText = `${item.creator} (added ${uploaded})`;
-    itemSubtitle.appendChild(document.createTextNode(subtitleText));
-    cardBody.appendChild(itemSubtitle);
+
+    cardBody.appendChild(exports.itemSubtitle(item.creator, item.uploaded));
 
     // TODO tags
 
-    const rightsSpan = document.createElement("span");
-    rightsSpan.classList.add("card-text", "mr-2");
-    rightsSpan.appendChild(document.createTextNode(item.rights));
-    cardBody.appendChild(rightsSpan);
+    cardBody.appendChild(exports.rightsSpan(item.rights));
 
     cardBody.appendChild(
         exports.makeCheckbox(
@@ -93,10 +130,7 @@ exports.resultsCard.media = function(item) {
             )
     );
 
-    const linkDiv = document.createElement("div");
-    linkDiv.appendChild(exports.cardLink("edit", ["text-primary"]));
-    linkDiv.appendChild(exports.cardLink("delete", ["text-danger"]));
-    cardBody.appendChild(linkDiv);
+    cardBody.appendChild(exports.linkDiv("media", item.id));
 
     itemCard.appendChild(cardBody);
 
