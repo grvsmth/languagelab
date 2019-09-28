@@ -77,11 +77,11 @@ export default class MediaCard extends React.Component {
     }
 
     editClick(event) {
-        console.log("editClick");
+        this.props.editClick();
     }
 
     deleteClick(event) {
-        console.log("deleteClick");
+        this.props.deleteClick();
     }
 
     editLink() {

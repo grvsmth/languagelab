@@ -54,6 +54,14 @@ export default class Lab extends React.Component {
         });
     }
 
+    editClick = function() {
+        console.log("editClick()");
+    }
+
+    deleteClick = function() {
+        console.log("deleteClick()");
+    }
+
     render() {
         console.log(this.state);
 
@@ -62,7 +70,9 @@ export default class Lab extends React.Component {
                 MediaCardList,
                 {
                     "media": this.state.media,
-                    "checkClick": this.checkClick.bind(this)
+                    "checkClick": this.checkClick.bind(this),
+                    "editClick": this.editClick.bind(this),
+                    "deleteClick": this.deleteClick.bind(this)
                 },
                 null
             )
