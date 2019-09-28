@@ -3,6 +3,8 @@ import config from "./config.js";
 import apiClient from "./apiClient.js";
 import itemCard from "./itemCard.js";
 
+import Lab from "./lab.js";
+
 const exports = {};
 
 
@@ -15,7 +17,11 @@ exports.init = function() {
         exports.addClick(anchor.id, exports.handleClick);
     });
     // exports.addClick("fetchLanguagesLink", apiClient.fetchLanguages);
-
+/*
+    ReactDOM.render(
+        React.createElement(Lab), resultsDiv
+    );
+    */
 };
 
 exports.showLoading = function() {
@@ -38,6 +44,17 @@ exports.resultsCards = function(type, results) {
 
 exports.handleClick = function(event) {
     event.preventDefault();
+    console.log(event);
+
+    const props = {"clickId": config.api.endpoint[event.target.id]};
+    ReactDOM.render(
+        React.createElement(Lab, props), resultsDiv
+    );
+
+};
+
+exports.handleClickOld = function(event) {
+    event.preventDefault();
     const apiUrl = [
         config.api.baseUrl, config.api.endpoint[event.target.id]
         ].join("/");
@@ -54,6 +71,7 @@ exports.handleClick = function(event) {
 };
 
 exports.addClick = function(anchorId, handler) {
+    console.log("addClick", anchorId);
     const anchor = document.body.querySelector("#" + anchorId);
     anchor.onclick = handler;
 }
