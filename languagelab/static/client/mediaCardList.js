@@ -1,4 +1,4 @@
-import apiClient from "./apiClient.js";
+import MediaCard from "./mediaCard.js";
 
 export default class MediaCardList extends React.Component {
     constructor(props) {
@@ -7,10 +7,30 @@ export default class MediaCardList extends React.Component {
     }
 
     render() {
-        return React.createElement(
-            "div",
-            {},
-            "MediaCardList will go here"
-        );
+        if (!this.props.media) {
+            return null;
+        }
+
+
+        const mediaElements = [];
+        /*
+            listDiv.append(
+                React.createElement(
+                    MediaCard,
+                    {"mediaItem": this.props.media[0]},
+                    null
+                )
+            );
+*/
+        this.props.media.forEach((mediaItem) => {
+            mediaElements.push(
+                React.createElement(
+                    MediaCard,
+                    {"mediaItem": mediaItem, "key": mediaItem.id},
+                    null
+                )
+            );
+        });
+        return mediaElements;
     }
 }
