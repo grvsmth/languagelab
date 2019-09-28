@@ -30,8 +30,6 @@ exports.hideLoading = function() {
     loadingDiv.classList.add("hidden");
 };
 
-
-
 exports.resultsCards = function(type, results) {
     results.forEach(
         (item) => resultsDiv.appendChild(itemCard.resultsCard[type](item))
