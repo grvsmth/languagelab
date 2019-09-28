@@ -142,30 +142,104 @@ exports.resultsCard.media = function(item) {
     return itemCard;
 }
 
-exports.nameInput = function(itemType, itemName, itemId) {
-    const itemTitle = document.createElement("div");
-    itemTitle.classList.add("form-group");
-
-    const titleId = [itemType, "name", itemId].join("_");
+exports.makeLabel = function(inputId, labelText) {
     const itemLabel = document.createElement("label");
-    itemLabel.for = titleId;
-    itemLabel.append(document.createTextNode("Name"));
+    itemLabel.for = inputId;
+    itemLabel.append(document.createTextNode(labelText));
+    return itemLabel;
+}
+
+exports.textInput = function(itemType, itemId, fieldName, fieldValue) {
+    const inputDiv = document.createElement("div");
+    inputDiv.classList.add("form-group", "col-sm");
+
+    const inputId = [itemType, fieldName, itemId].join("_");
+    const itemLabel = document.createElement("label");
+    itemLabel.for = inputId;
+    itemLabel.append(document.createTextNode(fieldName));
 
     const itemInput = document.createElement("input");
     itemInput.classList.add("form-control");
-    itemInput.value = itemName;
-    itemInput.id = titleId;
-    itemInput.placeholder = "name";
+    itemInput.id = inputId;
+    if (fieldValue) {
+        itemInput.value = fieldValue;
+    }
 
-    itemTitle.append(itemLabel, itemInput);
-    return itemTitle;
+    inputDiv.append(itemLabel, itemInput);
+    return inputDiv;
+};
+
+exports.fileInput = function(itemType, itemId, fieldName, fieldValue) {
+    const fileLabel = "or upload a file";
+
+    const inputDiv = document.createElement("div");
+    inputDiv.classList.add("form-group");
+
+    const inputId = [itemType, fieldName, itemId].join("_");
+
+    const itemLabel = exports.makeLabel(inputId, fieldName);
+
+    const itemInput = document.createElement("input");
+    itemInput.classList.add("form-control-file");
+    itemInput.type = "file";
+    itemInput.id = inputId;
+
+    if (fieldValue) {
+        itemInput.value = fieldValue;
+    }
+    inputDiv.append(itemLabel, itemInput);
+    return inputDiv;
+};
+
+exports.hiddenInput = function(itemName, itemValue) {
+    const inputSpan = document.createElement("span");
+
+    const inputElement = document.createElement("input");
+    inputElement.type = "hidden";
+    inputElement.name = itemName;
+    inputElement.value = itemValue;
+    return inputElement;
+};
+
+exports.formatOption = function(formatChoices, selectedValue) {
+    var options = [];
+    for (let choiceValue in formatChoices) {
+        const optionElement = document.createElement("option");
+        optionElement.value = choiceValue;
+        if (choiceValue === selectedValue) {
+            optionElement.selected = true;
+        }
+
+        let choiceTextNode = document.createTextNode(formatChoices[choiceValue]);
+        optionElement.append(choiceTextNode);
+        options.push(optionElement);
+    }
+    return options;
+};
+
+exports.formatSelect = function(itemType, itemId, fieldName, fieldValue) {
+    const selectGroup = document.createElement("div");
+    selectGroup.classList.add("form-group");
+
+    const inputId = [itemType, fieldName, itemId].join("_");
+    const itemLabel = exports.makeLabel(inputId, fieldName);
+
+    const itemSelect = document.createElement("select");
+    itemSelect.classList.add("form-control");
+    itemSelect.id = inputId;
+
+    const formatOptions = exports.formatOption(config.formatName, fieldValue);
+    itemSelect.append(...formatOptions);
+
+    selectGroup.append(itemLabel, itemSelect);
+    return selectGroup;
 };
 
 exports.formCard.media = function(item={}) {
     const itemCard = document.createElement("div");
     itemCard.classList.add("card", "bg-info");
 
-    if (item.hasOwnProperty("id")) {
+    if (!item.hasOwnProperty("id")) {
         item = {
             "id": "form",
             "name": ""
@@ -177,12 +251,52 @@ exports.formCard.media = function(item={}) {
     cardBody.classList.add("card-body");
 
     const cardForm = document.createElement("form");
-    cardBody.append(cardForm);
 
-    cardForm.append(
-        exports.nameInput("media", item.name, item.id)
+    const firstRow = document.createElement("div");
+    firstRow.classList.add("form-row");
+
+    firstRow.append(
+        exports.hiddenInput("mediaId", item.id),
+        exports.textInput("media", item.id, "name", item.name),
+        exports.textInput("media", item.id, "creator", item.creator),
+        exports.textInput("media", item.id, "rights", item.rights),
     );
 
+    const sourceGroup = document.createElement("div");
+    sourceGroup.classList.add("form-row")
+
+    sourceGroup.append(
+        exports.textInput("media", item.id, "mediaUrl", item.mediaUrl),
+        exports.fileInput("media", item.id, "mediaFile", item.mediaFile),
+        exports.formatSelect("media", item.id, "format", config.formatName)
+    );
+
+    const checkboxGroup = document.createElement("div");
+    checkboxGroup.classList.add("form-group");
+
+    checkboxGroup.append(
+        exports.makeCheckbox(
+            "media", "isAvailable", "available", item.id, item.isAvailable
+        ),
+        exports.makeCheckbox(
+            "media", "isPublic", "public", item.id, item.isPublic
+        )
+    );
+
+    const thirdRow = document.createElement("div");
+    thirdRow.classList.add("form-row");
+
+    thirdRow.append(
+        checkboxGroup
+    );
+
+    cardForm.append(
+        firstRow,
+        sourceGroup,
+        thirdRow
+    );
+
+    cardBody.append(cardForm);
     itemCard.append(cardBody);
     return itemCard;
 };
