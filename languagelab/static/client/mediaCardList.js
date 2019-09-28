@@ -13,20 +13,16 @@ export default class MediaCardList extends React.Component {
 
 
         const mediaElements = [];
-        /*
-            listDiv.append(
-                React.createElement(
-                    MediaCard,
-                    {"mediaItem": this.props.media[0]},
-                    null
-                )
-            );
-*/
+
         this.props.media.forEach((mediaItem) => {
             mediaElements.push(
                 React.createElement(
                     MediaCard,
-                    {"mediaItem": mediaItem, "key": mediaItem.id},
+                    {
+                        "key": mediaItem.id,
+                        "mediaItem": mediaItem,
+                        "checkClick": this.props.checkClick
+                    },
                     null
                 )
             );

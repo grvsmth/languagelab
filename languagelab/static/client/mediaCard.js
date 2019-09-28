@@ -44,8 +44,8 @@ export default class MediaCard extends React.Component {
             {
                 "className": "form-check-input",
                 "type": "checkbox",
-                "onClick": this.checkboxClick,
-                "onChange": this.checkboxClick,
+                "onClick": this.props.checkClick,
+                "onChange": this.props.checkClick,
                 "id": inputId,
                 "name": key,
                 "checked": this.props.mediaItem[key]

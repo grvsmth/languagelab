@@ -21,7 +21,6 @@ export default class Lab extends React.Component {
             config.api.baseUrl, dataType
         ].join("/");
 
-        console.log(apiUrl);
         apiClient.fetchData(apiUrl).then((res) => {
             console.log("results", res.results);
             this.setState(
@@ -38,13 +37,18 @@ export default class Lab extends React.Component {
         }
     }
 
+    checkClick = function(event) {
+        event.preventDefault();
+        console.dir(event.target);
+    }
+
     render() {
         console.log(this.state);
 
         if (this.props.clickId === "media") {
             return React.createElement(
                 MediaCardList,
-                {"media": this.state.media},
+                {"media": this.state.media, "checkClick": this.checkClick},
                 null
             )
         }
