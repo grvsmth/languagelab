@@ -1,4 +1,5 @@
 import config from "./config.js";
+import commonElements from "./commonElements.js";
 
 export default class MediaCard extends React.Component {
     constructor(props) {
@@ -10,14 +11,6 @@ export default class MediaCard extends React.Component {
         console.dir(event);
     }
 
-    itemLabel(fieldName, inputId) {
-        return React.createElement(
-            "label",
-            {"htmlFor": inputId},
-            fieldName
-        );
-    }
-
     textInput(fieldName, inputId) {
         return React.createElement(
             "input",
@@ -25,6 +18,7 @@ export default class MediaCard extends React.Component {
                 "id": inputId,
                 "className": "form-control",
                 "type": "text",
+                "name": fieldName,
                 "value": this.props.mediaItem[fieldName],
                 "onChange": this.inputChange
             },
@@ -37,7 +31,7 @@ export default class MediaCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "col-sm"},
-            this.itemLabel(fieldName, inputId),
+            commonElements.itemLabel(fieldName, inputId),
             this.textInput(fieldName, inputId)
         );
     }
@@ -49,19 +43,40 @@ export default class MediaCard extends React.Component {
                 "type": "file",
                 "className": "form-control-file",
                 "id": inputId,
+                "name": fieldName,
                 "onChange": this.inputChange
             },
             null
         );
     }
 
+    fileLabel(fieldName, inputId) {
+        if (!this.props.mediaItem[fieldName]) {
+            return commonElements.itemLabel("or upload a file", inputId);
+        }
+
+        const fileUrlParts = this.props.mediaItem[fieldName].split("/");
+        const fileNameSpan = React.createElement(
+            "span",
+            {"className": "text-success"},
+            fileUrlParts[fileUrlParts.length-1]
+        );
+
+        return React.createElement(
+            "label",
+            {"htmlFor": inputId},
+            "or upload a file to replace ",
+            fileNameSpan
+        );
+
+    }
+
     fileInputDiv(fieldName) {
-        const fileLabel = "or upload a file";
         const inputId = [fieldName, this.props.mediaItem.id].join("_");
         return React.createElement(
             "div",
             {"className": "col-sm"},
-            this.itemLabel(fileLabel, inputId),
+            this.fileLabel(fieldName, inputId),
             this.fileInput(fieldName, inputId)
         );
     }
@@ -96,7 +111,7 @@ export default class MediaCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "form-group"},
-            this.itemLabel(fieldName, inputId),
+            commonElements.itemLabel(fieldName, inputId),
             this.itemSelect(fieldName, config.formatName)
         );
     }
@@ -116,8 +131,15 @@ export default class MediaCard extends React.Component {
             "div",
             {"className": "form-row"},
             this.textInputDiv("mediaUrl"),
-            this.fileInputDiv("mediaFile"),
             this.selectDiv("format")
+        );
+    }
+
+    thirdRow() {
+        return React.createElement(
+            "div",
+            {"className": "form-row"},
+            this.fileInputDiv("mediaFile")
         );
     }
 
@@ -126,7 +148,8 @@ export default class MediaCard extends React.Component {
             "div",
             {"className": "card-body"},
             this.firstRow(),
-            this.secondRow()
+            this.secondRow(),
+            this.thirdRow()
         );
     }
 
