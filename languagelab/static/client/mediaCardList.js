@@ -19,6 +19,7 @@ export default class MediaCardList extends React.Component {
 
         this.props.media.forEach((mediaItem) => {
             var users = [];
+            var languages = [];
             var nextElement;
 
             if (this.props.users) {
@@ -32,17 +33,25 @@ export default class MediaCardList extends React.Component {
                         "key": mediaItem.id,
                         "mediaItem": mediaItem,
                         "users": users,
+                        "languages": this.props.languages,
                         "checkClick": this.props.checkClick
                     },
                     null
                 );
             } else {
+                if (this.props.languages) {
+                    languages.push(
+                        util.findItem(this.props.languages, mediaItem.language)
+                    );
+                }
+
                 nextElement = React.createElement(
                     MediaCard,
                     {
                         "key": mediaItem.id,
                         "mediaItem": mediaItem,
                         "users": users,
+                        "languages": languages,
                         "checkClick": this.props.checkClick,
                         "editClick": this.props.editClick,
                         "deleteClick": this.props.deleteClick

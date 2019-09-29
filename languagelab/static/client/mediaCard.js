@@ -10,10 +10,16 @@ export default class MediaCard extends React.Component {
 
     itemTitle() {
         const formatText = config.formatName[this.props.mediaItem.format];
+
+        var languageText = "";
+        if (this.props.mediaItem.language && this.props.languages) {
+            languageText = this.props.languages[0].name + ", ";
+        }
+
         return React.createElement(
             "h5",
             {"className": "card-title"},
-            `${this.props.mediaItem.name} (${formatText}, ${this.props.mediaItem.duration})`
+            `${this.props.mediaItem.name} (${formatText}, ${languageText}${this.props.mediaItem.duration})`
         );
     }
 
@@ -22,14 +28,11 @@ export default class MediaCard extends React.Component {
             return null;
         }
 
-        const uploader = util.findItem(
-            this.props.users, this.props.mediaItem.uploader
-        );
         return React.createElement(
             "span",
             {"className": "text-dark"},
             " by ",
-            uploader.username
+            this.props.users[0].username
         );
     }
 

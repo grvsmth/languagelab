@@ -13,6 +13,7 @@ export default class Lab extends React.Component {
             "lastUpdated": "",
             "media": [],
             "users": [],
+            "languages": [],
             "activity": "read"
         };
     }
@@ -21,6 +22,7 @@ export default class Lab extends React.Component {
         if (!this.state.lastUpdated) {
             this.fetchData("media");
             this.fetchData("users");
+            this.fetchData("languages");
         }
     }
 
@@ -76,6 +78,7 @@ export default class Lab extends React.Component {
                     "activity": this.state.activity,
                     "media": this.state.media,
                     "users": this.state.users,
+                    "languages": this.state.languages,
                     "checkClick": this.checkClick.bind(this),
                     "editClick": this.editClick.bind(this),
                     "deleteClick": this.deleteClick.bind(this)
