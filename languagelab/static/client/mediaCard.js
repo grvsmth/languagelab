@@ -106,7 +106,7 @@ export default class MediaCard extends React.Component {
     editLink() {
         return React.createElement(
             "a",
-            {"className": "text-primary", "onClick": this.editClick},
+            {"className": "text-primary", "onClick": this.editClick.bind(this)},
             "edit"
         );
     }
@@ -114,7 +114,7 @@ export default class MediaCard extends React.Component {
     deleteLink() {
         return React.createElement(
             "a",
-            {"className": "text-danger", "onClick": this.deleteClick},
+            {"className": "text-danger", "onClick": this.deleteClick.bind(this)},
             "delete"
         );
     }

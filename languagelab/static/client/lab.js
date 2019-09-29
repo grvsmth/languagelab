@@ -12,7 +12,8 @@ export default class Lab extends React.Component {
         this.state = {
             "lastUpdated": "",
             "media": [],
-            "users": []
+            "users": [],
+            "activity": "read"
         };
     }
 
@@ -58,6 +59,7 @@ export default class Lab extends React.Component {
 
     editClick = function() {
         console.log("editClick()");
+        this.setState({"activity": "edit"});
     }
 
     deleteClick = function() {
@@ -71,6 +73,7 @@ export default class Lab extends React.Component {
             return React.createElement(
                 MediaCardList,
                 {
+                    "activity": this.state.activity,
                     "media": this.state.media,
                     "users": this.state.users,
                     "checkClick": this.checkClick.bind(this),
