@@ -1,4 +1,5 @@
 import config from "./config.js";
+import commonElements from "./commonElements.js";
 import util from "./util.js";
 
 export default class MediaCard extends React.Component {
@@ -62,39 +63,6 @@ export default class MediaCard extends React.Component {
         )
     }
 
-    checkboxInput(key, inputId) {
-        return React.createElement(
-            "input",
-            {
-                "className": "form-check-input",
-                "type": "checkbox",
-                "onChange": this.checkboxClick.bind(this),
-                "id": inputId,
-                "name": key,
-                "checked": this.props.mediaItem[key]
-            },
-            null
-        );
-    }
-
-    checkboxLabel(inputId, labelText) {
-        return React.createElement(
-            "label",
-            {"htmlFor": inputId},
-            labelText
-        );
-    }
-
-    checkboxDiv(key, labelText) {
-        const inputId = [key, this.props.mediaItem.id].join("_");
-        return React.createElement(
-            "div",
-            {"className": "form-check form-check-inline"},
-            this.checkboxInput(key, inputId),
-            this.checkboxLabel(inputId, labelText)
-        );
-    }
-
     editClick(event) {
         this.props.editClick();
     }
@@ -136,8 +104,20 @@ export default class MediaCard extends React.Component {
             this.itemTitle(),
             this.itemSubtitle(),
             this.rightsSpan(),
-            this.checkboxDiv("isAvailable", "available"),
-            this.checkboxDiv("isPublic", "public"),
+            commonElements.checkboxDiv(
+                "isAvailable",
+                this.props.mediaItem.isAvailable,
+                "available",
+                this.props.mediaItem.id,
+                this.checkboxClick.bind(this)
+                ),
+            commonElements.checkboxDiv(
+                "isPublic",
+                this.props.mediaItem.isPublic,
+                "public",
+                this.props.mediaItem.id,
+                this.checkboxClick.bind(this)
+                ),
             this.linkDiv()
         );
     }
