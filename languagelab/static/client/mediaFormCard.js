@@ -11,15 +11,6 @@ export default class MediaCard extends React.Component {
         console.dir(event);
     }
 
-    checkboxClick(event) {
-        this.props.checkClick(
-            "media",
-            this.props.mediaItem.id,
-            event.target.name,
-            event.target.checked
-        )
-    }
-
     textInput(fieldName, inputId) {
         return React.createElement(
             "input",
@@ -178,6 +169,28 @@ export default class MediaCard extends React.Component {
         return languageObject;
     }
 
+    saveButton() {
+        return React.createElement(
+            "button",
+            {
+                "className": "btn btn-success btn-sm mx-1",
+                "onClick": this.inputChange.bind(this)
+            },
+            "Save"
+        );
+    }
+
+    cancelButton() {
+        return React.createElement(
+            "button",
+            {
+                "className": "btn btn-danger btn-sm mx-1",
+                "onClick": this.inputChange.bind(this)
+            },
+            "Cancel"
+        );
+    }
+
     optionsRow() {
         return React.createElement(
             "div",
@@ -189,15 +202,17 @@ export default class MediaCard extends React.Component {
                 this.props.mediaItem.isAvailable,
                 "available",
                 this.props.mediaItem.id,
-                this.checkboxClick.bind(this)
+                this.inputChange.bind(this)
             ),
             commonElements.checkboxDiv(
                 "isPublic",
                 this.props.mediaItem.isPublic,
                 "public",
                 this.props.mediaItem.id,
-                this.checkboxClick.bind(this)
-            )
+                this.inputChange.bind(this)
+            ),
+            this.saveButton(),
+            this.cancelButton()
         );
     }
 
