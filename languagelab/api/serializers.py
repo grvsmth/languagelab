@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
 from taggit_serializer.serializers import (
     TagListSerializerField,
     TaggitSerializer
@@ -10,25 +10,25 @@ from languagelab.api.models import (
     )
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'url', 'username', 'email', 'groups']
 
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class GroupSerializer(ModelSerializer):
     class Meta:
         model = Group
         fields = ['id', 'url', 'name']
 
 
-class LanguageSerializer(serializers.HyperlinkedModelSerializer):
+class LanguageSerializer(ModelSerializer):
     class Meta:
         model = Language
         fields = ['id', 'name', 'code']
 
 
-class MediaItemSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
+class MediaItemSerializer(TaggitSerializer, ModelSerializer):
     tags = TagListSerializerField()
 
     class Meta:
@@ -51,7 +51,7 @@ class MediaItemSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializ
             ]
 
 
-class ExerciseSerializer(serializers.HyperlinkedModelSerializer):
+class ExerciseSerializer(ModelSerializer):
     class Meta:
         model = Exercise
         fields = [
@@ -70,7 +70,7 @@ class ExerciseSerializer(serializers.HyperlinkedModelSerializer):
             'created'
             ]
 
-class LessonSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
+class LessonSerializer(TaggitSerializer, ModelSerializer):
     tags = TagListSerializerField()
 
     class Meta:
@@ -89,7 +89,7 @@ class LessonSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer)
             'created'
             ]
 
-class QueueItemSerializer(serializers.HyperlinkedModelSerializer):
+class QueueItemSerializer(ModelSerializer):
     class Meta:
         model = QueueItem
         fields = [

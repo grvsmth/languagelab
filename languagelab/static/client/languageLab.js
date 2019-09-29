@@ -23,24 +23,6 @@ exports.init = function() {
     );
 };
 
-exports.showLoading = function() {
-    loadingDiv.querySelector("span").innerHTML = "Loading...";
-    loadingDiv.classList.add("spinner-border");
-    loadingDiv.classList.remove("hidden");
-};
-
-exports.hideLoading = function() {
-    loadingDiv.querySelector("span").innerHTML = "";
-    loadingDiv.classList.remove("spinner-border");
-    loadingDiv.classList.add("hidden");
-};
-
-exports.resultsCards = function(type, results) {
-    results.forEach(
-        (item) => resultsDiv.appendChild(itemCard.resultsCard[type](item))
-    );
-};
-
 exports.handleClick = function(event) {
     event.preventDefault();
     const props = {"clickId": config.api.endpoint[event.target.id]};

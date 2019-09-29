@@ -1,4 +1,5 @@
 import config from "./config.js";
+import util from "./util.js";
 
 export default class MediaCard extends React.Component {
     constructor(props) {
@@ -15,6 +16,22 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    bySpan() {
+        if (!this.props.users) {
+            return null;
+        }
+
+        const uploader = util.findItem(
+            this.props.users, this.props.mediaItem.uploader
+        );
+        return React.createElement(
+            "span",
+            {"className": "text-dark"},
+            " by ",
+            uploader.username
+        );
+    }
+
     itemSubtitle() {
         const uploadedText = new moment(this.props.mediaItem.uploaded)
             .format(config.dateTimeFormat);
@@ -22,7 +39,9 @@ export default class MediaCard extends React.Component {
         return React.createElement(
             "h6",
             {"className": "card-subtitle text-muted"},
-            `${this.props.mediaItem.creator} (added ${uploadedText})`
+            `${this.props.mediaItem.creator} (added ${uploadedText}`,
+            this.bySpan(),
+            ")"
         );
     }
 

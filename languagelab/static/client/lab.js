@@ -11,8 +11,16 @@ export default class Lab extends React.Component {
 
         this.state = {
             "lastUpdated": "",
-            "media": []
+            "media": [],
+            "users": []
         };
+    }
+
+    componentDidMount() {
+        if (!this.state.lastUpdated) {
+            this.fetchData("media");
+            this.fetchData("users");
+        }
     }
 
     fetchData(dataType) {
@@ -28,12 +36,6 @@ export default class Lab extends React.Component {
         }, (err) => {
             console.error(err);
         });
-    }
-
-    componentDidMount() {
-        if (!this.state.lastUpdated) {
-            this.fetchData("media");
-        }
     }
 
     updateStateItem(res) {
@@ -70,6 +72,7 @@ export default class Lab extends React.Component {
                 MediaCardList,
                 {
                     "media": this.state.media,
+                    "users": this.state.users,
                     "checkClick": this.checkClick.bind(this),
                     "editClick": this.editClick.bind(this),
                     "deleteClick": this.deleteClick.bind(this)
