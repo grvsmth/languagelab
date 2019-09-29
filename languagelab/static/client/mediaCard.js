@@ -67,7 +67,7 @@ export default class MediaCard extends React.Component {
     }
 
     editClick(event) {
-        this.props.editClick();
+        this.props.setActivity("edit");
     }
 
     deleteClick(event) {

@@ -27,7 +27,7 @@ exports.checkboxDiv = function(key, checked, labelText, itemId, callback) {
     const inputId = [key, itemId].join("_");
     return React.createElement(
         "div",
-        {"className": "form-check form-check-inline"},
+        {"className": "form-check form-check-inline mx-1"},
         exports.checkboxInput(
             key,
             checked,

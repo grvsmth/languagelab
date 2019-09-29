@@ -59,9 +59,8 @@ export default class Lab extends React.Component {
         });
     }
 
-    editClick = function() {
-        console.log("editClick()");
-        this.setState({"activity": "edit"});
+    setActivity = function(activity) {
+        this.setState({"activity": activity});
     }
 
     deleteClick = function() {
@@ -80,7 +79,7 @@ export default class Lab extends React.Component {
                     "users": this.state.users,
                     "languages": this.state.languages,
                     "checkClick": this.checkClick.bind(this),
-                    "editClick": this.editClick.bind(this),
+                    "setActivity": this.setActivity.bind(this),
                     "deleteClick": this.deleteClick.bind(this)
                 },
                 null

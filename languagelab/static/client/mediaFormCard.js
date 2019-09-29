@@ -137,13 +137,17 @@ export default class MediaCard extends React.Component {
         );
     }
 
-    selectDiv(fieldName) {
+    selectDiv(fieldName, optionList) {
+        if (!optionList) {
+            return null;
+        }
+
         const inputId = [fieldName, this.props.mediaItem.id].join("_");
         return React.createElement(
             "div",
-            {"className": "form-group"},
+            {"className": "form-group mx-1"},
             commonElements.itemLabel(fieldName, inputId),
-            this.itemSelect(fieldName, config.formatName)
+            this.itemSelect(fieldName, optionList)
         );
     }
 
@@ -166,10 +170,20 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    languageObject() {
+        const languageObject = this.props.languages.reduce((object, item) => {
+            object[item.id] = item.name;
+            return object;
+        }, {});
+        return languageObject;
+    }
+
     optionsRow() {
         return React.createElement(
             "div",
             {"className": "form-row"},
+            this.selectDiv("format", config.formatName),
+            this.selectDiv("language", this.languageObject()),
             commonElements.checkboxDiv(
                 "isAvailable",
                 this.props.mediaItem.isAvailable,
@@ -183,8 +197,7 @@ export default class MediaCard extends React.Component {
                 "public",
                 this.props.mediaItem.id,
                 this.checkboxClick.bind(this)
-            ),
-            this.selectDiv("format")
+            )
         );
     }
 
