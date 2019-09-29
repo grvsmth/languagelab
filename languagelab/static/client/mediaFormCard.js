@@ -11,6 +11,15 @@ export default class MediaCard extends React.Component {
         console.dir(event);
     }
 
+    checkboxClick(event) {
+        this.props.checkClick(
+            "media",
+            this.props.mediaItem.id,
+            event.target.name,
+            event.target.checked
+        )
+    }
+
     textInput(fieldName, inputId) {
         return React.createElement(
             "input",
@@ -50,6 +59,27 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    fileInfo() {
+        if (!this.props.mediaItem.mediaFile) {
+            return null;
+        }
+
+        const fileUrlParts = this.props.mediaItem.mediaFile.split("/");
+        const fileNameSpan = React.createElement(
+            "span",
+            {"className": "text-success"},
+            fileUrlParts[fileUrlParts.length-1]
+        );
+
+        return React.createElement(
+            "span",
+            {"className": "badge"},
+            "uploaded media file is ",
+            fileNameSpan
+        );
+
+    }
+
     fileLabel(fieldName, inputId) {
         if (!this.props.mediaItem[fieldName]) {
             return commonElements.itemLabel("or upload a file", inputId);
@@ -76,8 +106,9 @@ export default class MediaCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "col-sm"},
-            this.fileLabel(fieldName, inputId),
-            this.fileInput(fieldName, inputId)
+            commonElements.itemLabel("or upload a file", inputId),
+            this.fileInput(fieldName, inputId),
+            this.fileInfo()
         );
     }
 
@@ -116,7 +147,7 @@ export default class MediaCard extends React.Component {
         );
     }
 
-    firstRow() {
+    nameRow() {
         return React.createElement(
             "div",
             {"className": "form-row"},
@@ -126,20 +157,34 @@ export default class MediaCard extends React.Component {
         );
     }
 
-    secondRow() {
+    fileRow() {
         return React.createElement(
             "div",
             {"className": "form-row"},
             this.textInputDiv("mediaUrl"),
-            this.selectDiv("format")
+            this.fileInputDiv("mediaFile")
         );
     }
 
-    thirdRow() {
+    optionsRow() {
         return React.createElement(
             "div",
             {"className": "form-row"},
-            this.fileInputDiv("mediaFile")
+            commonElements.checkboxDiv(
+                "isAvailable",
+                this.props.mediaItem.isAvailable,
+                "available",
+                this.props.mediaItem.id,
+                this.checkboxClick.bind(this)
+            ),
+            commonElements.checkboxDiv(
+                "isPublic",
+                this.props.mediaItem.isPublic,
+                "public",
+                this.props.mediaItem.id,
+                this.checkboxClick.bind(this)
+            ),
+            this.selectDiv("format")
         );
     }
 
@@ -147,9 +192,9 @@ export default class MediaCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "card-body"},
-            this.firstRow(),
-            this.secondRow(),
-            this.thirdRow()
+            this.nameRow(),
+            this.fileRow(),
+            this.optionsRow()
         );
     }
 
