@@ -91,6 +91,9 @@ export default class MediaCard extends React.Component {
     }
 
     linkDiv() {
+        if (this.props.activity === "add") {
+            return null;
+        }
         return React.createElement(
             "div",
             {},

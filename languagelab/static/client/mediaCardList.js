@@ -9,16 +9,63 @@ export default class MediaCardList extends React.Component {
         console.log("props", props);
     }
 
+    addClick() {
+        this.props.setActivity("add");
+    }
 
-    render() {
-        if (!this.props.media) {
-            return null;
+    addButtonElement() {
+        return React.createElement(
+            "button",
+            {
+                "type": "button",
+                "className": "btn btn-primary",
+                "onClick": this.addClick.bind(this)
+            },
+            "Add media item"
+        );
+    }
+
+    addButtonCardBody() {
+        return React.createElement(
+            "div",
+            {"className": "card-body"},
+            this.addButtonElement()
+        );
+    }
+
+    addButtonCard() {
+        return React.createElement(
+            "div",
+            {
+                "className": "card",
+                "key": "addButton"
+            },
+            this.addButtonCardBody()
+        );
+    }
+
+    mediaFormCard(mediaItem, users) {
+        var mediaId = "form";
+        if (mediaItem.hasOwnProperty("id")) {
+            mediaId = mediaitem.id;
         }
 
-        const mediaElements = [];
+        return React.createElement(
+            MediaFormCard,
+            {
+                "key": mediaId,
+                "mediaItem": mediaItem,
+                "users": users,
+                "languages": this.props.languages,
+                "setActivity": this.props.setActivity,
+                "saveItem": this.props.saveItem
+            },
+            null
+        );
+    }
 
-
-        this.props.media.forEach((mediaItem) => {
+    makeElements() {
+        return this.props.media.map((mediaItem) => {
             var users = [];
             var languageList = [];
             var nextElement;
@@ -28,18 +75,7 @@ export default class MediaCardList extends React.Component {
             }
 
             if (this.props.activity === "edit") {
-                nextElement = React.createElement(
-                    MediaFormCard,
-                    {
-                        "key": mediaItem.id,
-                        "mediaItem": mediaItem,
-                        "users": users,
-                        "languages": this.props.languages,
-                        "setActivity": this.props.setActivity,
-                        "saveItem": this.props.saveItem
-                    },
-                    null
-                );
+                nextElement = this.createMediaFormCard(mediaItem, users);
             } else {
                 if (this.props.languages) {
                     languageList.push(
@@ -61,8 +97,29 @@ export default class MediaCardList extends React.Component {
                     null
                 );
             }
-            mediaElements.push(nextElement);
+            return nextElement;
         });
+    }
+
+    render() {
+        if (!this.props.media) {
+            return null;
+        }
+
+        var mediaElements = [];
+
+        if (this.props.activity === "add") {
+            // TODO retrieve current user
+            mediaElements.push(
+                this.mediaFormCard({}, this.props.users[0])
+            );
+        } else {
+            mediaElements.push(
+                this.addButtonCard()
+            );
+        }
+
+        mediaElements = mediaElements.concat(this.makeElements());
         return mediaElements;
     }
 }
