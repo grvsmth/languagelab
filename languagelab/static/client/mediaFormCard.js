@@ -8,7 +8,7 @@ export default class MediaCard extends React.Component {
     }
 
     inputChange(event) {
-        console.dir(event);
+        console.dir("inputChange()", event);
     }
 
     textInput(fieldName, inputId) {
@@ -34,6 +34,32 @@ export default class MediaCard extends React.Component {
             commonElements.itemLabel(fieldName, inputId),
             this.textInput(fieldName, inputId)
         );
+    }
+
+    tagsInput(inputId) {
+        return React.createElement(
+            "input",
+            {
+                "id": inputId,
+                "className": "form-control",
+                "type": "text",
+                "name": "tags",
+                "value": this.props.mediaItem.tags.join(" "),
+                "onChange": this.inputChange
+            },
+            null
+        );
+    }
+
+    tagsInputDiv() {
+        const inputId = "tags_" + this.props.mediaItem.id;
+
+        return React.createElement(
+            "div",
+            {"className": "col-sm"},
+            commonElements.itemLabel("tags", inputId),
+            this.tagsInput(inputId)
+        )
     }
 
     fileInput(fieldName, inputId) {
@@ -173,7 +199,7 @@ export default class MediaCard extends React.Component {
         return React.createElement(
             "button",
             {
-                "className": "btn btn-success btn-sm mx-1",
+                "className": "btn btn-success btn-sm m-1",
                 "onClick": this.inputChange.bind(this)
             },
             "Save"
@@ -184,10 +210,19 @@ export default class MediaCard extends React.Component {
         return React.createElement(
             "button",
             {
-                "className": "btn btn-danger btn-sm mx-1",
+                "className": "btn btn-danger btn-sm m-1",
                 "onClick": this.inputChange.bind(this)
             },
             "Cancel"
+        );
+    }
+
+    buttonDiv() {
+        return React.createElement(
+            "div",
+            {"className": "col"},
+            this.saveButton(),
+            this.cancelButton()
         );
     }
 
@@ -195,6 +230,7 @@ export default class MediaCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "form-row"},
+            this.tagsInputDiv(),
             this.selectDiv("format", config.formatName),
             this.selectDiv("language", this.languageObject()),
             commonElements.checkboxDiv(
@@ -210,9 +246,15 @@ export default class MediaCard extends React.Component {
                 "public",
                 this.props.mediaItem.id,
                 this.inputChange.bind(this)
-            ),
-            this.saveButton(),
-            this.cancelButton()
+            )
+        );
+    }
+
+    submitRow() {
+        return React.createElement(
+            "div",
+            {"className": "form-row"},
+            this.buttonDiv()
         );
     }
 
@@ -222,11 +264,13 @@ export default class MediaCard extends React.Component {
             {"className": "card-body"},
             this.nameRow(),
             this.fileRow(),
-            this.optionsRow()
+            this.optionsRow(),
+            this.submitRow()
         );
     }
 
     render() {
+
         return React.createElement(
             "div",
             {"className": "card bg-light"},
