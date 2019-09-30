@@ -17,7 +17,7 @@ export default class MediaCard extends React.Component {
 
     processField(node) {
         if (node.type === "checkbox") {
-            return node.value === "on";
+            return node.checked;
         }
         return node.value;
     }
@@ -279,15 +279,13 @@ export default class MediaCard extends React.Component {
                 "isAvailable",
                 this.props.mediaItem.isAvailable,
                 "available",
-                this.props.mediaItem.id,
-                this.inputChange.bind(this)
+                this.props.mediaItem.id
             ),
             commonElements.checkboxDiv(
                 "isPublic",
                 this.props.mediaItem.isPublic,
                 "public",
-                this.props.mediaItem.id,
-                this.inputChange.bind(this)
+                this.props.mediaItem.id
             )
         );
     }
