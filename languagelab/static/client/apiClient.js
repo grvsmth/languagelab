@@ -44,6 +44,7 @@ exports.updateLanguages = function() {
 
 exports.patch = function(data, endpoint, id=null) {
     console.log(`apiclient.patch(${endpoint}, ${id})`);
+    console.log(data);
     const csrftoken = exports.extractCookie("csrftoken");
     const apiUrl = [config.api.baseUrl, endpoint, id, ""].join("/");
     const options = {

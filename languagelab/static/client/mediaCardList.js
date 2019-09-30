@@ -17,6 +17,7 @@ export default class MediaCardList extends React.Component {
 
         const mediaElements = [];
 
+
         this.props.media.forEach((mediaItem) => {
             var users = [];
             var languageList = [];
@@ -34,7 +35,8 @@ export default class MediaCardList extends React.Component {
                         "mediaItem": mediaItem,
                         "users": users,
                         "languages": this.props.languages,
-                        "setActivity": this.props.setActivity
+                        "setActivity": this.props.setActivity,
+                        "saveItem": this.props.saveItem
                     },
                     null
                 );

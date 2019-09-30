@@ -33,7 +33,6 @@ export default class MediaCard extends React.Component {
     }
 
     saveClick(event) {
-        var itemToSave = {};
         const formInputs = document.body.querySelectorAll(
             `#${event.target.form.id} input, select`
         )
@@ -44,8 +43,12 @@ export default class MediaCard extends React.Component {
                 return object;
             }, {});
 
+        var itemId = null;
+        if (this.props.mediaItem.id !== "form") {
+            itemId = this.props.mediaItem.id;
+        }
         this.processMediaInfo(formData);
-        console.log(formData);
+        this.props.saveItem(formData, "media", itemId);
 
     }
 

@@ -14,7 +14,8 @@ export default class Lab extends React.Component {
             "media": [],
             "users": [],
             "languages": [],
-            "activity": "read"
+            "activity": "read",
+            "type": this.props.clickId
         };
     }
 
@@ -46,7 +47,9 @@ export default class Lab extends React.Component {
         const index = items.findIndex((item) => item.id === res.response.id);
         items[index] = res.response;
 
-        this.setState({[res.type]: items});
+        this.setState(
+            {[res.type]: items}
+        );
     }
 
     checkClick = function(itemType, itemId, itemKey, itemChecked) {
@@ -67,6 +70,16 @@ export default class Lab extends React.Component {
         console.log("deleteClick()");
     }
 
+    saveItem = function(item, itemType, itemId) {
+        console.log(item);
+        apiClient.patch({"language": item.language}, itemType, itemId).then((res) => {
+            this.updateStateItem(res);
+            this.setState({"activity": "read"});
+        }, (err) => {
+            console.error(err);
+        });
+    }
+
     render() {
         console.log(this.state);
 
@@ -80,7 +93,8 @@ export default class Lab extends React.Component {
                     "languages": this.state.languages,
                     "checkClick": this.checkClick.bind(this),
                     "setActivity": this.setActivity.bind(this),
-                    "deleteClick": this.deleteClick.bind(this)
+                    "deleteClick": this.deleteClick.bind(this),
+                    "saveItem": this.saveItem.bind(this)
                 },
                 null
             )

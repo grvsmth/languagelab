@@ -26,6 +26,7 @@ class LanguageSerializer(ModelSerializer):
     class Meta:
         model = Language
         fields = ['id', 'name', 'code']
+        ordering = ['id']
 
 
 class MediaItemSerializer(TaggitSerializer, ModelSerializer):
@@ -49,7 +50,7 @@ class MediaItemSerializer(TaggitSerializer, ModelSerializer):
             'mediaFile',
             'mediaUrl'
             ]
-
+        ordering = ['-id']
 
 class ExerciseSerializer(ModelSerializer):
     class Meta:
@@ -69,6 +70,7 @@ class ExerciseSerializer(ModelSerializer):
             'notes',
             'created'
             ]
+        ordering = ['-id']
 
 class LessonSerializer(TaggitSerializer, ModelSerializer):
     tags = TagListSerializerField()
@@ -88,6 +90,8 @@ class LessonSerializer(TaggitSerializer, ModelSerializer):
             'tags',
             'created'
             ]
+        ordering = ['-id']
+
 
 class QueueItemSerializer(ModelSerializer):
     class Meta:
@@ -100,4 +104,5 @@ class QueueItemSerializer(ModelSerializer):
             'started',
             'completed'
             ]
+        ordering = ['-rank']
 

@@ -5,7 +5,7 @@ import util from "./util.js";
 export default class MediaCard extends React.Component {
     constructor(props) {
         super(props);
-        console.log("props", JSON.stringify(props));
+        console.log("props", props);
     }
 
     itemTitle() {
