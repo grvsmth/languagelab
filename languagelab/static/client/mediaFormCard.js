@@ -22,16 +22,6 @@ export default class MediaCard extends React.Component {
         return node.value;
     }
 
-    processMediaInfo(formData) {
-        if (!formData.mediaUrl && !formData.mediaFile) {
-            if (this.props.mediaItem.mediaUrl) {
-                formData.mediaUrl = this.props.mediaitem.mediaUrl;
-                return;
-            }
-            formData.mediaFile = this.props.mediaItem.mediaFile;
-        }
-    }
-
     saveClick(event) {
         const formInputs = document.body.querySelectorAll(
             `#${event.target.form.id} input, select`
@@ -39,6 +29,10 @@ export default class MediaCard extends React.Component {
         console.log(formInputs);
         const formData = Array.from(formInputs.values())
             .reduce((object, item) => {
+                if (item.name === "mediaFile") {
+                    // TODO handle later
+                    return object;
+                }
                 object[item.name] = this.processField(item);
                 return object;
             }, {});
@@ -47,7 +41,6 @@ export default class MediaCard extends React.Component {
         if (this.props.mediaItem.id !== "form") {
             itemId = this.props.mediaItem.id;
         }
-        this.processMediaInfo(formData);
         this.props.saveItem(formData, "media", itemId);
 
     }

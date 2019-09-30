@@ -71,13 +71,7 @@ export default class Lab extends React.Component {
     }
 
     saveItem = function(item, itemType, itemId) {
-        console.log(item);
-        const testItem = {
-            "language": item.language,
-            "isAvailable": item.isAvailable,
-            "isPublic": item.isPublic
-        }
-        apiClient.patch(testItem, itemType, itemId).then((res) => {
+        apiClient.patch(item, itemType, itemId).then((res) => {
             this.updateStateItem(res);
             this.setState({"activity": "read"});
         }, (err) => {
