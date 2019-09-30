@@ -72,4 +72,25 @@ exports.patch = function(data, endpoint, id=null) {
     });
 };
 
+exports.post = function(data, endpoint) {
+    const csrftoken = exports.extractCookie("csrftoken");
+    const apiUrl = [config.api.baseUrl, endpoint, ""].join("/");
+    const options = {
+        "method": "POST",
+        "headers": {
+            "X-CSRFToken": csrftoken,
+            'Content-Type': 'application/json'
+        },
+        "body": JSON.stringify(data)
+    };
+
+    return new Promise((resolve, reject) => {
+        exports.fetchData(apiUrl, options).then((res) => {
+            resolve({"type": endpoint, "response": res});
+        }, (err) => {
+            reject({"type": endpoint, "error": err});
+        });
+    });
+};
+
 export default exports;

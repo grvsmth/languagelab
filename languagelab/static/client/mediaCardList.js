@@ -47,7 +47,7 @@ export default class MediaCardList extends React.Component {
     mediaFormCard(mediaItem, users) {
         var mediaId = "form";
         if (mediaItem.hasOwnProperty("id")) {
-            mediaId = mediaitem.id;
+            mediaId = mediaItem.id;
         }
 
         return React.createElement(
@@ -74,13 +74,17 @@ export default class MediaCardList extends React.Component {
                 users.push(util.findItem(this.props.users, mediaItem.uploader));
             }
 
-            if (this.props.activity === "edit") {
-                nextElement = this.createMediaFormCard(mediaItem, users);
+            if (this.props.activity === "edit"
+                && this.props.selectedItem === mediaItem.id) {
+                nextElement = this.mediaFormCard(mediaItem, users);
             } else {
                 if (this.props.languages) {
-                    languageList.push(
-                        util.findItem(this.props.languages, mediaItem.language)
-                    );
+                    let language = util.findItem(
+                        this.props.languages, mediaItem.language
+                        );
+                    if (language) {
+                        languageList.push(language);
+                    }
                 }
 
                 nextElement = React.createElement(
@@ -91,8 +95,8 @@ export default class MediaCardList extends React.Component {
                         "users": users,
                         "languages": languageList,
                         "checkClick": this.props.checkClick,
-                        "setActivity": this.props.setActivity,
-                        "deleteClick": this.props.deleteClick
+                        "deleteClick": this.props.deleteClick,
+                        "editItem": this.props.editItem
                     },
                     null
                 );

@@ -71,6 +71,10 @@ export default class MediaCard extends React.Component {
     }
 
     tagsInput(inputId) {
+        var defaultValue = "";
+        if (this.props.mediaItem.tags) {
+            defaultValue = this.props.mediaItem.tags.join(" ");
+        }
         return React.createElement(
             "input",
             {
@@ -78,7 +82,7 @@ export default class MediaCard extends React.Component {
                 "className": "form-control",
                 "type": "text",
                 "name": "tags",
-                "defaultValue": this.props.mediaItem.tags.join(" ")
+                "defaultValue": defaultValue
             },
             null
         );

@@ -15,7 +15,8 @@ export default class Lab extends React.Component {
             "users": [],
             "languages": [],
             "activity": "read",
-            "type": this.props.clickId
+            "type": this.props.clickId,
+            "selectedItem": null
         };
     }
 
@@ -62,6 +63,13 @@ export default class Lab extends React.Component {
         });
     }
 
+    editItem = function(itemId) {
+        this.setState({
+            "activity": "edit",
+            "selectedItem": itemId
+        })
+    }
+
     setActivity = function(activity) {
         this.setState({"activity": activity});
     }
@@ -71,12 +79,34 @@ export default class Lab extends React.Component {
     }
 
     saveItem = function(item, itemType, itemId) {
-        apiClient.patch(item, itemType, itemId).then((res) => {
-            this.updateStateItem(res);
-            this.setState({"activity": "read"});
-        }, (err) => {
-            console.error(err);
-        });
+        console.log(`saveItem(${itemType}, ${itemId})`);
+        if (itemId) {
+            apiClient.patch(item, itemType, itemId).then((res) => {
+                this.updateStateItem(res);
+                this.setState({"activity": "read"});
+            }, (err) => {
+                console.error(err);
+            });
+        } else {
+            console.log(item);
+            const testItem = {
+                "creator": item.creator,
+                "format": item.format,
+                "isAvailable": item.isAvailable,
+                "isPublic": item.isPublic,
+                "language": parseInt(item.language),
+                "mediaUrl": item.mediaUrl,
+                "name": item.name,
+                "rights": item.rights
+            };
+            console.log(testItem);
+            apiClient.post(testItem, itemType).then((res) => {
+                this.updateStateItem(res);
+                this.setState({"activity": "read"});
+            }, (err) => {
+                console.error(err);
+            });
+        }
     }
 
     render() {
@@ -90,10 +120,12 @@ export default class Lab extends React.Component {
                     "media": this.state.media,
                     "users": this.state.users,
                     "languages": this.state.languages,
+                    "selectedItem": this.state.selectedItem,
                     "checkClick": this.checkClick.bind(this),
                     "setActivity": this.setActivity.bind(this),
                     "deleteClick": this.deleteClick.bind(this),
-                    "saveItem": this.saveItem.bind(this)
+                    "saveItem": this.saveItem.bind(this),
+                    "editItem": this.editItem.bind(this)
                 },
                 null
             )
