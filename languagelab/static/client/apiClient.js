@@ -16,10 +16,19 @@ exports.extractCookie = function(cookieKey) {
     return cookieValue;
 };
 
-exports.fetchData = function(url, options={}) {
+exports.fetchData = function(url, options={}, results=[]) {
     return new Promise((resolve, reject) => {
-       fetch(url, options).then((res) => {
-            resolve(res.json());
+        fetch(url, options).then((res) => {
+            res.json().then((resJson) => {
+                results = results.concat(resJson.results);
+                if (resJson.next) {
+                    this.fetchData(resJson.next, options, results).then(
+                        resolve, reject
+                    );
+                } else {
+                   resolve(results);
+                }
+            });
         }, (err) => {
             reject(err);
         });

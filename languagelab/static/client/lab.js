@@ -35,8 +35,8 @@ export default class Lab extends React.Component {
 
         apiClient.fetchData(apiUrl).then((res) => {
             this.setState(
-                {[dataType]: res.results, "lastUpdated": loadTime.format()}
-                );
+                {[dataType]: res, "lastUpdated": loadTime.format()}
+            );
         }, (err) => {
             console.error(err);
         });
