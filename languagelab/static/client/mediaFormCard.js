@@ -19,8 +19,7 @@ export default class MediaCard extends React.Component {
                 "className": "form-control",
                 "type": "text",
                 "name": fieldName,
-                "value": this.props.mediaItem[fieldName],
-                "onChange": this.inputChange
+                "defaultValue": this.props.mediaItem[fieldName]
             },
             null
         );
@@ -44,8 +43,7 @@ export default class MediaCard extends React.Component {
                 "className": "form-control",
                 "type": "text",
                 "name": "tags",
-                "value": this.props.mediaItem.tags.join(" "),
-                "onChange": this.inputChange
+                "defaultValue": this.props.mediaItem.tags.join(" ")
             },
             null
         );
@@ -69,8 +67,7 @@ export default class MediaCard extends React.Component {
                 "type": "file",
                 "className": "form-control-file",
                 "id": inputId,
-                "name": fieldName,
-                "onChange": this.inputChange
+                "name": fieldName
             },
             null
         );
@@ -181,7 +178,7 @@ export default class MediaCard extends React.Component {
     fileRow() {
         return React.createElement(
             "div",
-            {"className": "form-row"},
+            {"className": "form-row mt-3"},
             this.textInputDiv("mediaUrl"),
             this.fileInputDiv("mediaFile")
         );
@@ -206,12 +203,16 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    cancelClick() {
+        this.props.setActivity("read");
+    }
+
     cancelButton() {
         return React.createElement(
             "button",
             {
                 "className": "btn btn-danger btn-sm m-1",
-                "onClick": this.inputChange.bind(this)
+                "onClick": this.cancelClick.bind(this)
             },
             "Cancel"
         );
@@ -229,7 +230,7 @@ export default class MediaCard extends React.Component {
     optionsRow() {
         return React.createElement(
             "div",
-            {"className": "form-row"},
+            {"className": "form-row mt-3"},
             this.tagsInputDiv(),
             this.selectDiv("format", config.formatName),
             this.selectDiv("language", this.languageObject()),
