@@ -8,7 +8,10 @@ export default class MediaCard extends React.Component {
     }
 
     inputChange(event) {
-        console.dir("inputChange()", event);
+        const audio1 = document.querySelector("#audio1");
+        console.dir(audio1);
+        console.log(event.target.value);
+        audio1.src = event.target.value;
     }
 
     cancelClick() {
@@ -20,6 +23,24 @@ export default class MediaCard extends React.Component {
             return node.checked;
         }
         return node.value;
+    }
+
+    loadedMetadata(event) {
+        console.dir(event.target);
+        console.log("duration", event.target.duration);
+
+    }
+
+    audioElement() {
+        const audio = React.createElement(
+            "audio",
+            {
+                "id": "audio1",
+                "onLoadedMetadata": this.loadedMetadata.bind(this)
+            },
+            null
+        );
+        return audio;
     }
 
     saveClick(event) {
@@ -37,6 +58,7 @@ export default class MediaCard extends React.Component {
                 return object;
             }, {});
 
+        const audio1 = document.querySelector("#audio1");
         var itemId = null;
         if (this.props.mediaItem.id !== "form") {
             itemId = this.props.mediaItem.id;
@@ -45,28 +67,32 @@ export default class MediaCard extends React.Component {
 
     }
 
-    textInput(fieldName, inputId, required=false) {
+    textInput(fieldName, inputId, onChange) {
+        const options = {
+            "id": inputId,
+            "className": "form-control",
+            "type": "text",
+            "name": fieldName,
+            "defaultValue": this.props.mediaItem[fieldName]
+        };
+        if (onChange) {
+            options.onChange = onChange;
+        }
+
         return React.createElement(
             "input",
-            {
-                "id": inputId,
-                "className": "form-control",
-                "type": "text",
-                "name": fieldName,
-                "defaultValue": this.props.mediaItem[fieldName],
-                "required": required
-            },
+            options,
             null
         );
     }
 
-    textInputDiv(fieldName) {
+    textInputDiv(fieldName, onChange=null) {
         const inputId = [fieldName, this.props.mediaItem.id].join("_");
         return React.createElement(
             "div",
             {"className": "col-sm"},
             commonElements.itemLabel(fieldName, inputId),
-            this.textInput(fieldName, inputId)
+            this.textInput(fieldName, inputId, onChange)
         );
     }
 
@@ -219,8 +245,9 @@ export default class MediaCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "form-row mt-3"},
-            this.textInputDiv("mediaUrl"),
-            this.fileInputDiv("mediaFile")
+            this.textInputDiv("mediaUrl", this.inputChange),
+            this.fileInputDiv("mediaFile"),
+            this.audioElement()
         );
     }
 

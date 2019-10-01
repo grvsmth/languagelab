@@ -1,5 +1,6 @@
 import MediaCardList from "./mediaCardList.js";
 import apiClient from "./apiClient.js";
+import util from "./util.js";
 
 import config from "./config.js";
 
@@ -11,6 +12,11 @@ export default class Lab extends React.Component {
 
         this.state = {
             "lastUpdated": "",
+            "loading": {
+                "media": false,
+                "users": false,
+                "languages": false
+            },
             "media": [],
             "users": [],
             "languages": [],
@@ -22,6 +28,11 @@ export default class Lab extends React.Component {
 
     componentDidMount() {
         if (!this.state.lastUpdated) {
+            this.setState({"loading": {
+                "media": true,
+                "languages": true,
+                "users": true
+            }});
             this.fetchData("media");
             this.fetchData("users");
             this.fetchData("languages");
@@ -36,7 +47,11 @@ export default class Lab extends React.Component {
 
         apiClient.fetchData(apiUrl).then((res) => {
             this.setState(
-                {[dataType]: res, "lastUpdated": loadTime.format()}
+                {
+                    [dataType]: res,
+                    "lastUpdated": loadTime.format(),
+                    "loading": {[dataType]: false}
+                }
             );
         }, (err) => {
             console.error(err);
@@ -99,6 +114,7 @@ export default class Lab extends React.Component {
             });
         } else {
             console.log(item);
+            util.duration(item.mediaUrl);
             const testItem = {
                 "uploader": 1,
                 "creator": item.creator,
@@ -137,7 +153,8 @@ export default class Lab extends React.Component {
                     "setActivity": this.setActivity.bind(this),
                     "deleteClick": this.deleteClick.bind(this),
                     "saveItem": this.saveItem.bind(this),
-                    "editItem": this.editItem.bind(this)
+                    "editItem": this.editItem.bind(this),
+                    "loading": this.state.loading
                 },
                 null
             )

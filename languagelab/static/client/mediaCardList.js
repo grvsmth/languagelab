@@ -38,7 +38,8 @@ export default class MediaCardList extends React.Component {
             "div",
             {
                 "className": "card",
-                "key": "addButton"
+                "key": "addButton",
+                "loading": this.props.loading.media
             },
             this.addButtonCardBody()
         );

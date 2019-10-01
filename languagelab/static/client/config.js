@@ -13,6 +13,12 @@ const config = {
     "formatName": {
         "au": "audio",
         "vi": "video"
+    },
+    "audio": {
+        "options": {
+            "audioBitsPerSecond": 128000,
+            "sampleRate": 48000
+        }
     }
 };
 
