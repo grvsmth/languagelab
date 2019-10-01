@@ -43,13 +43,19 @@ export default class Lab extends React.Component {
         });
     }
 
-    updateStateItem(res) {
-        const items = [...this.state[res.type]];
-        const index = items.findIndex((item) => item.id === res.response.id);
-        items[index] = res.response;
+    updateStateItem(res, itemType) {
+        console.log("updateStateItem", res)
+        const items = [...this.state[itemType]];
+        const index = items.findIndex((item) => item.id === res.id);
+
+        if (index < 0) {
+            items.push(res);
+        } else {
+            items[index] = res;
+        }
 
         this.setState(
-            {[res.type]: items}
+            {[itemType]: items}
         );
     }
 
@@ -57,7 +63,7 @@ export default class Lab extends React.Component {
         event.preventDefault();
         const payload = {[itemKey]: itemChecked};
         apiClient.patch(payload, itemType, itemId).then((res) => {
-            this.updateStateItem(res);
+            this.updateStateItem(res, itemType);
         }, (err) => {
             console.error(err);
         });
@@ -74,15 +80,21 @@ export default class Lab extends React.Component {
         this.setState({"activity": activity});
     }
 
-    deleteClick = function() {
+    deleteClick = function(itemType, itemId) {
         console.log("deleteClick()");
+        apiClient.delete(itemType, itemId).then((res) => {
+            console.log(res);
+            this.fetchData(itemType);
+        }, (err) => {
+            console.error(err);
+        });
     }
 
     saveItem = function(item, itemType, itemId) {
         console.log(`saveItem(${itemType}, ${itemId})`);
         if (itemId) {
             apiClient.patch(item, itemType, itemId).then((res) => {
-                this.updateStateItem(res);
+                this.updateStateItem(res, itemType);
                 this.setState({"activity": "read"});
             }, (err) => {
                 console.error(err);
@@ -90,18 +102,22 @@ export default class Lab extends React.Component {
         } else {
             console.log(item);
             const testItem = {
+                "uploader": 1,
                 "creator": item.creator,
+                "duration": "00:00:00",
                 "format": item.format,
                 "isAvailable": item.isAvailable,
                 "isPublic": item.isPublic,
                 "language": parseInt(item.language),
                 "mediaUrl": item.mediaUrl,
                 "name": item.name,
-                "rights": item.rights
+                "rights": item.rights,
+                "tags": []
             };
             console.log(testItem);
             apiClient.post(testItem, itemType).then((res) => {
-                this.updateStateItem(res);
+                console.log(res);
+                this.updateStateItem(res, itemType);
                 this.setState({"activity": "read"});
             }, (err) => {
                 console.error(err);

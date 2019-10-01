@@ -52,6 +52,7 @@ class MediaItemSerializer(TaggitSerializer, ModelSerializer):
             ]
         ordering = ['-id']
 
+
 class ExerciseSerializer(ModelSerializer):
     class Meta:
         model = Exercise

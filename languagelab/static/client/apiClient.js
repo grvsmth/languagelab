@@ -19,7 +19,15 @@ exports.extractCookie = function(cookieKey) {
 exports.fetchData = function(url, options={}, results=[]) {
     return new Promise((resolve, reject) => {
         fetch(url, options).then((res) => {
+            if (res.status === 204) {
+                resolve();
+                return;
+            }
             res.json().then((resJson) => {
+                if (!resJson.hasOwnProperty("results")) {
+                    resolve(resJson);
+                }
+
                 results = results.concat(resJson.results);
                 if (resJson.next) {
                     this.fetchData(resJson.next, options, results).then(
@@ -61,6 +69,26 @@ exports.patch = function(data, endpoint, id=null) {
             'Content-Type': 'application/json'
         },
         "body": JSON.stringify(data)
+    };
+
+    return new Promise((resolve, reject) => {
+        exports.fetchData(apiUrl, options).then((res) => {
+            resolve({"type": endpoint, "response": res});
+        }, (err) => {
+            reject({"type": endpoint, "error": err});
+        });
+    });
+};
+
+exports.delete = function(endpoint, id) {
+    const csrftoken = exports.extractCookie("csrftoken");
+    const apiUrl = [config.api.baseUrl, endpoint, id, ""].join("/");
+    const options = {
+        "method": "DELETE",
+        "headers": {
+            "X-CSRFToken": csrftoken,
+            'Content-Type': 'application/json'
+        }
     };
 
     return new Promise((resolve, reject) => {

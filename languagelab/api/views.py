@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.serializers import PrimaryKeyRelatedField
 
 from languagelab.api.iso639client import getIso639, makeLanguage
 
@@ -62,6 +63,14 @@ class MediaItemViewSet(viewsets.ModelViewSet):
     """
     queryset = MediaItem.objects.all()
     serializer_class = MediaItemSerializer
+    user = PrimaryKeyRelatedField(
+        # set it to read_only as we're handling the writing part ourselves
+        read_only=True,
+    )
+
+    def perform_create(self, serializer):
+        serializer.save(uploader=self.request.user)
+
 
 
 class ExerciseViewSet(viewsets.ModelViewSet):

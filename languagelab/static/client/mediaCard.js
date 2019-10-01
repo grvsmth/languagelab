@@ -71,7 +71,7 @@ export default class MediaCard extends React.Component {
     }
 
     deleteClick(event) {
-        this.props.deleteClick();
+        this.props.deleteClick("media", this.props.mediaItem.id);
     }
 
     editLink() {
