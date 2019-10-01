@@ -44,7 +44,6 @@ exports.fetchData = function(url, options={}, results=[]) {
                 reject(err);
             });
         }, (err) => {
-            console.log("caught on line 44");
             reject(err);
         });
     });

@@ -59,7 +59,6 @@ export default class Lab extends React.Component {
     }
 
     updateStateItem(res, itemType) {
-        console.log("updateStateItem", res)
         const items = [...this.state[itemType]];
         const index = items.findIndex((item) => item.id === res.id);
 
@@ -104,7 +103,6 @@ export default class Lab extends React.Component {
     }
 
     saveItem = function(item, itemType, itemId) {
-        console.log(`saveItem(${itemType}, ${itemId})`);
         if (itemId) {
             apiClient.patch(item, itemType, itemId).then((res) => {
                 this.updateStateItem(res.response, itemType);
@@ -113,22 +111,7 @@ export default class Lab extends React.Component {
                 console.error(err);
             });
         } else {
-            console.log(item);
-            util.duration(item.mediaUrl);
-            const testItem = {
-                "uploader": 1,
-                "creator": item.creator,
-                "format": item.format,
-                "isAvailable": item.isAvailable,
-                "isPublic": item.isPublic,
-                "language": parseInt(item.language),
-                "mediaUrl": item.mediaUrl,
-                "name": item.name,
-                "rights": item.rights
-            };
-            console.log(testItem);
-            apiClient.post(testItem, itemType).then((res) => {
-                console.log(res);
+            apiClient.post(item, itemType).then((res) => {
                 this.updateStateItem(res.response, itemType);
                 this.setState({"activity": "read"});
             }, (err) => {

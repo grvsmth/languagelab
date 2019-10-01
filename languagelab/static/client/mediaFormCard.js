@@ -1,4 +1,6 @@
 import config from "./config.js";
+
+import util from "./util.js";
 import commonElements from "./commonElements.js";
 
 export default class MediaCard extends React.Component {
@@ -9,8 +11,6 @@ export default class MediaCard extends React.Component {
 
     inputChange(event) {
         const audio1 = document.querySelector("#audio1");
-        console.dir(audio1);
-        console.log(event.target.value);
         audio1.src = event.target.value;
     }
 
@@ -22,19 +22,28 @@ export default class MediaCard extends React.Component {
         if (node.type === "checkbox") {
             return node.checked;
         }
+        if (node.name === "tags") {
+            if (node.value.length < 1) {
+                return [];
+            }
+            return node.value.split('[\s,;]');
+        }
+        if (node.name === "language") {
+            return parseInt(node.value);
+        }
         return node.value;
     }
 
     loadedMetadata(event) {
-        console.dir(event.target);
-        console.log("duration", event.target.duration);
+        const durationMoment = moment.duration(event.target.duration * 1000);
+
         const durationInputSelector = [
             "#duration",
             this.props.mediaItem.id
             ].join("_");
 
         const durationInput = document.querySelector(durationInputSelector);
-        durationInput.value = event.target.duration;
+        durationInput.value = util.formatDuration(durationMoment);
     }
 
     audioElement() {
@@ -53,7 +62,6 @@ export default class MediaCard extends React.Component {
         const formInputs = document.body.querySelectorAll(
             `#${event.target.form.id} input, select`
         )
-        console.log(formInputs);
         const formData = Array.from(formInputs.values())
             .reduce((object, item) => {
                 if (item.name === "mediaFile") {
@@ -95,11 +103,11 @@ export default class MediaCard extends React.Component {
     textInputDiv(fieldName, onChange=null, defaultVal=null) {
         var defaultValue = "";
 
-        if (this.props.mediaItem.hasOwnProperty(fieldName)) {
-            defaultValue = this.props.mediaItem[fieldName];
-        }
         if (defaultVal) {
             defaultValue = defaultVal;
+        }
+        if (this.props.mediaItem.hasOwnProperty(fieldName)) {
+            defaultValue = this.props.mediaItem[fieldName];
         }
 
         const inputId = [fieldName, this.props.mediaItem.id].join("_");
@@ -262,7 +270,7 @@ export default class MediaCard extends React.Component {
             {"className": "form-row mt-3"},
             this.textInputDiv("mediaUrl", this.inputChange),
             this.fileInputDiv("mediaFile"),
-            this.textInputDiv("duration", null, 0),
+            this.textInputDiv("duration", null, "00:00:00"),
             this.audioElement()
         );
     }

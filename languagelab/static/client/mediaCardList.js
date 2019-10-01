@@ -46,15 +46,10 @@ export default class MediaCardList extends React.Component {
     }
 
     mediaFormCard(mediaItem, users) {
-        var mediaId = "form";
-        if (mediaItem.hasOwnProperty("id")) {
-            mediaId = mediaItem.id;
-        }
-
         return React.createElement(
             MediaFormCard,
             {
-                "key": mediaId,
+                "key": mediaItem.id,
                 "mediaItem": mediaItem,
                 "users": users,
                 "languages": this.props.languages,
@@ -119,7 +114,7 @@ export default class MediaCardList extends React.Component {
         if (this.props.activity === "add") {
             // TODO retrieve current user
             mediaElements.push(
-                this.mediaFormCard({}, this.props.users[0])
+                this.mediaFormCard({"id": "form"}, this.props.users[0])
             );
         } else {
             mediaElements.push(

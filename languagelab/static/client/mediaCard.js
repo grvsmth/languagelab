@@ -17,10 +17,13 @@ export default class MediaCard extends React.Component {
             languageText = this.props.languages[0].name + ", ";
         }
 
+        const durationMoment = moment.duration(this.props.mediaItem.duration)
+        const duration = util.formatDuration(durationMoment, 0);
+
         return React.createElement(
             "h5",
             {"className": "card-title"},
-            `${this.props.mediaItem.name} (${formatText}, ${languageText}${this.props.mediaItem.duration})`
+            `${this.props.mediaItem.name} (${formatText}, ${languageText}${duration})`
         );
     }
 
