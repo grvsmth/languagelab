@@ -28,7 +28,13 @@ export default class MediaCard extends React.Component {
     loadedMetadata(event) {
         console.dir(event.target);
         console.log("duration", event.target.duration);
+        const durationInputSelector = [
+            "#duration",
+            this.props.mediaItem.id
+            ].join("_");
 
+        const durationInput = document.querySelector(durationInputSelector);
+        durationInput.value = event.target.duration;
     }
 
     audioElement() {
@@ -67,13 +73,13 @@ export default class MediaCard extends React.Component {
 
     }
 
-    textInput(fieldName, inputId, onChange) {
+    textInput(fieldName, inputId, onChange, defaultValue) {
         const options = {
             "id": inputId,
             "className": "form-control",
             "type": "text",
             "name": fieldName,
-            "defaultValue": this.props.mediaItem[fieldName]
+            "defaultValue": defaultValue
         };
         if (onChange) {
             options.onChange = onChange;
@@ -86,13 +92,22 @@ export default class MediaCard extends React.Component {
         );
     }
 
-    textInputDiv(fieldName, onChange=null) {
+    textInputDiv(fieldName, onChange=null, defaultVal=null) {
+        var defaultValue = "";
+
+        if (this.props.mediaItem.hasOwnProperty(fieldName)) {
+            defaultValue = this.props.mediaItem[fieldName];
+        }
+        if (defaultVal) {
+            defaultValue = defaultVal;
+        }
+
         const inputId = [fieldName, this.props.mediaItem.id].join("_");
         return React.createElement(
             "div",
             {"className": "col-sm"},
             commonElements.itemLabel(fieldName, inputId),
-            this.textInput(fieldName, inputId, onChange)
+            this.textInput(fieldName, inputId, onChange, defaultValue)
         );
     }
 
@@ -247,6 +262,7 @@ export default class MediaCard extends React.Component {
             {"className": "form-row mt-3"},
             this.textInputDiv("mediaUrl", this.inputChange),
             this.fileInputDiv("mediaFile"),
+            this.textInputDiv("duration", null, 0),
             this.audioElement()
         );
     }

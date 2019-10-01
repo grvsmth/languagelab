@@ -72,7 +72,10 @@ export default class MediaCardList extends React.Component {
             var nextElement;
 
             if (this.props.users) {
-                users.push(util.findItem(this.props.users, mediaItem.uploader));
+                const user = util.findItem(this.props.users, mediaItem.uploader);
+                if (user) {
+                    users.push(user);
+                }
             }
 
             if (this.props.activity === "edit"
