@@ -81,9 +81,7 @@ export default class Lab extends React.Component {
     }
 
     deleteClick = function(itemType, itemId) {
-        console.log("deleteClick()");
         apiClient.delete(itemType, itemId).then((res) => {
-            console.log(res);
             this.fetchData(itemType);
         }, (err) => {
             console.error(err);
@@ -104,15 +102,13 @@ export default class Lab extends React.Component {
             const testItem = {
                 "uploader": 1,
                 "creator": item.creator,
-                "duration": "00:00:00",
                 "format": item.format,
                 "isAvailable": item.isAvailable,
                 "isPublic": item.isPublic,
                 "language": parseInt(item.language),
                 "mediaUrl": item.mediaUrl,
                 "name": item.name,
-                "rights": item.rights,
-                "tags": []
+                "rights": item.rights
             };
             console.log(testItem);
             apiClient.post(testItem, itemType).then((res) => {

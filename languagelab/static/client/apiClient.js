@@ -22,7 +22,11 @@ exports.fetchData = function(url, options={}, results=[]) {
             if (res.status === 204) {
                 resolve();
                 return;
+            } else if (res.status < 200 || res.status > 299) {
+                reject(res);
+                return;
             }
+
             res.json().then((resJson) => {
                 if (!resJson.hasOwnProperty("results")) {
                     resolve(resJson);
@@ -36,8 +40,11 @@ exports.fetchData = function(url, options={}, results=[]) {
                 } else {
                    resolve(results);
                 }
+            }, (err) => {
+                reject(err);
             });
         }, (err) => {
+            console.log("caught on line 44");
             reject(err);
         });
     });
