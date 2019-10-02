@@ -9,14 +9,13 @@ export default class ExerciseCard extends React.Component {
     }
 
     itemTitle() {
-        /*
-        const formatText = config.formatName[this.props.item.format];
+        const formatText = config.formatName[this.props.mediaItem.format];
 
         var languageText = "";
-        if (this.props.item.language && this.props.languages
-            && this.props.languages.length) {
+        if (this.props.languages && this.props.languages.length) {
             languageText = this.props.languages[0].name + ", ";
         }
+        /*
 
         const durationMoment = moment.duration(this.props.item.duration)
         const duration = util.formatDuration(durationMoment, 0);
@@ -24,7 +23,7 @@ export default class ExerciseCard extends React.Component {
         return React.createElement(
             "h5",
             {"className": "card-title"},
-            `${this.props.item.name}`
+            `${this.props.item.name} (${formatText}, ${languageText})`
         );
     }
 
@@ -134,12 +133,7 @@ export default class ExerciseCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "card-body"},
-            this.itemTitle()
-        );
-        /*
-            this.itemSubtitle(),
-            this.tagsSpan(),
-            this.rightsSpan(),
+            this.itemTitle(),
             commonElements.checkboxDiv(
                 "isAvailable",
                 this.props.item.isAvailable,
@@ -155,6 +149,11 @@ export default class ExerciseCard extends React.Component {
                 this.checkboxClick.bind(this)
                 ),
             this.linkDiv()
+        );
+        /*
+            this.itemSubtitle(),
+            this.tagsSpan(),
+            this.rightsSpan(),
         );
         */
     }

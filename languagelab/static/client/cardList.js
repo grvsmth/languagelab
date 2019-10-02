@@ -82,10 +82,55 @@ export default class CardList extends React.Component {
         );
     }
 
+    findLanguage(item) {
+        if (!this.props.languages) {
+            return [];
+        }
+
+        var language = "";
+        if (item.language) {
+            language = item.language;
+        } else if (item.media) {
+            const mediaItem = util.findItem(this.props.media, item.media);
+            if (mediaItem.language) {
+                language = mediaItem.language;
+            }
+        }
+        if (!language) {
+            return [];
+        }
+
+        return [
+            util.findItem(this.props.languages, language)
+        ];
+    }
+
+    itemCard(item, users) {
+        var options = {
+                "key": item.id,
+                "item": item,
+                "users": users,
+                "languages": this.findLanguage(item),
+                "checkClick": this.props.checkClick,
+                "deleteClick": this.props.deleteClick,
+                "editItem": this.props.editItem
+        };
+
+        if (item.media) {
+            options["mediaItem"] = util.findItem(this.props.media, item.media);
+        }
+
+        return React.createElement(
+            typeInfo[this.props.selectedType].card,
+            options,
+            null
+        );
+    }
+
     makeElements() {
         console.log("this.props", this.props);
 
-        return this.props.itemList.map((item) => {
+        return this.props[this.props.selectedType].map((item) => {
             var users = [];
             var languageList = [];
             var nextElement;
@@ -102,35 +147,14 @@ export default class CardList extends React.Component {
                 && this.props.selectedItem === item.id) {
                 nextElement = this.formCard(item, users);
             } else {
-                if (this.props.languages) {
-                    let language = util.findItem(
-                        this.props.languages, item.language
-                        );
-                    if (language) {
-                        languageList.push(language);
-                    }
-                }
-
-                nextElement = React.createElement(
-                    typeInfo[this.props.selectedType].card,
-                    {
-                        "key": item.id,
-                        "item": item,
-                        "users": users,
-                        "languages": languageList,
-                        "checkClick": this.props.checkClick,
-                        "deleteClick": this.props.deleteClick,
-                        "editItem": this.props.editItem
-                    },
-                    null
-                );
+                nextElement = this.itemCard(item, users);
             }
             return nextElement;
         });
     }
 
     render() {
-        if (!this.props.itemList.length
+        if (!this.props[this.props.selectedType].length
         || !typeInfo[this.props.selectedType].hasOwnProperty("card")) {
             return React.createElement(
                 "div",

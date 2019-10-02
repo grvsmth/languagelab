@@ -130,7 +130,10 @@ export default class Lab extends React.Component {
             CardList,
             {
                 "activity": this.state.activity,
-                "itemList": this.state[this.props.selectedType],
+                "exercises": this.state.exercises,
+                "lessons": this.state.lessons,
+                "queueItems": this.state.queueItems,
+                "media": this.state.media,
                 "users": this.state.users,
                 "languages": this.state.languages,
                 "selectedItem": this.state.selectedItem,
