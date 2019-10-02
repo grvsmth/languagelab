@@ -26,7 +26,8 @@ export default class MediaCard extends React.Component {
             if (node.value.length < 1) {
                 return [];
             }
-            return node.value.split('[\s,;]');
+            const tags = node.value.split(config.tagSplitRE);
+            return tags;
         }
         if (node.name === "language") {
             return parseInt(node.value);
@@ -122,7 +123,7 @@ export default class MediaCard extends React.Component {
     tagsInput(inputId) {
         var defaultValue = "";
         if (this.props.mediaItem.tags) {
-            defaultValue = this.props.mediaItem.tags.join(" ");
+            defaultValue = this.props.mediaItem.tags.join(", ");
         }
         return React.createElement(
             "input",

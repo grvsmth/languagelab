@@ -94,6 +94,28 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    tagBadge(tagText) {
+        return React.createElement(
+            "span",
+            {"className": "badge badge-pill badge-info mx-1"},
+            tagText
+        );
+    }
+
+    tagsSpan() {
+        if (this.props.mediaItem.tags.length < 1) {
+            return null;
+        }
+
+        return React.createElement(
+            "span",
+            {},
+            ...this.props.mediaItem.tags.map((tag) => {
+                return this.tagBadge(tag);
+            })
+        );
+    }
+
     linkDiv() {
         if (this.props.activity === "add") {
             return null;
@@ -113,6 +135,7 @@ export default class MediaCard extends React.Component {
             {"className": "card-body"},
             this.itemTitle(),
             this.itemSubtitle(),
+            this.tagsSpan(),
             this.rightsSpan(),
             commonElements.checkboxDiv(
                 "isAvailable",
