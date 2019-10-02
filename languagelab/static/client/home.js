@@ -22,9 +22,11 @@ export default class Home extends React.Component {
             "users": [],
             "languages": [],
             "activity": "read",
-            "type": this.props.clickId,
-            "selectedItem": null
+            "selectedItem": null,
+            "selectedType": "queue"
         };
+
+        this.navClick = this.navClick.bind(this);
     }
 
     componentDidMount() {
@@ -74,7 +76,11 @@ export default class Home extends React.Component {
         );
     }
 
-    checkClick = function(itemType, itemId, itemKey, itemChecked) {
+    navClick(itemType) {
+        this.setState({"selectedType": itemType});
+    }
+
+    checkClick(itemType, itemId, itemKey, itemChecked) {
         event.preventDefault();
         const payload = {[itemKey]: itemChecked};
         apiClient.patch(payload, itemType, itemId).then((res) => {
@@ -126,7 +132,8 @@ export default class Home extends React.Component {
             Navbar,
             {
                 "activeItem": "Queue",
-                "itemType": config.api.endpoint
+                "itemType": config.api.endpoint,
+                "navClick": this.navClick
             },
             null
         );
@@ -136,6 +143,7 @@ export default class Home extends React.Component {
         return React.createElement(
             Lab,
             {
+                "selectedType": this.state.selectedType
             },
             null
         );

@@ -15,7 +15,9 @@ export default class Home extends React.Component {
     }
 
     navClick(event) {
+        event.preventDefault();
         console.dir(event.target);
+        this.props.navClick(event.target.id);
     }
 
     srOnlySpan(key) {

@@ -21,7 +21,7 @@ export default class Lab extends React.Component {
             "users": [],
             "languages": [],
             "activity": "read",
-            "type": this.props.clickId,
+            "type": this.props.selectedType,
             "selectedItem": null
         };
     }
@@ -123,7 +123,7 @@ export default class Lab extends React.Component {
     render() {
         console.log(this.state);
 
-        if (this.props.clickId === "media") {
+        if (this.props.selectedType === "media") {
             return React.createElement(
                 MediaCardList,
                 {
