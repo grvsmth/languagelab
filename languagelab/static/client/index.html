@@ -53,8 +53,22 @@
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/moment.min.js"></script>
     <script type="module">
-        import languageLab from "./languageLab.js";
+        import Home from "./home.js";
 
-        window.addEventListener("DOMContentLoaded", languageLab.init)
+        const init = function() {
+            const navAnchors = document.body.querySelectorAll("#navContent a");
+            const loadingDiv = document.body.querySelectorAll("loadingDiv");
+            const resultsDiv = document.body.querySelector("#resultsDiv");
+
+            navAnchors.forEach((anchor) => {
+                // exports.addClick(anchor.id, exports.handleClick);
+            });
+
+            ReactDOM.render(
+                React.createElement(Home), resultsDiv
+            );
+        }
+
+        window.addEventListener("DOMContentLoaded", init);
     </script>
 </html>
