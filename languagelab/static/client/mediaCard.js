@@ -97,7 +97,7 @@ export default class MediaCard extends React.Component {
     tagBadge(tagText) {
         return React.createElement(
             "span",
-            {"className": "badge badge-pill badge-info mx-1"},
+            {"className": "badge badge-pill badge-info mr-1"},
             tagText
         );
     }
