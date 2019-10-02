@@ -17,9 +17,12 @@ export default class Lab extends React.Component {
                 "users": false,
                 "languages": false
             },
+            "exercises": [],
+            "lessons": [],
             "media": [],
             "users": [],
             "languages": [],
+            "queueItems": [],
             "activity": "read",
             "selectedItem": null
         };
@@ -32,6 +35,7 @@ export default class Lab extends React.Component {
                 "languages": true,
                 "users": true
             }});
+            this.fetchData("exercises");
             this.fetchData("media");
             this.fetchData("users");
             this.fetchData("languages");
@@ -126,7 +130,7 @@ export default class Lab extends React.Component {
             CardList,
             {
                 "activity": this.state.activity,
-                "itemList": this.state.media,
+                "itemList": this.state[this.props.selectedType],
                 "users": this.state.users,
                 "languages": this.state.languages,
                 "selectedItem": this.state.selectedItem,

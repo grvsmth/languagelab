@@ -9,21 +9,22 @@ export default class ExerciseCard extends React.Component {
     }
 
     itemTitle() {
-        const formatText = config.formatName[this.props.mediaItem.format];
+        /*
+        const formatText = config.formatName[this.props.item.format];
 
         var languageText = "";
-        if (this.props.mediaItem.language && this.props.languages
+        if (this.props.item.language && this.props.languages
             && this.props.languages.length) {
             languageText = this.props.languages[0].name + ", ";
         }
 
-        const durationMoment = moment.duration(this.props.mediaItem.duration)
+        const durationMoment = moment.duration(this.props.item.duration)
         const duration = util.formatDuration(durationMoment, 0);
-
+        */
         return React.createElement(
             "h5",
             {"className": "card-title"},
-            `${this.props.mediaItem.name} (${formatText}, ${languageText}${duration})`
+            `${this.props.item.name}`
         );
     }
 
@@ -41,13 +42,13 @@ export default class ExerciseCard extends React.Component {
     }
 
     itemSubtitle() {
-        const uploadedText = new moment(this.props.mediaItem.uploaded)
+        const uploadedText = new moment(this.props.item.uploaded)
             .format(config.dateTimeFormat);
 
         return React.createElement(
             "h6",
             {"className": "card-subtitle text-muted"},
-            `${this.props.mediaItem.creator} (added ${uploadedText}`,
+            `${this.props.item.creator} (added ${uploadedText}`,
             this.bySpan(),
             ")"
         );
@@ -57,25 +58,25 @@ export default class ExerciseCard extends React.Component {
         return React.createElement(
             "span",
             {"className": "card-text mr-2"},
-            this.props.mediaItem.rights
+            this.props.item.rights
         );
     }
 
     checkboxClick(event) {
         this.props.checkClick(
             "media",
-            this.props.mediaItem.id,
+            this.props.item.id,
             event.target.name,
             event.target.checked
         )
     }
 
     editClick(event) {
-        this.props.editItem(this.props.mediaItem.id);
+        this.props.editItem(this.props.item.id);
     }
 
     deleteClick(event) {
-        this.props.deleteClick("media", this.props.mediaItem.id);
+        this.props.deleteClick("media", this.props.item.id);
     }
 
     editLink() {
@@ -103,14 +104,14 @@ export default class ExerciseCard extends React.Component {
     }
 
     tagsSpan() {
-        if (this.props.mediaItem.tags.length < 1) {
+        if (this.props.item.tags.length < 1) {
             return null;
         }
 
         return React.createElement(
             "span",
             {},
-            ...this.props.mediaItem.tags.map((tag) => {
+            ...this.props.item.tags.map((tag) => {
                 return this.tagBadge(tag);
             })
         );
@@ -133,33 +134,37 @@ export default class ExerciseCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "card-body"},
-            this.itemTitle(),
+            this.itemTitle()
+        );
+        /*
             this.itemSubtitle(),
             this.tagsSpan(),
             this.rightsSpan(),
             commonElements.checkboxDiv(
                 "isAvailable",
-                this.props.mediaItem.isAvailable,
+                this.props.item.isAvailable,
                 "available",
-                this.props.mediaItem.id,
+                this.props.item.id,
                 this.checkboxClick.bind(this)
                 ),
             commonElements.checkboxDiv(
                 "isPublic",
-                this.props.mediaItem.isPublic,
+                this.props.item.isPublic,
                 "public",
-                this.props.mediaItem.id,
+                this.props.item.id,
                 this.checkboxClick.bind(this)
                 ),
             this.linkDiv()
         );
+        */
     }
 
     render() {
         return React.createElement(
             "div",
             {"className": "card bg-light"},
-            JSON.stringify(this.props.item);
+            this.cardBody(),
+            JSON.stringify(this.props.item)
         );
     }
 

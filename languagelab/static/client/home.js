@@ -30,50 +30,6 @@ export default class Home extends React.Component {
     }
 
     componentDidMount() {
-        if (!this.state.lastUpdated) {
-            this.setState({"loading": {
-                "media": true,
-                "languages": true,
-                "users": true
-            }});
-            this.fetchData("media");
-            this.fetchData("users");
-            this.fetchData("languages");
-        }
-    }
-
-    fetchData(dataType) {
-        const loadTime = new moment();
-        const apiUrl = [
-            config.api.baseUrl, dataType
-        ].join("/");
-
-        apiClient.fetchData(apiUrl).then((res) => {
-            this.setState(
-                {
-                    [dataType]: res,
-                    "lastUpdated": loadTime.format(),
-                    "loading": {[dataType]: false}
-                }
-            );
-        }, (err) => {
-            console.error(err);
-        });
-    }
-
-    updateStateItem(res, itemType) {
-        const items = [...this.state[itemType]];
-        const index = items.findIndex((item) => item.id === res.id);
-
-        if (index < 0) {
-            items.push(res);
-        } else {
-            items[index] = res;
-        }
-
-        this.setState(
-            {[itemType]: items}
-        );
     }
 
     navClick(itemType) {

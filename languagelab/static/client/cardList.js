@@ -1,5 +1,6 @@
 import util from "./util.js";
 
+import ExerciseCard from "./exerciseCard.js";
 import MediaCard from "./mediaCard.js";
 import MediaFormCard from "./mediaFormCard.js";
 
@@ -10,7 +11,8 @@ const typeInfo = {
         "formCard": MediaFormCard
     },
     "exercises": {
-        "userField": "creator"
+        "userField": "creator",
+        "card": ExerciseCard
     },
     "lessons": {
         "userField": "creator"
