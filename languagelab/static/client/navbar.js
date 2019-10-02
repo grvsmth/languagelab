@@ -21,7 +21,7 @@ export default class Home extends React.Component {
     }
 
     srOnlySpan(key) {
-        if (this.props.activeItem !== key) {
+        if (this.props.selectedType !== key) {
             return null;
         }
         return React.createElement(
@@ -47,7 +47,7 @@ export default class Home extends React.Component {
 
     navItem(key) {
         var className = "nav-item";
-        if (this.props.activeItem === key) {
+        if (this.props.selectedType === key) {
             className = "nav-item active";
         }
 

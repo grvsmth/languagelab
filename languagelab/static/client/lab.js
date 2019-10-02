@@ -1,4 +1,4 @@
-import CardList from "./mediaCardList.js";
+import CardList from "./cardList.js";
 import apiClient from "./apiClient.js";
 import util from "./util.js";
 
@@ -21,7 +21,6 @@ export default class Lab extends React.Component {
             "users": [],
             "languages": [],
             "activity": "read",
-            "type": this.props.selectedType,
             "selectedItem": null
         };
     }
@@ -128,7 +127,7 @@ export default class Lab extends React.Component {
                 CardList,
                 {
                     "activity": this.state.activity,
-                    "media": this.state.media,
+                    "itemList": this.state.media,
                     "users": this.state.users,
                     "languages": this.state.languages,
                     "selectedItem": this.state.selectedItem,
@@ -138,7 +137,7 @@ export default class Lab extends React.Component {
                     "saveItem": this.saveItem.bind(this),
                     "editItem": this.editItem.bind(this),
                     "loading": this.state.loading,
-                    "selectedType": this.state.selectedType,
+                    "selectedType": this.props.selectedType,
                 },
                 null
             )

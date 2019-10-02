@@ -7,7 +7,7 @@ const typeInfo = {
     "media": {
         "userField": "uploader",
         "card": MediaCard,
-        "formCard": mediaFormCard
+        "formCard": MediaFormCard
     },
     "exercise": {
         "userField": "creator"
@@ -123,7 +123,7 @@ export default class CardList extends React.Component {
     }
 
     render() {
-        if (!this.props.hasOwnProperty(this.props.selectedType) {
+        if (!this.props.itemList) {
             return null;
         }
 
