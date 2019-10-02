@@ -122,39 +122,23 @@ export default class Lab extends React.Component {
     render() {
         console.log(this.state);
 
-        if (this.props.selectedType === "media") {
-            return React.createElement(
-                CardList,
-                {
-                    "activity": this.state.activity,
-                    "itemList": this.state.media,
-                    "users": this.state.users,
-                    "languages": this.state.languages,
-                    "selectedItem": this.state.selectedItem,
-                    "checkClick": this.checkClick.bind(this),
-                    "setActivity": this.setActivity.bind(this),
-                    "deleteClick": this.deleteClick.bind(this),
-                    "saveItem": this.saveItem.bind(this),
-                    "editItem": this.editItem.bind(this),
-                    "loading": this.state.loading,
-                    "selectedType": this.props.selectedType,
-                },
-                null
-            )
-        }
-
-        if (!this.props.selectedType) {
-            return React.createElement(
-                "div",
-                {},
-                "React is running"
-            )
-        }
-
         return React.createElement(
-            "div",
-            {},
-            `Selected type is ${this.props.selectedType}`
+            CardList,
+            {
+                "activity": this.state.activity,
+                "itemList": this.state.media,
+                "users": this.state.users,
+                "languages": this.state.languages,
+                "selectedItem": this.state.selectedItem,
+                "checkClick": this.checkClick.bind(this),
+                "setActivity": this.setActivity.bind(this),
+                "deleteClick": this.deleteClick.bind(this),
+                "saveItem": this.saveItem.bind(this),
+                "editItem": this.editItem.bind(this),
+                "loading": this.state.loading,
+                "selectedType": this.props.selectedType,
+            },
+            null
         );
     }
 }

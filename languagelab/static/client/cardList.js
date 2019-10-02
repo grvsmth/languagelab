@@ -9,14 +9,17 @@ const typeInfo = {
         "card": MediaCard,
         "formCard": MediaFormCard
     },
-    "exercise": {
+    "exercises": {
         "userField": "creator"
     },
-    "lesson": {
+    "lessons": {
         "userField": "creator"
     },
-    "queue": {
+    "queueItems": {
         "userField": "user"
+    },
+    "languages": {
+        "userField": ""
     }
 };
 
@@ -78,6 +81,8 @@ export default class CardList extends React.Component {
     }
 
     makeElements() {
+        console.log("this.props", this.props);
+
         return this.props.itemList.map((item) => {
             var users = [];
             var languageList = [];
@@ -123,8 +128,13 @@ export default class CardList extends React.Component {
     }
 
     render() {
-        if (!this.props.itemList) {
-            return null;
+        if (!this.props.itemList.length
+        || !typeInfo[this.props.selectedType].hasOwnProperty("card")) {
+            return React.createElement(
+                "div",
+                {"className": "card"},
+                `Ready to start displaying ${this.props.selectedType}`
+            );
         }
 
         var elements = [];

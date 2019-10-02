@@ -23,7 +23,7 @@ export default class Home extends React.Component {
             "languages": [],
             "activity": "read",
             "selectedItem": null,
-            "selectedType": "queue"
+            "selectedType": "queueItems"
         };
 
         this.navClick = this.navClick.bind(this);
