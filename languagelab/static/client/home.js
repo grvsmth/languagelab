@@ -2,6 +2,7 @@ import apiClient from "./apiClient.js";
 import util from "./util.js";
 import config from "./config.js";
 
+import Navbar from "./navbar.js";
 import Lab from "./lab.js";
 
 
@@ -122,9 +123,12 @@ export default class Home extends React.Component {
 
     nav() {
         return React.createElement(
-            "nav",
-            {"className": "navbar navbar-expand-sm navbar-light"},
-            "Navbar"
+            Navbar,
+            {
+                "activeItem": "Queue",
+                "itemType": config.api.endpoint
+            },
+            null
         );
     }
 
@@ -143,7 +147,6 @@ export default class Home extends React.Component {
         return React.createElement(
             "div",
             {"className": "container-fluid"},
-            "NavBar goes here",
             this.nav(),
             this.lab()
         );

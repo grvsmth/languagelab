@@ -4,11 +4,11 @@ const config = {
     "api": {
         "baseUrl": "https://languagelab-dev.grieve-smith.com/api/0.2",
         "endpoint": {
-            "mediaLink": "media",
-            "exercisesLink": "exercises",
-            "languagesLink": "languages",
-            "lessonsLink": "lessons",
-            "queueLink": "queueItems"
+            "Media": "media",
+            "Exercises": "exercises",
+            "Lessons": "lessons",
+            "Queue": "queueItems",
+            "Languages": "languages"
         }
     },
     "formatName": {
