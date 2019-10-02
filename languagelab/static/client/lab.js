@@ -1,4 +1,4 @@
-import MediaCardList from "./mediaCardList.js";
+import CardList from "./mediaCardList.js";
 import apiClient from "./apiClient.js";
 import util from "./util.js";
 
@@ -125,7 +125,7 @@ export default class Lab extends React.Component {
 
         if (this.props.selectedType === "media") {
             return React.createElement(
-                MediaCardList,
+                CardList,
                 {
                     "activity": this.state.activity,
                     "media": this.state.media,
@@ -137,13 +137,14 @@ export default class Lab extends React.Component {
                     "deleteClick": this.deleteClick.bind(this),
                     "saveItem": this.saveItem.bind(this),
                     "editItem": this.editItem.bind(this),
-                    "loading": this.state.loading
+                    "loading": this.state.loading,
+                    "selectedType": this.state.selectedType,
                 },
                 null
             )
         }
 
-        if (!this.props.clickId) {
+        if (!this.props.selectedType) {
             return React.createElement(
                 "div",
                 {},
@@ -154,7 +155,7 @@ export default class Lab extends React.Component {
         return React.createElement(
             "div",
             {},
-            `You clicked ${this.props.clickId}`
+            `Selected type is ${this.props.selectedType}`
         );
     }
 }

@@ -3,7 +3,24 @@ import util from "./util.js";
 import MediaCard from "./mediaCard.js";
 import MediaFormCard from "./mediaFormCard.js";
 
-export default class MediaCardList extends React.Component {
+const typeInfo = {
+    "media": {
+        "userField": "uploader",
+        "card": MediaCard,
+        "formCard": mediaFormCard
+    },
+    "exercise": {
+        "userField": "creator"
+    },
+    "lesson": {
+        "userField": "creator"
+    },
+    "queue": {
+        "userField": "user"
+    }
+};
+
+export default class CardList extends React.Component {
     constructor(props) {
         super(props);
         console.log("props", props);
@@ -21,7 +38,7 @@ export default class MediaCardList extends React.Component {
                 "className": "btn btn-primary",
                 "onClick": this.addClick.bind(this)
             },
-            "Add media item"
+            `Add ${this.props.selectedType} item`
         );
     }
 
@@ -39,18 +56,18 @@ export default class MediaCardList extends React.Component {
             {
                 "className": "card",
                 "key": "addButton",
-                "loading": this.props.loading.media
+                "loading": this.props.loading
             },
             this.addButtonCardBody()
         );
     }
 
-    mediaFormCard(mediaItem, users) {
+    formCard(item, users) {
         return React.createElement(
-            MediaFormCard,
+            typeInfo[this.props.selectedType].formCard,
             {
-                "key": mediaItem.id,
-                "mediaItem": mediaItem,
+                "key": item.id,
+                "item": item,
                 "users": users,
                 "languages": this.props.languages,
                 "setActivity": this.props.setActivity,
@@ -61,25 +78,26 @@ export default class MediaCardList extends React.Component {
     }
 
     makeElements() {
-        return this.props.media.map((mediaItem) => {
+        return this.props.itemList.map((item) => {
             var users = [];
             var languageList = [];
             var nextElement;
 
             if (this.props.users) {
-                const user = util.findItem(this.props.users, mediaItem.uploader);
+                const fieldName = typeInfo[this.props.selectedType].userField;
+                const user = util.findItem(this.props.users, item[fieldName]);
                 if (user) {
                     users.push(user);
                 }
             }
 
             if (this.props.activity === "edit"
-                && this.props.selectedItem === mediaItem.id) {
-                nextElement = this.mediaFormCard(mediaItem, users);
+                && this.props.selectedItem === item.id) {
+                nextElement = this.formCard(item, users);
             } else {
                 if (this.props.languages) {
                     let language = util.findItem(
-                        this.props.languages, mediaItem.language
+                        this.props.languages, item.language
                         );
                     if (language) {
                         languageList.push(language);
@@ -87,10 +105,10 @@ export default class MediaCardList extends React.Component {
                 }
 
                 nextElement = React.createElement(
-                    MediaCard,
+                    typeInfo[this.props.selectedType].card,
                     {
-                        "key": mediaItem.id,
-                        "mediaItem": mediaItem,
+                        "key": item.id,
+                        "item": item,
                         "users": users,
                         "languages": languageList,
                         "checkClick": this.props.checkClick,
@@ -105,24 +123,24 @@ export default class MediaCardList extends React.Component {
     }
 
     render() {
-        if (!this.props.media) {
+        if (!this.props.hasOwnProperty(this.props.selectedType) {
             return null;
         }
 
-        var mediaElements = [];
+        var elements = [];
 
         if (this.props.activity === "add") {
             // TODO retrieve current user
-            mediaElements.push(
-                this.mediaFormCard({"id": "form"}, this.props.users[0])
+            elements.push(
+                this.formCard({"id": "form"}, this.props.users[0])
             );
         } else {
-            mediaElements.push(
+            elements.push(
                 this.addButtonCard()
             );
         }
 
-        mediaElements = mediaElements.concat(this.makeElements());
-        return mediaElements;
+        elements = elements.concat(this.makeElements());
+        return elements;
     }
 }
