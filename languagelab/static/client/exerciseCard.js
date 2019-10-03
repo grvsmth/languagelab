@@ -8,6 +8,14 @@ export default class ExerciseCard extends React.Component {
         console.log("props", props);
     }
 
+    duration(start, end) {
+        const startMoment = new moment(start);
+        const endMoment = new moment(end);
+        const durationMoment = moment.duration(startMoment.diff(endMoment));
+
+        return util.formatDuration(durationMoment, 0);
+    }
+
     itemTitle() {
         const formatText = config.formatName[this.props.mediaItem.format];
 
@@ -15,15 +23,13 @@ export default class ExerciseCard extends React.Component {
         if (this.props.languages && this.props.languages.length) {
             languageText = this.props.languages[0].name + ", ";
         }
-        /*
-
-        const durationMoment = moment.duration(this.props.item.duration)
-        const duration = util.formatDuration(durationMoment, 0);
-        */
+        const duration = this.duration(
+            this.props.item.start, this.props.item.end
+        );
         return React.createElement(
             "h5",
             {"className": "card-title"},
-            `${this.props.item.name} (${formatText}, ${languageText})`
+            `${this.props.item.name} (${formatText}, ${languageText}${duration})`
         );
     }
 
@@ -41,23 +47,16 @@ export default class ExerciseCard extends React.Component {
     }
 
     itemSubtitle() {
-        const uploadedText = new moment(this.props.item.uploaded)
+        const createdText = new moment(this.props.item.created)
             .format(config.dateTimeFormat);
 
         return React.createElement(
             "h6",
             {"className": "card-subtitle text-muted"},
-            `${this.props.item.creator} (added ${uploadedText}`,
+            this.props.mediaItem.name,
+            ` (${this.props.mediaItem.creator}, added ${createdText}`,
             this.bySpan(),
             ")"
-        );
-    }
-
-    rightsSpan() {
-        return React.createElement(
-            "span",
-            {"className": "card-text mr-2"},
-            this.props.item.rights
         );
     }
 
@@ -94,28 +93,6 @@ export default class ExerciseCard extends React.Component {
         );
     }
 
-    tagBadge(tagText) {
-        return React.createElement(
-            "span",
-            {"className": "badge badge-pill badge-info mr-1"},
-            tagText
-        );
-    }
-
-    tagsSpan() {
-        if (this.props.item.tags.length < 1) {
-            return null;
-        }
-
-        return React.createElement(
-            "span",
-            {},
-            ...this.props.item.tags.map((tag) => {
-                return this.tagBadge(tag);
-            })
-        );
-    }
-
     linkDiv() {
         if (this.props.activity === "add") {
             return null;
@@ -129,11 +106,21 @@ export default class ExerciseCard extends React.Component {
         );
     }
 
+    textDiv(fieldName, options={}) {
+        return React.createElement(
+            "div",
+            options,
+            this.props.item[fieldName]
+        );
+    }
+
     cardBody() {
         return React.createElement(
             "div",
             {"className": "card-body"},
             this.itemTitle(),
+            this.itemSubtitle(),
+            this.textDiv("description"),
             commonElements.checkboxDiv(
                 "isAvailable",
                 this.props.item.isAvailable,
@@ -150,20 +137,13 @@ export default class ExerciseCard extends React.Component {
                 ),
             this.linkDiv()
         );
-        /*
-            this.itemSubtitle(),
-            this.tagsSpan(),
-            this.rightsSpan(),
-        );
-        */
     }
 
     render() {
         return React.createElement(
             "div",
             {"className": "card bg-light"},
-            this.cardBody(),
-            JSON.stringify(this.props.item)
+            this.cardBody()
         );
     }
 
