@@ -2,6 +2,8 @@ import config from "./config.js";
 import commonElements from "./commonElements.js";
 import util from "./util.js";
 
+const timeFormat = "HH:mm:ss.S";
+
 export default class ExerciseCard extends React.Component {
     constructor(props) {
         super(props);
@@ -9,11 +11,10 @@ export default class ExerciseCard extends React.Component {
     }
 
     duration(start, end) {
-        const startMoment = new moment(start);
-        const endMoment = new moment(end);
-        const durationMoment = moment.duration(startMoment.diff(endMoment));
-
-        return util.formatDuration(durationMoment, 0);
+        const startMoment = new moment(start, timeFormat);
+        const endMoment = new moment(end, timeFormat);
+        const durationMoment = moment.duration(endMoment.diff(startMoment));
+        return util.formatDuration(durationMoment, 3);
     }
 
     itemTitle() {
@@ -24,7 +25,8 @@ export default class ExerciseCard extends React.Component {
             languageText = this.props.languages[0].name + ", ";
         }
         const duration = this.duration(
-            this.props.item.start, this.props.item.end
+            this.props.item.startTime,
+            this.props.item.endTime
         );
         return React.createElement(
             "h5",

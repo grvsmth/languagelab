@@ -1,6 +1,7 @@
 import util from "./util.js";
 
 import ExerciseCard from "./exerciseCard.js";
+import ExerciseFormCard from "./exerciseFormCard.js";
 import MediaCard from "./mediaCard.js";
 import MediaFormCard from "./mediaFormCard.js";
 
@@ -12,7 +13,8 @@ const typeInfo = {
     },
     "exercises": {
         "userField": "creator",
-        "card": ExerciseCard
+        "card": ExerciseCard,
+        "formCard": ExerciseFormCard
     },
     "lessons": {
         "userField": "creator"
@@ -68,16 +70,23 @@ export default class CardList extends React.Component {
     }
 
     formCard(item, users) {
+        var options = {
+            "key": item.id,
+            "item": item,
+            "users": users,
+            "languages": this.props.languages,
+            "setActivity": this.props.setActivity,
+            "saveItem": this.props.saveItem,
+            "selectedType": this.props.selectedType
+        };
+
+        if (["exercises"].includes(this.props.selectedType)) {
+            options["media"] = this.props.media;
+        }
+
         return React.createElement(
             typeInfo[this.props.selectedType].formCard,
-            {
-                "key": item.id,
-                "item": item,
-                "users": users,
-                "languages": this.props.languages,
-                "setActivity": this.props.setActivity,
-                "saveItem": this.props.saveItem
-            },
+            options,
             null
         );
     }
@@ -92,7 +101,7 @@ export default class CardList extends React.Component {
             language = item.language;
         } else if (item.media) {
             const mediaItem = util.findItem(this.props.media, item.media);
-            if (mediaItem.language) {
+            if (mediaItem && mediaItem.language) {
                 language = mediaItem.language;
             }
         }
@@ -128,11 +137,8 @@ export default class CardList extends React.Component {
     }
 
     makeElements() {
-        console.log("this.props", this.props);
-
         return this.props[this.props.selectedType].map((item) => {
             var users = [];
-            var languageList = [];
             var nextElement;
 
             if (this.props.users) {

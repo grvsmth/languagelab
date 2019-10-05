@@ -3,7 +3,7 @@ import config from "./config.js";
 import util from "./util.js";
 import commonElements from "./commonElements.js";
 
-export default class MediaCard extends React.Component {
+export default class MediaFormCard extends React.Component {
     constructor(props) {
         super(props);
         console.log("props", props);

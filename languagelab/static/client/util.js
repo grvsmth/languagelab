@@ -15,4 +15,12 @@ exports.formatDuration = function(durationMoment, fixed=6) {
         ].join(":");
 };
 
+exports.listToObject = function(inputList) {
+    const outputObject = inputList.reduce((object, item) => {
+            object[item.id] = item.name;
+            return object;
+        }, {});
+        return outputObject;
+    }
+
 export default exports;
