@@ -35,6 +35,7 @@ export default class Lab extends React.Component {
                 "languages": true,
                 "users": true
             }});
+            this.fetchData("queueItems");
             this.fetchData("exercises");
             this.fetchData("media");
             this.fetchData("users");

@@ -20,7 +20,8 @@ const typeInfo = {
         "userField": "creator"
     },
     "queueItems": {
-        "userField": "user"
+        "userField": "user",
+        "card": ExerciseCard
     },
     "languages": {
         "userField": ""
@@ -99,11 +100,6 @@ export default class CardList extends React.Component {
         var language = "";
         if (item.language) {
             language = item.language;
-        } else if (item.media) {
-            const mediaItem = util.findItem(this.props.media, item.media);
-            if (mediaItem && mediaItem.language) {
-                language = mediaItem.language;
-            }
         }
         if (language && typeof language !== "undefined") {
             return [
@@ -115,7 +111,14 @@ export default class CardList extends React.Component {
 
     }
 
-    itemCard(item, users) {
+    findExercise(exerciseId) {
+
+    }
+
+    itemCard(selection, users) {
+        const item = selection.exercise ?
+            util.findItem(this.props.exercises, selection.exercise) : selection;
+
         var options = {
                 "key": item.id,
                 "item": item,
@@ -123,11 +126,17 @@ export default class CardList extends React.Component {
                 "languages": this.findLanguage(item),
                 "checkClick": this.props.checkClick,
                 "deleteClick": this.props.deleteClick,
-                "editItem": this.props.editItem
+                "editItem": this.props.editItem,
+                "selectedType": this.props.selectedType
         };
 
         if (item.media) {
             options["mediaItem"] = util.findItem(this.props.media, item.media);
+        }
+
+        if (selection.exercise) {
+            options["rank"] = selection.rank;
+            options["queueItem"] = selection;
         }
 
         return React.createElement(
