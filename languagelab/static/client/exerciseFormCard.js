@@ -33,11 +33,11 @@ export default class ExerciseFormCard extends React.Component {
                 return object;
             }, {});
 
-        const audio1 = document.querySelector("#audio1");
         var itemId = null;
         if (this.props.item.id !== "form") {
             itemId = this.props.item.id;
         }
+
         this.props.saveItem(formData, this.props.selectedType, itemId);
 
     }

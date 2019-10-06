@@ -18,20 +18,10 @@ export default class ExerciseCard extends React.Component {
     }
 
     itemTitle() {
-        const formatText = config.formatName[this.props.mediaItem.format];
-
-        var languageText = "";
-        if (this.props.languages && this.props.languages.length) {
-            languageText = this.props.languages[0].name + ", ";
-        }
-        const duration = this.duration(
-            this.props.item.startTime,
-            this.props.item.endTime
-        );
         return React.createElement(
             "h5",
             {"className": "card-title"},
-            `${this.props.item.name} (${formatText}, ${languageText}${duration})`
+            this.props.item.name
         );
     }
 
@@ -49,16 +39,44 @@ export default class ExerciseCard extends React.Component {
     }
 
     itemSubtitle() {
-        const createdText = new moment(this.props.item.created)
-            .format(config.dateTimeFormat);
+        const timeRange = util.timeRange(
+            this.props.item.startTime,
+            this.props.item.endTime,
+            timeFormat
+        );
+
+        var mediaName = "";
+        if (this.props.mediaItem) {
+            mediaName = this.props.mediaItem.name + ", ";
+
+        }
 
         return React.createElement(
             "h6",
             {"className": "card-subtitle text-muted"},
-            this.props.mediaItem.name,
-            ` (${this.props.mediaItem.creator}, added ${createdText}`,
-            this.bySpan(),
-            ")"
+            mediaName,
+            timeRange
+        );
+    }
+
+    descriptionRow() {
+        var languageText = "";
+        if (this.props.languages && this.props.languages.length && this.props.languages[0]) {
+            languageText = this.props.languages[0].name + ", ";
+        }
+
+        var mediaCreator = "";
+        if (this.props.mediaItem) {
+            mediaCreator = this.props.mediaItem.creator;
+        }
+
+        return React.createElement(
+            "div",
+            {},
+            languageText,
+            mediaCreator,
+            ": ",
+            this.props.item.description
         );
     }
 
@@ -102,6 +120,20 @@ export default class ExerciseCard extends React.Component {
         return React.createElement(
             "div",
             {},
+            commonElements.checkboxDiv(
+                "isAvailable",
+                this.props.item.isAvailable,
+                "available",
+                this.props.item.id,
+                this.checkboxClick.bind(this)
+                ),
+            commonElements.checkboxDiv(
+                "isPublic",
+                this.props.item.isPublic,
+                "public",
+                this.props.item.id,
+                this.checkboxClick.bind(this)
+                ),
             this.editLink(),
             " ",
             this.deleteLink()
@@ -122,21 +154,7 @@ export default class ExerciseCard extends React.Component {
             {"className": "card-body"},
             this.itemTitle(),
             this.itemSubtitle(),
-            this.textDiv("description"),
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.item.isAvailable,
-                "available",
-                this.props.item.id,
-                this.checkboxClick.bind(this)
-                ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.item.isPublic,
-                "public",
-                this.props.item.id,
-                this.checkboxClick.bind(this)
-                ),
+            this.descriptionRow(),
             this.linkDiv()
         );
     }

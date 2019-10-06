@@ -87,7 +87,7 @@ class Exercise (Model):
         on_delete=CASCADE
     )
 
-    dialogue = BooleanField("Dialogue", db_index=True)
+    dialogue = BooleanField("Dialogue", db_index=True, default=False)
     description = CharField("Instructions", max_length=1000)
     isAvailable = BooleanField("Available", db_index=True)
     isPublic = BooleanField("Public", db_index=True)
@@ -95,7 +95,7 @@ class Exercise (Model):
     startTime = DurationField("Start time", default=timedelta())
     endTime = DurationField("End time", default=timedelta())
     notes = TextField("Notes", null=True, blank=True)
-    created = DateTimeField("Created", auto_now_add=True)
+    created = DateTimeField("Created", default=now)
 
 
 class Lesson (Model):

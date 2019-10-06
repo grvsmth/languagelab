@@ -105,13 +105,14 @@ export default class CardList extends React.Component {
                 language = mediaItem.language;
             }
         }
-        if (!language) {
-            return [];
-        }
+        if (language && typeof language !== "undefined") {
+            return [
+                util.findItem(this.props.languages, language)
+            ];
 
-        return [
-            util.findItem(this.props.languages, language)
-        ];
+        }
+        return [];
+
     }
 
     itemCard(item, users) {

@@ -2,7 +2,12 @@ from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.serializers import CurrentUserDefault, PrimaryKeyRelatedField
+from rest_framework.serializers import (
+    CurrentUserDefault,
+    PrimaryKeyRelatedField
+    )
+
+from logging import basicConfig, getLogger
 
 from languagelab.api.iso639client import getIso639, makeLanguage
 
@@ -19,6 +24,9 @@ from languagelab.api.serializers import (
     QueueItemSerializer,
     UserSerializer
     )
+
+LOG = getLogger()
+basicConfig(level="DEBUG")
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -80,12 +88,6 @@ class ExerciseViewSet(viewsets.ModelViewSet):
     """
     queryset = Exercise.objects.all()
     serializer_class = ExerciseSerializer
-
-    creator = PrimaryKeyRelatedField(
-        # set it to read_only as we're handling the writing part ourselves
-        read_only=True,
-        default=CurrentUserDefault()
-    )
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
