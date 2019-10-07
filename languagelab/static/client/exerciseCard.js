@@ -8,6 +8,8 @@ export default class ExerciseCard extends React.Component {
     constructor(props) {
         super(props);
         console.log("props", props);
+
+        this.rankButton = this.rankButton.bind(this);
     }
 
     duration(start, end) {
@@ -164,16 +166,23 @@ export default class ExerciseCard extends React.Component {
         );
     }
 
+    queueClick(event) {
+        console.dir(event.target);
+    }
+
     rankButton(buttonContent) {
         const iconClass = config.queueButton[buttonContent]["icon"];
         const btnClass = "btn-" + config.queueButton[buttonContent]["color"];
+        const buttonId = [buttonContent, this.props.item.id].join("_");
 
         return React.createElement(
             "button",
             {
                 "type": "button",
                 "className": "btn btn-sm " + btnClass,
-                "key": "rank-button-" + buttonContent
+                "key": "rank-button-" + buttonContent,
+                "onClick": this.queueClick,
+                "id": buttonId
             },
             this.iconSpan(iconClass)
         );
@@ -181,9 +190,9 @@ export default class ExerciseCard extends React.Component {
 
     rankButtonGroup() {
         return React.createElement(
-            "div",
+            "span",
             {"className": "button-group"},
-            Object.keys(config.queueButton).map(this.rankButton.bind(this))
+            Object.keys(config.queueButton).map(this.rankButton)
         );
     }
 
@@ -207,7 +216,7 @@ export default class ExerciseCard extends React.Component {
             "div",
             {"className": "card-footer"},
             this.rankBadge(this.props.rank),
-            " in queue",
+            " in queue ",
             this.rankButtonGroup()
         );
     }

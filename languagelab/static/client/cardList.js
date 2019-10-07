@@ -111,10 +111,6 @@ export default class CardList extends React.Component {
 
     }
 
-    findExercise(exerciseId) {
-
-    }
-
     itemCard(selection, users) {
         var rank = 0;
         var item = selection;
