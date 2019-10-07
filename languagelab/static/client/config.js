@@ -1,5 +1,6 @@
 const config = {
     "dateTimeFormat": "MMM D, YYYY h:mm a",
+    "timeFormat": "HH:mm:ss.S",
     "tagSplitRE": /[,;]+/,
     "api": {
         "baseUrl": "https://languagelab-dev.grieve-smith.com/api/0.2",
@@ -19,6 +20,20 @@ const config = {
         "options": {
             "audioBitsPerSecond": 128000,
             "sampleRate": 48000
+        }
+    },
+    "queueButton": {
+        "up": {
+            "icon": "oi-caret-top",
+            "color": "success"
+        },
+        "down": {
+            "icon": "oi-caret-bottom",
+            "color": "success"
+        },
+        "remove": {
+            "icon": "oi-circle-x",
+            "color": "danger"
         }
     }
 };

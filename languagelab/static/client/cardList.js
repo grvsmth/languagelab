@@ -116,13 +116,27 @@ export default class CardList extends React.Component {
     }
 
     itemCard(selection, users) {
-        const item = selection.exercise ?
-            util.findItem(this.props.exercises, selection.exercise) : selection;
+        var rank = 0;
+        var item = selection;
+        var queueItem = null;
+
+        if (item.exercise) {
+            let exercise = util.findItem(
+                this.props.exercises, selection.exercise
+                );
+            if (exercise) {
+                rank = selection.rank;
+                queueItem = selection;
+                item = exercise;
+            }
+        }
 
         var options = {
                 "key": item.id,
                 "item": item,
                 "users": users,
+                "queueItem": queueItem,
+                "rank": rank,
                 "languages": this.findLanguage(item),
                 "checkClick": this.props.checkClick,
                 "deleteClick": this.props.deleteClick,
@@ -132,11 +146,6 @@ export default class CardList extends React.Component {
 
         if (item.media) {
             options["mediaItem"] = util.findItem(this.props.media, item.media);
-        }
-
-        if (selection.exercise) {
-            options["rank"] = selection.rank;
-            options["queueItem"] = selection;
         }
 
         return React.createElement(

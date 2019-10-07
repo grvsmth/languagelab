@@ -148,6 +148,45 @@ export default class ExerciseCard extends React.Component {
         );
     }
 
+    rankBadge(rank) {
+        return React.createElement(
+            "span",
+            {"className": "badge badge-success"},
+            rank
+        );
+    }
+
+    iconSpan(iconClass) {
+        return React.createElement(
+            "i",
+            {"className": "oi " + iconClass},
+            null
+        );
+    }
+
+    rankButton(buttonContent) {
+        const iconClass = config.queueButton[buttonContent]["icon"];
+        const btnClass = "btn-" + config.queueButton[buttonContent]["color"];
+
+        return React.createElement(
+            "button",
+            {
+                "type": "button",
+                "className": "btn btn-sm " + btnClass,
+                "key": "rank-button-" + buttonContent
+            },
+            this.iconSpan(iconClass)
+        );
+    }
+
+    rankButtonGroup() {
+        return React.createElement(
+            "div",
+            {"className": "button-group"},
+            Object.keys(config.queueButton).map(this.rankButton.bind(this))
+        );
+    }
+
     cardBody() {
         return React.createElement(
             "div",
@@ -159,11 +198,26 @@ export default class ExerciseCard extends React.Component {
         );
     }
 
+    cardFooter() {
+        if (!this.props.queueItem) {
+            return null;
+        }
+
+        return React.createElement(
+            "div",
+            {"className": "card-footer"},
+            this.rankBadge(this.props.rank),
+            " in queue",
+            this.rankButtonGroup()
+        );
+    }
+
     render() {
         return React.createElement(
             "div",
             {"className": "card bg-light"},
-            this.cardBody()
+            this.cardBody(),
+            this.cardFooter()
         );
     }
 
