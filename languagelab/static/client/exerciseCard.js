@@ -125,6 +125,20 @@ export default class ExerciseCard extends React.Component {
         return React.createElement(
             "div",
             {},
+            commonElements.checkboxDiv(
+                "isAvailable",
+                this.props.item.isAvailable,
+                "available",
+                this.props.item.id,
+                this.checkboxClick
+                ),
+            commonElements.checkboxDiv(
+                "isPublic",
+                this.props.item.isPublic,
+                "public",
+                this.props.item.id,
+                this.checkboxClick
+                ),
             this.editLink(),
             " ",
             this.deleteLink()
