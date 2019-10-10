@@ -10,6 +10,8 @@ export default class Lab extends React.Component {
         super(props);
         console.log("props", props);
 
+        this.checkClick = this.checkClick.bind(this);
+
         this.state = {
             "lastUpdated": "",
             "loading": {
@@ -138,7 +140,7 @@ export default class Lab extends React.Component {
                 "users": this.state.users,
                 "languages": this.state.languages,
                 "selectedItem": this.state.selectedItem,
-                "checkClick": this.checkClick.bind(this),
+                "checkClick": this.checkClick,
                 "setActivity": this.setActivity.bind(this),
                 "deleteClick": this.deleteClick.bind(this),
                 "saveItem": this.saveItem.bind(this),

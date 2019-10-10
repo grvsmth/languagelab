@@ -6,6 +6,10 @@ export default class MediaCard extends React.Component {
     constructor(props) {
         super(props);
         console.log("props", props);
+
+        this.checkboxClick = this.checkboxClick.bind(this);
+        this.deleteClick = this.deleteClick.bind(this);
+        this.editClick = this.editClick.bind(this);
     }
 
     itemTitle() {
@@ -81,7 +85,7 @@ export default class MediaCard extends React.Component {
     editLink() {
         return React.createElement(
             "a",
-            {"className": "text-primary", "onClick": this.editClick.bind(this)},
+            {"className": "text-primary", "onClick": this.editClick},
             "edit"
         );
     }
@@ -89,7 +93,7 @@ export default class MediaCard extends React.Component {
     deleteLink() {
         return React.createElement(
             "a",
-            {"className": "text-danger", "onClick": this.deleteClick.bind(this)},
+            {"className": "text-danger", "onClick": this.deleteClick},
             "delete"
         );
     }
@@ -142,14 +146,14 @@ export default class MediaCard extends React.Component {
                 this.props.item.isAvailable,
                 "available",
                 this.props.item.id,
-                this.checkboxClick.bind(this)
+                this.checkboxClick
                 ),
             commonElements.checkboxDiv(
                 "isPublic",
                 this.props.item.isPublic,
                 "public",
                 this.props.item.id,
-                this.checkboxClick.bind(this)
+                this.checkboxClick
                 ),
             this.linkDiv()
         );

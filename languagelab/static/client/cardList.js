@@ -31,7 +31,6 @@ const typeInfo = {
 export default class CardList extends React.Component {
     constructor(props) {
         super(props);
-        console.log("props", props);
     }
 
     addClick() {
@@ -125,6 +124,12 @@ export default class CardList extends React.Component {
                 queueItem = selection;
                 item = exercise;
             }
+
+            // TODO if no exercise found, load a simple QueueItemCard
+        } else {
+            queueItem = this.props.queueItems.find(
+                (queueItem) => queueItem.exercise === item.id
+            );
         }
 
         var options = {
@@ -137,6 +142,7 @@ export default class CardList extends React.Component {
                 "checkClick": this.props.checkClick,
                 "deleteClick": this.props.deleteClick,
                 "editItem": this.props.editItem,
+                "mediaItem": null,
                 "selectedType": this.props.selectedType
         };
 
@@ -175,12 +181,14 @@ export default class CardList extends React.Component {
     }
 
     render() {
+        console.log("props", props);
+
         if (!this.props[this.props.selectedType].length
         || !typeInfo[this.props.selectedType].hasOwnProperty("card")) {
             return React.createElement(
                 "div",
                 {"className": "card"},
-                `Ready to start displaying ${this.props.selectedType}`
+                `No ${this.props.selectedType} found`
             );
         }
 
