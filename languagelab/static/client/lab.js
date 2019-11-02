@@ -79,6 +79,10 @@ export default class Lab extends React.Component {
         );
     }
 
+    queueOperation(operationName, exerciseId) {
+        console.log(`queueOperation(${operationName}, ${exerciseId})`);
+    }
+
     checkClick = function(itemType, itemId, itemKey, itemChecked) {
         event.preventDefault();
         const payload = {[itemKey]: itemChecked};
@@ -145,6 +149,7 @@ export default class Lab extends React.Component {
                 "deleteClick": this.deleteClick.bind(this),
                 "saveItem": this.saveItem.bind(this),
                 "editItem": this.editItem.bind(this),
+                "queueClick": this.queueOperation.bind(this),
                 "loading": this.state.loading,
                 "selectedType": this.props.selectedType,
             },

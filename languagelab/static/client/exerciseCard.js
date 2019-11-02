@@ -9,9 +9,10 @@ export default class ExerciseCard extends React.Component {
         super(props);
 
         this.checkboxClick = this.checkboxClick.bind(this);
-        this.editClick = this.editClick.bind(this);
-        this.rankButton = this.rankButton.bind(this);
         this.deleteClick = this.deleteClick.bind(this);
+        this.editClick = this.editClick.bind(this);
+        this.queueClick = this.queueClick.bind(this);
+        this.rankButton = this.rankButton.bind(this);
     }
 
     duration(start, end) {
@@ -152,14 +153,14 @@ export default class ExerciseCard extends React.Component {
         );
     }
 
-    rankBadge(rank) {
-        if (typeof rank !== "number") {
-            return "not";
+    rankBadge() {
+        if (!this.props.queueItem) {
+            return "Not";
         }
         return React.createElement(
             "span",
             {"className": "badge badge-success"},
-            rank
+            this.props.queueItem.rank
         );
     }
 
@@ -172,8 +173,12 @@ export default class ExerciseCard extends React.Component {
     }
 
     queueClick(event) {
-        console.dir(event.target);
+        const idParts = event.target.id.split("_");
+        if (!idParts) {
+            return;
+        }
         console.log("id", event.target.id)
+        this.props.queueClick(idParts[0], this.props.item.id);
     }
 
     rankButton(buttonContent) {
@@ -200,7 +205,8 @@ export default class ExerciseCard extends React.Component {
             {
                 "type": "button",
                 "className": "btn btn-sm btn-success",
-                "id": "add"
+                "id": "add",
+                "onClick": this.queueClick
             },
             "Add to queue"
         );
@@ -250,14 +256,14 @@ export default class ExerciseCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "card-footer"},
-            this.rankBadge(this.props.rank),
+            this.rankBadge(),
             " in queue ",
             this.rankButtonGroup()
         );
     }
 
     render() {
-        // console.log("props", JSON.stringify(this.props));
+        console.log("props", this.props);
         return React.createElement(
             "div",
             {"className": "card bg-light"},
@@ -265,5 +271,4 @@ export default class ExerciseCard extends React.Component {
             this.cardFooter()
         );
     }
-
 }

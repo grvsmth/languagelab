@@ -111,7 +111,6 @@ export default class CardList extends React.Component {
     }
 
     itemCard(selection, users) {
-        var rank = null;
         var item = selection;
         var queueItem = null;
 
@@ -120,12 +119,9 @@ export default class CardList extends React.Component {
                 this.props.exercises, selection.exercise
                 );
             if (exercise) {
-                rank = selection.rank;
                 queueItem = selection;
                 item = exercise;
             }
-
-            // TODO if no exercise found, load a simple QueueItemCard
         } else {
             queueItem = this.props.queueItems.find(
                 (queueItem) => queueItem.exercise === item.id
@@ -137,12 +133,12 @@ export default class CardList extends React.Component {
                 "item": item,
                 "users": users,
                 "queueItem": queueItem,
-                "rank": rank,
                 "languages": this.findLanguage(item),
                 "checkClick": this.props.checkClick,
                 "deleteClick": this.props.deleteClick,
                 "editItem": this.props.editItem,
                 "mediaItem": null,
+                "queueClick": this.props.queueClick,
                 "selectedType": this.props.selectedType
         };
 
@@ -207,6 +203,10 @@ export default class CardList extends React.Component {
             );
         }
 
-        return elements.concat(this.makeElements());
+        return React.createElement(
+            "div",
+            {"className": "card-columns"},
+            elements.concat(this.makeElements())
+        );
     }
 }

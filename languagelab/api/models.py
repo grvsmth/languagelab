@@ -154,7 +154,3 @@ class QueueItem (Model):
         # queue = self.objects
         # LOG.error(queue)
         LOG.error("up!")
-
-    class Meta:
-        order_with_respect_to = 'rank'
-
