@@ -111,7 +111,7 @@ export default class CardList extends React.Component {
     }
 
     itemCard(selection, users) {
-        var rank = 0;
+        var rank = null;
         var item = selection;
         var queueItem = null;
 
@@ -157,31 +157,33 @@ export default class CardList extends React.Component {
         );
     }
 
+    makeElement(item) {
+        var users = [];
+        var nextElement;
+
+        if (this.props.users) {
+            const fieldName = typeInfo[this.props.selectedType].userField;
+            const user = util.findItem(this.props.users, item[fieldName]);
+            if (user) {
+                users.push(user);
+            }
+        }
+
+        if (this.props.activity === "edit"
+            && this.props.selectedItem === item.id) {
+            nextElement = this.formCard(item, users);
+        } else {
+            nextElement = this.itemCard(item, users);
+        }
+        return nextElement;
+    }
+
     makeElements() {
-        return this.props[this.props.selectedType].map((item) => {
-            var users = [];
-            var nextElement;
-
-            if (this.props.users) {
-                const fieldName = typeInfo[this.props.selectedType].userField;
-                const user = util.findItem(this.props.users, item[fieldName]);
-                if (user) {
-                    users.push(user);
-                }
-            }
-
-            if (this.props.activity === "edit"
-                && this.props.selectedItem === item.id) {
-                nextElement = this.formCard(item, users);
-            } else {
-                nextElement = this.itemCard(item, users);
-            }
-            return nextElement;
-        });
+        return this.props[this.props.selectedType].map(this.makeElement, this);
     }
 
     render() {
-        console.log("props", props);
+        console.log("this.props", this.props);
 
         if (!this.props[this.props.selectedType].length
         || !typeInfo[this.props.selectedType].hasOwnProperty("card")) {
@@ -205,7 +207,6 @@ export default class CardList extends React.Component {
             );
         }
 
-        elements = elements.concat(this.makeElements());
-        return elements;
+        return elements.concat(this.makeElements());
     }
 }

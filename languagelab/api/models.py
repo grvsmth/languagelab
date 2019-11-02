@@ -16,7 +16,12 @@ from django.db.models import (
     )
 from django.utils.timezone import now
 
+from logging import basicConfig, getLogger
+
 from taggit.managers import TaggableManager
+
+LOG = getLogger()
+basicConfig(level="DEBUG")
 
 
 class Language(Model):
@@ -135,8 +140,7 @@ class QueueItem (Model):
     rank = IntegerField(
         "Rank",
         db_index=True,
-        null=True,
-        blank=True
+        unique=True
     )
     started = DateTimeField(
         "Started",
@@ -145,4 +149,12 @@ class QueueItem (Model):
         db_index=True
     )
     completed = DateTimeField("Completed", null=True, blank=True)
+
+    def up(self):
+        # queue = self.objects
+        # LOG.error(queue)
+        LOG.error("up!")
+
+    class Meta:
+        order_with_respect_to = 'rank'
 

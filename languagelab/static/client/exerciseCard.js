@@ -7,7 +7,6 @@ const timeFormat = "HH:mm:ss.S";
 export default class ExerciseCard extends React.Component {
     constructor(props) {
         super(props);
-        console.log("props", props);
 
         this.checkboxClick = this.checkboxClick.bind(this);
         this.editClick = this.editClick.bind(this);
@@ -154,6 +153,9 @@ export default class ExerciseCard extends React.Component {
     }
 
     rankBadge(rank) {
+        if (typeof rank !== "number") {
+            return "not";
+        }
         return React.createElement(
             "span",
             {"className": "badge badge-success"},
@@ -171,6 +173,7 @@ export default class ExerciseCard extends React.Component {
 
     queueClick(event) {
         console.dir(event.target);
+        console.log("id", event.target.id)
     }
 
     rankButton(buttonContent) {
@@ -191,7 +194,23 @@ export default class ExerciseCard extends React.Component {
         );
     }
 
+    addButton() {
+        return React.createElement(
+            "button",
+            {
+                "type": "button",
+                "className": "btn btn-sm btn-success",
+                "id": "add"
+            },
+            "Add to queue"
+        );
+    }
+
     rankButtonGroup() {
+        if (!this.props.queueItem) {
+            return this.addButton();
+        }
+
         return React.createElement(
             "span",
             {"className": "button-group"},
@@ -199,7 +218,20 @@ export default class ExerciseCard extends React.Component {
         );
     }
 
+    queueBody(item) {
+        return React.createElement(
+            "div",
+            {"className": "card-body"},
+            `Loading exercise ${item.exercise}`
+        );
+
+    }
+
     cardBody() {
+        if (!this.props.item.hasOwnProperty("name")) {
+            return this.queueBody(this.props.item);
+        }
+
         return React.createElement(
             "div",
             {"className": "card-body"},
@@ -211,7 +243,7 @@ export default class ExerciseCard extends React.Component {
     }
 
     cardFooter() {
-        if (!this.props.queueItem) {
+        if (!this.props.item.hasOwnProperty("name")) {
             return null;
         }
 
@@ -225,6 +257,7 @@ export default class ExerciseCard extends React.Component {
     }
 
     render() {
+        // console.log("props", JSON.stringify(this.props));
         return React.createElement(
             "div",
             {"className": "card bg-light"},
