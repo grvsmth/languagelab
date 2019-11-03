@@ -139,8 +139,7 @@ class QueueItem (Model):
     )
     rank = IntegerField(
         "Rank",
-        db_index=True,
-        unique=True
+        db_index=True
     )
     started = DateTimeField(
         "Started",

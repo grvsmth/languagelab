@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, Group
 from rest_framework.serializers import (
     CurrentUserDefault,
+    IntegerField,
     ModelSerializer,
     PrimaryKeyRelatedField
     )
@@ -116,6 +117,7 @@ class QueueItemSerializer(ModelSerializer):
         read_only=True,
         default=CurrentUserDefault()
     )
+    rank = IntegerField(read_only=True, min_value=1)
 
     class Meta:
         model = QueueItem
@@ -128,4 +130,3 @@ class QueueItemSerializer(ModelSerializer):
             'completed'
             ]
         ordering = ['-rank']
-

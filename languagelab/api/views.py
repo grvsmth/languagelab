@@ -1,9 +1,12 @@
 from django.contrib.auth.models import User, Group
+from django.db.models import Max
 from django.http import JsonResponse
+
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.serializers import (
     CurrentUserDefault,
+    IntegerField,
     PrimaryKeyRelatedField
     )
 
@@ -122,7 +125,18 @@ class QueueItemViewSet(viewsets.ModelViewSet):
         read_only=True,
         default=CurrentUserDefault()
     )
+    rank = IntegerField(read_only=True, min_value=1, default=1)
+
+    def nextRank(self):
+        nextRank = 1
+        userItems = self.queryset.filter(user=self.request.user)
+        maxRank = userItems.aggregate(Max('rank'))['rank__max']
+
+        if maxRank:
+            nextRank = maxRank + 1
+
+        return nextRank
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user, rank=self.nextRank())
 

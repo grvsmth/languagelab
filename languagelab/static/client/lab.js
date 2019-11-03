@@ -11,8 +11,12 @@ export default class Lab extends React.Component {
         console.log("props", props);
 
         this.checkClick = this.checkClick.bind(this);
+        this.queueOperation = {
+            "add": this.addToQueue.bind(this)
+        };
 
         this.state = {
+            "activity": "read",
             "lastUpdated": "",
             "loading": {
                 "media": false,
@@ -25,7 +29,6 @@ export default class Lab extends React.Component {
             "users": [],
             "languages": [],
             "queueItems": [],
-            "activity": "read",
             "selectedItem": null
         };
     }
@@ -79,8 +82,20 @@ export default class Lab extends React.Component {
         );
     }
 
-    queueOperation(operationName, exerciseId) {
-        console.log(`queueOperation(${operationName}, ${exerciseId})`);
+    addToQueue(exerciseId) {
+        const queueItem = {
+            "exercise": exerciseId
+        };
+        apiClient.post(queueItem, "queueItems").then((res) => {
+            this.updateStateItem(res, "queueItems");
+        }, (err) => {
+            console.error(err);
+        });
+    }
+
+    queueClick(operationName, exerciseId) {
+        console.log(`queueOperation[${operationName}](${exerciseId})`);
+        this.queueOperation[operationName](exerciseId);
     }
 
     checkClick = function(itemType, itemId, itemKey, itemChecked) {
@@ -149,7 +164,7 @@ export default class Lab extends React.Component {
                 "deleteClick": this.deleteClick.bind(this),
                 "saveItem": this.saveItem.bind(this),
                 "editItem": this.editItem.bind(this),
-                "queueClick": this.queueOperation.bind(this),
+                "queueClick": this.queueClick.bind(this),
                 "loading": this.state.loading,
                 "selectedType": this.props.selectedType,
             },
