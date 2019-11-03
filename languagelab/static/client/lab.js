@@ -99,9 +99,9 @@ export default class Lab extends React.Component {
         });
     }
 
-    queueClick(operationName, exerciseId) {
-        console.log(`queueOperation[${operationName}](${exerciseId})`);
-        this.queueOperation[operationName](exerciseId);
+    queueClick(operationName, id) {
+        console.log(`queueOperation[${operationName}](${id})`);
+        this.queueOperation[operationName](id);
     }
 
     checkClick = function(itemType, itemId, itemKey, itemChecked) {

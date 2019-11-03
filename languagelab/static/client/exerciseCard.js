@@ -177,7 +177,11 @@ export default class ExerciseCard extends React.Component {
         if (!idParts) {
             return;
         }
-        this.props.queueClick(idParts[0], this.props.queueItem.id);
+        var id = this.props.item.id
+        if (idParts[0] !== "add") {
+            id = this.props.queueItem.id;
+        }
+        this.props.queueClick(idParts[0], id);
     }
 
     rankButton(buttonContent) {
