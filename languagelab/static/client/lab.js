@@ -12,7 +12,8 @@ export default class Lab extends React.Component {
 
         this.checkClick = this.checkClick.bind(this);
         this.queueOperation = {
-            "add": this.addToQueue.bind(this)
+            "add": this.addToQueue.bind(this),
+            "remove": this.removeFromQueue.bind(this)
         };
 
         this.state = {
@@ -82,12 +83,17 @@ export default class Lab extends React.Component {
         );
     }
 
+    removeFromQueue(queueItemId) {
+        this.deleteClick("queueItems", queueItemId);
+    }
+
     addToQueue(exerciseId) {
         const queueItem = {
             "exercise": exerciseId
         };
         apiClient.post(queueItem, "queueItems").then((res) => {
-            this.updateStateItem(res, "queueItems");
+            // this.updateStateItem(res, "queueItems");
+            this.fetchData("queueItems");
         }, (err) => {
             console.error(err);
         });

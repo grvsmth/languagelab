@@ -89,8 +89,8 @@ export default class ExerciseCard extends React.Component {
         this.props.checkClick(
             "media",
             this.props.item.id,
-            event.target.name,
-            event.target.checked
+            event.currentTarget.name,
+            event.currentTarget.checked
         )
     }
 
@@ -173,18 +173,17 @@ export default class ExerciseCard extends React.Component {
     }
 
     queueClick(event) {
-        const idParts = event.target.id.split("_");
+        const idParts = event.currentTarget.id.split("_");
         if (!idParts) {
             return;
         }
-        console.log("id", event.target.id)
-        this.props.queueClick(idParts[0], this.props.item.id);
+        this.props.queueClick(idParts[0], this.props.queueItem.id);
     }
 
     rankButton(buttonContent) {
         const iconClass = config.queueButton[buttonContent]["icon"];
         const btnClass = "btn-" + config.queueButton[buttonContent]["color"];
-        const buttonId = [buttonContent, this.props.item.id].join("_");
+        const buttonId = [buttonContent, this.props.queueItem.id].join("_");
 
         return React.createElement(
             "button",
