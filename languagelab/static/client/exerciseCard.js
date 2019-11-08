@@ -1,5 +1,6 @@
 import config from "./config.js";
 import commonElements from "./commonElements.js";
+import QueueFooter from "./queueFooter.js";
 import util from "./util.js";
 
 const timeFormat = "HH:mm:ss.S";
@@ -11,8 +12,6 @@ export default class ExerciseCard extends React.Component {
         this.checkboxClick = this.checkboxClick.bind(this);
         this.deleteClick = this.deleteClick.bind(this);
         this.editClick = this.editClick.bind(this);
-        this.queueClick = this.queueClick.bind(this);
-        this.rankButton = this.rankButton.bind(this);
     }
 
     duration(start, end) {
@@ -153,81 +152,11 @@ export default class ExerciseCard extends React.Component {
         );
     }
 
-    rankBadge() {
-        if (!this.props.queueItem) {
-            return "Not";
-        }
-        return React.createElement(
-            "span",
-            {"className": "badge badge-success"},
-            this.props.queueItem.rank
-        );
-    }
-
-    iconSpan(iconClass) {
-        return React.createElement(
-            "i",
-            {"className": "oi " + iconClass},
-            null
-        );
-    }
-
-    queueClick(event) {
-        const idParts = event.currentTarget.id.split("_");
-        if (!idParts) {
-            return;
-        }
-        var id = this.props.item.id
-        if (idParts[0] !== "add") {
-            id = this.props.queueItem.id;
-        }
-        this.props.queueClick(idParts[0], id);
-    }
-
-    rankButton(buttonContent) {
-        const iconClass = config.queueButton[buttonContent]["icon"];
-        const btnClass = "btn-" + config.queueButton[buttonContent]["color"];
-        const buttonId = [buttonContent, this.props.queueItem.id].join("_");
-
-        return React.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": "btn btn-sm " + btnClass,
-                "key": "rank-button-" + buttonContent,
-                "onClick": this.queueClick,
-                "id": buttonId
-            },
-            this.iconSpan(iconClass)
-        );
-    }
-
-    addButton() {
-        return React.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": "btn btn-sm btn-success",
-                "id": "add",
-                "onClick": this.queueClick
-            },
-            "Add to queue"
-        );
-    }
-
-    rankButtonGroup() {
-        if (!this.props.queueItem) {
-            return this.addButton();
-        }
-
-        return React.createElement(
-            "span",
-            {"className": "button-group"},
-            Object.keys(config.queueButton).map(this.rankButton)
-        );
-    }
-
     queueBody(item) {
+        if (!this.props.item.hasOwnProperty("name")) {
+            return null;
+        }
+
         return React.createElement(
             "div",
             {"className": "card-body"},
@@ -257,11 +186,13 @@ export default class ExerciseCard extends React.Component {
         }
 
         return React.createElement(
-            "div",
-            {"className": "card-footer"},
-            this.rankBadge(),
-            " in queue ",
-            this.rankButtonGroup()
+            QueueFooter,
+            {
+                "itemId": this.props.item.id,
+                "queueItem": this.props.queueItem,
+                "queueClick": this.props.queueClick
+            },
+            null
         );
     }
 
