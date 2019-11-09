@@ -4,11 +4,13 @@ from django.http import JsonResponse
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.serializers import (
     CurrentUserDefault,
     IntegerField,
     PrimaryKeyRelatedField
     )
+from rest_framework.status import HTTP_204_NO_CONTENT
 
 from logging import basicConfig, getLogger
 
@@ -139,5 +141,10 @@ class QueueItemViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, rank=self.nextRank())
+
+    def destroy(self, request, *args, **kwargs):
+        self.perform_destroy(self.get_object())
         QueueItem.objects.renumber(user=self.request.user)
+        return Response(status=HTTP_204_NO_CONTENT)
+
 
