@@ -176,6 +176,13 @@ class QueueItem (Model):
     objects = QueueManager()
 
     def up(self):
-        # queue = self.objects
-        # LOG.error(queue)
-        LOG.error("up!")
+        queue = self.objects.userQueue(self.user)
+        if self.rank < 2 or self.rank > queue.count():
+            return self.rank
+
+        newrank = self.rank - 1
+        oldQueueItem = queue.filter(rank=newrank)
+        oldQueueItem.update(rank=self.rank)
+        self.rank = newrank
+
+        return newrank
