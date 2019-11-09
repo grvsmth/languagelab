@@ -46,7 +46,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
-    queryset = Group.objects.all()
+    queryset = Group.objects.all().order_by('id')
     serializer_class = GroupSerializer
 
 
@@ -54,7 +54,7 @@ class LanguageViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing available languages
     """
-    queryset = Language.objects.all()
+    queryset = Language.objects.all().order_by('id')
     serializer_class = LanguageSerializer
 
     @action(detail=False, methods=['post'])
@@ -74,7 +74,7 @@ class MediaItemViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing media items
     """
-    queryset = MediaItem.objects.all()
+    queryset = MediaItem.objects.all().order_by('id')
     serializer_class = MediaItemSerializer
 
     uploader = PrimaryKeyRelatedField(
@@ -91,7 +91,7 @@ class ExerciseViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing exercises
     """
-    queryset = Exercise.objects.all()
+    queryset = Exercise.objects.all().order_by('id')
     serializer_class = ExerciseSerializer
 
     def perform_create(self, serializer):
@@ -102,7 +102,7 @@ class LessonViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing lessons
     """
-    queryset = Lesson.objects.all()
+    queryset = Lesson.objects.all().order_by('id')
     serializer_class = LessonSerializer
 
     creator = PrimaryKeyRelatedField(
@@ -119,7 +119,7 @@ class QueueItemViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing queue items
     """
-    queryset = QueueItem.objects.all()
+    queryset = QueueItem.objects.all().order_by('rank')
     serializer_class = QueueItemSerializer
 
     user = PrimaryKeyRelatedField(
