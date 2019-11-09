@@ -139,4 +139,5 @@ class QueueItemViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, rank=self.nextRank())
+        QueueItem.objects.renumber(user=self.request.user)
 

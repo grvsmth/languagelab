@@ -10,6 +10,7 @@ from django.db.models import (
     FileField,
     ForeignKey,
     IntegerField,
+    Manager,
     ManyToManyField,
     Model,
     TextField
@@ -123,6 +124,29 @@ class Lesson (Model):
     created = DateTimeField("Created", auto_now_add=True)
 
 
+class QueueManager (Manager):
+    """
+    Manager for queue operations
+    """
+    def userQueue(self, userId):
+        return super(
+            QueueManager,
+            self
+        ).get_queryset().filter(
+            user=userId,
+            rank__isnull=False
+        ).order_by('rank')
+
+    def renumber(self, user):
+        i = 1
+        queue = self.userQueue(user)
+        for (queueItem) in queue:
+            if (queueItem.completed is None):
+                queueItem.rank = i
+                queueItem.save()
+                i += 1
+
+
 class QueueItem (Model):
     """
     Model for tracking exercises in a user queue
@@ -148,6 +172,8 @@ class QueueItem (Model):
         db_index=True
     )
     completed = DateTimeField("Completed", null=True, blank=True)
+
+    objects = QueueManager()
 
     def up(self):
         # queue = self.objects
