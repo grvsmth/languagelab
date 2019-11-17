@@ -147,4 +147,11 @@ class QueueItemViewSet(viewsets.ModelViewSet):
         QueueItem.objects.renumber(user=self.request.user)
         return Response(status=HTTP_204_NO_CONTENT)
 
-
+    @action(detail=False, methods=['patch'])
+    def up(self, request):
+        QueueItem.objects.up(
+            userId=self.request.user,
+            itemId=self.request.data['item']
+            )
+        serializer = self.serializer_class(self.queryset, many=True)
+        return Response(serializer.data)

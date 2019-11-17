@@ -13,7 +13,8 @@ export default class Lab extends React.Component {
         this.checkClick = this.checkClick.bind(this);
         this.queueOperation = {
             "add": this.addToQueue.bind(this),
-            "remove": this.removeFromQueue.bind(this)
+            "remove": this.removeFromQueue.bind(this),
+            "up": this.up.bind(this)
         };
 
         this.state = {
@@ -149,6 +150,15 @@ export default class Lab extends React.Component {
                 console.error(err);
             });
         }
+    }
+
+    up(itemId) {
+        apiClient.patch({"item": itemId}, "queueItems", "up").then(res => {
+            console.log(res);
+            this.setState({"queueItems": res.response});
+        }, err => {
+            console.error(err);
+        });
     }
 
     render() {

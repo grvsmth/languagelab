@@ -146,6 +146,22 @@ class QueueManager (Manager):
                 queueItem.save()
                 i += 1
 
+    def up(self, userId, itemId):
+        queue = self.userQueue(userId)
+        item = queue.get(id=itemId)
+
+        if item.rank < 2 or item.rank > queue.count():
+            return item.rank
+
+        newrank = item.rank - 1
+        oldQueueItem = queue.get(rank=newrank, user=userId)
+        oldQueueItem.rank = item.rank
+        item.rank = newrank
+        oldQueueItem.save()
+        item.save()
+
+        return queue
+
 
 class QueueItem (Model):
     """
@@ -174,15 +190,3 @@ class QueueItem (Model):
     completed = DateTimeField("Completed", null=True, blank=True)
 
     objects = QueueManager()
-
-    def up(self):
-        queue = self.objects.userQueue(self.user)
-        if self.rank < 2 or self.rank > queue.count():
-            return self.rank
-
-        newrank = self.rank - 1
-        oldQueueItem = queue.filter(rank=newrank)
-        oldQueueItem.update(rank=self.rank)
-        self.rank = newrank
-
-        return newrank
