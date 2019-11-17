@@ -155,3 +155,12 @@ class QueueItemViewSet(viewsets.ModelViewSet):
             )
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['patch'])
+    def down(self, request):
+        QueueItem.objects.down(
+            userId=self.request.user,
+            itemId=self.request.data['item']
+            )
+        serializer = self.serializer_class(self.queryset, many=True)
+        return Response(serializer.data)

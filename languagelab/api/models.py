@@ -148,17 +148,29 @@ class QueueManager (Manager):
 
     def up(self, userId, itemId):
         queue = self.userQueue(userId)
-        item = queue.get(id=itemId)
+        itemQueryset = queue.filter(id=itemId)
+        oldRank = itemQueryset[0].rank
 
-        if item.rank < 2 or item.rank > queue.count():
-            return item.rank
+        if oldRank < 2 or oldRank > queue.count():
+            return queue
 
-        newrank = item.rank - 1
-        oldQueueItem = queue.get(rank=newrank, user=userId)
-        oldQueueItem.rank = item.rank
-        item.rank = newrank
-        oldQueueItem.save()
-        item.save()
+        newRank = oldRank - 1
+        queue.filter(rank=newRank).update(rank=oldRank)
+        itemQueryset.update(rank=newRank)
+
+        return queue
+
+    def down(self, userId, itemId):
+        queue = self.userQueue(userId)
+        itemQueryset = queue.filter(id=itemId)
+        oldRank = itemQueryset[0].rank
+
+        if oldRank < 1 or oldRank >= queue.count():
+            return queue
+
+        newRank = oldRank + 1
+        queue.filter(rank=newRank).update(rank=oldRank)
+        itemQueryset.update(rank=newRank)
 
         return queue
 

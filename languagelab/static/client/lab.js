@@ -14,7 +14,8 @@ export default class Lab extends React.Component {
         this.queueOperation = {
             "add": this.addToQueue.bind(this),
             "remove": this.removeFromQueue.bind(this),
-            "up": this.up.bind(this)
+            "up": this.up.bind(this),
+            "down": this.down.bind(this)
         };
 
         this.state = {
@@ -93,7 +94,6 @@ export default class Lab extends React.Component {
             "exercise": exerciseId
         };
         apiClient.post(queueItem, "queueItems").then((res) => {
-            // this.updateStateItem(res, "queueItems");
             this.fetchData("queueItems");
         }, (err) => {
             console.error(err);
@@ -154,8 +154,15 @@ export default class Lab extends React.Component {
 
     up(itemId) {
         apiClient.patch({"item": itemId}, "queueItems", "up").then(res => {
-            console.log(res);
-            this.setState({"queueItems": res.response});
+            this.fetchData("queueItems");
+        }, err => {
+            console.error(err);
+        });
+    }
+
+    down(itemId) {
+        apiClient.patch({"item": itemId}, "queueItems", "down").then(res => {
+            this.fetchData("queueItems");
         }, err => {
             console.error(err);
         });
