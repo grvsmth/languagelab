@@ -10,25 +10,31 @@ const typeInfo = {
         "userField": "uploader",
         "card": MediaCard,
         "formCard": MediaFormCard,
-        "addable": true
+        "addable": true,
+        "doable": false
     },
     "exercises": {
         "userField": "creator",
         "card": ExerciseCard,
         "formCard": ExerciseFormCard,
-        "addable": true
+        "addable": true,
+        "doable": true
     },
     "lessons": {
         "userField": "creator",
-        "addable": true
+        "addable": true,
+        "doable": false
     },
     "queueItems": {
         "userField": "user",
         "card": ExerciseCard,
-        "addable": false
+        "addable": false,
+        "doable": true
     },
     "languages": {
-        "userField": ""
+        "userField": "",
+        "addable": true,
+        "doable": false
     }
 };
 
@@ -73,20 +79,17 @@ export default class CardList extends React.Component {
         );
     }
 
-    formCard(item, users) {
+    formCard(exercise, mediaItem, users) {
         var options = {
-            "key": item.id,
-            "item": item,
+            "key": exercise.id,
+            "item": exercise,
             "users": users,
+            "mediaItem": mediaItem,
             "languages": this.props.languages,
             "setActivity": this.props.setActivity,
             "saveItem": this.props.saveItem,
             "selectedType": this.props.selectedType
         };
-
-        if (["exercises"].includes(this.props.selectedType)) {
-            options["media"] = this.props.media;
-        }
 
         return React.createElement(
             typeInfo[this.props.selectedType].formCard,
@@ -105,50 +108,52 @@ export default class CardList extends React.Component {
             language = item.language;
         }
         if (language && typeof language !== "undefined") {
-            return [
-                util.findItem(this.props.languages, language)
-            ];
-
+            return [util.findItem(this.props.languages, language)];
         }
-        return [];
 
+        return [];
     }
 
-    itemCard(selection, users) {
-        var item = selection;
-        var queueItem = null;
-
-        if (item.exercise) {
-            let exercise = util.findItem(
-                this.props.exercises, selection.exercise
-                );
-            if (exercise) {
-                queueItem = selection;
-                item = exercise;
-            }
-        } else {
-            queueItem = this.props.queueItems.find(
-                (queueItem) => queueItem.exercise === item.id
-            );
+    queueExercise(selection) {
+        if (!selection.exercise) {
+            return null;
         }
+        return util.findItem(this.props.exercises, selection.exercise);
+    }
 
+    doCard(queueItem, exercise, mediaItem, users) {
         var options = {
-                "key": item.id,
-                "item": item,
+                "key": exercise.id,
+                "item": exercise,
                 "users": users,
                 "queueItem": queueItem,
-                "languages": this.findLanguage(item),
-                "checkClick": this.props.checkClick,
-                "deleteClick": this.props.deleteClick,
-                "editItem": this.props.editItem,
-                "mediaItem": null,
-                "queueClick": this.props.queueClick,
+                "languages": this.findLanguage(exercise),
+                "mediaItem": mediaItem,
                 "selectedType": this.props.selectedType
         };
 
-        if (item.media) {
-            options["mediaItem"] = util.findItem(this.props.media, item.media);
-        }
+        return React.createElement(
+            typeInfo[this.props.selectedType].card,
+            options,
+            null
+        );
+    }
+
+    itemCard(queueItem, exercise, mediaItem, users) {
+
+        var options = {
+            "key": exercise.id,
+            "item": exercise,
+            "users": users,
+            "queueItem": queueItem,
+            "languages": this.findLanguage(exercise),
+            "checkClick": this.props.checkClick,
+            "deleteClick": this.props.deleteClick,
+            "editItem": this.props.editItem,
+            "mediaItem": mediaItem,
+            "queueClick": this.props.queueClick,
+            "selectedType": this.props.selectedType
+        };
 
         return React.createElement(
             typeInfo[this.props.selectedType].card,
@@ -160,6 +165,9 @@ export default class CardList extends React.Component {
     makeElement(item) {
         var users = [];
         var nextElement;
+        var exercise;
+        var queueItem;
+        var mediaItem;
 
         if (this.props.users) {
             const fieldName = typeInfo[this.props.selectedType].userField;
@@ -169,11 +177,38 @@ export default class CardList extends React.Component {
             }
         }
 
-        if (this.props.activity === "edit"
-            && this.props.selectedItem === item.id) {
-            nextElement = this.formCard(item, users);
+        if (this.props.selectedType === "queueItems") {
+            queueItem = item;
+            exercise = this.queueExercise(item);
         } else {
-            nextElement = this.itemCard(item, users);
+            exercise = item;
+            queueItem = exercise ? item : this.props.queueItems.find(
+                (queueItem) => queueItem.exercise === item.id
+            );
+        }
+
+        if (!exercise) {
+            return null;
+        }
+
+        if (exercise && exercise.media) {
+            mediaItem = util.findItem(this.props.media, exercise.media);
+        }
+
+        if (this.props.selectedItem === item.id) {
+            if (this.props.activity === "edit") {
+                nextElement = this.formCard(exercise, mediaItem, users);
+            } else if (this.props.activity === "do" && typeInfo[this.props.selectedType].doable) {
+                nextElement = this.doExerciseCard(
+                    queueItem, exercise, mediaItem, users
+                );
+            } else {
+                nextElement = this.itemCard(
+                    queueItem, exercise, mediaItem, users
+                );
+            }
+        } else {
+            nextElement = this.itemCard(queueItem, exercise,  mediaItem, users);
         }
         return nextElement;
     }
