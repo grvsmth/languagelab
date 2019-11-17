@@ -122,6 +122,13 @@ export default class Lab extends React.Component {
         })
     }
 
+    startExercise(exerciseId) {
+        this.setState({
+            "activity": "do",
+            "selectedItem": exerciseId
+        });
+    }
+
     setActivity = function(activity) {
         this.setState({"activity": activity});
     }
@@ -187,6 +194,7 @@ export default class Lab extends React.Component {
                 "deleteClick": this.deleteClick.bind(this),
                 "saveItem": this.saveItem.bind(this),
                 "editItem": this.editItem.bind(this),
+                "startExercise": this.startExercise.bind(this),
                 "queueClick": this.queueClick.bind(this),
                 "loading": this.state.loading,
                 "selectedType": this.props.selectedType,

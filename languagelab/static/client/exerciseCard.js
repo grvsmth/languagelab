@@ -12,6 +12,7 @@ export default class ExerciseCard extends React.Component {
         this.checkboxClick = this.checkboxClick.bind(this);
         this.deleteClick = this.deleteClick.bind(this);
         this.editClick = this.editClick.bind(this);
+        this.startClick = this.startClick.bind(this);
     }
 
     duration(start, end) {
@@ -101,6 +102,10 @@ export default class ExerciseCard extends React.Component {
         this.props.deleteClick("media", this.props.item.id);
     }
 
+    startClick(event) {
+        this.props.startExercise(this.props.item.id);
+    }
+
     editLink() {
         return React.createElement(
             "a",
@@ -165,6 +170,27 @@ export default class ExerciseCard extends React.Component {
 
     }
 
+    startButton() {
+        return React.createElement(
+            "button",
+            {
+                "className": "btn btn-success",
+                "type": "button",
+                "id": "start_" + this.props.item.id,
+                "onClick": this.startClick
+            },
+            "Start exercise"
+        );
+    }
+
+    startDiv() {
+        return React.createElement(
+            "div",
+            {},
+            this.startButton()
+        );
+    }
+
     cardBody() {
         if (!this.props.item.hasOwnProperty("name")) {
             return this.queueBody(this.props.item);
@@ -176,7 +202,8 @@ export default class ExerciseCard extends React.Component {
             this.itemTitle(),
             this.itemSubtitle(),
             this.descriptionRow(),
-            this.linkDiv()
+            this.linkDiv(),
+            this.startDiv()
         );
     }
 

@@ -1,6 +1,7 @@
 import util from "./util.js";
 
 import ExerciseCard from "./exerciseCard.js";
+import DoExerciseCard from "./doExerciseCard.js";
 import ExerciseFormCard from "./exerciseFormCard.js";
 import MediaCard from "./mediaCard.js";
 import MediaFormCard from "./mediaFormCard.js";
@@ -133,7 +134,7 @@ export default class CardList extends React.Component {
         };
 
         return React.createElement(
-            typeInfo[this.props.selectedType].card,
+            DoExerciseCard,
             options,
             null
         );
@@ -150,6 +151,7 @@ export default class CardList extends React.Component {
             "checkClick": this.props.checkClick,
             "deleteClick": this.props.deleteClick,
             "editItem": this.props.editItem,
+            "startExercise": this.props.startExercise,
             "mediaItem": mediaItem,
             "queueClick": this.props.queueClick,
             "selectedType": this.props.selectedType
@@ -196,10 +198,11 @@ export default class CardList extends React.Component {
         }
 
         if (this.props.selectedItem === item.id) {
+            console.log("typeInfo", typeInfo[this.props.selectedType])
             if (this.props.activity === "edit") {
                 nextElement = this.formCard(exercise, mediaItem, users);
             } else if (this.props.activity === "do" && typeInfo[this.props.selectedType].doable) {
-                nextElement = this.doExerciseCard(
+                nextElement = this.doCard(
                     queueItem, exercise, mediaItem, users
                 );
             } else {
