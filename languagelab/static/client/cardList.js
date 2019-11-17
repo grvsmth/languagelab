@@ -9,19 +9,23 @@ const typeInfo = {
     "media": {
         "userField": "uploader",
         "card": MediaCard,
-        "formCard": MediaFormCard
+        "formCard": MediaFormCard,
+        "addable": true
     },
     "exercises": {
         "userField": "creator",
         "card": ExerciseCard,
-        "formCard": ExerciseFormCard
+        "formCard": ExerciseFormCard,
+        "addable": true
     },
     "lessons": {
-        "userField": "creator"
+        "userField": "creator",
+        "addable": true
     },
     "queueItems": {
         "userField": "user",
-        "card": ExerciseCard
+        "card": ExerciseCard,
+        "addable": false
     },
     "languages": {
         "userField": ""
@@ -181,8 +185,9 @@ export default class CardList extends React.Component {
     render() {
         console.log("this.props", this.props);
 
+        const myType = typeInfo[this.props.selectedType];
         if (!this.props[this.props.selectedType].length
-        || !typeInfo[this.props.selectedType].hasOwnProperty("card")) {
+            || !myType.hasOwnProperty("card")) {
             return React.createElement(
                 "div",
                 {"className": "card"},
@@ -197,7 +202,7 @@ export default class CardList extends React.Component {
             elements.push(
                 this.formCard({"id": "form"}, this.props.users[0])
             );
-        } else {
+        } else if (myType.addable) {
             elements.push(
                 this.addButtonCard()
             );

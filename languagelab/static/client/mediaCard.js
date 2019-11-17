@@ -17,7 +17,7 @@ export default class MediaCard extends React.Component {
 
         var languageText = "";
         if (this.props.item.language && this.props.languages
-            && this.props.languages.length) {
+            && this.props.languages.length && this.props.languages[0]) {
             languageText = this.props.languages[0].name + ", ";
         }
 
@@ -38,7 +38,7 @@ export default class MediaCard extends React.Component {
 
         return React.createElement(
             "span",
-            {"className": "text-dark"},
+            {"className": "text-info"},
             " by ",
             this.props.users[0].username
         );
@@ -50,7 +50,7 @@ export default class MediaCard extends React.Component {
 
         return React.createElement(
             "h6",
-            {"className": "card-subtitle text-muted"},
+            {"className": "card-subtitle text-dark"},
             `${this.props.item.creator} (added ${uploadedText}`,
             this.bySpan(),
             ")"
@@ -162,7 +162,7 @@ export default class MediaCard extends React.Component {
     render() {
         return React.createElement(
             "div",
-            {"className": "card bg-light"},
+            {"className": "card bg-secondary"},
             this.cardBody()
         );
     }
