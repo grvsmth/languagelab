@@ -103,7 +103,11 @@ export default class ExerciseCard extends React.Component {
     }
 
     startClick(event) {
-        this.props.startExercise(this.props.item.id);
+        if (this.props.selectedType === "queueItems") {
+            this.props.startExercise(this.props.queueItem.id)
+        } else {
+            this.props.startExercise(this.props.item.id);
+        }
     }
 
     editLink() {
@@ -215,7 +219,7 @@ export default class ExerciseCard extends React.Component {
         return React.createElement(
             QueueFooter,
             {
-                "itemId": this.props.item.id,
+                "exerciseId": this.props.item.id,
                 "queueItem": this.props.queueItem,
                 "queueClick": this.props.queueClick
             },

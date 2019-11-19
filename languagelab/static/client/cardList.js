@@ -198,10 +198,10 @@ export default class CardList extends React.Component {
         }
 
         if (this.props.selectedItem === item.id) {
-            console.log("typeInfo", typeInfo[this.props.selectedType])
             if (this.props.activity === "edit") {
                 nextElement = this.formCard(exercise, mediaItem, users);
-            } else if (this.props.activity === "do" && typeInfo[this.props.selectedType].doable) {
+            } else if (this.props.activity === "do"
+                && typeInfo[this.props.selectedType].doable) {
                 nextElement = this.doCard(
                     queueItem, exercise, mediaItem, users
                 );

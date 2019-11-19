@@ -33,7 +33,7 @@ export default class QueueFooter extends React.Component {
         if (!idParts) {
             return;
         }
-        var id = this.props.itemId
+        var id = this.props.exerciseId
         if (idParts[0] !== "add") {
             id = this.props.queueItem.id;
         }
