@@ -7,15 +7,12 @@ export default class DoExerciseCard extends React.Component {
     constructor(props) {
         super(props);
 
+        this.setActivity = this.setActivity.bind(this);
         this.timeFormat = "HH:mm:ss.S";
 
         this.state = {
             "startSeconds": this.timeAsSeconds(this.props.item.startTime),
             "endSeconds": this.timeAsSeconds(this.props.item.endTime),
-            "duration": this.duration(
-                this.props.item.startTime,
-                this.props.item.endTime
-                ),
             "nowPlaying": this.props.mediaItem.mediaUrl
         };
     }
@@ -127,7 +124,29 @@ export default class DoExerciseCard extends React.Component {
 
     }
 
+    setActivity(activityName) {
+        this.setState({"activity": activityName});
+    }
+
+    afterPlay() {
+        console.log("afterPlay()");
+    }
+
+    timeUpdateHandler(event) {
+        console.log("timeUpdateHandler");
+        if (["playModelFirst", "playModelSecond", "playModel"].includes(
+            this.state.activity
+            ) && event.target.currentTime >= this.state.endSeconds) {
+            event.target.pause();
+            this.afterPlay();
+        }
+    }
+
     player() {
+        console.log(this.state);
+        const timeUpdateHandler = this.state.startSeconds < this.state.endSeconds
+            ? this.timeUpdateHandler.bind(this) : null;
+
         return React.createElement(
             "audio",
             {
@@ -135,6 +154,8 @@ export default class DoExerciseCard extends React.Component {
                 "src": this.state.nowPlaying,
                 "controls": true,
                 "onLoadedMetadata": this.setStartTime.bind(this),
+                "onPlay": () => {this.setActivity("playModel")},
+                "onTimeUpdate": timeUpdateHandler,
                 "style": {
                     "width": "100%"
                 }
