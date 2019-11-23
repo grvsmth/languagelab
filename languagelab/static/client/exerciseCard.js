@@ -1,5 +1,7 @@
 import config from "./config.js";
 import commonElements from "./commonElements.js";
+
+import ExerciseCardBody from "./exerciseCardBody.js";
 import QueueFooter from "./queueFooter.js";
 import util from "./util.js";
 
@@ -201,13 +203,18 @@ export default class ExerciseCard extends React.Component {
         }
 
         return React.createElement(
-            "div",
-            {"className": "card-body"},
-            this.itemTitle(),
-            this.itemSubtitle(),
-            this.descriptionRow(),
-            this.linkDiv(),
-            this.startDiv()
+            ExerciseCardBody,
+            {
+                "checkClick": this.props.checkClick,
+                "editItem": this.props.editItem,
+                "exercise": this.props.item,
+                "languages": this.props.languages,
+                "mediaItem": this.props.mediaItem,
+                "queueClick": this.props.queueClick,
+                "startExercise": this.props.startExercise,
+                "users": this.props.users
+            },
+            null
         );
     }
 

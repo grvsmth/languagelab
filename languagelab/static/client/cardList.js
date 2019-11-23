@@ -85,6 +85,7 @@ export default class CardList extends React.Component {
             "key": exercise.id,
             "item": exercise,
             "users": users,
+            "media": this.props.media,
             "mediaItem": mediaItem,
             "languages": this.props.languages,
             "setActivity": this.props.setActivity,
