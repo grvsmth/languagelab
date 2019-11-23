@@ -2,20 +2,31 @@ import config from "./config.js";
 import commonElements from "./commonElements.js";
 import util from "./util.js";
 
-const timeFormat = "HH:mm:ss.S";
 
 export default class DoExerciseCard extends React.Component {
     constructor(props) {
         super(props);
 
+        this.timeFormat = "HH:mm:ss.S";
+
         this.state = {
+            "startSeconds": this.timeAsSeconds(this.props.item.startTime),
+            "endSeconds": this.timeAsSeconds(this.props.item.endTime),
+            "duration": this.duration(
+                this.props.item.startTime,
+                this.props.item.endTime
+                ),
             "nowPlaying": this.props.mediaItem.mediaUrl
         };
     }
 
-    duration(start, end) {
-        const startMoment = new moment(start, timeFormat);
-        const endMoment = new moment(end, timeFormat);
+    timeAsSeconds(timeString) {
+        return moment.duration(timeString).asSeconds();
+    }
+
+    duration(startString, endString) {
+        const startMoment = new moment(startString, this.timeFormat);
+        const endMoment = new moment(endString, this.timeFormat);
         const durationMoment = moment.duration(endMoment.diff(startMoment));
         return util.formatDuration(durationMoment, 3);
     }
@@ -45,7 +56,7 @@ export default class DoExerciseCard extends React.Component {
         const timeRange = util.timeRange(
             this.props.item.startTime,
             this.props.item.endTime,
-            timeFormat
+            this.timeFormat
         );
 
         var mediaName = "";
@@ -83,66 +94,6 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
-    checkboxClick(event) {
-        this.props.checkClick(
-            "media",
-            this.props.item.id,
-            event.currentTarget.name,
-            event.currentTarget.checked
-        )
-    }
-
-    editClick(event) {
-        this.props.editItem(this.props.item.id);
-    }
-
-    deleteClick(event) {
-        this.props.deleteClick("media", this.props.item.id);
-    }
-
-    editLink() {
-        return React.createElement(
-            "a",
-            {"className": "text-primary", "onClick": this.editClick},
-            "edit"
-        );
-    }
-
-    deleteLink() {
-        return React.createElement(
-            "a",
-            {"className": "text-danger", "onClick": this.deleteClick},
-            "delete"
-        );
-    }
-
-    linkDiv() {
-        if (this.props.activity === "add") {
-            return null;
-        }
-        return React.createElement(
-            "div",
-            {},
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.item.isAvailable,
-                "available",
-                this.props.item.id,
-                this.checkboxClick
-                ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.item.isPublic,
-                "public",
-                this.props.item.id,
-                this.checkboxClick
-                ),
-            this.editLink(),
-            " ",
-            this.deleteLink()
-        );
-    }
-
     textDiv(fieldName, options={}) {
         return React.createElement(
             "div",
@@ -151,16 +102,28 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
-    queueBody(item) {
-        if (!this.props.item.hasOwnProperty("name")) {
-            return null;
+    setStartTime(event) {
+        if (this.state.startSeconds <= 0) {
+            return;
         }
 
-        return React.createElement(
-            "div",
-            {"className": "card-body"},
-            `Loading exercise ${item.exercise}`
-        );
+        if (this.state.startSeconds > event.target.duration) {
+            const msg = `Your startTime of ${this.props.item.startTime}
+            seconds is greater than
+            the total duration (${event.target.duration} seconds) of this media clip.`;
+            console.error(msg);
+        }
+        if (this.state.nowPlaying === this.props.mediaItem.mediaUrl) {
+            event.target.currentTime = this.state.startSeconds;
+            if (event.target.currentTime !== this.state.startSeconds) {
+                const msg = `Unable to set start time.  You may need to use a
+                different browser or host your media on a server that supports <a
+                target="_blank"
+                href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests"
+                >byte-range requests</a>.`;
+                console.error(msg);
+            }
+        }
 
     }
 
@@ -171,6 +134,7 @@ export default class DoExerciseCard extends React.Component {
                 "id": "audio1",
                 "src": this.state.nowPlaying,
                 "controls": true,
+                "onLoadedMetadata": this.setStartTime.bind(this),
                 "style": {
                     "width": "100%"
                 }
@@ -197,10 +161,6 @@ export default class DoExerciseCard extends React.Component {
     }
 
     cardBody() {
-        if (!this.props.item.hasOwnProperty("name")) {
-            return this.queueBody(this.props.item);
-        }
-
         return React.createElement(
             "div",
             {"className": "card-body"},
