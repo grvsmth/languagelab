@@ -3,6 +3,8 @@ import config from "./config.js";
 import apiClient from "./apiClient.js";
 import itemCard from "./itemCard.js";
 
+import Lab from "./lab.js";
+
 const exports = {};
 
 
@@ -16,43 +18,18 @@ exports.init = function() {
     });
     // exports.addClick("fetchLanguagesLink", apiClient.fetchLanguages);
 
-};
-
-exports.showLoading = function() {
-    loadingDiv.querySelector("span").innerHTML = "Loading...";
-    loadingDiv.classList.add("spinner-border");
-    loadingDiv.classList.remove("hidden");
-};
-
-exports.hideLoading = function() {
-    loadingDiv.querySelector("span").innerHTML = "";
-    loadingDiv.classList.remove("spinner-border");
-    loadingDiv.classList.add("hidden");
-};
-
-
-
-exports.resultsCards = function(type, results) {
-    results.forEach(
-        (item) => resultsDiv.appendChild(itemCard.resultsCard[type](item))
+    ReactDOM.render(
+        React.createElement(Lab), resultsDiv
     );
 };
 
 exports.handleClick = function(event) {
     event.preventDefault();
-    const apiUrl = [
-        config.api.baseUrl, config.api.endpoint[event.target.id]
-        ].join("/");
+    const props = {"clickId": config.api.endpoint[event.target.id]};
+    ReactDOM.render(
+        React.createElement(Lab, props), resultsDiv
+    );
 
-    exports.showLoading();
-    apiClient.fetchData(apiUrl).then((res) => {
-        console.log("results", res.results);
-        resultsDiv.innerHTML = "";
-        exports.resultsCards("media", res.results);
-        exports.hideLoading();
-    }, (err) => {
-        console.error(err);
-    });
 };
 
 exports.addClick = function(anchorId, handler) {

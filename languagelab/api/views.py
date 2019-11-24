@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.serializers import CurrentUserDefault, PrimaryKeyRelatedField
 
 from languagelab.api.iso639client import getIso639, makeLanguage
 
@@ -63,6 +64,15 @@ class MediaItemViewSet(viewsets.ModelViewSet):
     queryset = MediaItem.objects.all()
     serializer_class = MediaItemSerializer
 
+    uploader = PrimaryKeyRelatedField(
+        # set it to read_only as we're handling the writing part ourselves
+        read_only=True,
+        default=CurrentUserDefault()
+    )
+
+    def perform_create(self, serializer):
+        serializer.save(uploader=self.request.user)
+
 
 class ExerciseViewSet(viewsets.ModelViewSet):
     """
@@ -70,6 +80,15 @@ class ExerciseViewSet(viewsets.ModelViewSet):
     """
     queryset = Exercise.objects.all()
     serializer_class = ExerciseSerializer
+
+    creator = PrimaryKeyRelatedField(
+        # set it to read_only as we're handling the writing part ourselves
+        read_only=True,
+        default=CurrentUserDefault()
+    )
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
 
 
 class LessonViewSet(viewsets.ModelViewSet):
@@ -79,6 +98,15 @@ class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
+    creator = PrimaryKeyRelatedField(
+        # set it to read_only as we're handling the writing part ourselves
+        read_only=True,
+        default=CurrentUserDefault()
+    )
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
 
 class QueueItemViewSet(viewsets.ModelViewSet):
     """
@@ -86,3 +114,13 @@ class QueueItemViewSet(viewsets.ModelViewSet):
     """
     queryset = QueueItem.objects.all()
     serializer_class = QueueItemSerializer
+
+    user = PrimaryKeyRelatedField(
+        # set it to read_only as we're handling the writing part ourselves
+        read_only=True,
+        default=CurrentUserDefault()
+    )
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+

@@ -177,7 +177,7 @@ exports.fileInput = function(itemType, itemId, fieldName, fieldValue) {
 
     const inputId = [itemType, fieldName, itemId].join("_");
 
-    const itemLabel = exports.makeLabel(inputId, fieldName);
+    const itemLabel = exports.makeLabel(inputId, fileLabel);
 
     const itemInput = document.createElement("input");
     itemInput.classList.add("form-control-file");

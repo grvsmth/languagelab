@@ -16,10 +16,33 @@ exports.extractCookie = function(cookieKey) {
     return cookieValue;
 };
 
-exports.fetchData = function(url, options={}) {
+exports.fetchData = function(url, options={}, results=[]) {
     return new Promise((resolve, reject) => {
-       fetch(url, options).then((res) => {
-            resolve(res.json());
+        fetch(url, options).then((res) => {
+            if (res.status === 204) {
+                resolve();
+                return;
+            } else if (res.status < 200 || res.status > 299) {
+                reject(res);
+                return;
+            }
+
+            res.json().then((resJson) => {
+                if (!resJson.hasOwnProperty("results")) {
+                    resolve(resJson);
+                }
+
+                results = results.concat(resJson.results);
+                if (resJson.next) {
+                    this.fetchData(resJson.next, options, results).then(
+                        resolve, reject
+                    );
+                } else {
+                   resolve(results);
+                }
+            }, (err) => {
+                reject(err);
+            });
         }, (err) => {
             reject(err);
         });
@@ -43,11 +66,51 @@ exports.updateLanguages = function() {
 };
 
 exports.patch = function(data, endpoint, id=null) {
-    console.log(`apiclient.patch(${endpoint}, ${id})`);
     const csrftoken = exports.extractCookie("csrftoken");
     const apiUrl = [config.api.baseUrl, endpoint, id, ""].join("/");
     const options = {
         "method": "PATCH",
+        "headers": {
+            "X-CSRFToken": csrftoken,
+            'Content-Type': 'application/json'
+        },
+        "body": JSON.stringify(data)
+    };
+
+    return new Promise((resolve, reject) => {
+        exports.fetchData(apiUrl, options).then((res) => {
+            resolve({"type": endpoint, "response": res});
+        }, (err) => {
+            reject({"type": endpoint, "error": err});
+        });
+    });
+};
+
+exports.delete = function(endpoint, id) {
+    const csrftoken = exports.extractCookie("csrftoken");
+    const apiUrl = [config.api.baseUrl, endpoint, id, ""].join("/");
+    const options = {
+        "method": "DELETE",
+        "headers": {
+            "X-CSRFToken": csrftoken,
+            'Content-Type': 'application/json'
+        }
+    };
+
+    return new Promise((resolve, reject) => {
+        exports.fetchData(apiUrl, options).then((res) => {
+            resolve({"type": endpoint, "response": res});
+        }, (err) => {
+            reject({"type": endpoint, "error": err});
+        });
+    });
+};
+
+exports.post = function(data, endpoint) {
+    const csrftoken = exports.extractCookie("csrftoken");
+    const apiUrl = [config.api.baseUrl, endpoint, ""].join("/");
+    const options = {
+        "method": "POST",
         "headers": {
             "X-CSRFToken": csrftoken,
             'Content-Type': 'application/json'
