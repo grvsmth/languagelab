@@ -2,8 +2,8 @@
 admin/
 django_environ.py
 media/
-jslib/
-data/*
+/lib/
+data/
 *.log
 venv
 migrations/
@@ -11,6 +11,6 @@ templatetags
 __pycache__
 *.pyc
 logs/*
-/static/*
+/static/
 nohup.out
 

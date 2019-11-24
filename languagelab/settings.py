@@ -11,9 +11,13 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 from json import loads
+from logging import basicConfig, getLogger
 from os import environ, path
 
 from .django_environ import set_environ
+
+LOG = getLogger()
+basicConfig(level="DEBUG")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
@@ -21,11 +25,16 @@ APP_DIR = path.dirname((path.abspath(__file__)))
 
 set_environ()
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
+VERSION = "0.2.0"
+API_VERSION = "0.2"
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = environ.get('DJANGO_SECRET_KEY')
+
+# We are setting this because we are also setting DEFAULT_PERMISSION_CLASSES to
+# ['rest_framework.permissions.IsAuthenticated']
+CORS_ORIGIN_ALLOW_ALL = True
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -33,10 +42,12 @@ DEBUG = True
 ALLOWED_LIST = loads(environ.get('DJANGO_ALLOWED_HOSTS'))
 ALLOWED_HOSTS = ['localhost', environ.get('DJANGO_HOST')] + ALLOWED_LIST
 
+CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,10 +55,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'taggit',
+    'taggit_serializer',
     'languagelab',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -162,9 +176,38 @@ STATICFILES_FINDERS = (
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR + '/log/django_debug.log'
+        }
+
+    },
+    'loggers': {
+        'languagelab': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    }
 }
