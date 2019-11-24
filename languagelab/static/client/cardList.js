@@ -216,6 +216,17 @@ export default class CardList extends React.Component {
         return nextElement;
     }
 
+    initialAddCard(addable) {
+        if (this.props.activity === "add") {
+            return this.formCard({"id": "form"}, this.props.users[0]);
+        }
+
+        if (addable) {
+            return this.addButtonCard();
+        }
+        return null;
+    }
+
     makeElements() {
         return this.props[this.props.selectedType].map(this.makeElement, this);
     }
@@ -229,27 +240,16 @@ export default class CardList extends React.Component {
             return React.createElement(
                 "div",
                 {"className": "card"},
-                `No ${this.props.selectedType} found`
+                `No ${this.props.selectedType} loaded`
             );
         }
 
-        var elements = [];
-
-        if (this.props.activity === "add") {
-            // TODO retrieve current user
-            elements.push(
-                this.formCard({"id": "form"}, this.props.users[0])
-            );
-        } else if (myType.addable) {
-            elements.push(
-                this.addButtonCard()
-            );
-        }
 
         return React.createElement(
             "div",
             {"className": "card-columns"},
-            elements.concat(this.makeElements())
+            this.initialAddCard(myType.addable),
+            this.makeElements()
         );
     }
 }
