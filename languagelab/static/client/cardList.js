@@ -173,8 +173,8 @@ export default class CardList extends React.Component {
         var mediaItem;
 
         if (this.props.users) {
-            const fieldName = typeInfo[this.props.selectedType].userField;
-            const user = util.findItem(this.props.users, item[fieldName]);
+            const userFieldName = typeInfo[this.props.selectedType].userField;
+            const user = util.findItem(this.props.users, item[userFieldName]);
             if (user) {
                 users.push(user);
             }
