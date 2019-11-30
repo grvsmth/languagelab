@@ -9,7 +9,6 @@ export default class QueueFooter extends React.Component {
         super(props);
 
         this.queueClick = this.queueClick.bind(this);
-        this.rankButton = this.rankButton.bind(this);
     }
 
     rankBadge() {
@@ -41,6 +40,10 @@ export default class QueueFooter extends React.Component {
     }
 
     rankButton(buttonContent) {
+        var disabled = false;
+        if (buttonContent === "up" && this.props.queueItem.rank === 1) {
+            disabled = true;
+        }
         const iconClass = config.queueButton[buttonContent]["icon"];
         const btnClass = "btn-" + config.queueButton[buttonContent]["color"];
         const buttonId = [buttonContent, this.props.queueItem.id].join("_");
@@ -48,11 +51,12 @@ export default class QueueFooter extends React.Component {
         return React.createElement(
             "button",
             {
-                "type": "button",
                 "className": "btn " + btnClass,
+                "disabled": disabled,
+                "id": buttonId,
                 "key": "rank-button-" + buttonContent,
                 "onClick": this.queueClick,
-                "id": buttonId
+                "type": "button"
             },
             this.iconSpan(iconClass)
         );
@@ -95,7 +99,7 @@ export default class QueueFooter extends React.Component {
                 "className": "btn-group btn-group-sm",
                 "role": "group"
             },
-            Object.keys(config.queueButton).map(this.rankButton)
+            Object.keys(config.queueButton).map(this.rankButton, this)
         );
     }
 
@@ -104,6 +108,7 @@ export default class QueueFooter extends React.Component {
             return this.addFooter();
         }
 
+        console.log(this.props);
         return React.createElement(
             "div",
             {"className": "card-footer"},

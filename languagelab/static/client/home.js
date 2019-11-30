@@ -9,16 +9,11 @@ import Lab from "./lab.js";
 export default class Home extends React.Component {
     constructor(props) {
         super(props);
-        console.log("props", props);
-
         this.state = {
             "selectedType": "queueItems"
         };
 
         this.navClick = this.navClick.bind(this);
-    }
-
-    componentDidMount() {
     }
 
     navClick(itemType) {
@@ -48,8 +43,6 @@ export default class Home extends React.Component {
     }
 
     render() {
-        console.log(this.state);
-
         return React.createElement(
             "div",
             {"className": "container-fluid"},
