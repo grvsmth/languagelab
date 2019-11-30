@@ -73,8 +73,7 @@ export default class CardList extends React.Component {
             "div",
             {
                 "className": "card",
-                "key": "addButton",
-                "loading": this.props.loading
+                "key": "addButton"
             },
             this.addButtonCardBody()
         );
@@ -122,10 +121,17 @@ export default class CardList extends React.Component {
     }
 
     mediaCard(mediaItem, users) {
-        console.log("mediaCard", mediaItem);
-        const cardComponent = this.props.activity === "edit"
-            && this.props.selectedItem === mediaItem.id
-            ? MediaFormCard : MediaCard;
+        var cardComponent = MediaCard;
+
+        if (this.props.activity === "edit"
+            && this.props.selectedItem === mediaItem.id) {
+            cardComponent = MediaFormCard;
+        }
+
+        if (this.props.activity === "add" && mediaItem.id === "form") {
+            cardComponent = MediaFormCard;
+        }
+
         return React.createElement(
             cardComponent,
             {
@@ -144,7 +150,6 @@ export default class CardList extends React.Component {
     }
 
     exerciseFormCard(key, exercise, mediaItem, users) {
-        // TODO doesn't provide form in queue list
         var options = {
             "key": key,
             "exercise": exercise,
@@ -255,8 +260,15 @@ export default class CardList extends React.Component {
 
     initialAddCard(addable) {
         if (this.props.activity === "add") {
-            // TODO return MediaFormCard or this.exerciseFormCard
-            return this.exerciseFormCard("form", this.props.users[0]);
+            if (this.props.selectedType === "media") {
+                return this.mediaCard({"id": "form"}, [this.props.users[0]])
+            }
+            return this.exerciseFormCard(
+                "form",
+                {"id": "form"},
+                null,
+                this.props.users[0]
+            );
         }
 
         if (addable) {
