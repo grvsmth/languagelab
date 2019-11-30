@@ -56,6 +56,7 @@ export default class ExerciseCard extends React.Component {
             QueueFooter,
             {
                 "exerciseId": this.props.exercise.id,
+                "maxRank": this.props.maxRank,
                 "queueItem": this.props.queueItem,
                 "queueClick": this.props.queueClick
             },

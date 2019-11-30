@@ -41,7 +41,12 @@ export default class QueueFooter extends React.Component {
 
     rankButton(buttonContent) {
         var disabled = false;
-        if (buttonContent === "up" && this.props.queueItem.rank === 1) {
+        if (buttonContent === "up" && this.props.queueItem.rank <= 1) {
+            disabled = true;
+        }
+
+        if (buttonContent === "down"
+            && this.props.queueItem.rank >= this.props.maxRank) {
             disabled = true;
         }
         const iconClass = config.queueButton[buttonContent]["icon"];
