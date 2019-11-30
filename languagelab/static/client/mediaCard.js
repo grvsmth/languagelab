@@ -44,7 +44,7 @@ export default class MediaCard extends React.Component {
         );
     }
 
-    mediaItemSubtitle() {
+    itemSubtitle() {
         const uploadedText = new moment(this.props.mediaItem.uploaded)
             .format(config.dateTimeFormat);
 
@@ -75,7 +75,7 @@ export default class MediaCard extends React.Component {
     }
 
     editClick(event) {
-        this.props.editmediaItem(this.props.mediaItem.id);
+        this.props.editItem(this.props.mediaItem.id);
     }
 
     deleteClick(event) {

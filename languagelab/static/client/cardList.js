@@ -122,17 +122,19 @@ export default class CardList extends React.Component {
     }
 
     mediaCard(mediaItem, users) {
-        const cardType = this.props.activity === "edit"
+        console.log("mediaCard", mediaItem);
+        const cardComponent = this.props.activity === "edit"
             && this.props.selectedItem === mediaItem.id
             ? MediaFormCard : MediaCard;
         return React.createElement(
-            cardType,
+            cardComponent,
             {
                 "checkClick": this.props.checkClick,
                 "deleteClick": this.props.deleteClick,
                 "editItem": this.props.editItem,
                 "id": mediaItem.id,
                 "key": mediaItem.id,
+                "mediaItem": mediaItem,
                 "users": users
             },
             null
@@ -200,8 +202,8 @@ export default class CardList extends React.Component {
             }
         }
 
-        else if (this.props.selectedType === "mediaItems") {
-            return this.mediaCard(mediaItem, users);
+        if (this.props.selectedType === "media") {
+            return this.mediaCard(item, users);
         }
 
         if (this.props.selectedType === "queueItems") {
