@@ -134,6 +134,7 @@ export default class CardList extends React.Component {
                 "editItem": this.props.editItem,
                 "id": mediaItem.id,
                 "key": mediaItem.id,
+                "languages": this.props.languages,
                 "mediaItem": mediaItem,
                 "users": users
             },

@@ -44,7 +44,7 @@ export default class MediaFormCard extends React.Component {
 
         const durationInputSelector = [
             "#duration",
-            this.props.item.id
+            this.props.mediaItem.id
             ].join("_");
 
         const durationInput = document.querySelector(durationInputSelector);
@@ -79,8 +79,8 @@ export default class MediaFormCard extends React.Component {
 
         const audio1 = document.querySelector("#audio1");
         var itemId = null;
-        if (this.props.item.id !== "form") {
-            itemId = this.props.item.id;
+        if (this.props.mediaItem.id !== "form") {
+            itemId = this.props.mediaItem.id;
         }
         this.props.saveItem(formData, "media", itemId);
 
@@ -111,11 +111,11 @@ export default class MediaFormCard extends React.Component {
         if (defaultVal) {
             defaultValue = defaultVal;
         }
-        if (this.props.item.hasOwnProperty(fieldName)) {
-            defaultValue = this.props.item[fieldName];
+        if (this.props.mediaItem.hasOwnProperty(fieldName)) {
+            defaultValue = this.props.mediaItem[fieldName];
         }
 
-        const inputId = [fieldName, this.props.item.id].join("_");
+        const inputId = [fieldName, this.props.mediaItem.id].join("_");
         return React.createElement(
             "div",
             {"className": "col-sm"},
@@ -126,8 +126,8 @@ export default class MediaFormCard extends React.Component {
 
     tagsInput(inputId) {
         var defaultValue = "";
-        if (this.props.item.tags) {
-            defaultValue = this.props.item.tags.join(", ");
+        if (this.props.mediaItem.tags) {
+            defaultValue = this.props.mediaItem.tags.join(", ");
         }
         return React.createElement(
             "input",
@@ -143,7 +143,7 @@ export default class MediaFormCard extends React.Component {
     }
 
     tagsInputDiv() {
-        const inputId = "tags_" + this.props.item.id;
+        const inputId = "tags_" + this.props.mediaItem.id;
 
         return React.createElement(
             "div",
@@ -167,11 +167,11 @@ export default class MediaFormCard extends React.Component {
     }
 
     fileInfo() {
-        if (!this.props.item.mediaFile) {
+        if (!this.props.mediaItem.mediaFile) {
             return null;
         }
 
-        const fileUrlParts = this.props.item.mediaFile.split("/");
+        const fileUrlParts = this.props.mediaItem.mediaFile.split("/");
         const fileNameSpan = React.createElement(
             "span",
             {"className": "text-success"},
@@ -188,11 +188,11 @@ export default class MediaFormCard extends React.Component {
     }
 
     fileLabel(fieldName, inputId) {
-        if (!this.props.item[fieldName]) {
+        if (!this.props.mediaItem[fieldName]) {
             return commonElements.itemLabel("or upload a file", inputId);
         }
 
-        const fileUrlParts = this.props.item[fieldName].split("/");
+        const fileUrlParts = this.props.mediaItem[fieldName].split("/");
         const fileNameSpan = React.createElement(
             "span",
             {"className": "text-success"},
@@ -209,7 +209,7 @@ export default class MediaFormCard extends React.Component {
     }
 
     fileInputDiv(fieldName) {
-        const inputId = [fieldName, this.props.item.id].join("_");
+        const inputId = [fieldName, this.props.mediaItem.id].join("_");
         return React.createElement(
             "div",
             {"className": "col-sm"},
@@ -234,7 +234,7 @@ export default class MediaFormCard extends React.Component {
                 "className": "form-control",
                 "id": inputId,
                 "name": fieldName,
-                "defaultValue": this.props.item[fieldName]
+                "defaultValue": this.props.mediaItem[fieldName]
             },
             ...Object.keys(options).map((optionKey) => {
                 return this.itemOption(
@@ -250,7 +250,7 @@ export default class MediaFormCard extends React.Component {
             return null;
         }
 
-        const inputId = [fieldName, this.props.item.id].join("_");
+        const inputId = [fieldName, this.props.mediaItem.id].join("_");
         return React.createElement(
             "div",
             {"className": "form-group mx-1"},
@@ -330,15 +330,15 @@ export default class MediaFormCard extends React.Component {
             this.selectDiv("language", this.languageObject()),
             commonElements.checkboxDiv(
                 "isAvailable",
-                this.props.item.isAvailable,
+                this.props.mediaItem.isAvailable,
                 "available",
-                this.props.item.id
+                this.props.mediaItem.id
             ),
             commonElements.checkboxDiv(
                 "isPublic",
-                this.props.item.isPublic,
+                this.props.mediaItem.isPublic,
                 "public",
-                this.props.item.id
+                this.props.mediaItem.id
             )
         );
     }
@@ -356,7 +356,7 @@ export default class MediaFormCard extends React.Component {
             "form",
             {
                 "className": "card-body",
-                "id": "form_" + this.props.item.id
+                "id": "form_" + this.props.mediaItem.id
             },
             this.nameRow(),
             this.fileRow(),
