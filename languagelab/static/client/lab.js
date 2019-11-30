@@ -115,18 +115,34 @@ export default class Lab extends React.Component {
         });
     }
 
-    editItem = function(itemId, itemType) {
+    editItem = function(itemId) {
+        var queueItem;
+        if (this.props.selectedType === "queueItems") {
+            queueItem = this.state.queueItems.find(
+                (queueItem) => queueItem.exercise === itemId
+            );
+        }
+
+        const selectedItem = queueItem ? queueItem.id : itemId;
         this.setState({
             "activity": "edit",
-            "selectedItem": itemId,
-            "selectedType": itemType
+            "selectedItem": selectedItem
         })
     }
 
     startExercise(exerciseId) {
+        console.log("startExercise", exerciseId);
+        var queueItem;
+        if (this.props.selectedType === "queueItems") {
+            queueItem = this.state.queueItems.find(
+                (queueItem) => queueItem.exercise === exerciseId
+            );
+        }
+        const selectedItem = queueItem ? queueItem.id : exerciseId;
+        console.log("selectedItem = ", selectedItem);
         this.setState({
             "activity": "do",
-            "selectedItem": exerciseId
+            "selectedItem": selectedItem
         });
     }
 

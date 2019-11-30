@@ -11,8 +11,8 @@ export default class DoExerciseCard extends React.Component {
         this.timeFormat = "HH:mm:ss.S";
 
         this.state = {
-            "startSeconds": this.timeAsSeconds(this.props.item.startTime),
-            "endSeconds": this.timeAsSeconds(this.props.item.endTime),
+            "startSeconds": this.timeAsSeconds(this.props.exercise.startTime),
+            "endSeconds": this.timeAsSeconds(this.props.exercise.endTime),
             "nowPlaying": this.props.mediaItem.mediaUrl
         };
     }
@@ -32,7 +32,7 @@ export default class DoExerciseCard extends React.Component {
         return React.createElement(
             "h5",
             {"className": "card-title"},
-            this.props.item.name
+            this.props.exercise.name
         );
     }
 
@@ -51,8 +51,8 @@ export default class DoExerciseCard extends React.Component {
 
     itemSubtitle() {
         const timeRange = util.timeRange(
-            this.props.item.startTime,
-            this.props.item.endTime,
+            this.props.exercise.startTime,
+            this.props.exercise.endTime,
             this.timeFormat
         );
 
@@ -87,7 +87,7 @@ export default class DoExerciseCard extends React.Component {
             languageText,
             mediaCreator,
             ": ",
-            this.props.item.description
+            this.props.exercise.description
         );
     }
 
@@ -95,7 +95,7 @@ export default class DoExerciseCard extends React.Component {
         return React.createElement(
             "div",
             options,
-            this.props.item[fieldName]
+            this.props.exercise[fieldName]
         );
     }
 
@@ -105,7 +105,7 @@ export default class DoExerciseCard extends React.Component {
         }
 
         if (this.state.startSeconds > event.target.duration) {
-            const msg = `Your startTime of ${this.props.item.startTime}
+            const msg = `Your startTime of ${this.props.exercise.startTime}
             seconds is greater than
             the total duration (${event.target.duration} seconds) of this media clip.`;
             console.error(msg);

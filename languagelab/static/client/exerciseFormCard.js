@@ -34,8 +34,8 @@ export default class ExerciseFormCard extends React.Component {
             }, {});
 
         var itemId = null;
-        if (this.props.item.id !== "form") {
-            itemId = this.props.item.id;
+        if (this.props.exercise.id !== "form") {
+            itemId = this.props.exercise.id;
         }
 
         this.props.saveItem(formData, this.props.selectedType, itemId);
@@ -67,11 +67,11 @@ export default class ExerciseFormCard extends React.Component {
         if (defaultVal) {
             defaultValue = defaultVal;
         }
-        if (this.props.item.hasOwnProperty(fieldName)) {
-            defaultValue = this.props.item[fieldName];
+        if (this.props.exercise.hasOwnProperty(fieldName)) {
+            defaultValue = this.props.exercise[fieldName];
         }
 
-        const inputId = [fieldName, this.props.item.id].join("_");
+        const inputId = [fieldName, this.props.exercise.id].join("_");
         return React.createElement(
             "div",
             {"className": "col-sm"},
@@ -144,7 +144,7 @@ export default class ExerciseFormCard extends React.Component {
                 "className": "form-control",
                 "id": inputId,
                 "name": fieldName,
-                "defaultValue": this.props.item[fieldName]
+                "defaultValue": this.props.exercise[fieldName]
             },
             ...Object.keys(options).map((optionKey) => {
                 return this.itemOption(
@@ -160,7 +160,7 @@ export default class ExerciseFormCard extends React.Component {
             return null;
         }
 
-        const inputId = [fieldName, this.props.item.id].join("_");
+        const inputId = [fieldName, this.props.exercise.id].join("_");
         return React.createElement(
             "div",
             {},
@@ -184,15 +184,15 @@ export default class ExerciseFormCard extends React.Component {
             {"className": "form-row mt-3"},
             commonElements.checkboxDiv(
                 "isAvailable",
-                this.props.item.isAvailable,
+                this.props.exercise.isAvailable,
                 "available",
-                this.props.item.id
+                this.props.exercise.id
             ),
             commonElements.checkboxDiv(
                 "isPublic",
-                this.props.item.isPublic,
+                this.props.exercise.isPublic,
                 "public",
-                this.props.item.id
+                this.props.exercise.id
             )
         );
     }
@@ -210,7 +210,7 @@ export default class ExerciseFormCard extends React.Component {
             "form",
             {
                 "className": "card-body",
-                "id": "form_" + this.props.item.id
+                "id": "form_" + this.props.exercise.id
             },
             this.nameRow(),
             this.mediaRow(),

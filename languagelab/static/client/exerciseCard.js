@@ -13,7 +13,7 @@ export default class ExerciseCard extends React.Component {
     }
 
     queueBody(item) {
-        if (!this.props.item.hasOwnProperty("name")) {
+        if (!this.props.exercise.hasOwnProperty("name")) {
             return null;
         }
 
@@ -26,16 +26,17 @@ export default class ExerciseCard extends React.Component {
     }
 
     cardBody() {
-        if (!this.props.item.hasOwnProperty("name")) {
-            return this.queueBody(this.props.item);
+        if (!this.props.exercise.hasOwnProperty("name")) {
+            return this.queueBody(this.props.exercise);
         }
 
         return React.createElement(
             ExerciseCardBody,
             {
                 "checkClick": this.props.checkClick,
+                "deleteClick": this.props.deleteClick,
                 "editItem": this.props.editItem,
-                "exercise": this.props.item,
+                "exercise": this.props.exercise,
                 "languages": this.props.languages,
                 "mediaItem": this.props.mediaItem,
                 "queueClick": this.props.queueClick,
@@ -47,14 +48,14 @@ export default class ExerciseCard extends React.Component {
     }
 
     cardFooter() {
-        if (!this.props.item.hasOwnProperty("name")) {
+        if (!this.props.exercise.hasOwnProperty("name")) {
             return null;
         }
 
         return React.createElement(
             QueueFooter,
             {
-                "exerciseId": this.props.item.id,
+                "exerciseId": this.props.exercise.id,
                 "queueItem": this.props.queueItem,
                 "queueClick": this.props.queueClick
             },

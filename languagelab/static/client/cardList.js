@@ -130,7 +130,7 @@ export default class CardList extends React.Component {
             {
                 "checkClick": this.props.checkClick,
                 "deleteClick": this.props.deleteClick,
-                "editItem": this.props.editItem
+                "editItem": this.props.editItem,
                 "id": mediaItem.id,
                 "key": mediaItem.id,
                 "users": users
@@ -154,7 +154,7 @@ export default class CardList extends React.Component {
         };
 
         return React.createElement(
-            typeInfo[this.props.selectedType].formCard,
+            ExerciseFormCard,
             options,
             null
         );
@@ -225,11 +225,15 @@ export default class CardList extends React.Component {
         if (this.props.selectedItem === item.id) {
             if (this.props.activity === "do"
                 && typeInfo[this.props.selectedType].doable) {
-                return this.doCard(item.id, queueItem, exercise, mediaItem, users);
+                return this.doCard(
+                    item.id, queueItem, exercise, mediaItem, users
+                );
             }
 
             if (this.props.activity === "edit") {
-                return this.exerciseFormCard(item.id, exercise, mediaItem, users);
+                return this.exerciseFormCard(
+                    item.id, exercise, mediaItem, users
+                );
             }
         }
         return this.exerciseCard(item.id, queueItem, exercise,  mediaItem, users);
