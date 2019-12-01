@@ -42,6 +42,8 @@ const typeInfo = {
 export default class CardList extends React.Component {
     constructor(props) {
         super(props);
+
+        this.findLanguage = this.findLanguage.bind(this);
     }
 
     addClick() {
@@ -84,15 +86,13 @@ export default class CardList extends React.Component {
             return [];
         }
 
-        var language = "";
-        if (item.language) {
-            language = item.language;
+        if (!item.language) {
+            return [];
         }
-        if (language && typeof language !== "undefined") {
-            return [util.findItem(this.props.languages, language)];
+        if (typeof item.language === "undefined") {
+            return [];
         }
-
-        return [];
+        return [util.findItem(this.props.languages, item.language)];
     }
 
     queueExercise(selection) {
@@ -140,7 +140,7 @@ export default class CardList extends React.Component {
                 "editItem": this.props.editItem,
                 "id": mediaItem.id,
                 "key": mediaItem.id,
-                "languages": this.props.languages,
+                "languages": this.findLanguage(mediaItem),
                 "mediaItem": mediaItem,
                 "setActivity": this.props.setActivity,
                 "saveItem": this.props.saveItem,

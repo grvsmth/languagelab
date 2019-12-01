@@ -5,7 +5,6 @@ import util from "./util.js";
 export default class MediaCard extends React.Component {
     constructor(props) {
         super(props);
-        console.log("props", props);
 
         this.checkboxClick = this.checkboxClick.bind(this);
         this.deleteClick = this.deleteClick.bind(this);
