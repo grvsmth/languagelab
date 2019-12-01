@@ -17,7 +17,14 @@ export default class Home extends React.Component {
     }
 
     navClick(itemType) {
-        this.setState({"selectedType": itemType});
+        // TODO reset selectedItem and Activity when nav changed
+
+        this.setState(
+            {
+                "selectedType": itemType,
+                "selectedItem": null
+            }
+        );
     }
 
     nav() {
@@ -36,7 +43,8 @@ export default class Home extends React.Component {
         return React.createElement(
             Lab,
             {
-                "selectedType": this.state.selectedType
+                "selectedType": this.state.selectedType,
+                "selectedItem": this.state.selectedItem
             },
             null
         );
