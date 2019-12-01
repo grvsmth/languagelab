@@ -1,4 +1,6 @@
 import CardList from "./cardList.js";
+import Navbar from "./navbar.js";
+
 import apiClient from "./apiClient.js";
 import util from "./util.js";
 
@@ -8,9 +10,10 @@ import config from "./config.js";
 export default class Lab extends React.Component {
     constructor(props) {
         super(props);
-        console.log("props", props);
 
         this.checkClick = this.checkClick.bind(this);
+        this.navClick = this.navClick.bind(this);
+
         this.queueOperation = {
             "add": this.addToQueue.bind(this),
             "remove": this.removeFromQueue.bind(this),
@@ -32,7 +35,8 @@ export default class Lab extends React.Component {
             "users": [],
             "languages": [],
             "queueItems": [],
-            "selectedItem": null
+            "selectedItem": null,
+            "selectedType": "queueItems"
         };
     }
 
@@ -117,7 +121,7 @@ export default class Lab extends React.Component {
 
     editItem = function(itemId) {
         var queueItem;
-        if (this.props.selectedType === "queueItems") {
+        if (this.state.selectedType === "queueItems") {
             queueItem = this.state.queueItems.find(
                 (queueItem) => queueItem.exercise === itemId
             );
@@ -133,7 +137,7 @@ export default class Lab extends React.Component {
     startExercise(exerciseId) {
         console.log("startExercise", exerciseId);
         var queueItem;
-        if (this.props.selectedType === "queueItems") {
+        if (this.state.selectedType === "queueItems") {
             queueItem = this.state.queueItems.find(
                 (queueItem) => queueItem.exercise === exerciseId
             );
@@ -192,31 +196,62 @@ export default class Lab extends React.Component {
         });
     }
 
-    render() {
-        console.log(this.state);
-
+    cardList() {
         return React.createElement(
             CardList,
             {
                 "activity": this.state.activity,
-                "exercises": this.state.exercises,
-                "lessons": this.state.lessons,
-                "queueItems": this.state.queueItems,
-                "media": this.state.media,
-                "users": this.state.users,
-                "languages": this.state.languages,
-                "selectedItem": this.state.selectedItem,
                 "checkClick": this.checkClick,
-                "setActivity": this.setActivity.bind(this),
                 "deleteClick": this.deleteClick.bind(this),
-                "saveItem": this.saveItem.bind(this),
                 "editItem": this.editItem.bind(this),
-                "startExercise": this.startExercise.bind(this),
-                "queueClick": this.queueClick.bind(this),
+                "exercises": this.state.exercises,
+                "media": this.state.media,
+                "languages": this.state.languages,
+                "lessons": this.state.lessons,
                 "loading": this.state.loading,
-                "selectedType": this.props.selectedType,
+                "queueClick": this.queueClick.bind(this),
+                "queueItems": this.state.queueItems,
+                "saveItem": this.saveItem.bind(this),
+                "setActivity": this.setActivity.bind(this),
+                "startExercise": this.startExercise.bind(this),
+                "selectedItem": this.state.selectedItem,
+                "selectedType": this.state.selectedType,
+                "users": this.state.users
             },
             null
+        );
+    }
+
+    navClick(itemType) {
+        // TODO reset selectedItem and Activity when nav changed
+
+        this.setState(
+            {
+                "selectedType": itemType,
+                "selectedItem": null
+            }
+        );
+    }
+
+    nav() {
+        return React.createElement(
+            Navbar,
+            {
+                "activeItem": "Queue",
+                "itemType": config.api.endpoint,
+                "navClick": this.navClick
+            },
+            null
+        );
+    }
+
+    render() {
+        console.log(this.state);
+        return React.createElement(
+            "div",
+            {"className": "container-fluid"},
+            this.nav(),
+            this.cardList()
         );
     }
 }

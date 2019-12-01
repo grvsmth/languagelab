@@ -14,7 +14,7 @@
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/moment.min.js"></script>
     <script type="module">
-        import Home from "./home.js";
+        import Lab from "./lab.js";
 
         const init = function() {
             const navAnchors = document.body.querySelectorAll("#navContent a");
@@ -22,7 +22,7 @@
             const resultsDiv = document.body.querySelector("#resultsDiv");
 
             ReactDOM.render(
-                React.createElement(Home), resultsDiv
+                React.createElement(Lab), resultsDiv
             );
         }
 
