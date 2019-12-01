@@ -157,6 +157,7 @@ export default class Lab extends React.Component {
     deleteClick = function(itemType, itemId) {
         apiClient.delete(itemType, itemId).then((res) => {
             this.fetchData(itemType);
+            this.fetchData("queueItems");
         }, (err) => {
             console.error(err);
         });
@@ -171,7 +172,6 @@ export default class Lab extends React.Component {
                 console.error(err);
             });
         } else {
-            console.log("saveItem", item);
             apiClient.post(item, itemType).then((res) => {
                 this.updateStateItem(res.response, itemType);
                 this.setState({"activity": "read"});

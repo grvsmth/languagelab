@@ -97,6 +97,11 @@ class ExerciseViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
 
+    def destroy(self, request, *args, **kwargs):
+        self.perform_destroy(self.get_object())
+        QueueItem.objects.renumber(user=self.request.user)
+        return Response(status=HTTP_204_NO_CONTENT)
+
 
 class LessonViewSet(viewsets.ModelViewSet):
     """
