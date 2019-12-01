@@ -21,6 +21,11 @@ export default class Lab extends React.Component {
             "down": this.down.bind(this)
         };
 
+        this.queueNav = {
+            "previous": this.previous.bind(this),
+            "next": this.next.bind(this)
+        };
+
         this.state = {
             "activity": "read",
             "lastUpdated": "",
@@ -197,6 +202,31 @@ export default class Lab extends React.Component {
         });
     }
 
+    selectByRank(rank) {
+        const queueItem = this.state.queueItems.find(
+            (queueItem) => queueItem.rank === rank
+        );
+
+        const selectedItem = this.state.selectedType === "queueItems"
+            ? queueItem.id : queueItem.exercise;
+
+        this.setState({"selectedItem": selectedItem});
+    }
+
+    previous(rank) {
+        if (rank <= 1) {
+            return;
+        }
+        this.selectByRank(rank - 1);
+    }
+
+    next(rank) {
+        if (rank <= 1) {
+            return;
+        }
+        this.selectByRank(rank + 1);
+    }
+
     cardList() {
         return React.createElement(
             CardList,
@@ -212,6 +242,7 @@ export default class Lab extends React.Component {
                 "loading": this.state.loading,
                 "queueClick": this.queueClick.bind(this),
                 "queueItems": this.state.queueItems,
+                "queueNav": this.state.queueNav,
                 "saveItem": this.saveItem.bind(this),
                 "setActivity": this.setActivity.bind(this),
                 "startExercise": this.startExercise.bind(this),

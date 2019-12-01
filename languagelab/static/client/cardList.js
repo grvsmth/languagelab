@@ -108,6 +108,7 @@ export default class CardList extends React.Component {
                 "exercise": exercise,
                 "users": users,
                 "queueItem": queueItem,
+                "queueNav": this.props.queueNav,
                 "languages": this.findLanguage(exercise),
                 "mediaItem": mediaItem,
                 "selectedType": this.props.selectedType
