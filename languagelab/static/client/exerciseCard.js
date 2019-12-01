@@ -40,6 +40,7 @@ export default class ExerciseCard extends React.Component {
                 "languages": this.props.languages,
                 "mediaItem": this.props.mediaItem,
                 "queueClick": this.props.queueClick,
+                "selectedType": this.props.selectedType,
                 "startExercise": this.props.startExercise,
                 "users": this.props.users
             },

@@ -171,6 +171,7 @@ export default class Lab extends React.Component {
                 console.error(err);
             });
         } else {
+            console.log("saveItem", item);
             apiClient.post(item, itemType).then((res) => {
                 this.updateStateItem(res.response, itemType);
                 this.setState({"activity": "read"});
@@ -223,12 +224,11 @@ export default class Lab extends React.Component {
     }
 
     navClick(itemType) {
-        // TODO reset selectedItem and Activity when nav changed
-
         this.setState(
             {
-                "selectedType": itemType,
-                "selectedItem": null
+                "activity": "read",
+                "selectedItem": null,
+                "selectedType": itemType
             }
         );
     }

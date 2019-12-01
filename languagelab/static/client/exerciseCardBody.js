@@ -79,7 +79,7 @@ export default class ExerciseCardBody extends React.Component {
             {},
             languageText,
             mediaCreator,
-            ": ",
+            " – ",
             this.props.exercise.description
         );
     }
@@ -98,7 +98,7 @@ export default class ExerciseCardBody extends React.Component {
     }
 
     deleteClick(event) {
-        this.props.deleteClick("media", this.props.exercise.id);
+        this.props.deleteClick("exercises", this.props.exercise.id);
     }
 
     startClick(event) {
@@ -126,7 +126,8 @@ export default class ExerciseCardBody extends React.Component {
     }
 
     linkDiv() {
-        if (this.props.activity === "add") {
+        if (this.props.activity === "add"
+            || this.props.selectedType === "queueItems") {
             return null;
         }
         return React.createElement(
