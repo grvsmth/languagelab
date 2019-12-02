@@ -110,7 +110,6 @@ export default class Lab extends React.Component {
     }
 
     queueClick(operationName, id) {
-        console.log(`queueOperation[${operationName}](${id})`);
         this.queueOperation[operationName](id);
     }
 
@@ -140,7 +139,6 @@ export default class Lab extends React.Component {
     }
 
     startExercise(exerciseId) {
-        console.log("startExercise", exerciseId);
         var queueItem;
         if (this.state.selectedType === "queueItems") {
             queueItem = this.state.queueItems.find(
@@ -148,7 +146,6 @@ export default class Lab extends React.Component {
             );
         }
         const selectedItem = queueItem ? queueItem.id : exerciseId;
-        console.log("selectedItem = ", selectedItem);
         this.setState({
             "activity": "do",
             "selectedItem": selectedItem
@@ -202,8 +199,16 @@ export default class Lab extends React.Component {
         });
     }
 
+    maxRank() {
+        if (this.state.queueItems.length < 1) {
+            return 0;
+        }
+
+        const last = this.state.queueItems[this.state.queueItems.length - 1];
+        return last.rank;
+    }
+
     selectByRank(rank) {
-        console.log("selectByRank", rank);
         const queueItem = this.state.queueItems.find(
             (queueItem) => queueItem.rank === rank
         );
@@ -215,7 +220,6 @@ export default class Lab extends React.Component {
     }
 
     previous(rank) {
-        console.log("previous", rank);
         if (rank <= 1) {
             return;
         }
@@ -223,7 +227,7 @@ export default class Lab extends React.Component {
     }
 
     next(rank) {
-        if (rank <= 1) {
+        if (rank >= this.maxRank()) {
             return;
         }
         this.selectByRank(rank + 1);
@@ -236,12 +240,14 @@ export default class Lab extends React.Component {
                 "activity": this.state.activity,
                 "checkClick": this.checkClick,
                 "deleteClick": this.deleteClick.bind(this),
+                "doButton": config.doButton,
                 "editItem": this.editItem.bind(this),
                 "exercises": this.state.exercises,
-                "media": this.state.media,
                 "languages": this.state.languages,
                 "lessons": this.state.lessons,
                 "loading": this.state.loading,
+                "maxRank": this.maxRank.bind(this),
+                "media": this.state.media,
                 "queueClick": this.queueClick.bind(this),
                 "queueItems": this.state.queueItems,
                 "queueNav": this.queueNav,

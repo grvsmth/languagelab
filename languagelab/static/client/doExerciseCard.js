@@ -1,4 +1,3 @@
-import config from "./config.js";
 import commonElements from "./commonElements.js";
 import util from "./util.js";
 
@@ -133,7 +132,6 @@ export default class DoExerciseCard extends React.Component {
     }
 
     timeUpdateHandler(event) {
-        console.log("timeUpdateHandler");
         if (["playModelFirst", "playModelSecond", "playModel"].includes(
             this.state.activity
             ) && event.target.currentTime >= this.state.endSeconds) {
@@ -173,21 +171,32 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
-    previousNav() {
-        this.props.queueNav.previous(this.props.queueItem.rank);
+    queueNav(direction) {
+        this.props.queueNav[direction](this.props.queueItem.rank);
     }
 
-    previousButton() {
-        const disabled = this.props.queueItem.rank <= 1 ? "disabled" : null;
+    navDisabled(direction) {
+        if (direction === "previous") {
+            return this.props.queueItem.rank <= 1 ? "disabled" : null;
+        }
+        if (direction === "next") {
+            return this.props.queueItem.rank >= this.props.maxRank
+                ? "disabled" : null;
+        }
+        return null;
+    }
+
+    navButton(direction) {
+        const disabled = this.navDisabled(direction);
         return React.createElement(
             "button",
             {
                 "type": "button",
-                "onClick": this.previousNav.bind(this),
-                "className": "btn btn-success",
+                "onClick": () => this.queueNav(direction),
+                "className": "btn btn-" + this.props.doButton[direction].color,
                 "disabled": disabled
             },
-            commonElements.iconSpan("oi-caret-left")
+            commonElements.iconSpan(this.props.doButton[direction].icon)
         );
     }
 
@@ -197,7 +206,8 @@ export default class DoExerciseCard extends React.Component {
             {
                 "className": "btn-group btn-group-sm"
             },
-            this.previousButton()
+            this.navButton("previous"),
+            this.navButton("next")
         );
     }
 

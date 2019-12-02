@@ -104,14 +104,16 @@ export default class CardList extends React.Component {
 
     doCard(key, queueItem, exercise, mediaItem, users) {
         var options = {
-                "key": key,
-                "exercise": exercise,
-                "users": users,
-                "queueItem": queueItem,
-                "queueNav": this.props.queueNav,
-                "languages": this.findLanguage(exercise),
-                "mediaItem": mediaItem,
-                "selectedType": this.props.selectedType
+            "doButton": this.props.doButton,
+            "key": key,
+            "exercise": exercise,
+            "users": users,
+            "queueItem": queueItem,
+            "queueNav": this.props.queueNav,
+            "languages": this.findLanguage(exercise),
+            "maxRank": this.props.maxRank(),
+            "mediaItem": mediaItem,
+            "selectedType": this.props.selectedType
         };
 
         return React.createElement(
@@ -173,15 +175,6 @@ export default class CardList extends React.Component {
         );
     }
 
-    maxRank() {
-        if (this.props.queueItems.length < 1) {
-            return 0;
-        }
-
-        const last = this.props.queueItems[this.props.queueItems.length - 1];
-        return last.rank;
-    }
-
     exerciseCard(key, queueItem, exercise, mediaItem, users) {
 
         var options = {
@@ -192,7 +185,7 @@ export default class CardList extends React.Component {
             "key": key,
             "languages": this.findLanguage(exercise),
             "mediaItem": mediaItem,
-            "maxRank": this.maxRank(),
+            "maxRank": this.props.maxRank(),
             "queueClick": this.props.queueClick,
             "queueItem": queueItem,
             "selectedType": this.props.selectedType,
