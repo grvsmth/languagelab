@@ -173,17 +173,21 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    previousNav() {
+        this.props.queueNav.previous(this.props.queueItem.rank);
+    }
+
     previousButton() {
         const disabled = this.props.queueItem.rank <= 1 ? "disabled" : null;
         return React.createElement(
             "button",
             {
                 "type": "button",
-                "onClick": this.props.queueNav.previous(this.props.rank),
+                "onClick": this.previousNav.bind(this),
                 "className": "btn btn-success",
                 "disabled": disabled
-            }
-            this.iconSpan("caret-left")
+            },
+            commonElements.iconSpan("oi-caret-left")
         );
     }
 
@@ -193,7 +197,7 @@ export default class DoExerciseCard extends React.Component {
             {
                 "className": "btn-group btn-group-sm"
             },
-            "Controls will go here"
+            this.previousButton()
         );
     }
 

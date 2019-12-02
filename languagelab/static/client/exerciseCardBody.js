@@ -102,11 +102,7 @@ export default class ExerciseCardBody extends React.Component {
     }
 
     startClick(event) {
-        if (this.props.selectedType === "queueItems") {
-            this.props.startExercise(this.props.queueItem.id)
-        } else {
-            this.props.startExercise(this.props.exercise.id);
-        }
+        this.props.startExercise(this.props.exercise.id);
     }
 
     editLink() {

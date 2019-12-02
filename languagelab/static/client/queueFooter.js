@@ -19,14 +19,6 @@ export default class QueueFooter extends React.Component {
         );
     }
 
-    iconSpan(iconClass) {
-        return React.createElement(
-            "i",
-            {"className": "oi " + iconClass},
-            null
-        );
-    }
-
     queueClick(event) {
         const idParts = event.currentTarget.id.split("_");
         if (!idParts) {
@@ -63,7 +55,7 @@ export default class QueueFooter extends React.Component {
                 "onClick": this.queueClick,
                 "type": "button"
             },
-            this.iconSpan(iconClass)
+            commonElements.iconSpan(iconClass)
         );
     }
 
@@ -113,7 +105,6 @@ export default class QueueFooter extends React.Component {
             return this.addFooter();
         }
 
-        console.log(this.props);
         return React.createElement(
             "div",
             {"className": "card-footer"},

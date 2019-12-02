@@ -34,6 +34,14 @@ const config = {
         "remove": {
             "icon": "oi-circle-x",
             "color": "danger"
+        },
+        "previous": {
+            "icon": "oi-caret-left",
+            "color": "success"
+        },
+        "next": {
+            "icon": "oi-caret-right",
+            "color": "success"
         }
     }
 };

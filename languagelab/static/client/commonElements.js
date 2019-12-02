@@ -1,5 +1,13 @@
 const exports = {};
 
+exports.iconSpan = function(iconClass) {
+    return React.createElement(
+        "i",
+        {"className": "oi " + iconClass},
+        null
+    );
+};
+
 exports.itemLabel = function(fieldName, inputId) {
     return React.createElement(
         "label",

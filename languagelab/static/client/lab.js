@@ -203,6 +203,7 @@ export default class Lab extends React.Component {
     }
 
     selectByRank(rank) {
+        console.log("selectByRank", rank);
         const queueItem = this.state.queueItems.find(
             (queueItem) => queueItem.rank === rank
         );
@@ -214,6 +215,7 @@ export default class Lab extends React.Component {
     }
 
     previous(rank) {
+        console.log("previous", rank);
         if (rank <= 1) {
             return;
         }
@@ -242,7 +244,7 @@ export default class Lab extends React.Component {
                 "loading": this.state.loading,
                 "queueClick": this.queueClick.bind(this),
                 "queueItems": this.state.queueItems,
-                "queueNav": this.state.queueNav,
+                "queueNav": this.queueNav,
                 "saveItem": this.saveItem.bind(this),
                 "setActivity": this.setActivity.bind(this),
                 "startExercise": this.startExercise.bind(this),
