@@ -294,7 +294,7 @@ export default class CardList extends React.Component {
 
         return React.createElement(
             "div",
-            {"className": "card-columns"},
+            {"className": ""},
             this.initialAddCard(myType.addable),
             this.makeElements()
         );

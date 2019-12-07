@@ -1,20 +1,26 @@
 import commonElements from "./commonElements.js";
 import util from "./util.js";
 
-const recorderOptions = { audioBitsPerSecond : 128000, sampleRate: 48000 };
-
-const statusClass = {
-    "error": "text-danger",
-    "warning": "text-warning",
-    "active": "text-success",
-    "normal": ""
-};
 
 export default class DoExerciseCard extends React.Component {
     constructor(props) {
         super(props);
 
         this.gotInput = this.gotInput.bind(this);
+        this.mediaRecorder = null;
+        this.playActivities = [
+            "playModelFirst", "playModelSecond", "playModel"
+        ];
+        this.recorderOptions = {
+            "audioBitsPerSecond": 128000, "sampleRate": 48000
+        };
+        this.statusColor = {
+            "error": "danger",
+            "warning": "warning",
+            "active": "success",
+            "normal": "info",
+            "recording": "danger"
+        };
         this.timeFormat = "HH:mm:ss.S";
 
         this.state = {
@@ -49,7 +55,9 @@ export default class DoExerciseCard extends React.Component {
     gotInput(stream) {
         console.log("Got input!");
         window.stream = stream;
-        this.mediaRecorder = new window.MediaRecorder(stream, recorderOptions);
+        this.mediaRecorder = new window.MediaRecorder(
+            stream, this.recorderOptions
+        );
         this.setState({"recordDisabled": false});
     }
 
@@ -122,7 +130,8 @@ export default class DoExerciseCard extends React.Component {
 
     descriptionRow() {
         var languageText = "";
-        if (this.props.languages && this.props.languages.length && this.props.languages[0]) {
+        if (this.props.languages
+            && this.props.languages.length && this.props.languages[0]) {
             languageText = this.props.languages[0].name + ", ";
         }
 
@@ -156,8 +165,8 @@ export default class DoExerciseCard extends React.Component {
 
         if (this.state.startSeconds > event.target.duration) {
             const msg = `Your startTime of ${this.props.exercise.startTime}
-            seconds is greater than
-            the total duration (${event.target.duration} seconds) of this media clip.`;
+            seconds is greater than the total duration
+            (${event.target.duration} seconds) of this media clip.`;
             this.setState({
                 "statusText": msg,
                 "status": "error"
@@ -180,7 +189,9 @@ export default class DoExerciseCard extends React.Component {
             }
         }
 
-        // TODO start playing if button clicked
+        if (this.playActivities.includes(this.state.currentActivity)) {
+            event.target.play();
+        }
 
     }
 
@@ -189,13 +200,12 @@ export default class DoExerciseCard extends React.Component {
     }
 
     afterPlay() {
-        console.log("afterPlay()");
+        this.setState({"statusText": "afterPlay()"});
     }
 
     timeUpdateHandler(event) {
-        if (["playModelFirst", "playModelSecond", "playModel"].includes(
-            this.state.activity
-            ) && event.target.currentTime >= this.state.endSeconds) {
+        if (this.playActivities.includes(this.state.activity)
+            && event.target.currentTime >= this.state.endSeconds) {
             event.target.pause();
             this.afterPlay();
         }
@@ -277,6 +287,16 @@ export default class DoExerciseCard extends React.Component {
     }
 
     mimicClick(event) {
+        if (this.state.currentActivity === "recording") {
+            console.log("Stop recording!");
+            this.mediaRecorder.stop();
+            this.setState({
+                "currentActivity": "playModelSecond",
+                "nowPlaying": this.props.mediaItem.mediaUrl,
+                "statusText": "Now playing " + this.props.mediaItem.name
+            });
+        }
+
         this.setState({
             "clickedAction": "mimic",
             "currentActivity": "playModelFirst",
@@ -287,7 +307,15 @@ export default class DoExerciseCard extends React.Component {
     }
 
     mimicButton() {
-        const className = "btn btn-success";
+        var colorClass = "info";
+        if (this.state.clickedAction === "mimic") {
+            if (this.state.currentActivity === "recording") {
+                colorClass = "danger";
+            } else if (this.playActions.includes(this.state.currentActivity)) {
+                colorClass = "success";
+            }
+        }
+        const className = "btn btn-" + colorClass;
         return React.createElement(
             "button",
             {
@@ -302,13 +330,12 @@ export default class DoExerciseCard extends React.Component {
     }
 
     downloadButton() {
-        const className = "btn btn-success";
         const disabled = this.state.userAudioUrl.length < 11;
         return React.createElement(
             "button",
             {
                 "type": "button",
-                "className": className,
+                "className": "btn btn-info",
                 "disabled": disabled,
                 "href": this.state.userAudioUrl
             },
@@ -319,7 +346,7 @@ export default class DoExerciseCard extends React.Component {
     statusRow() {
         return React.createElement(
             "div",
-            {"className": statusClass[this.state.status]},
+            {"className": "text-" + this.statusColor[this.state.status]},
             this.state.statusText
         );
     }
@@ -348,9 +375,6 @@ export default class DoExerciseCard extends React.Component {
             this.statusRow(),
             this.controls()
         );
-    }
-
-    cardFooter() {
     }
 
     render() {

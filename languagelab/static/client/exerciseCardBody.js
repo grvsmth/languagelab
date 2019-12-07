@@ -21,14 +21,6 @@ export default class ExerciseCardBody extends React.Component {
         return util.formatDuration(durationMoment, 3);
     }
 
-    itemTitle() {
-        return React.createElement(
-            "h5",
-            {"className": "card-title"},
-            this.props.exercise.name
-        );
-    }
-
     bySpan() {
         if (!this.props.users) {
             return null;
@@ -183,7 +175,6 @@ export default class ExerciseCardBody extends React.Component {
         return React.createElement(
             "div",
             {"className": "card-body"},
-            this.itemTitle(),
             this.itemSubtitle(),
             this.descriptionRow(),
             this.linkDiv(),

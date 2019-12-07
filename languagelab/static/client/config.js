@@ -39,11 +39,11 @@ const config = {
     "doButton": {
         "previous": {
             "icon": "oi-caret-left",
-            "color": "success"
+            "color": "info"
         },
         "next": {
             "icon": "oi-caret-right",
-            "color": "success"
+            "color": "info"
         }
     }
 };

@@ -25,6 +25,14 @@ export default class ExerciseCard extends React.Component {
 
     }
 
+    cardHeader() {
+        return React.createElement(
+            "h5",
+            {"className": "card-header"},
+            this.props.exercise.name
+        );
+    }
+
     cardBody() {
         if (!this.props.exercise.hasOwnProperty("name")) {
             return this.queueBody(this.props.exercise);
@@ -70,6 +78,7 @@ export default class ExerciseCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "card bg-light"},
+            this.cardHeader(),
             this.cardBody(),
             this.cardFooter()
         );
