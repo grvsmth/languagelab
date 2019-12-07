@@ -10,9 +10,11 @@ export default class DoExerciseCard extends React.Component {
         this.timeFormat = "HH:mm:ss.S";
 
         this.state = {
+            "mimicCount": 0,
             "startSeconds": this.timeAsSeconds(this.props.exercise.startTime),
             "endSeconds": this.timeAsSeconds(this.props.exercise.endTime),
-            "nowPlaying": this.props.mediaItem.mediaUrl
+            "nowPlaying": this.props.mediaItem.mediaUrl,
+            "recordDisabled": true
         };
     }
 
@@ -200,6 +202,28 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    mimicCountSpan() {
+        return React.createElement(
+            "span",
+            {"className": "badge badge-light"},
+            this.state.mimicCount
+        );
+    }
+
+    mimicButton() {
+        const className = "btn btn-success";
+        return React.createElement(
+            "button",
+            {
+                "type": "button",
+                "className": className,
+                "disabled": this.state.recordDisabled
+            },
+            "Mimic ",
+            this.mimicCountSpan()
+        );
+    }
+
     controls() {
         return React.createElement(
             "div",
@@ -207,6 +231,7 @@ export default class DoExerciseCard extends React.Component {
                 "className": "btn-group btn-group-sm"
             },
             this.navButton("previous"),
+            this.mimicButton(),
             this.navButton("next")
         );
     }
