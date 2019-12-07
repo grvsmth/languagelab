@@ -1,20 +1,33 @@
 import commonElements from "./commonElements.js";
 import util from "./util.js";
 
+const recorderOptions = { audioBitsPerSecond : 128000, sampleRate: 48000 };
+
+const statusClass = {
+    "error": "text-danger",
+    "warning": "text-warning",
+    "active": "text-success",
+    "normal": ""
+};
 
 export default class DoExerciseCard extends React.Component {
     constructor(props) {
         super(props);
 
-        this.setActivity = this.setActivity.bind(this);
+        this.gotInput = this.gotInput.bind(this);
         this.timeFormat = "HH:mm:ss.S";
 
         this.state = {
+            "clickedAction": "",
+            "currentActivity": "",
             "mimicCount": 0,
             "startSeconds": this.timeAsSeconds(this.props.exercise.startTime),
             "endSeconds": this.timeAsSeconds(this.props.exercise.endTime),
             "nowPlaying": this.props.mediaItem.mediaUrl,
-            "recordDisabled": true
+            "userAudioUrl": "",
+            "recordDisabled": true,
+            "status": "normal",
+            "statusText": ""
         };
     }
 
@@ -25,16 +38,33 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    onDataAvailable(event) {
+        const userAudioUrl = window.URL.createObjectURL(
+            event.data,
+            {"type": "audio/ogg"}
+        );
+        this.setState({"userAudioUrl": userAudioUrl});
+    }
+
     gotInput(stream) {
         console.log("Got input!");
+        window.stream = stream;
+        this.mediaRecorder = new window.MediaRecorder(stream, recorderOptions);
+        this.setState({"recordDisabled": false});
     }
 
     handleGetMediaError(error) {
         if (error.code === 8) {
-            console.error("Unable to find a recording device!");
+            this.setState({
+                "statusText": "Unable to find a recording device!",
+                "status": "warning"
+            });
             return;
         }
-        console.error(`getUserMedia(): ${error.message}`);
+        this.setState({
+            "statusText": `getUserMedia(): ${error.message}`,
+            "status": "error"
+        });
     }
 
     timeAsSeconds(timeString) {
@@ -106,7 +136,7 @@ export default class DoExerciseCard extends React.Component {
             {},
             languageText,
             mediaCreator,
-            ": ",
+            " – ",
             this.props.exercise.description
         );
     }
@@ -119,7 +149,7 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
-    setStartTime(event) {
+    loadedMetadata(event) {
         if (this.state.startSeconds <= 0) {
             return;
         }
@@ -128,7 +158,11 @@ export default class DoExerciseCard extends React.Component {
             const msg = `Your startTime of ${this.props.exercise.startTime}
             seconds is greater than
             the total duration (${event.target.duration} seconds) of this media clip.`;
-            console.error(msg);
+            this.setState({
+                "statusText": msg,
+                "status": "error"
+            });
+            return;
         }
         if (this.state.nowPlaying === this.props.mediaItem.mediaUrl) {
             event.target.currentTime = this.state.startSeconds;
@@ -138,9 +172,15 @@ export default class DoExerciseCard extends React.Component {
                 target="_blank"
                 href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests"
                 >byte-range requests</a>.`;
-                console.error(msg);
+                this.setState({
+                    "statusText": msg,
+                    "status": "error"
+                });
+                return;
             }
         }
+
+        // TODO start playing if button clicked
 
     }
 
@@ -172,7 +212,7 @@ export default class DoExerciseCard extends React.Component {
                 "id": "audio1",
                 "src": this.state.nowPlaying,
                 "controls": true,
-                "onLoadedMetadata": this.setStartTime.bind(this),
+                "onLoadedMetadata": this.loadedMetadata.bind(this),
                 "onPlay": () => {this.setActivity("playModel")},
                 "onTimeUpdate": timeUpdateHandler,
                 "style": {
@@ -229,8 +269,21 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
-    mimicClick(event) {
+    handleError(error, action="unknown") {
+        this.setState({
+            "statusText": action + ": " + error.message,
+            "status": "error"
+        });
+    }
 
+    mimicClick(event) {
+        this.setState({
+            "clickedAction": "mimic",
+            "currentActivity": "playModelFirst",
+            "nowPlaying": this.props.mediaItem.mediaUrl,
+            "statusText": "Now playing " + this.props.mediaItem.name,
+            "status": "active"
+        });
     }
 
     mimicButton() {
@@ -248,6 +301,29 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    downloadButton() {
+        const className = "btn btn-success";
+        const disabled = this.state.userAudioUrl.length < 11;
+        return React.createElement(
+            "button",
+            {
+                "type": "button",
+                "className": className,
+                "disabled": disabled,
+                "href": this.state.userAudioUrl
+            },
+            "Download"
+        );
+    }
+
+    statusRow() {
+        return React.createElement(
+            "div",
+            {"className": statusClass[this.state.status]},
+            this.state.statusText
+        );
+    }
+
     controls() {
         return React.createElement(
             "div",
@@ -256,6 +332,7 @@ export default class DoExerciseCard extends React.Component {
             },
             this.navButton("previous"),
             this.mimicButton(),
+            this.downloadButton(),
             this.navButton("next")
         );
     }
@@ -268,6 +345,7 @@ export default class DoExerciseCard extends React.Component {
             this.itemSubtitle(),
             this.descriptionRow(),
             this.playerDiv(),
+            this.statusRow(),
             this.controls()
         );
     }
