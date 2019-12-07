@@ -18,6 +18,25 @@ export default class DoExerciseCard extends React.Component {
         };
     }
 
+    componentDidMount() {
+        navigator.mediaDevices.getUserMedia({"audio": true}).then(
+            (stream) => this.gotInput(stream),
+            (error) => this.handleGetMediaError(error)
+        );
+    }
+
+    gotInput(stream) {
+        console.log("Got input!");
+    }
+
+    handleGetMediaError(error) {
+        if (error.code === 8) {
+            console.error("Unable to find a recording device!");
+            return;
+        }
+        console.error(`getUserMedia(): ${error.message}`);
+    }
+
     timeAsSeconds(timeString) {
         return moment.duration(timeString).asSeconds();
     }
@@ -210,6 +229,10 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    mimicClick(event) {
+
+    }
+
     mimicButton() {
         const className = "btn btn-success";
         return React.createElement(
@@ -217,7 +240,8 @@ export default class DoExerciseCard extends React.Component {
             {
                 "type": "button",
                 "className": className,
-                "disabled": this.state.recordDisabled
+                "disabled": this.state.recordDisabled,
+                "onClick": this.mimicClick.bind(this)
             },
             "Mimic ",
             this.mimicCountSpan()
