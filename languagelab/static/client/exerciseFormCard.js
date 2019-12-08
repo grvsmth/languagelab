@@ -224,7 +224,7 @@ export default class ExerciseFormCard extends React.Component {
 
         return React.createElement(
             "div",
-            {"className": "card bg-light"},
+            {"className": "card bg-light mb-3"},
             this.cardBody()
         );
     }

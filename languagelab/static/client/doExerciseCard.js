@@ -9,7 +9,7 @@ export default class DoExerciseCard extends React.Component {
         this.gotInput = this.gotInput.bind(this);
         this.mediaRecorder = null;
         this.playActivities = [
-            "playModelFirst", "playModelSecond", "playModel"
+            "playModelFirst", "playModelSecond", "playModel", "playMimic"
         ];
         this.recorderOptions = {
             "audioBitsPerSecond": 128000, "sampleRate": 48000
@@ -196,10 +196,12 @@ export default class DoExerciseCard extends React.Component {
     }
 
     setActivity(activityName) {
+        this.play
         this.setState({"activity": activityName});
     }
 
-    afterPlay() {
+    afterPlay(player) {
+        player.currentTime = this.state.startSeconds;
         this.setState({"statusText": "afterPlay()"});
     }
 
@@ -207,16 +209,16 @@ export default class DoExerciseCard extends React.Component {
         if (this.playActivities.includes(this.state.activity)
             && event.target.currentTime >= this.state.endSeconds) {
             event.target.pause();
-            this.afterPlay();
+            this.afterPlay(event.target);
         }
     }
 
-    player() {
+    makePlayer() {
         console.log(this.state);
         const timeUpdateHandler = this.state.startSeconds < this.state.endSeconds
             ? this.timeUpdateHandler.bind(this) : null;
 
-        return React.createElement(
+        this.player = React.createElement(
             "audio",
             {
                 "id": "audio1",
@@ -231,6 +233,7 @@ export default class DoExerciseCard extends React.Component {
             },
             null
         );
+        return this.player;
 
     }
 
@@ -238,7 +241,7 @@ export default class DoExerciseCard extends React.Component {
         return React.createElement(
             "div",
             {"className": ""},
-            this.player()
+            this.makePlayer()
         );
     }
 
@@ -381,7 +384,7 @@ export default class DoExerciseCard extends React.Component {
         console.log("props", this.props);
         return React.createElement(
             "div",
-            {"className": "card bg-light"},
+            {"className": "card bg-light mb-3"},
             this.cardBody()
         );
     }
