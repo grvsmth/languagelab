@@ -50,7 +50,10 @@ export default class DoExerciseCard extends React.Component {
             event.data,
             {"type": "audio/ogg"}
         );
-        this.setState({"userAudioUrl": userAudioUrl});
+        this.setState({
+            "userAudioUrl": userAudioUrl,
+            "statusText": "userAudioUrl: " + userAudioUrl
+        });
     }
 
     gotInput(stream) {
@@ -58,6 +61,7 @@ export default class DoExerciseCard extends React.Component {
         this.mediaRecorder = new window.MediaRecorder(
             stream, this.recorderOptions
         );
+        this.mediaRecorder.ondataavailable = this.onDataAvailable.bind(this);
         this.setState({"recordDisabled": false});
     }
 
@@ -163,17 +167,17 @@ export default class DoExerciseCard extends React.Component {
             return;
         }
 
-        if (this.state.startSeconds > event.target.duration) {
-            const msg = `Your startTime of ${this.props.exercise.startTime}
-            seconds is greater than the total duration
-            (${event.target.duration} seconds) of this media clip.`;
-            this.setState({
-                "statusText": msg,
-                "status": "error"
-            });
-            return;
-        }
         if (this.state.nowPlaying === this.props.mediaItem.mediaUrl) {
+            if (this.state.startSeconds > event.target.duration) {
+                const msg = `Your startTime of ${this.props.exercise.startTime}
+                seconds is greater than the total duration
+                (${event.target.duration} seconds) of this media clip.`;
+                this.setState({
+                    "statusText": msg,
+                    "status": "error"
+                });
+                return;
+            }
             event.target.currentTime = this.state.startSeconds;
             if (event.target.currentTime !== this.state.startSeconds) {
                 const msg = `Unable to set start time.  You may need to use a
@@ -188,12 +192,10 @@ export default class DoExerciseCard extends React.Component {
                 return;
             }
         }
-        /*
         console.log("currentActivity", this.state.currentActivity);
-        if (this.playActivities.includes(this.state.currentActivity)) {
+        if (["playMimic"].includes(this.state.currentActivity)) {
             event.target.play();
         }
-        */
     }
 
     setActivity(activityName) {
@@ -201,27 +203,33 @@ export default class DoExerciseCard extends React.Component {
     }
 
     afterPlay(player) {
-        if (this.clickedAction === "mimic") {
-            if (this.currentActivity === "playModelFirst") {
+        if (this.state.clickedAction === "mimic") {
+            if (this.state.currentActivity === "playModelFirst") {
                 this.mediaRecorder.start();
                 this.setState({
                     "currentActivity": "recording",
                     "statusText": "Now recording"
                 });
-            } else if (this.currentActivity === "playMimic") {
+            } else if (this.state.currentActivity === "playMimic") {
                 this.setState({"mimicCount": this.state.mimicCount + 1});
             }
         }
-        if (this.currentActivity === "playModelSecond") {
+        if (this.state.currentActivity === "playModelSecond") {
             if (this.state.userAudioUrl.length < 11) {
-                this.setState({"clickedAction": null});
+                this.setState({
+                    "currentActivity": "inactive",
+                    "clickedAction": null,
+                    "statusText": "No recorded audio found",
+                    "status": "warning"
+                });
                 player.currentTime = this.state.startSeconds;
             } else {
                 this.setState({
                     "nowPlaying": this.state.userAudioUrl,
-                    "currentActivity": "playMimic"
+                    "currentActivity": "playMimic",
+                    "statusText": "Now playing recorded audio"
                 });
-                this.player.play().catch(this.handleError, "playMimic");
+                this.player.current.play().catch(this.handleError, "playMimic");
             }
         } else {
             player.currentTime = this.state.startSeconds;
@@ -321,6 +329,7 @@ export default class DoExerciseCard extends React.Component {
             });
             this.player.current.play()
                 .catch(this.handleError, "playModelSecond");
+            return;
         }
 
         this.setState({
