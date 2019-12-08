@@ -262,7 +262,7 @@ export default class MediaFormCard extends React.Component {
     nameRow() {
         return React.createElement(
             "div",
-            {"className": "form-row"},
+            {"className": "card-header"},
             this.textInputDiv("name"),
             this.textInputDiv("creator"),
             this.textInputDiv("rights")
@@ -358,7 +358,6 @@ export default class MediaFormCard extends React.Component {
                 "className": "card-body",
                 "id": "form_" + this.props.mediaItem.id
             },
-            this.nameRow(),
             this.fileRow(),
             this.optionsRow(),
             this.submitRow()
@@ -370,6 +369,7 @@ export default class MediaFormCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "card bg-light mb-3"},
+            this.nameRow(),
             this.cardBody()
         );
     }

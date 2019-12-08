@@ -171,7 +171,6 @@ export default class ExerciseCardBody extends React.Component {
     }
 
     render() {
-        console.log("props", this.props);
         return React.createElement(
             "div",
             {"className": "card-body"},

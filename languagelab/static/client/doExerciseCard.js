@@ -11,6 +11,7 @@ export default class DoExerciseCard extends React.Component {
         this.playActivities = [
             "playModelFirst", "playModelSecond", "playModel", "playMimic"
         ];
+        this.player = React.createRef();
         this.recorderOptions = {
             "audioBitsPerSecond": 128000, "sampleRate": 48000
         };
@@ -25,7 +26,7 @@ export default class DoExerciseCard extends React.Component {
 
         this.state = {
             "clickedAction": "",
-            "currentActivity": "",
+            "currentActivity": "inactive",
             "mimicCount": 0,
             "startSeconds": this.timeAsSeconds(this.props.exercise.startTime),
             "endSeconds": this.timeAsSeconds(this.props.exercise.endTime),
@@ -53,7 +54,6 @@ export default class DoExerciseCard extends React.Component {
     }
 
     gotInput(stream) {
-        console.log("Got input!");
         window.stream = stream;
         this.mediaRecorder = new window.MediaRecorder(
             stream, this.recorderOptions
@@ -188,21 +188,41 @@ export default class DoExerciseCard extends React.Component {
                 return;
             }
         }
-
+        /*
+        console.log("currentActivity", this.state.currentActivity);
         if (this.playActivities.includes(this.state.currentActivity)) {
             event.target.play();
         }
-
+        */
     }
 
     setActivity(activityName) {
-        this.play
         this.setState({"activity": activityName});
     }
 
     afterPlay(player) {
-        player.currentTime = this.state.startSeconds;
-        this.setState({"statusText": "afterPlay()"});
+        if (this.clickedAction === "mimic") {
+            if (this.currentActivity === "playModelFirst") {
+                this.mediaRecorder.start();
+                this.currentActivity = "recording";
+            } else if (this.currentActivity === "playMimic") {
+                this.setState({"mimicCount": this.state.mimicCount + 1});
+            }
+        }
+        if (this.currentActivity === "playModelSecond") {
+            if (this.state.userAudioUrl.length < 11) {
+                this.setState({"clickedAction": null});
+                player.currentTime = this.state.startSeconds;
+            } else {
+                this.setState({
+                    "nowPlaying": this.state.userAudioUrl,
+                    "currentActivity": "playMimic"
+                });
+                this.player.play().catch(this.handleError, "playMimic");
+            }
+        } else {
+            player.currentTime = this.state.startSeconds;
+        }
     }
 
     timeUpdateHandler(event) {
@@ -214,14 +234,14 @@ export default class DoExerciseCard extends React.Component {
     }
 
     makePlayer() {
-        console.log(this.state);
         const timeUpdateHandler = this.state.startSeconds < this.state.endSeconds
             ? this.timeUpdateHandler.bind(this) : null;
 
-        this.player = React.createElement(
+        return React.createElement(
             "audio",
             {
                 "id": "audio1",
+                "ref": this.player,
                 "src": this.state.nowPlaying,
                 "controls": true,
                 "onLoadedMetadata": this.loadedMetadata.bind(this),
@@ -233,8 +253,6 @@ export default class DoExerciseCard extends React.Component {
             },
             null
         );
-        return this.player;
-
     }
 
     playerDiv() {
@@ -307,6 +325,7 @@ export default class DoExerciseCard extends React.Component {
             "statusText": "Now playing " + this.props.mediaItem.name,
             "status": "active"
         });
+        this.player.current.play().catch(this.handleError, "mimicButtonClick");
     }
 
     mimicButton() {
@@ -314,7 +333,9 @@ export default class DoExerciseCard extends React.Component {
         if (this.state.clickedAction === "mimic") {
             if (this.state.currentActivity === "recording") {
                 colorClass = "danger";
-            } else if (this.playActions.includes(this.state.currentActivity)) {
+            } else if (this.playActivities.includes(
+                this.state.currentActivity
+            )) {
                 colorClass = "success";
             }
         }

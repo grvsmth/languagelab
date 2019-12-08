@@ -74,7 +74,6 @@ export default class ExerciseCard extends React.Component {
     }
 
     render() {
-        console.log("props", this.props);
         return React.createElement(
             "div",
             {"className": "card bg-light mb-3"},
