@@ -293,7 +293,7 @@ export default class Lab extends React.Component {
         console.log(this.state);
         return React.createElement(
             "div",
-            {"className": "container-fluid"},
+            {"className": "container"},
             this.nav(),
             this.cardList()
         );
