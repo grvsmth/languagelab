@@ -252,6 +252,12 @@ export default class DoExerciseCard extends React.Component {
         }
     }
 
+    playHandler(event) {
+        if (this.state.currentActivity === "inactive") {
+            this.setActivity("playModel");
+        }
+    }
+
     makePlayer() {
         const timeUpdateHandler = this.state.startSeconds < this.state.endSeconds
             ? this.timeUpdateHandler.bind(this) : null;
@@ -265,7 +271,7 @@ export default class DoExerciseCard extends React.Component {
                 "controls": true,
                 "onEnded": this.afterPlay,
                 "onLoadedMetadata": this.loadedMetadata.bind(this),
-                "onPlay": () => {this.setActivity("playModel")},
+                "onPlay": this.playHandler.bind(this),
                 "onTimeUpdate": timeUpdateHandler,
                 "style": {
                     "width": "100%"
