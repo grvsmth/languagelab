@@ -6,7 +6,9 @@ export default class DoExerciseCard extends React.Component {
     constructor(props) {
         super(props);
 
+        this.afterPlay = this.afterPlay.bind(this);
         this.gotInput = this.gotInput.bind(this);
+        this.handleError = this.handleError.bind(this);
         this.mediaRecorder = null;
         this.playActivities = [
             "playModelFirst", "playModelSecond", "playModel", "playMimic"
@@ -200,6 +202,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     afterPlay(player) {
+        console.log("afterPlay");
         if (this.state.clickedAction === "mimic"
             && this.state.currentActivity === "playModelFirst") {
             this.mediaRecorder.start();
@@ -260,6 +263,7 @@ export default class DoExerciseCard extends React.Component {
                 "ref": this.player,
                 "src": this.state.nowPlaying,
                 "controls": true,
+                "onEnded": this.afterPlay,
                 "onLoadedMetadata": this.loadedMetadata.bind(this),
                 "onPlay": () => {this.setActivity("playModel")},
                 "onTimeUpdate": timeUpdateHandler,
