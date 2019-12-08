@@ -23,6 +23,7 @@ export default class Lab extends React.Component {
 
         this.queueNav = {
             "previous": this.previous.bind(this),
+            "exit": this.exitDo.bind(this),
             "next": this.next.bind(this)
         };
 
@@ -224,6 +225,10 @@ export default class Lab extends React.Component {
             return;
         }
         this.selectByRank(rank - 1);
+    }
+
+    exitDo() {
+        this.setState({"activity": "read", "selectedItem": null});
     }
 
     next(rank) {

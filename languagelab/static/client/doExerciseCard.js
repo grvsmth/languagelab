@@ -204,7 +204,10 @@ export default class DoExerciseCard extends React.Component {
         if (this.clickedAction === "mimic") {
             if (this.currentActivity === "playModelFirst") {
                 this.mediaRecorder.start();
-                this.currentActivity = "recording";
+                this.setState({
+                    "currentActivity": "recording",
+                    "statusText": "Now recording"
+                });
             } else if (this.currentActivity === "playMimic") {
                 this.setState({"mimicCount": this.state.mimicCount + 1});
             }
@@ -316,6 +319,8 @@ export default class DoExerciseCard extends React.Component {
                 "nowPlaying": this.props.mediaItem.mediaUrl,
                 "statusText": "Now playing " + this.props.mediaItem.name
             });
+            this.player.current.play()
+                .catch(this.handleError, "playModelSecond");
         }
 
         this.setState({
@@ -384,6 +389,7 @@ export default class DoExerciseCard extends React.Component {
             this.navButton("previous"),
             this.mimicButton(),
             this.downloadButton(),
+            this.navButton("exit"),
             this.navButton("next")
         );
     }
