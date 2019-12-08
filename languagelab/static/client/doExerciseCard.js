@@ -50,10 +50,7 @@ export default class DoExerciseCard extends React.Component {
             event.data,
             {"type": "audio/ogg"}
         );
-        this.setState({
-            "userAudioUrl": userAudioUrl,
-            "statusText": "userAudioUrl: " + userAudioUrl
-        });
+        this.setState({"userAudioUrl": userAudioUrl});
     }
 
     gotInput(stream) {
@@ -203,17 +200,16 @@ export default class DoExerciseCard extends React.Component {
     }
 
     afterPlay(player) {
-        if (this.state.clickedAction === "mimic") {
-            if (this.state.currentActivity === "playModelFirst") {
-                this.mediaRecorder.start();
-                this.setState({
-                    "currentActivity": "recording",
-                    "statusText": "Now recording"
-                });
-            } else if (this.state.currentActivity === "playMimic") {
-                this.setState({"mimicCount": this.state.mimicCount + 1});
-            }
+        if (this.state.clickedAction === "mimic"
+            && this.state.currentActivity === "playModelFirst") {
+            this.mediaRecorder.start();
+            this.setState({
+                "currentActivity": "recording",
+                "statusText": "Now recording"
+            });
+            return;
         }
+
         if (this.state.currentActivity === "playModelSecond") {
             if (this.state.userAudioUrl.length < 11) {
                 this.setState({
@@ -229,11 +225,20 @@ export default class DoExerciseCard extends React.Component {
                     "currentActivity": "playMimic",
                     "statusText": "Now playing recorded audio"
                 });
-                this.player.current.play().catch(this.handleError, "playMimic");
             }
-        } else {
-            player.currentTime = this.state.startSeconds;
+            return;
         }
+
+        if (this.state.currentActivity === "playMimic") {
+            this.setState({
+                "currentActivity": "inactive",
+                "statusText": "",
+                "clickedAction": null,
+                "mimicCount": this.state.mimicCount + 1
+            });
+            return;
+        }
+        player.currentTime = this.state.startSeconds;
     }
 
     timeUpdateHandler(event) {
