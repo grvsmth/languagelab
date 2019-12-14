@@ -162,7 +162,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     loadedMetadata(event) {
-        if (this.state.startSeconds <= 0) {
+        if (this.state.startSeconds < 0) {
             return;
         }
 
@@ -192,8 +192,8 @@ export default class DoExerciseCard extends React.Component {
             }
         }
 
-        if (["playMimic"].includes(this.state.currentActivity)) {
-            event.target.play();
+        if (this.playActivities.includes(this.state.currentActivity)) {
+            event.target.play().catch(this.handleError, this.state.currentActivity);
         }
     }
 
@@ -330,6 +330,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     handleError(error, action="unknown") {
+        console.error(error);
         this.setState({
             "statusText": action + ": " + error.message,
             "status": "error"
@@ -345,11 +346,17 @@ export default class DoExerciseCard extends React.Component {
                 "nowPlaying": this.props.mediaItem.mediaUrl,
                 "statusText": "Now playing " + this.props.mediaItem.name
             });
+            this.player.current.currentTime = this.state.startSeconds;
+
             this.player.current.play()
                 .catch(this.handleError, "playModelSecond");
+
             return;
         }
 
+        if (this.state.nowPlaying === this.props.mediaItem.mediaUrl) {
+            this.player.current.play().catch(this.handleError, "mimicButtonClick");
+        }
         this.setState({
             "clickedAction": "mimic",
             "currentActivity": "playModelFirst",
@@ -357,7 +364,6 @@ export default class DoExerciseCard extends React.Component {
             "statusText": "Now playing " + this.props.mediaItem.name,
             "status": "active"
         });
-        this.player.current.play().catch(this.handleError, "mimicButtonClick");
     }
 
     mimicButton() {
@@ -448,6 +454,7 @@ export default class DoExerciseCard extends React.Component {
 
     render() {
         console.log("props", this.props);
+        console.log("state", this.state);
         return React.createElement(
             "div",
             {"className": "card bg-light mb-3"},
