@@ -248,6 +248,7 @@ export default class Lab extends React.Component {
                 "doButton": config.doButton,
                 "editItem": this.editItem.bind(this),
                 "exercises": this.state.exercises,
+                "exitDo": this.exitDo.bind(this),
                 "languages": this.state.languages,
                 "lessons": this.state.lessons,
                 "loading": this.state.loading,

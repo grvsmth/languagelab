@@ -41,10 +41,6 @@ const config = {
             "icon": "oi-caret-left",
             "color": "info"
         },
-        "exit": {
-            "icon": "oi-circle-x",
-            "color": "info"
-        },
         "next": {
             "icon": "oi-caret-right",
             "color": "info"
