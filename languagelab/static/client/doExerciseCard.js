@@ -191,7 +191,7 @@ export default class DoExerciseCard extends React.Component {
                 return;
             }
         }
-        console.log("currentActivity", this.state.currentActivity);
+
         if (["playMimic"].includes(this.state.currentActivity)) {
             event.target.play();
         }
@@ -245,7 +245,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     timeUpdateHandler(event) {
-        if (this.playActivities.includes(this.state.activity)
+        if (this.playActivities.includes(this.state.currentActivity)
             && event.target.currentTime >= this.state.endSeconds) {
             event.target.pause();
             this.afterPlay(event.target);
