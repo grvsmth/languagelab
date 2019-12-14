@@ -104,7 +104,9 @@ export default class Home extends React.Component {
     render() {
         return React.createElement(
             "nav",
-            {"className": "navbar navbar-expand-sm navbar-light"},
+            {
+                "className": "navbar navbar-expand-sm navbar-light bg-light sticky-top"
+            },
             this.navbarBrand(),
             this.toggler(),
             this.navContent()
