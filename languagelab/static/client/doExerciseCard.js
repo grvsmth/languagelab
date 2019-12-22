@@ -239,11 +239,12 @@ export default class DoExerciseCard extends React.Component {
             return;
         }
         player.currentTime = this.state.startSeconds;
+        this.setState({"currentActivity": "inactive"});
     }
 
     timeUpdateHandler(event) {
-        console.log(this.state);
-        if (!this.state.onlyExercise) {
+        if (this.state.currentActivity === "playModel"
+            && !this.state.onlyExercise) {
             return;
         }
         if (!this.playActivities.includes(this.state.currentActivity)) {
@@ -259,7 +260,6 @@ export default class DoExerciseCard extends React.Component {
 
     playHandler(event) {
         if (this.state.currentActivity === "inactive") {
-            console.log("Setting activity");
             this.setState({"currentActivity": "playModel"});
         }
     }
@@ -300,7 +300,8 @@ export default class DoExerciseCard extends React.Component {
                 "onlyExercise",
                 this.state.onlyExercise,
                 "Play only this exercise",
-                this.props.exercise.id
+                this.props.exercise.id,
+                this.onlyCheck.bind(this)
             )
         );
     }
@@ -371,7 +372,10 @@ export default class DoExerciseCard extends React.Component {
         }
 
         if (this.state.nowPlaying === this.props.mediaItem.mediaUrl) {
-            this.player.current.play().catch(this.handleError, "mimicButtonClick");
+            this.player.current.currentTime = this.state.startSeconds;
+            this.player.current.play().catch(
+                this.handleError, "mimicButtonClick"
+            );
         }
         this.setState({
             "clickedAction": "mimic",
