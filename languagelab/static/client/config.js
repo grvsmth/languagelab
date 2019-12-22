@@ -1,7 +1,7 @@
 const config = {
     "dateTimeFormat": "MMM D, YYYY h:mm a",
     "timeFormat": "HH:mm:ss.S",
-    "tagSplitRE": /[,;]+/,
+    "tagSplitRE": /\s*[,;]+\s*/,
     "api": {
         "baseUrl": "https://languagelab-dev.grieve-smith.com/api/0.2",
         "endpoint": {

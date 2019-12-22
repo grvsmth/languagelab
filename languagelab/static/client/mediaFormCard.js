@@ -6,7 +6,6 @@ import commonElements from "./commonElements.js";
 export default class MediaFormCard extends React.Component {
     constructor(props) {
         super(props);
-        console.log("props", props);
 
         this.cancelClick = this.cancelClick.bind(this);
         this.loadedMetadata = this.loadedMetadata.bind(this);
@@ -83,7 +82,6 @@ export default class MediaFormCard extends React.Component {
             itemId = this.props.mediaItem.id;
         }
         this.props.saveItem(formData, "media", itemId);
-
     }
 
     textInput(fieldName, inputId, onChange, defaultValue) {
@@ -262,7 +260,7 @@ export default class MediaFormCard extends React.Component {
     nameRow() {
         return React.createElement(
             "div",
-            {"className": "card-header"},
+            {"className": "form-row mt-3"},
             this.textInputDiv("name"),
             this.textInputDiv("creator"),
             this.textInputDiv("rights")
@@ -358,6 +356,7 @@ export default class MediaFormCard extends React.Component {
                 "className": "card-body",
                 "id": "form_" + this.props.mediaItem.id
             },
+            this.nameRow(),
             this.fileRow(),
             this.optionsRow(),
             this.submitRow()
@@ -369,7 +368,6 @@ export default class MediaFormCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "card bg-light mb-3"},
-            this.nameRow(),
             this.cardBody()
         );
     }

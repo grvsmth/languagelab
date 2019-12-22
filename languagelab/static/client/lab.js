@@ -183,6 +183,7 @@ export default class Lab extends React.Component {
                 this.updateStateItem(res.response, itemType);
                 this.setState({"activity": "read"});
             }, (err) => {
+                console.log(item);
                 console.error(err);
             });
         }

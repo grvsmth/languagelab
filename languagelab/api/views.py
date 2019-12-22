@@ -77,12 +77,6 @@ class MediaItemViewSet(viewsets.ModelViewSet):
     queryset = MediaItem.objects.all().order_by('id')
     serializer_class = MediaItemSerializer
 
-    uploader = PrimaryKeyRelatedField(
-        # set it to read_only as we're handling the writing part ourselves
-        read_only=True,
-        default=CurrentUserDefault()
-    )
-
     def perform_create(self, serializer):
         serializer.save(uploader=self.request.user)
 
