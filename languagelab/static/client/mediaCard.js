@@ -9,6 +9,7 @@ export default class MediaCard extends React.Component {
         this.checkboxClick = this.checkboxClick.bind(this);
         this.deleteClick = this.deleteClick.bind(this);
         this.editClick = this.editClick.bind(this);
+        this.player = React.createRef();
     }
 
     itemTitle() {
@@ -31,7 +32,7 @@ export default class MediaCard extends React.Component {
     }
 
     bySpan() {
-        if (!this.props.users) {
+        if (!this.props.users || this.props.users.length < 1) {
             return null;
         }
 
@@ -97,6 +98,53 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    playHandler() {
+        this.props.selectItem(this.props.id);
+    }
+
+    afterPlay() {
+        this.props.selectItem(null);
+    }
+
+    showControls() {
+        if (this.props.selectedItem
+            && this.props.id !== this.props.selectedItem) {
+            this.player.current.pause();
+            return false;
+        }
+        return true;
+    }
+
+    makePlayer() {
+        /*
+
+            When we re-implement file upload, we will need to pick the proper
+            URL
+
+        */
+        return React.createElement(
+            "audio",
+            {
+                "id": "audio1",
+                "ref": this.player,
+                "src": this.props.mediaItem.mediaUrl,
+                "onEnded": this.afterPlay.bind(this),
+                "onPause": this.afterPlay.bind(this),
+                "onPlay": this.playHandler.bind(this),
+                "controls": this.showControls()
+            },
+            null
+        );
+    }
+
+    playerDiv() {
+        return React.createElement(
+            "div",
+            {"className": "d-flex flex-row mt-3"},
+            this.makePlayer()
+        );
+    }
+
     tagBadge(tagText) {
         return React.createElement(
             "span",
@@ -138,6 +186,7 @@ export default class MediaCard extends React.Component {
             {"className": "card-body"},
             this.itemTitle(),
             this.itemSubtitle(),
+            this.playerDiv(),
             this.tagsSpan(),
             this.rightsSpan(),
             commonElements.checkboxDiv(
@@ -159,6 +208,7 @@ export default class MediaCard extends React.Component {
     }
 
     render() {
+        console.log(this.props);
         return React.createElement(
             "div",
             {"className": "card border-primary bg-light mb-3"},

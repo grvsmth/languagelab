@@ -114,7 +114,7 @@ export default class Lab extends React.Component {
         this.queueOperation[operationName](id);
     }
 
-    checkClick = function(itemType, itemId, itemKey, itemChecked) {
+    checkClick(itemType, itemId, itemKey, itemChecked) {
         event.preventDefault();
         const payload = {[itemKey]: itemChecked};
         apiClient.patch(payload, itemType, itemId).then((res) => {
@@ -124,7 +124,7 @@ export default class Lab extends React.Component {
         });
     }
 
-    editItem = function(itemId) {
+    editItem(itemId) {
         var queueItem;
         if (this.state.selectedType === "queueItems") {
             queueItem = this.state.queueItems.find(
@@ -137,6 +137,10 @@ export default class Lab extends React.Component {
             "activity": "edit",
             "selectedItem": selectedItem
         })
+    }
+
+    selectItem(itemId) {
+        this.setState({"selectedItem": itemId});
     }
 
     startExercise(exerciseId) {
@@ -153,11 +157,11 @@ export default class Lab extends React.Component {
         });
     }
 
-    setActivity = function(activity) {
+    setActivity(activity) {
         this.setState({"activity": activity});
     }
 
-    deleteClick = function(itemType, itemId) {
+    deleteClick(itemType, itemId) {
         apiClient.delete(itemType, itemId).then((res) => {
             this.fetchData(itemType);
             this.fetchData("queueItems");
@@ -166,7 +170,7 @@ export default class Lab extends React.Component {
         });
     }
 
-    saveItem = function(item, itemType, itemId) {
+    saveItem(item, itemType, itemId) {
         if (itemId) {
             apiClient.patch(item, itemType, itemId).then((res) => {
                 this.updateStateItem(res.response, itemType);
@@ -260,6 +264,7 @@ export default class Lab extends React.Component {
                 "saveItem": this.saveItem.bind(this),
                 "setActivity": this.setActivity.bind(this),
                 "startExercise": this.startExercise.bind(this),
+                "selectItem": this.selectItem.bind(this),
                 "selectedItem": this.state.selectedItem,
                 "selectedType": this.state.selectedType,
                 "users": this.state.users

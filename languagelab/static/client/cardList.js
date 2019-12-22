@@ -148,6 +148,8 @@ export default class CardList extends React.Component {
                 "key": mediaItem.id,
                 "languages": languages,
                 "mediaItem": mediaItem,
+                "selectItem": this.props.selectItem,
+                "selectedItem": this.props.selectedItem,
                 "setActivity": this.props.setActivity,
                 "saveItem": this.props.saveItem,
                 "users": users
