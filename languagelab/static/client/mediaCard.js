@@ -135,7 +135,10 @@ export default class MediaCard extends React.Component {
                 "onEnded": this.afterPlay.bind(this),
                 "onPause": this.afterPlay.bind(this),
                 "onPlay": this.playHandler.bind(this),
-                "controls": this.showControls()
+                "controls": this.showControls(),
+                "style": {
+                    "width": "100%"
+                }
             },
             null
         );
