@@ -29,14 +29,15 @@ export default class DoExerciseCard extends React.Component {
         this.state = {
             "clickedAction": "",
             "currentActivity": "inactive",
-            "mimicCount": 0,
-            "startSeconds": this.timeAsSeconds(this.props.exercise.startTime),
             "endSeconds": this.timeAsSeconds(this.props.exercise.endTime),
+            "mimicCount": 0,
             "nowPlaying": this.props.mediaItem.mediaUrl,
-            "userAudioUrl": "",
+            "onlyExercise": true,
             "recordDisabled": true,
+            "startSeconds": this.timeAsSeconds(this.props.exercise.startTime),
             "status": "normal",
-            "statusText": ""
+            "statusText": "",
+            "userAudioUrl": ""
         };
     }
 
@@ -197,10 +198,6 @@ export default class DoExerciseCard extends React.Component {
         }
     }
 
-    setActivity(activityName) {
-        this.setState({"activity": activityName});
-    }
-
     afterPlay(player) {
         console.log("afterPlay");
         if (this.state.clickedAction === "mimic"
@@ -245,16 +242,25 @@ export default class DoExerciseCard extends React.Component {
     }
 
     timeUpdateHandler(event) {
-        if (this.playActivities.includes(this.state.currentActivity)
-            && event.target.currentTime >= this.state.endSeconds) {
-            event.target.pause();
-            this.afterPlay(event.target);
+        console.log(this.state);
+        if (!this.state.onlyExercise) {
+            return;
         }
+        if (!this.playActivities.includes(this.state.currentActivity)) {
+            return;
+        }
+        if (event.target.currentTime < this.state.endSeconds) {
+            return;
+        }
+
+        event.target.pause();
+        this.afterPlay(event.target);
     }
 
     playHandler(event) {
         if (this.state.currentActivity === "inactive") {
-            this.setActivity("playModel");
+            console.log("Setting activity");
+            this.setState({"currentActivity": "playModel"});
         }
     }
 
@@ -274,18 +280,28 @@ export default class DoExerciseCard extends React.Component {
                 "onPlay": this.playHandler.bind(this),
                 "onTimeUpdate": timeUpdateHandler,
                 "style": {
-                    "width": "100%"
+                    "width": "70%"
                 }
             },
             null
         );
     }
 
+    onlyCheck(event) {
+        this.setState({"onlyExercise": event.target.checked})
+    }
+
     playerDiv() {
         return React.createElement(
             "div",
-            {"className": ""},
-            this.makePlayer()
+            {"className": "d-flex flex-row mt-3"},
+            this.makePlayer(),
+            commonElements.checkboxDiv(
+                "onlyExercise",
+                this.state.onlyExercise,
+                "Play only this exercise",
+                this.props.exercise.id
+            )
         );
     }
 
