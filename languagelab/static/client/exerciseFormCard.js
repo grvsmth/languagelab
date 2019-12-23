@@ -34,7 +34,7 @@ export default class ExerciseFormCard extends React.Component {
             }, {});
 
         var itemId = null;
-        if (typeof this.props.exercise.id !== "number") {
+        if (typeof this.props.exercise.id === "number") {
             itemId = this.props.exercise.id;
         }
 
