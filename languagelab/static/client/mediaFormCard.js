@@ -78,7 +78,7 @@ export default class MediaFormCard extends React.Component {
 
         const audio1 = document.querySelector("#audio1");
         var itemId = null;
-        if (this.props.mediaItem.id !== "form") {
+        if (typeof this.props.mediaItem.id !== "number") {
             itemId = this.props.mediaItem.id;
         }
         this.props.saveItem(formData, "media", itemId);

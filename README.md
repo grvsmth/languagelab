@@ -5,11 +5,15 @@ primary use case that I envison is for language lab type activities, but this
 could also be used to practice dialect or gender speech, song or even
 instrumental music.
 
+There are two parts to the application: the backend *Library*, written in Python
+to work with Django, and the frontend *Client*, written in Javascript to work
+with React.
+
 ## Requirements
 
-The full list of backend requirements is at [requirements.txt], but the main
+The full list of Library requirements is at [requirements.txt], but the main
 requirements are Django, the Django Rest Framework and Django-taggit.  The
-frontend requirements are as follows:
+Client requirements are as follows:
 
 * React and React-DOM
 * Moment.js

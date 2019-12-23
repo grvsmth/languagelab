@@ -70,12 +70,13 @@ export default class CardList extends React.Component {
         );
     }
 
-    addButtonCard() {
+    addButtonCard(cardId) {
         return React.createElement(
             "div",
             {
                 "className": "card",
-                "key": "addButton"
+                "key": cardId,
+                "id": cardId
             },
             this.addButtonCardBody()
         );
@@ -134,7 +135,7 @@ export default class CardList extends React.Component {
             languages = this.findLanguage(mediaItem);
         }
 
-        if (this.props.activity === "add" && mediaItem.id === "form") {
+        if (this.props.activity === "add" && typeof mediaItem.id !== "number") {
             cardComponent = MediaFormCard;
         }
 
@@ -258,21 +259,21 @@ export default class CardList extends React.Component {
         return this.exerciseCard(item.id, queueItem, exercise,  mediaItem, users);
     }
 
-    initialAddCard(addable) {
+    addCard(addable, cardId="form") {
         if (this.props.activity === "add") {
             if (this.props.selectedType === "media") {
-                return this.mediaCard({"id": "form"}, [this.props.users[0]])
+                return this.mediaCard({"id": cardId}, [this.props.users[0]])
             }
             return this.exerciseFormCard(
-                "form",
-                {"id": "form"},
+                cardId,
+                {"id": cardId},
                 null,
                 this.props.users[0]
             );
         }
 
         if (addable) {
-            return this.addButtonCard();
+            return this.addButtonCard(cardId);
         }
         return null;
     }
@@ -294,12 +295,12 @@ export default class CardList extends React.Component {
             );
         }
 
-
         return React.createElement(
             "div",
             {"className": ""},
-            this.initialAddCard(myType.addable),
-            this.makeElements()
+            this.addCard(myType.addable, "initial"),
+            this.makeElements(),
+            this.addCard(myType.addable, "final")
         );
     }
 }
