@@ -132,7 +132,6 @@ export default class CardList extends React.Component {
         if (this.props.activity === "edit"
             && this.props.selectedItem === mediaItem.id) {
             cardComponent = MediaFormCard;
-            languages = this.findLanguage(mediaItem);
         }
 
         if (this.props.activity === "add" && typeof mediaItem.id !== "number") {

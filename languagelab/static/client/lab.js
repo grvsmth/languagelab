@@ -171,6 +171,7 @@ export default class Lab extends React.Component {
     }
 
     saveItem(item, itemType, itemId) {
+        console.log("saveItem", itemId);
         if (itemId) {
             apiClient.patch(item, itemType, itemId).then((res) => {
                 this.updateStateItem(res.response, itemType);
