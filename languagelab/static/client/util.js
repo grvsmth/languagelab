@@ -1,7 +1,11 @@
 const exports = {};
 
 exports.findItem = function(items, id) {
-    return items.find((item) => item.id === id);
+    const item = items.find((item) => item.id === id);
+    if (item && typeof item !== "undefined") {
+        return item;
+    }
+    return;
 };
 
 exports.formatDuration = function(durationMoment, fixed=6) {
@@ -14,5 +18,27 @@ exports.formatDuration = function(durationMoment, fixed=6) {
         seconds.toFixed(fixed).padStart(2, "0")
         ].join(":");
 };
+
+exports.timeRange = function(startTime, endTime, timeFormat) {
+    const startTimeString = exports.formatDuration(
+        new moment(startTime, timeFormat),
+        2
+    );
+    const endTimeString = exports.formatDuration(
+        new moment(endTime, timeFormat),
+        2
+    );
+    return `${startTimeString} - ${endTimeString}`;
+
+
+}
+
+exports.listToObject = function(inputList) {
+    const outputObject = inputList.reduce((object, item) => {
+            object[item.id] = item.name;
+            return object;
+        }, {});
+        return outputObject;
+    }
 
 export default exports;

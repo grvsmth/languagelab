@@ -10,13 +10,19 @@ from django.db.models import (
     FileField,
     ForeignKey,
     IntegerField,
+    Manager,
     ManyToManyField,
     Model,
     TextField
     )
 from django.utils.timezone import now
 
+from logging import basicConfig, getLogger
+
 from taggit.managers import TaggableManager
+
+LOG = getLogger()
+basicConfig(level="DEBUG")
 
 
 class Language(Model):
@@ -87,15 +93,15 @@ class Exercise (Model):
         on_delete=CASCADE
     )
 
-    dialogue = BooleanField("Dialogue", db_index=True)
-    description = CharField("Instructions", max_length=1000)
+    dialogue = BooleanField("Dialogue", db_index=True, default=False)
+    description = CharField("Instructions", max_length=1000, blank=True)
     isAvailable = BooleanField("Available", db_index=True)
     isPublic = BooleanField("Public", db_index=True)
     audioOnly = BooleanField("Audio only", db_index=True, default=True)
     startTime = DurationField("Start time", default=timedelta())
     endTime = DurationField("End time", default=timedelta())
     notes = TextField("Notes", null=True, blank=True)
-    created = DateTimeField("Created", auto_now_add=True)
+    created = DateTimeField("Created", default=now)
 
 
 class Lesson (Model):
@@ -118,6 +124,57 @@ class Lesson (Model):
     created = DateTimeField("Created", auto_now_add=True)
 
 
+class QueueManager (Manager):
+    """
+    Manager for queue operations
+    """
+    def userQueue(self, userId):
+        return super(
+            QueueManager,
+            self
+        ).get_queryset().filter(
+            user=userId,
+            rank__isnull=False
+        ).order_by('rank')
+
+    def renumber(self, user):
+        i = 1
+        queue = self.userQueue(user)
+        for (queueItem) in queue:
+            if (queueItem.completed is None):
+                queueItem.rank = i
+                queueItem.save()
+                i += 1
+
+    def up(self, userId, itemId):
+        queue = self.userQueue(userId)
+        itemQueryset = queue.filter(id=itemId)
+        oldRank = itemQueryset[0].rank
+
+        if oldRank < 2 or oldRank > queue.count():
+            return queue
+
+        newRank = oldRank - 1
+        queue.filter(rank=newRank).update(rank=oldRank)
+        itemQueryset.update(rank=newRank)
+
+        return queue
+
+    def down(self, userId, itemId):
+        queue = self.userQueue(userId)
+        itemQueryset = queue.filter(id=itemId)
+        oldRank = itemQueryset[0].rank
+
+        if oldRank < 1 or oldRank >= queue.count():
+            return queue
+
+        newRank = oldRank + 1
+        queue.filter(rank=newRank).update(rank=oldRank)
+        itemQueryset.update(rank=newRank)
+
+        return queue
+
+
 class QueueItem (Model):
     """
     Model for tracking exercises in a user queue
@@ -134,9 +191,7 @@ class QueueItem (Model):
     )
     rank = IntegerField(
         "Rank",
-        db_index=True,
-        null=True,
-        blank=True
+        db_index=True
     )
     started = DateTimeField(
         "Started",
@@ -146,3 +201,4 @@ class QueueItem (Model):
     )
     completed = DateTimeField("Completed", null=True, blank=True)
 
+    objects = QueueManager()

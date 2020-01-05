@@ -1,4 +1,6 @@
-import MediaCardList from "./mediaCardList.js";
+import CardList from "./cardList.js";
+import Navbar from "./navbar.js";
+
 import apiClient from "./apiClient.js";
 import util from "./util.js";
 
@@ -8,21 +10,39 @@ import config from "./config.js";
 export default class Lab extends React.Component {
     constructor(props) {
         super(props);
-        console.log("props", props);
+
+        this.checkClick = this.checkClick.bind(this);
+        this.navClick = this.navClick.bind(this);
+
+        this.queueOperation = {
+            "add": this.addToQueue.bind(this),
+            "remove": this.removeFromQueue.bind(this),
+            "up": this.up.bind(this),
+            "down": this.down.bind(this)
+        };
+
+        this.queueNav = {
+            "previous": this.previous.bind(this),
+            "exit": this.exitDo.bind(this),
+            "next": this.next.bind(this)
+        };
 
         this.state = {
+            "activity": "read",
             "lastUpdated": "",
             "loading": {
                 "media": false,
                 "users": false,
                 "languages": false
             },
+            "exercises": [],
+            "lessons": [],
             "media": [],
             "users": [],
             "languages": [],
-            "activity": "read",
-            "type": this.props.clickId,
-            "selectedItem": null
+            "queueItems": [],
+            "selectedItem": null,
+            "selectedType": "queueItems"
         };
     }
 
@@ -33,6 +53,8 @@ export default class Lab extends React.Component {
                 "languages": true,
                 "users": true
             }});
+            this.fetchData("queueItems");
+            this.fetchData("exercises");
             this.fetchData("media");
             this.fetchData("users");
             this.fetchData("languages");
@@ -73,7 +95,26 @@ export default class Lab extends React.Component {
         );
     }
 
-    checkClick = function(itemType, itemId, itemKey, itemChecked) {
+    removeFromQueue(queueItemId) {
+        this.deleteClick("queueItems", queueItemId);
+    }
+
+    addToQueue(exerciseId) {
+        const queueItem = {
+            "exercise": exerciseId
+        };
+        apiClient.post(queueItem, "queueItems").then((res) => {
+            this.fetchData("queueItems");
+        }, (err) => {
+            console.error(err);
+        });
+    }
+
+    queueClick(operationName, id) {
+        this.queueOperation[operationName](id);
+    }
+
+    checkClick(itemType, itemId, itemKey, itemChecked) {
         event.preventDefault();
         const payload = {[itemKey]: itemChecked};
         apiClient.patch(payload, itemType, itemId).then((res) => {
@@ -83,26 +124,54 @@ export default class Lab extends React.Component {
         });
     }
 
-    editItem = function(itemId) {
+    editItem(itemId) {
+        var queueItem;
+        if (this.state.selectedType === "queueItems") {
+            queueItem = this.state.queueItems.find(
+                (queueItem) => queueItem.exercise === itemId
+            );
+        }
+
+        const selectedItem = queueItem ? queueItem.id : itemId;
         this.setState({
             "activity": "edit",
-            "selectedItem": itemId
+            "selectedItem": selectedItem
         })
     }
 
-    setActivity = function(activity) {
+    selectItem(itemId) {
+        this.setState({"selectedItem": itemId});
+    }
+
+    startExercise(exerciseId) {
+        var queueItem;
+        if (this.state.selectedType === "queueItems") {
+            queueItem = this.state.queueItems.find(
+                (queueItem) => queueItem.exercise === exerciseId
+            );
+        }
+        const selectedItem = queueItem ? queueItem.id : exerciseId;
+        this.setState({
+            "activity": "do",
+            "selectedItem": selectedItem
+        });
+    }
+
+    setActivity(activity) {
         this.setState({"activity": activity});
     }
 
-    deleteClick = function(itemType, itemId) {
+    deleteClick(itemType, itemId) {
         apiClient.delete(itemType, itemId).then((res) => {
             this.fetchData(itemType);
+            this.fetchData("queueItems");
         }, (err) => {
             console.error(err);
         });
     }
 
-    saveItem = function(item, itemType, itemId) {
+    saveItem(item, itemType, itemId) {
+        console.log("saveItem", itemId);
         if (itemId) {
             apiClient.patch(item, itemType, itemId).then((res) => {
                 this.updateStateItem(res.response, itemType);
@@ -115,46 +184,126 @@ export default class Lab extends React.Component {
                 this.updateStateItem(res.response, itemType);
                 this.setState({"activity": "read"});
             }, (err) => {
+                console.log(item);
                 console.error(err);
             });
         }
     }
 
+    up(itemId) {
+        apiClient.patch({"item": itemId}, "queueItems", "up").then(res => {
+            this.fetchData("queueItems");
+        }, err => {
+            console.error(err);
+        });
+    }
+
+    down(itemId) {
+        apiClient.patch({"item": itemId}, "queueItems", "down").then(res => {
+            this.fetchData("queueItems");
+        }, err => {
+            console.error(err);
+        });
+    }
+
+    maxRank() {
+        if (this.state.queueItems.length < 1) {
+            return 0;
+        }
+
+        const last = this.state.queueItems[this.state.queueItems.length - 1];
+        return last.rank;
+    }
+
+    selectByRank(rank) {
+        const queueItem = this.state.queueItems.find(
+            (queueItem) => queueItem.rank === rank
+        );
+
+        const selectedItem = this.state.selectedType === "queueItems"
+            ? queueItem.id : queueItem.exercise;
+
+        this.setState({"selectedItem": selectedItem});
+    }
+
+    previous(rank) {
+        if (rank <= 1) {
+            return;
+        }
+        this.selectByRank(rank - 1);
+    }
+
+    exitDo() {
+        this.setState({"activity": "read", "selectedItem": null});
+    }
+
+    next(rank) {
+        if (rank >= this.maxRank()) {
+            return;
+        }
+        this.selectByRank(rank + 1);
+    }
+
+    cardList() {
+        return React.createElement(
+            CardList,
+            {
+                "activity": this.state.activity,
+                "checkClick": this.checkClick,
+                "deleteClick": this.deleteClick.bind(this),
+                "doButton": config.doButton,
+                "editItem": this.editItem.bind(this),
+                "exercises": this.state.exercises,
+                "exitDo": this.exitDo.bind(this),
+                "languages": this.state.languages,
+                "lessons": this.state.lessons,
+                "loading": this.state.loading,
+                "maxRank": this.maxRank.bind(this),
+                "media": this.state.media,
+                "queueClick": this.queueClick.bind(this),
+                "queueItems": this.state.queueItems,
+                "queueNav": this.queueNav,
+                "saveItem": this.saveItem.bind(this),
+                "setActivity": this.setActivity.bind(this),
+                "startExercise": this.startExercise.bind(this),
+                "selectItem": this.selectItem.bind(this),
+                "selectedItem": this.state.selectedItem,
+                "selectedType": this.state.selectedType,
+                "users": this.state.users
+            },
+            null
+        );
+    }
+
+    navClick(itemType) {
+        this.setState(
+            {
+                "activity": "read",
+                "selectedItem": null,
+                "selectedType": itemType
+            }
+        );
+    }
+
+    nav() {
+        return React.createElement(
+            Navbar,
+            {
+                "activeItem": "Queue",
+                "itemType": config.api.endpoint,
+                "navClick": this.navClick
+            },
+            null
+        );
+    }
+
     render() {
         console.log(this.state);
-
-        if (this.props.clickId === "media") {
-            return React.createElement(
-                MediaCardList,
-                {
-                    "activity": this.state.activity,
-                    "media": this.state.media,
-                    "users": this.state.users,
-                    "languages": this.state.languages,
-                    "selectedItem": this.state.selectedItem,
-                    "checkClick": this.checkClick.bind(this),
-                    "setActivity": this.setActivity.bind(this),
-                    "deleteClick": this.deleteClick.bind(this),
-                    "saveItem": this.saveItem.bind(this),
-                    "editItem": this.editItem.bind(this),
-                    "loading": this.state.loading
-                },
-                null
-            )
-        }
-
-        if (!this.props.clickId) {
-            return React.createElement(
-                "div",
-                {},
-                "React is running"
-            )
-        }
-
         return React.createElement(
             "div",
-            {},
-            `You clicked ${this.props.clickId}`
+            {"className": "container"},
+            this.nav(),
+            this.cardList()
         );
     }
 }

@@ -1,5 +1,11 @@
 from django.contrib.auth.models import User, Group
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import (
+    CurrentUserDefault,
+    IntegerField,
+    ModelSerializer,
+    PrimaryKeyRelatedField
+    )
+
 from taggit_serializer.serializers import (
     TagListSerializerField,
     TaggitSerializer
@@ -31,6 +37,11 @@ class LanguageSerializer(ModelSerializer):
 
 class MediaItemSerializer(TaggitSerializer, ModelSerializer):
     tags = TagListSerializerField()
+    uploader = PrimaryKeyRelatedField(
+        # set it to read_only as we're handling the writing part ourselves
+        read_only=True,
+        default=CurrentUserDefault()
+    )
 
     class Meta:
         model = MediaItem
@@ -54,6 +65,12 @@ class MediaItemSerializer(TaggitSerializer, ModelSerializer):
 
 
 class ExerciseSerializer(ModelSerializer):
+    creator = PrimaryKeyRelatedField(
+        # set it to read_only as we're handling the writing part ourselves
+        read_only=True,
+        default=CurrentUserDefault()
+    )
+
     class Meta:
         model = Exercise
         fields = [
@@ -75,6 +92,11 @@ class ExerciseSerializer(ModelSerializer):
 
 class LessonSerializer(TaggitSerializer, ModelSerializer):
     tags = TagListSerializerField()
+    creator = PrimaryKeyRelatedField(
+        # set it to read_only as we're handling the writing part ourselves
+        read_only=True,
+        default=CurrentUserDefault()
+    )
 
     class Meta:
         model = Lesson
@@ -95,6 +117,13 @@ class LessonSerializer(TaggitSerializer, ModelSerializer):
 
 
 class QueueItemSerializer(ModelSerializer):
+    user = PrimaryKeyRelatedField(
+        # set it to read_only as we're handling the writing part ourselves
+        read_only=True,
+        default=CurrentUserDefault()
+    )
+    rank = IntegerField(read_only=True, min_value=1)
+
     class Meta:
         model = QueueItem
         fields = [
@@ -106,4 +135,3 @@ class QueueItemSerializer(ModelSerializer):
             'completed'
             ]
         ordering = ['-rank']
-

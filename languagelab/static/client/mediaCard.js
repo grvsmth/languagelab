@@ -5,7 +5,11 @@ import util from "./util.js";
 export default class MediaCard extends React.Component {
     constructor(props) {
         super(props);
-        console.log("props", props);
+
+        this.checkboxClick = this.checkboxClick.bind(this);
+        this.deleteClick = this.deleteClick.bind(this);
+        this.editClick = this.editClick.bind(this);
+        this.player = React.createRef();
     }
 
     itemTitle() {
@@ -13,8 +17,12 @@ export default class MediaCard extends React.Component {
 
         var languageText = "";
         if (this.props.mediaItem.language && this.props.languages
-            && this.props.languages.length) {
-            languageText = this.props.languages[0].name + ", ";
+            && this.props.languages.length > this.props.mediaItem.language) {
+            const language = util.findItem(
+                this.props.languages,
+                this.props.mediaItem.language
+            );
+            languageText = language.name + ", ";
         }
 
         const durationMoment = moment.duration(this.props.mediaItem.duration)
@@ -28,13 +36,13 @@ export default class MediaCard extends React.Component {
     }
 
     bySpan() {
-        if (!this.props.users) {
+        if (!this.props.users || this.props.users.length < 1) {
             return null;
         }
 
         return React.createElement(
             "span",
-            {"className": "text-dark"},
+            {"className": "text-info"},
             " by ",
             this.props.users[0].username
         );
@@ -46,7 +54,7 @@ export default class MediaCard extends React.Component {
 
         return React.createElement(
             "h6",
-            {"className": "card-subtitle text-muted"},
+            {"className": "card-subtitle text-dark"},
             `${this.props.mediaItem.creator} (added ${uploadedText}`,
             this.bySpan(),
             ")"
@@ -81,7 +89,7 @@ export default class MediaCard extends React.Component {
     editLink() {
         return React.createElement(
             "a",
-            {"className": "text-primary", "onClick": this.editClick.bind(this)},
+            {"className": "text-primary", "onClick": this.editClick},
             "edit"
         );
     }
@@ -89,8 +97,58 @@ export default class MediaCard extends React.Component {
     deleteLink() {
         return React.createElement(
             "a",
-            {"className": "text-danger", "onClick": this.deleteClick.bind(this)},
+            {"className": "text-danger", "onClick": this.deleteClick},
             "delete"
+        );
+    }
+
+    playHandler() {
+        this.props.selectItem(this.props.id);
+    }
+
+    afterPlay() {
+        this.props.selectItem(null);
+    }
+
+    showControls() {
+        if (this.props.selectedItem
+            && this.props.id !== this.props.selectedItem) {
+            this.player.current.pause();
+            return false;
+        }
+        return true;
+    }
+
+    makePlayer() {
+        /*
+
+            When we re-implement file upload, we will need to pick the proper
+            URL
+
+        */
+        return React.createElement(
+            "audio",
+            {
+                "id": "audio1",
+                "ref": this.player,
+                "src": this.props.mediaItem.mediaUrl,
+                "onEnded": this.afterPlay.bind(this),
+                "onPause": this.afterPlay.bind(this),
+                "onPlay": this.playHandler.bind(this),
+                "controls": this.showControls(),
+                "style": {
+                    "width": "100%"
+                }
+            },
+            null
+        );
+    }
+
+    playerDiv() {
+        return React.createElement(
+            "div",
+            {"className": "d-flex flex-row mt-3"},
+            this.makePlayer()
         );
     }
 
@@ -135,6 +193,7 @@ export default class MediaCard extends React.Component {
             {"className": "card-body"},
             this.itemTitle(),
             this.itemSubtitle(),
+            this.playerDiv(),
             this.tagsSpan(),
             this.rightsSpan(),
             commonElements.checkboxDiv(
@@ -142,23 +201,24 @@ export default class MediaCard extends React.Component {
                 this.props.mediaItem.isAvailable,
                 "available",
                 this.props.mediaItem.id,
-                this.checkboxClick.bind(this)
+                this.checkboxClick
                 ),
             commonElements.checkboxDiv(
                 "isPublic",
                 this.props.mediaItem.isPublic,
                 "public",
                 this.props.mediaItem.id,
-                this.checkboxClick.bind(this)
+                this.checkboxClick
                 ),
             this.linkDiv()
         );
     }
 
     render() {
+        console.log(this.props);
         return React.createElement(
             "div",
-            {"className": "card bg-light"},
+            {"className": "card border-primary bg-light mb-3"},
             this.cardBody()
         );
     }

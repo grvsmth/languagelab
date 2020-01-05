@@ -1,8 +1,18 @@
 from django.contrib.auth.models import User, Group
+from django.db.models import Max
 from django.http import JsonResponse
+
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.serializers import CurrentUserDefault, PrimaryKeyRelatedField
+from rest_framework.response import Response
+from rest_framework.serializers import (
+    CurrentUserDefault,
+    IntegerField,
+    PrimaryKeyRelatedField
+    )
+from rest_framework.status import HTTP_204_NO_CONTENT
+
+from logging import basicConfig, getLogger
 
 from languagelab.api.iso639client import getIso639, makeLanguage
 
@@ -20,6 +30,9 @@ from languagelab.api.serializers import (
     UserSerializer
     )
 
+LOG = getLogger()
+basicConfig(level="DEBUG")
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -33,7 +46,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
-    queryset = Group.objects.all()
+    queryset = Group.objects.all().order_by('id')
     serializer_class = GroupSerializer
 
 
@@ -41,7 +54,7 @@ class LanguageViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing available languages
     """
-    queryset = Language.objects.all()
+    queryset = Language.objects.all().order_by('id')
     serializer_class = LanguageSerializer
 
     @action(detail=False, methods=['post'])
@@ -61,14 +74,8 @@ class MediaItemViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing media items
     """
-    queryset = MediaItem.objects.all()
+    queryset = MediaItem.objects.all().order_by('id')
     serializer_class = MediaItemSerializer
-
-    uploader = PrimaryKeyRelatedField(
-        # set it to read_only as we're handling the writing part ourselves
-        read_only=True,
-        default=CurrentUserDefault()
-    )
 
     def perform_create(self, serializer):
         serializer.save(uploader=self.request.user)
@@ -78,24 +85,23 @@ class ExerciseViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing exercises
     """
-    queryset = Exercise.objects.all()
+    queryset = Exercise.objects.all().order_by('id')
     serializer_class = ExerciseSerializer
-
-    creator = PrimaryKeyRelatedField(
-        # set it to read_only as we're handling the writing part ourselves
-        read_only=True,
-        default=CurrentUserDefault()
-    )
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
+
+    def destroy(self, request, *args, **kwargs):
+        self.perform_destroy(self.get_object())
+        QueueItem.objects.renumber(user=self.request.user)
+        return Response(status=HTTP_204_NO_CONTENT)
 
 
 class LessonViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing lessons
     """
-    queryset = Lesson.objects.all()
+    queryset = Lesson.objects.all().order_by('id')
     serializer_class = LessonSerializer
 
     creator = PrimaryKeyRelatedField(
@@ -112,7 +118,7 @@ class QueueItemViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing queue items
     """
-    queryset = QueueItem.objects.all()
+    queryset = QueueItem.objects.all().order_by('rank')
     serializer_class = QueueItemSerializer
 
     user = PrimaryKeyRelatedField(
@@ -120,7 +126,40 @@ class QueueItemViewSet(viewsets.ModelViewSet):
         read_only=True,
         default=CurrentUserDefault()
     )
+    rank = IntegerField(read_only=True, min_value=1, default=1)
+
+    def nextRank(self):
+        nextRank = 1
+        userItems = self.queryset.filter(user=self.request.user)
+        maxRank = userItems.aggregate(Max('rank'))['rank__max']
+
+        if maxRank:
+            nextRank = maxRank + 1
+
+        return nextRank
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user, rank=self.nextRank())
 
+    def destroy(self, request, *args, **kwargs):
+        self.perform_destroy(self.get_object())
+        QueueItem.objects.renumber(user=self.request.user)
+        return Response(status=HTTP_204_NO_CONTENT)
+
+    @action(detail=False, methods=['patch'])
+    def up(self, request):
+        QueueItem.objects.up(
+            userId=self.request.user,
+            itemId=self.request.data['item']
+            )
+        serializer = self.serializer_class(self.queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['patch'])
+    def down(self, request):
+        QueueItem.objects.down(
+            userId=self.request.user,
+            itemId=self.request.data['item']
+            )
+        serializer = self.serializer_class(self.queryset, many=True)
+        return Response(serializer.data)

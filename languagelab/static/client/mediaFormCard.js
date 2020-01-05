@@ -3,10 +3,13 @@ import config from "./config.js";
 import util from "./util.js";
 import commonElements from "./commonElements.js";
 
-export default class MediaCard extends React.Component {
+export default class MediaFormCard extends React.Component {
     constructor(props) {
         super(props);
-        console.log("props", props);
+
+        this.cancelClick = this.cancelClick.bind(this);
+        this.loadedMetadata = this.loadedMetadata.bind(this);
+        this.saveClick = this.saveClick.bind(this);
     }
 
     inputChange(event) {
@@ -52,7 +55,7 @@ export default class MediaCard extends React.Component {
             "audio",
             {
                 "id": "audio1",
-                "onLoadedMetadata": this.loadedMetadata.bind(this)
+                "onLoadedMetadata": this.loadedMetadata
             },
             null
         );
@@ -75,11 +78,10 @@ export default class MediaCard extends React.Component {
 
         const audio1 = document.querySelector("#audio1");
         var itemId = null;
-        if (this.props.mediaItem.id !== "form") {
+        if (typeof this.props.mediaItem.id === "number") {
             itemId = this.props.mediaItem.id;
         }
         this.props.saveItem(formData, "media", itemId);
-
     }
 
     textInput(fieldName, inputId, onChange, defaultValue) {
@@ -258,7 +260,7 @@ export default class MediaCard extends React.Component {
     nameRow() {
         return React.createElement(
             "div",
-            {"className": "form-row"},
+            {"className": "form-row mt-3"},
             this.textInputDiv("name"),
             this.textInputDiv("creator"),
             this.textInputDiv("rights")
@@ -290,7 +292,7 @@ export default class MediaCard extends React.Component {
             {
                 "type": "button",
                 "className": "btn btn-success btn-sm m-1",
-                "onClick": this.saveClick.bind(this)
+                "onClick": this.saveClick
             },
             "Save"
         );
@@ -302,7 +304,7 @@ export default class MediaCard extends React.Component {
             {
                 "type": "button",
                 "className": "btn btn-danger btn-sm m-1",
-                "onClick": this.cancelClick.bind(this)
+                "onClick": this.cancelClick
             },
             "Cancel"
         );
@@ -362,10 +364,10 @@ export default class MediaCard extends React.Component {
     }
 
     render() {
-
+        console.log(this.props);
         return React.createElement(
             "div",
-            {"className": "card bg-light"},
+            {"className": "card bg-light mb-3"},
             this.cardBody()
         );
     }
