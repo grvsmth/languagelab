@@ -2,7 +2,7 @@
 admin/
 django_environ.py
 media/
-/lib/
+lib/*
 data/
 *.log
 venv
