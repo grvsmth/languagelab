@@ -259,6 +259,10 @@ export default class CardList extends React.Component {
     }
 
     addCard(addable, cardId="form") {
+        if (cardId === "initial" && !this.props[this.props.selectedType].length) {
+            return null;
+        }
+
         if (this.props.activity === "add") {
             if (this.props.selectedType === "media") {
                 return this.mediaCard({"id": cardId}, [this.props.users[0]])
@@ -277,14 +281,7 @@ export default class CardList extends React.Component {
         return null;
     }
 
-    makeElements() {
-        return this.props[this.props.selectedType].map(this.makeElement, this);
-    }
-
-    render() {
-        console.log("this.props", this.props);
-
-        const myType = typeInfo[this.props.selectedType];
+    makeElements(myType) {
         if (!this.props[this.props.selectedType].length
             || !myType.hasOwnProperty("card")) {
             return React.createElement(
@@ -294,11 +291,18 @@ export default class CardList extends React.Component {
             );
         }
 
+        return this.props[this.props.selectedType].map(this.makeElement, this);
+    }
+
+    render() {
+        console.log("this.props", this.props);
+
+        const myType = typeInfo[this.props.selectedType];
         return React.createElement(
             "div",
             {"className": ""},
             this.addCard(myType.addable, "initial"),
-            this.makeElements(),
+            this.makeElements(myType),
             this.addCard(myType.addable, "final")
         );
     }

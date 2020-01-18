@@ -35,8 +35,9 @@ Client requirements are as follows:
 * Copy the static files including admin site styling: `python manage.py collectstatic`
 * Run `python manage.py makemigrations languagelab`
 * Run `python manage.py migrate`
+* Run `python manage.py loaddata languagelab/api/fixtures/languages.json`
+* If you want languages that aren't on the language list, download them
 * Create a superuser: `python manage.py createsuperuser --username=joe --email=joe@example.com`
 * Restart your web server
 * Log in to `/admin`, create your domain and delete `example.com` so that the links in the activation emails will work
 * Change the `DJANGO_SITE_ID` value in your `django_environ.py` to the ID of the site you just created (probably 2)
-* If you want languages that aren't on the language list, download them
