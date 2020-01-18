@@ -38,5 +38,3 @@ Client requirements are as follows:
 * Log in to `/admin`, create your domain and delete `example.com` so that the links in the activation emails will work
 * Change the `DJANGO_SITE_ID` value in your `django_environ.py` to the ID of the site you just created (probably 2)
 * If you want languages that aren't on the language list, download them
-
-
