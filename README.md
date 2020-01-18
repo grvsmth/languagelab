@@ -29,7 +29,7 @@ Client requirements are as follows:
 * Copy `languagelab/django_environ_empty.py` to `languagelab/django_environ.py`
 * Edit `languagelab/django_environ.py` and fill in the details of your installation
 * Copy the static files including admin site styling: `python manage.py collectstatic`
-* Run `python manage.py makemigrations mimic`
+* Run `python manage.py makemigrations languagelab`
 * Run `python manage.py migrate`
 * Create a superuser: `python manage.py createsuperuser --username=joe --email=joe@example.com`
 * Restart your web server
