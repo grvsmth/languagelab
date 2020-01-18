@@ -5,7 +5,7 @@ import apiClient from "./apiClient.js";
 import util from "./util.js";
 
 import config from "./config.js";
-
+import environment from "./environment.js";
 
 export default class Lab extends React.Component {
     constructor(props) {
@@ -64,7 +64,7 @@ export default class Lab extends React.Component {
     fetchData(dataType) {
         const loadTime = new moment();
         const apiUrl = [
-            config.api.baseUrl, dataType
+            environment.api.baseUrl, dataType
         ].join("/");
 
         apiClient.fetchData(apiUrl).then((res) => {
