@@ -1,5 +1,3 @@
-import config from "./config.js";
-
 const exports = {};
 
 exports.extractCookie = function(cookieKey) {
@@ -49,9 +47,9 @@ exports.fetchData = function(url, options={}, results=[]) {
     });
 };
 
-exports.updateLanguages = function() {
+exports.updateLanguages = function(baseUrl) {
     const csrftoken = exports.extractCookie("csrftoken");
-    const apiUrl = [config.api.baseUrl, "languages", "updateAll", ""].join("/");
+    const apiUrl = [baseUrl, "languages", "updateAll", ""].join("/");
     const options = {
         "method": "POST",
         "mode": "cors",
@@ -65,9 +63,9 @@ exports.updateLanguages = function() {
     });
 };
 
-exports.post = function(data, endpoint) {
+exports.post = function(baseUrl, endpoint, data) {
     const csrftoken = exports.extractCookie("csrftoken");
-    const apiUrl = [config.api.baseUrl, endpoint, ""].join("/");
+    const apiUrl = [baseUrl, endpoint, ""].join("/");
     const options = {
         "method": "POST",
         "headers": {
@@ -86,9 +84,9 @@ exports.post = function(data, endpoint) {
     });
 };
 
-exports.patch = function(data, endpoint, id=null) {
+exports.patch = function(baseUrl, endpoint, data, id=null) {
     const csrftoken = exports.extractCookie("csrftoken");
-    const apiUrl = [config.api.baseUrl, endpoint, id, ""].join("/");
+    const apiUrl = [baseUrl, endpoint, id, ""].join("/");
     const options = {
         "method": "PATCH",
         "headers": {
@@ -107,9 +105,9 @@ exports.patch = function(data, endpoint, id=null) {
     });
 };
 
-exports.delete = function(endpoint, id) {
+exports.delete = function(baseUrl, endpoint, id) {
     const csrftoken = exports.extractCookie("csrftoken");
-    const apiUrl = [config.api.baseUrl, endpoint, id, ""].join("/");
+    const apiUrl = [baseUrl, endpoint, id, ""].join("/");
     const options = {
         "method": "DELETE",
         "headers": {
@@ -127,9 +125,9 @@ exports.delete = function(endpoint, id) {
     });
 };
 
-exports.post = function(data, endpoint) {
+exports.post = function(baseUrl, endpoint, data) {
     const csrftoken = exports.extractCookie("csrftoken");
-    const apiUrl = [config.api.baseUrl, endpoint, ""].join("/");
+    const apiUrl = [baseUrl, endpoint, ""].join("/");
     const options = {
         "method": "POST",
         "headers": {
