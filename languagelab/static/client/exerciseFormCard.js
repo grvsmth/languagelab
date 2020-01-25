@@ -129,7 +129,9 @@ export default class ExerciseFormCard extends React.Component {
             this.saveButton(),
             this.cancelButton()
         );
-    }    itemOption(optionKey, optionValue) {
+    }
+
+    itemOption(optionKey, optionValue) {
         return React.createElement(
             "option",
             {"value": optionKey},
@@ -138,6 +140,7 @@ export default class ExerciseFormCard extends React.Component {
     }
 
     itemSelect(fieldName, options, inputId) {
+        console.log("itemSelect", options);
         return React.createElement(
             "select",
             {
