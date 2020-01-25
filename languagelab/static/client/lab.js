@@ -180,6 +180,7 @@ export default class Lab extends React.Component {
                 console.error(err);
             });
         } else {
+            console.log("save", item);
             apiClient.post(item, itemType).then((res) => {
                 this.updateStateItem(res.response, itemType);
                 this.setState({"activity": "read"});

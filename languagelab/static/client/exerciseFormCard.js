@@ -16,7 +16,11 @@ export default class ExerciseFormCard extends React.Component {
         this.props.setActivity("read");
     }
 
+
+
     processField(node) {
+        console.log("processField", node);
+        console.dir(node);
         if (node.type === "checkbox") {
             return node.checked;
         }
@@ -129,12 +133,18 @@ export default class ExerciseFormCard extends React.Component {
             this.saveButton(),
             this.cancelButton()
         );
-    }    itemOption(optionKey, optionValue) {
+    }
+
+    itemOption(optionKey, optionValue) {
         return React.createElement(
             "option",
             {"value": optionKey},
             optionValue
         );
+    }
+
+    itemChange(event) {
+        console.dir(event.target);
     }
 
     itemSelect(fieldName, options, inputId) {
@@ -144,6 +154,7 @@ export default class ExerciseFormCard extends React.Component {
                 "className": "form-control",
                 "id": inputId,
                 "name": fieldName,
+                "onChange": this.itemChange.bind(this),
                 "defaultValue": this.props.exercise[fieldName]
             },
             ...Object.keys(options).map((optionKey) => {
@@ -159,6 +170,7 @@ export default class ExerciseFormCard extends React.Component {
         if (!optionList) {
             return null;
         }
+        console.log("selectDiv()", optionList);
 
         const inputId = [fieldName, this.props.exercise.id].join("_");
         return React.createElement(
