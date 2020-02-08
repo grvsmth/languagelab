@@ -159,8 +159,13 @@ export default class Lab extends React.Component {
         });
     }
 
-    setActivity(activity) {
-        this.setState({"activity": activity});
+    setActivity(activity, itemId=null) {
+        var targetState = {"activity": activity};
+        if (itemId) {
+            targetState.selectedItem = itemId;
+        }
+        console.log("targetState", targetState);
+        this.setState(targetState);
     }
 
     deleteClick(itemType, itemId) {
