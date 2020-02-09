@@ -135,9 +135,7 @@ export default class CardList extends React.Component {
             cardComponent = MediaFormCard;
         }
 
-        if (this.props.activity === "add" && typeof mediaItem.id !== "number"
-            && this.props.selectedItem === mediaItem.id
-        ) {
+        if (this.props.activity === "add" && typeof mediaItem.id !== "number") {
             cardComponent = MediaFormCard;
         }
 
@@ -267,11 +265,11 @@ export default class CardList extends React.Component {
         }
 
         if (this.props.activity === "add") {
-            if (this.props.selectedType === "media") {
-                return this.mediaCard({"id": cardId}, [this.props.users[0]])
-            }
-
             if (this.props.selectedItem === cardId) {
+                if (this.props.selectedType === "media") {
+                    return this.mediaCard({"id": cardId}, [this.props.users[0]])
+                }
+
                 return this.exerciseFormCard(
                     cardId,
                     {"id": cardId},
@@ -301,7 +299,7 @@ export default class CardList extends React.Component {
     }
 
     render() {
-
+        console.log(this.props);
         const myType = typeInfo[this.props.selectedType];
         return React.createElement(
             "div",

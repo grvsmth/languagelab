@@ -188,7 +188,7 @@ export default class Lab extends React.Component {
         } else {
             apiClient.post(environment.api.baseUrl, itemType, item).then((res) => {
                 this.updateStateItem(res.response, itemType);
-                this.setState({"activity": "read"});
+                this.setState({"activity": "read", "selectedItem": null});
             }, (err) => {
                 console.error(err);
             });
