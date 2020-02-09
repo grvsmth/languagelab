@@ -164,7 +164,6 @@ export default class Lab extends React.Component {
         if (itemId) {
             targetState.selectedItem = itemId;
         }
-        console.log("targetState", targetState);
         this.setState(targetState);
     }
 
@@ -178,9 +177,7 @@ export default class Lab extends React.Component {
     }
 
     saveItem(item, itemType, itemId) {
-        console.log("saveItem", itemId);
         if (itemId) {
-            console.log("saving", item);
             apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
                 .then((res) => {
                 this.updateStateItem(res.response, itemType);
@@ -189,12 +186,10 @@ export default class Lab extends React.Component {
                 console.error(err);
             });
         } else {
-            console.log("saving", item);
             apiClient.post(environment.api.baseUrl, itemType, item).then((res) => {
                 this.updateStateItem(res.response, itemType);
                 this.setState({"activity": "read"});
             }, (err) => {
-                console.log(item);
                 console.error(err);
             });
         }
