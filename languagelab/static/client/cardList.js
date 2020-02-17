@@ -299,7 +299,6 @@ export default class CardList extends React.Component {
     }
 
     render() {
-        console.log(this.props);
         const myType = typeInfo[this.props.selectedType];
         return React.createElement(
             "div",

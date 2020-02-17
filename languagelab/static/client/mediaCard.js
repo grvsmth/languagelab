@@ -215,7 +215,6 @@ export default class MediaCard extends React.Component {
     }
 
     render() {
-        console.log(this.props);
         return React.createElement(
             "div",
             {"className": "card border-primary bg-light mb-3"},

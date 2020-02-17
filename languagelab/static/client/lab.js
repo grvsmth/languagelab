@@ -81,7 +81,6 @@ export default class Lab extends React.Component {
     }
 
     updateStateItem(res, itemType, activity=null, resetSelected=false) {
-        console.log(`updateStateItem(${itemType}, ${activity}, ${resetSelected})`);
         const items = [...this.state[itemType]];
         const index = items.findIndex((item) => item.id === res.id);
 
@@ -98,7 +97,6 @@ export default class Lab extends React.Component {
         if (resetSelected) {
             targetState.selectedItem = null;
         }
-        console.log(targetState);
 
         this.setState(targetState);
     }
@@ -185,7 +183,6 @@ export default class Lab extends React.Component {
     }
 
     saveItem(item, itemType, itemId) {
-        console.log("saveItem", itemId);
         if (itemId) {
             apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
                 .then((res) => {
@@ -196,7 +193,6 @@ export default class Lab extends React.Component {
         } else {
             apiClient.post(environment.api.baseUrl, itemType, item).then(
                 (res) => {
-                    console.log("Item successfully saved!");
                     this.updateStateItem(res.response, itemType, "read", true);
                 }, (err) => {
                     console.error(err);
@@ -317,7 +313,6 @@ export default class Lab extends React.Component {
     }
 
     render() {
-        console.log(this.state);
         return React.createElement(
             "div",
             {"className": "container"},
