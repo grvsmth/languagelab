@@ -80,8 +80,8 @@ export default class Lab extends React.Component {
         });
     }
 
-    updateStateItem(res, itemType, action=null, resetSelected=false) {
-        console.log(`updateStateItem(${itemType}, ${action}, ${resetSelected})`);
+    updateStateItem(res, itemType, activity=null, resetSelected=false) {
+        console.log(`updateStateItem(${itemType}, ${activity}, ${resetSelected})`);
         const items = [...this.state[itemType]];
         const index = items.findIndex((item) => item.id === res.id);
 
@@ -92,8 +92,8 @@ export default class Lab extends React.Component {
         }
 
         const targetState = {[itemType]: items};
-        if (action) {
-            targetState.action = action;
+        if (activity) {
+            targetState.activity = activity;
         }
         if (resetSelected) {
             targetState.selectedItem = null;
