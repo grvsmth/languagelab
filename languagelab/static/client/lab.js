@@ -80,7 +80,8 @@ export default class Lab extends React.Component {
         });
     }
 
-    updateStateItem(res, itemType) {
+    updateStateItem(res, itemType, action=null, resetSelected=false) {
+        console.log(`updateStateItem(${itemType}, ${action}, ${resetSelected})`);
         const items = [...this.state[itemType]];
         const index = items.findIndex((item) => item.id === res.id);
 
@@ -90,9 +91,16 @@ export default class Lab extends React.Component {
             items[index] = res;
         }
 
-        this.setState(
-            {[itemType]: items}
-        );
+        const targetState = {[itemType]: items};
+        if (action) {
+            targetState.action = action;
+        }
+        if (resetSelected) {
+            targetState.selectedItem = null;
+        }
+        console.log(targetState);
+
+        this.setState(targetState);
     }
 
     removeFromQueue(queueItemId) {
@@ -177,21 +185,23 @@ export default class Lab extends React.Component {
     }
 
     saveItem(item, itemType, itemId) {
+        console.log("saveItem", itemId);
         if (itemId) {
             apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
                 .then((res) => {
-                this.updateStateItem(res.response, itemType);
-                this.setState({"activity": "read"});
+                this.updateStateItem(res.response, itemType, "read", false);
             }, (err) => {
                 console.error(err);
             });
         } else {
-            apiClient.post(environment.api.baseUrl, itemType, item).then((res) => {
-                this.updateStateItem(res.response, itemType);
-                this.setState({"activity": "read", "selectedItem": null});
-            }, (err) => {
-                console.error(err);
-            });
+            apiClient.post(environment.api.baseUrl, itemType, item).then(
+                (res) => {
+                    console.log("Item successfully saved!");
+                    this.updateStateItem(res.response, itemType, "read", true);
+                }, (err) => {
+                    console.error(err);
+                }
+            );
         }
     }
 
