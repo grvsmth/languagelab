@@ -364,7 +364,6 @@ export default class MediaFormCard extends React.Component {
     }
 
     render() {
-        console.log(this.props);
         return React.createElement(
             "div",
             {"className": "card bg-light mb-3"},

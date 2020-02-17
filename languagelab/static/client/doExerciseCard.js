@@ -473,8 +473,6 @@ export default class DoExerciseCard extends React.Component {
     }
 
     render() {
-        console.log("props", this.props);
-        console.log("state", this.state);
         return React.createElement(
             "div",
             {"className": "card bg-light mb-3"},

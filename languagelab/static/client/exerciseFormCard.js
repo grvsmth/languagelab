@@ -6,7 +6,6 @@ import commonElements from "./commonElements.js";
 export default class ExerciseFormCard extends React.Component {
     constructor(props) {
         super(props);
-        console.log("props", props);
     }
 
     inputChange(event) {
@@ -19,8 +18,6 @@ export default class ExerciseFormCard extends React.Component {
 
 
     processField(node) {
-        console.log("processField", node);
-        console.dir(node);
         if (node.type === "checkbox") {
             return node.checked;
         }
@@ -148,7 +145,6 @@ export default class ExerciseFormCard extends React.Component {
     }
 
     itemSelect(fieldName, options, inputId) {
-        console.log("itemSelect", options);
         return React.createElement(
             "select",
             {
@@ -171,7 +167,6 @@ export default class ExerciseFormCard extends React.Component {
         if (!optionList) {
             return null;
         }
-        console.log("selectDiv()", optionList);
 
         const inputId = [fieldName, this.props.exercise.id].join("_");
         return React.createElement(
