@@ -6,7 +6,6 @@ import commonElements from "./commonElements.js";
 export default class ExerciseFormCard extends React.Component {
     constructor(props) {
         super(props);
-        console.log("props", props);
     }
 
     inputChange(event) {
@@ -15,6 +14,8 @@ export default class ExerciseFormCard extends React.Component {
     cancelClick() {
         this.props.setActivity("read");
     }
+
+
 
     processField(node) {
         if (node.type === "checkbox") {
@@ -129,12 +130,18 @@ export default class ExerciseFormCard extends React.Component {
             this.saveButton(),
             this.cancelButton()
         );
-    }    itemOption(optionKey, optionValue) {
+    }
+
+    itemOption(optionKey, optionValue) {
         return React.createElement(
             "option",
             {"value": optionKey},
             optionValue
         );
+    }
+
+    itemChange(event) {
+        console.dir(event.target);
     }
 
     itemSelect(fieldName, options, inputId) {
@@ -144,6 +151,7 @@ export default class ExerciseFormCard extends React.Component {
                 "className": "form-control",
                 "id": inputId,
                 "name": fieldName,
+                "onChange": this.itemChange.bind(this),
                 "defaultValue": this.props.exercise[fieldName]
             },
             ...Object.keys(options).map((optionKey) => {

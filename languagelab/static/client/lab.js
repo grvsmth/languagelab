@@ -5,7 +5,7 @@ import apiClient from "./apiClient.js";
 import util from "./util.js";
 
 import config from "./config.js";
-
+import environment from "./environment.js";
 
 export default class Lab extends React.Component {
     constructor(props) {
@@ -64,7 +64,7 @@ export default class Lab extends React.Component {
     fetchData(dataType) {
         const loadTime = new moment();
         const apiUrl = [
-            config.api.baseUrl, dataType
+            environment.api.baseUrl, dataType
         ].join("/");
 
         apiClient.fetchData(apiUrl).then((res) => {
@@ -80,7 +80,7 @@ export default class Lab extends React.Component {
         });
     }
 
-    updateStateItem(res, itemType) {
+    updateStateItem(res, itemType, activity=null, resetSelected=false) {
         const items = [...this.state[itemType]];
         const index = items.findIndex((item) => item.id === res.id);
 
@@ -90,9 +90,15 @@ export default class Lab extends React.Component {
             items[index] = res;
         }
 
-        this.setState(
-            {[itemType]: items}
-        );
+        const targetState = {[itemType]: items};
+        if (activity) {
+            targetState.activity = activity;
+        }
+        if (resetSelected) {
+            targetState.selectedItem = null;
+        }
+
+        this.setState(targetState);
     }
 
     removeFromQueue(queueItemId) {
@@ -103,10 +109,11 @@ export default class Lab extends React.Component {
         const queueItem = {
             "exercise": exerciseId
         };
-        apiClient.post(queueItem, "queueItems").then((res) => {
-            this.fetchData("queueItems");
-        }, (err) => {
-            console.error(err);
+        apiClient.post(environment.api.baseUrl, "queueItems", queueItem).then(
+            (res) => {
+                this.fetchData("queueItems");
+            }, (err) => {
+                console.error(err);
         });
     }
 
@@ -117,7 +124,8 @@ export default class Lab extends React.Component {
     checkClick(itemType, itemId, itemKey, itemChecked) {
         event.preventDefault();
         const payload = {[itemKey]: itemChecked};
-        apiClient.patch(payload, itemType, itemId).then((res) => {
+        apiClient.patch(environment.api.baseUrl, itemType, payload, itemId)
+            .then((res) => {
             this.updateStateItem(res, itemType);
         }, (err) => {
             console.error(err);
@@ -157,12 +165,16 @@ export default class Lab extends React.Component {
         });
     }
 
-    setActivity(activity) {
-        this.setState({"activity": activity});
+    setActivity(activity, itemId=null) {
+        var targetState = {"activity": activity};
+        if (itemId) {
+            targetState.selectedItem = itemId;
+        }
+        this.setState(targetState);
     }
 
     deleteClick(itemType, itemId) {
-        apiClient.delete(itemType, itemId).then((res) => {
+        apiClient.delete(environment.api.baseUrl, itemType, itemId).then((res) => {
             this.fetchData(itemType);
             this.fetchData("queueItems");
         }, (err) => {
@@ -171,27 +183,28 @@ export default class Lab extends React.Component {
     }
 
     saveItem(item, itemType, itemId) {
-        console.log("saveItem", itemId);
         if (itemId) {
-            apiClient.patch(item, itemType, itemId).then((res) => {
-                this.updateStateItem(res.response, itemType);
-                this.setState({"activity": "read"});
+            apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
+                .then((res) => {
+                this.updateStateItem(res.response, itemType, "read", false);
             }, (err) => {
                 console.error(err);
             });
         } else {
-            apiClient.post(item, itemType).then((res) => {
-                this.updateStateItem(res.response, itemType);
-                this.setState({"activity": "read"});
-            }, (err) => {
-                console.log(item);
-                console.error(err);
-            });
+            apiClient.post(environment.api.baseUrl, itemType, item).then(
+                (res) => {
+                    this.updateStateItem(res.response, itemType, "read", true);
+                }, (err) => {
+                    console.error(err);
+                }
+            );
         }
     }
 
     up(itemId) {
-        apiClient.patch({"item": itemId}, "queueItems", "up").then(res => {
+        apiClient.patch(
+            environment.api.baseUrl, "queueItems", {"item": itemId}, "up"
+        ).then(res => {
             this.fetchData("queueItems");
         }, err => {
             console.error(err);
@@ -199,7 +212,9 @@ export default class Lab extends React.Component {
     }
 
     down(itemId) {
-        apiClient.patch({"item": itemId}, "queueItems", "down").then(res => {
+        apiClient.patch(
+            environment.api.baseUrl, "queueItems", {"item": itemId}, "down"
+        ).then(res => {
             this.fetchData("queueItems");
         }, err => {
             console.error(err);
@@ -298,7 +313,6 @@ export default class Lab extends React.Component {
     }
 
     render() {
-        console.log(this.state);
         return React.createElement(
             "div",
             {"className": "container"},

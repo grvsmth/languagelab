@@ -3,7 +3,7 @@ const config = {
     "timeFormat": "HH:mm:ss.S",
     "tagSplitRE": /\s*[,;]+\s*/,
     "api": {
-        "baseUrl": "https://languagelab-dev.grieve-smith.com/api/0.2",
+        "baseUrl": "https://languagelab.grieve-smith.com/api/0.2",
         "endpoint": {
             "Media": "media",
             "Exercises": "exercises",
