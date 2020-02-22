@@ -20,23 +20,25 @@ export default class DoExerciseCard extends React.Component {
         this.statusColor = {
             "error": "danger",
             "warning": "warning",
-            "active": "success",
-            "normal": "info",
+            "playMimic": "success",
+            "playModel": "info",
+            "playModelFirst": "success",
+            "playModelSecond": "success",
+            "ready": "info",
             "recording": "danger"
         };
         this.timeFormat = "HH:mm:ss.S";
 
         this.state = {
             "clickedAction": "",
-            "currentActivity": "inactive",
+            "status": "ready",
             "endSeconds": this.timeAsSeconds(this.props.exercise.endTime),
             "mimicCount": 0,
             "nowPlaying": this.props.mediaItem.mediaUrl,
             "onlyExercise": true,
             "recordDisabled": true,
             "startSeconds": this.timeAsSeconds(this.props.exercise.startTime),
-            "status": "normal",
-            "statusText": "",
+            "statusText": "Ready",
             "userAudioUrl": ""
         };
     }
@@ -193,61 +195,60 @@ export default class DoExerciseCard extends React.Component {
             }
         }
 
-        if (this.playActivities.includes(this.state.currentActivity)) {
-            event.target.play().catch(this.handleError, this.state.currentActivity);
+        if (this.playActivities.includes(this.state.status)) {
+            event.target.play().catch(this.handleError, this.state.status);
         }
     }
 
     afterPlay(player) {
         console.log("afterPlay");
         if (this.state.clickedAction === "mimic"
-            && this.state.currentActivity === "playModelFirst") {
+            && this.state.status === "playModelFirst") {
             this.mediaRecorder.start();
             this.setState({
-                "currentActivity": "recording",
+                "status": "recording",
                 "statusText": "Now recording"
             });
             return;
         }
 
-        if (this.state.currentActivity === "playModelSecond") {
+        if (this.state.status === "playModelSecond") {
             if (this.state.userAudioUrl.length < 11) {
                 this.setState({
-                    "currentActivity": "inactive",
+                    "status": "warning",
                     "clickedAction": null,
                     "statusText": "No recorded audio found",
-                    "status": "warning"
                 });
                 player.currentTime = this.state.startSeconds;
             } else {
                 this.setState({
                     "nowPlaying": this.state.userAudioUrl,
-                    "currentActivity": "playMimic",
+                    "status": "playMimic",
                     "statusText": "Now playing recorded audio"
                 });
             }
             return;
         }
 
-        if (this.state.currentActivity === "playMimic") {
+        if (this.state.status === "playMimic") {
             this.setState({
-                "currentActivity": "inactive",
-                "statusText": "",
+                "status": "ready",
+                "statusText": "Ready",
                 "clickedAction": null,
                 "mimicCount": this.state.mimicCount + 1
             });
             return;
         }
         player.currentTime = this.state.startSeconds;
-        this.setState({"currentActivity": "inactive"});
+        this.setState({"status": "ready"});
     }
 
     timeUpdateHandler(event) {
-        if (this.state.currentActivity === "playModel"
+        if (this.state.status === "playModel"
             && !this.state.onlyExercise) {
             return;
         }
-        if (!this.playActivities.includes(this.state.currentActivity)) {
+        if (!this.playActivities.includes(this.state.status)) {
             return;
         }
         if (event.target.currentTime < this.state.endSeconds) {
@@ -259,8 +260,11 @@ export default class DoExerciseCard extends React.Component {
     }
 
     playHandler(event) {
-        if (this.state.currentActivity === "inactive") {
-            this.setState({"currentActivity": "playModel"});
+        if (this.state.status === "ready") {
+            this.setState({
+                "status": "playModel",
+                "statusText": "Now playing " + this.props.mediaItem.name
+            });
         }
     }
 
@@ -355,11 +359,11 @@ export default class DoExerciseCard extends React.Component {
     }
 
     mimicClick(event) {
-        if (this.state.currentActivity === "recording") {
+        if (this.state.status === "recording") {
             console.log("Stop recording!");
             this.mediaRecorder.stop();
             this.setState({
-                "currentActivity": "playModelSecond",
+                "status": "playModelSecond",
                 "nowPlaying": this.props.mediaItem.mediaUrl,
                 "statusText": "Now playing " + this.props.mediaItem.name
             });
@@ -379,20 +383,19 @@ export default class DoExerciseCard extends React.Component {
         }
         this.setState({
             "clickedAction": "mimic",
-            "currentActivity": "playModelFirst",
+            "status": "playModelFirst",
             "nowPlaying": this.props.mediaItem.mediaUrl,
-            "statusText": "Now playing " + this.props.mediaItem.name,
-            "status": "active"
+            "statusText": "Now playing " + this.props.mediaItem.name
         });
     }
 
     mimicButton() {
         var colorClass = "info";
         if (this.state.clickedAction === "mimic") {
-            if (this.state.currentActivity === "recording") {
+            if (this.state.status === "recording") {
                 colorClass = "danger";
             } else if (this.playActivities.includes(
-                this.state.currentActivity
+                this.state.status
             )) {
                 colorClass = "success";
             }
@@ -449,7 +452,7 @@ export default class DoExerciseCard extends React.Component {
         return React.createElement(
             "div",
             {
-                "className": "btn-group btn-group-sm"
+                "className": "btn-group btn-group"
             },
             this.navButton("previous"),
             this.mimicButton(),
