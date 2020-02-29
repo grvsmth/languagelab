@@ -26,7 +26,7 @@ Client requirements are as follows:
 * Create a virtual environment for your application
 * Activate the virtual environment
 * Install Python dependencies: `pip install -r requirements.txt`
-* Download the Javascript and CSS dependencies and copy them to the `static`
+* Download the Javascript and CSS dependencies and copy them to the `lib`
     directory (this will be done automatically in the future)
 * Copy `languagelab/django_environ_empty.py` to `languagelab/django_environ.py`
 * Edit `languagelab/django_environ.py` and fill in the details of your installation
