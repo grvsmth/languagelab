@@ -7,7 +7,7 @@ export default class DoExerciseCard extends React.Component {
         super(props);
 
         this.afterPlay = this.afterPlay.bind(this);
-        this.gotInput = this.gotInput.bind(this);
+        this.handleGetInput = this.handleGetInput.bind(this);
         this.handleError = this.handleError.bind(this);
         this.mediaRecorder = null;
         this.playActivities = [
@@ -45,7 +45,7 @@ export default class DoExerciseCard extends React.Component {
 
     componentDidMount() {
         navigator.mediaDevices.getUserMedia({"audio": true}).then(
-            (stream) => this.gotInput(stream),
+            (stream) => this.handleGetInput(stream),
             (error) => this.handleGetMediaError(error)
         );
     }
@@ -58,7 +58,7 @@ export default class DoExerciseCard extends React.Component {
         this.setState({"userAudioUrl": userAudioUrl});
     }
 
-    gotInput(stream) {
+    handleGetInput(stream) {
         window.stream = stream;
         this.mediaRecorder = new window.MediaRecorder(
             stream, this.recorderOptions
@@ -456,7 +456,6 @@ export default class DoExerciseCard extends React.Component {
             },
             this.navButton("previous"),
             this.mimicButton(),
-            this.downloadButton(),
             this.exitButton(),
             this.navButton("next")
         );
