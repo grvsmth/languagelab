@@ -29,36 +29,41 @@ export default class Lab extends React.Component {
 
         this.state = {
             "activity": "read",
+            "exercises": [],
+            "languages": [],
             "lastUpdated": "",
+            "lessons": [],
             "loading": {
                 "media": false,
                 "users": false,
                 "languages": false
             },
-            "exercises": [],
-            "lessons": [],
+            "loggedIn": false,
             "media": [],
-            "users": [],
-            "languages": [],
             "queueItems": [],
             "selectedItem": null,
-            "selectedType": "queueItems"
+            "selectedType": "queueItems",
+            "users": []
         };
     }
 
     componentDidMount() {
         if (!this.state.lastUpdated) {
-            this.setState({"loading": {
-                "media": true,
-                "languages": true,
-                "users": true
-            }});
-            this.fetchData("queueItems");
-            this.fetchData("exercises");
-            this.fetchData("media");
-            this.fetchData("users");
-            this.fetchData("languages");
+            this.fetchAll();
         }
+    }
+
+    fetchAll() {
+        const loading = {};
+        const thingsToLoad = Object.values(config.api.endpoint).concat([
+            "users"
+        ]);
+
+        thingsToLoad.forEach((endpoint) => {
+            loading[endpoint] = true;
+            this.fetchData(endpoint);
+        });
+        this.setState({"loading": loading});
     }
 
     fetchData(dataType) {
