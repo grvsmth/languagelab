@@ -2,8 +2,8 @@ from django.contrib.auth.models import User, Group
 from django.db.models import Max
 from django.http import JsonResponse
 
-from rest_framework import viewsets
-from rest_framework.decorators import action
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework.serializers import (
     CurrentUserDefault,
@@ -27,22 +27,31 @@ from languagelab.api.serializers import (
     LessonSerializer,
     MediaItemSerializer,
     QueueItemSerializer,
-    UserSerializer
+    UserSerializer,
+    UserSerializerWithToken
     )
 
 LOG = getLogger()
 basicConfig(level="DEBUG")
 
+@api_view(['GET'])
+def current_user(request):
+    """
+    Determine the current user by token and return the data
+    """
 
-class UserViewSet(viewsets.ModelViewSet):
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data)
+
+class UserViewSet(ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
     queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
+    serializer_class = UserSerializerWithToken
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupViewSet(ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
@@ -50,7 +59,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
 
 
-class LanguageViewSet(viewsets.ModelViewSet):
+class LanguageViewSet(ModelViewSet):
     """
     API endpoint for viewing available languages
     """
@@ -70,7 +79,7 @@ class LanguageViewSet(viewsets.ModelViewSet):
         return JsonResponse({"success": "true", "items": counter})
 
 
-class MediaItemViewSet(viewsets.ModelViewSet):
+class MediaItemViewSet(ModelViewSet):
     """
     API endpoint for viewing media items
     """
@@ -81,7 +90,7 @@ class MediaItemViewSet(viewsets.ModelViewSet):
         serializer.save(uploader=self.request.user)
 
 
-class ExerciseViewSet(viewsets.ModelViewSet):
+class ExerciseViewSet(ModelViewSet):
     """
     API endpoint for viewing exercises
     """
@@ -97,7 +106,7 @@ class ExerciseViewSet(viewsets.ModelViewSet):
         return Response(status=HTTP_204_NO_CONTENT)
 
 
-class LessonViewSet(viewsets.ModelViewSet):
+class LessonViewSet(ModelViewSet):
     """
     API endpoint for viewing lessons
     """
@@ -114,7 +123,7 @@ class LessonViewSet(viewsets.ModelViewSet):
         serializer.save(creator=self.request.user)
 
 
-class QueueItemViewSet(viewsets.ModelViewSet):
+class QueueItemViewSet(ModelViewSet):
     """
     API endpoint for viewing queue items
     """

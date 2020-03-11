@@ -1,9 +1,16 @@
 from django.contrib.auth.models import User, Group
 from rest_framework.serializers import (
+    CharField,
     CurrentUserDefault,
     IntegerField,
     ModelSerializer,
-    PrimaryKeyRelatedField
+    PrimaryKeyRelatedField,
+    SerializerMethodField
+    )
+
+from rest_framework_jwt.settings.api_settings import (
+    JWT_PAYLOAD_HANDLER,
+    JWT_ENCODE_HANDLER
     )
 
 from taggit_serializer.serializers import (
@@ -20,6 +27,31 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'url', 'username', 'email', 'groups']
+
+
+class UserSerializerWithToken(ModelSerializer):
+
+    token = SerializerMethodField()
+    password = CharField(write_only=True)
+
+    def get_token(self, obj):
+        payload = JWT_PAYLOAD_HANDLER()
+        token = JWT_ENCODE_HANDLER(payload)
+        return token
+
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        instance = self.Meta.model(**validated_data)
+
+        if password is not None:
+            instance.set_password(password)
+
+        instance.save()
+        return instance
+
+    class Meta:
+        model = User
+        fields = ('token', 'username', 'password')
 
 
 class GroupSerializer(ModelSerializer):
