@@ -8,10 +8,7 @@ from rest_framework.serializers import (
     SerializerMethodField
     )
 
-from rest_framework_jwt.settings.api_settings import (
-    JWT_PAYLOAD_HANDLER,
-    JWT_ENCODE_HANDLER
-    )
+from rest_framework_jwt.settings import api_settings
 
 from taggit_serializer.serializers import (
     TagListSerializerField,
@@ -35,8 +32,8 @@ class UserSerializerWithToken(ModelSerializer):
     password = CharField(write_only=True)
 
     def get_token(self, obj):
-        payload = JWT_PAYLOAD_HANDLER()
-        token = JWT_ENCODE_HANDLER(payload)
+        payload = api_settings.JWT_PAYLOAD_HANDLER(obj)
+        token = api_settings.JWT_ENCODE_HANDLER(payload)
         return token
 
     def create(self, validated_data):
