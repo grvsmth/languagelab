@@ -85,16 +85,18 @@ export default class Home extends React.Component {
         )
     }
 
-    loginButton() {
-        const buttonText = this.props.currentUser ? "Logout" : "Login";
+    logoutButton() {
+        if (!this.props.currentUser) {
+            return null;
+        }
 
         return React.createElement(
             "button",
             {
                 "className": "btn btn-secondary",
-                "onClick": this.props.login
+                "onClick": this.props.logout
             },
-            buttonText
+            "Logout"
         )
     }
 
@@ -107,7 +109,7 @@ export default class Home extends React.Component {
             },
             this.navUl(),
             this.welcomeItem(),
-            this.loginButton()
+            this.logoutButton()
         );
     }
 

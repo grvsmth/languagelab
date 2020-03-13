@@ -104,10 +104,18 @@ export default class Lab extends React.Component {
         this.setState(targetState);
     }
 
-    login() {
-        console.log("login()");
+    fetchToken() {
+
+            if (dataType === "token-auth") {
+                if (res.token) {
+                    localStorage.setItem("token-auth", res.token);
+                }
+            }
+    }
+
+    logout() {
         if (this.state.currentUser) {
-            this.setState({"currentUser": null});
+            this.setState({"currentUser": null, "activity": "login"});
             return;
         }
     }
@@ -318,7 +326,7 @@ export default class Lab extends React.Component {
                 "activeItem": this.state.selectedType,
                 "currentUser": this.state.currentUser,
                 "itemType": config.api.endpoint,
-                "login": this.login.bind(this),
+                "logout": this.logout.bind(this),
                 "navClick": this.navClick
             },
             null
