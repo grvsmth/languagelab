@@ -59,6 +59,10 @@ export default class Home extends React.Component {
     }
 
     navUl() {
+        if (!this.props.currentUser) {
+            return null;
+        }
+
         return React.createElement(
             "ul",
             {"className": "navbar-nav mr-auto"},

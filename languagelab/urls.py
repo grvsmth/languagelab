@@ -47,6 +47,6 @@ urlpatterns = [
         'api-auth/',
         include('rest_framework.urls', namespace='rest_framework')
         ),
-    path('api/{}/current-user/'.format(API_VERSION), current_user),
+    path('api/{}/currentUser/'.format(API_VERSION), current_user),
     path('api/{}/token-auth/'.format(API_VERSION), obtain_jwt_token)
 ] + static(STATIC_URL, document_root=STATIC_ROOT)

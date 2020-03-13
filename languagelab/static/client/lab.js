@@ -51,7 +51,7 @@ export default class Lab extends React.Component {
 
     fetchAll() {
         const loading = {};
-        this.fetchData("current-user");
+        this.fetchData("currentUser");
 
         const thingsToLoad = Object.values(config.api.endpoint).concat([
             "users"
@@ -102,6 +102,14 @@ export default class Lab extends React.Component {
         }
 
         this.setState(targetState);
+    }
+
+    login() {
+        console.log("login()");
+        if (this.state.currentUser) {
+            this.setState({"currentUser": null});
+            return;
+        }
     }
 
     removeFromQueue(queueItemId) {
@@ -308,8 +316,9 @@ export default class Lab extends React.Component {
             Navbar,
             {
                 "activeItem": this.state.selectedType,
-                "currentUser": this.state["current-user"],
+                "currentUser": this.state.currentUser,
                 "itemType": config.api.endpoint,
+                "login": this.login.bind(this),
                 "navClick": this.navClick
             },
             null
