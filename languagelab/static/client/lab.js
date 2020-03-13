@@ -33,11 +33,7 @@ export default class Lab extends React.Component {
             "languages": [],
             "lastUpdated": "",
             "lessons": [],
-            "loading": {
-                "media": false,
-                "users": false,
-                "languages": false
-            },
+            "loading": {},
             "loggedIn": false,
             "media": [],
             "queueItems": [],
@@ -55,6 +51,8 @@ export default class Lab extends React.Component {
 
     fetchAll() {
         const loading = {};
+        this.fetchData("current-user");
+
         const thingsToLoad = Object.values(config.api.endpoint).concat([
             "users"
         ]);
@@ -309,7 +307,8 @@ export default class Lab extends React.Component {
         return React.createElement(
             Navbar,
             {
-                "activeItem": "Queue",
+                "activeItem": this.state.selectedType,
+                "currentUser": this.state["current-user"],
                 "itemType": config.api.endpoint,
                 "navClick": this.navClick
             },
@@ -318,6 +317,7 @@ export default class Lab extends React.Component {
     }
 
     render() {
+        console.log(this.state);
         return React.createElement(
             "div",
             {"className": "container"},

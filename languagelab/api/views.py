@@ -40,7 +40,7 @@ def current_user(request):
     Determine the current user by token and return the data
     """
 
-    serializer = UserSerializer(request.user)
+    serializer = UserSerializer(request.user, context={'request': request})
     return Response(serializer.data)
 
 class UserViewSet(ModelViewSet):
