@@ -2,7 +2,7 @@ import CardList from "./cardList.js";
 import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
 
-import apiClient from "./apiClient.js";
+import LanguageLabClient from "./apiClient.js";
 import util from "./util.js";
 
 import config from "./config.js";
@@ -28,6 +28,9 @@ export default class Lab extends React.Component {
             "next": this.next.bind(this)
         };
 
+        this.apiClient = new LanguageLabClient();
+        this.apiClient.setToken(localStorage.getItem("token-auth"));
+
         this.state = {
             "activity": "read",
             "exercises": [],
@@ -42,7 +45,7 @@ export default class Lab extends React.Component {
             "selectedItem": null,
             "selectedType": "queueItems",
             "users": [],
-            "token": localStorage.getItem("token-auth")
+            "token": this.apiClient.token
         };
     }
 
@@ -72,7 +75,11 @@ export default class Lab extends React.Component {
             environment.api.baseUrl, dataType
         ].join("/");
 
-        apiClient.fetchData(apiUrl).then((res) => {
+        const options = {
+            "headers": {"Authorization": "JWT " + this.state.token}
+        };
+
+        this.apiClient.fetchData(apiUrl, options).then((res) => {
             this.setState(
                 {
                     [dataType]: res,
@@ -107,11 +114,12 @@ export default class Lab extends React.Component {
     }
 
     handleToken(res) {
+        console.log(res);
         const loadTime = new moment();
-        localStorage.setItem("token-auth", res.token);
+        localStorage.setItem("token-auth", res.response.token);
         this.setState(
             {
-                "token": res,
+                "token": res.response.token,
                 "lastUpdated": loadTime.format(),
             }
         );
@@ -130,7 +138,7 @@ export default class Lab extends React.Component {
             "password": document.getElementById("password").value
         };
 
-        apiClient.post(environment.api.baseUrl, "token-auth", options)
+        this.apiClient.post(environment.api.baseUrl, "token-auth", options)
             .then(
                 this.handleToken.bind(this), this.handleTokenError.bind(this)
         );
@@ -151,7 +159,7 @@ export default class Lab extends React.Component {
         const queueItem = {
             "exercise": exerciseId
         };
-        apiClient.post(environment.api.baseUrl, "queueItems", queueItem).then(
+        this.apiClient.post(environment.api.baseUrl, "queueItems", queueItem).then(
             (res) => {
                 this.fetchData("queueItems");
             }, (err) => {
@@ -166,7 +174,7 @@ export default class Lab extends React.Component {
     checkClick(itemType, itemId, itemKey, itemChecked) {
         event.preventDefault();
         const payload = {[itemKey]: itemChecked};
-        apiClient.patch(environment.api.baseUrl, itemType, payload, itemId)
+        this.apiClient.patch(environment.api.baseUrl, itemType, payload, itemId)
             .then((res) => {
             this.updateStateItem(res, itemType);
         }, (err) => {
@@ -216,7 +224,7 @@ export default class Lab extends React.Component {
     }
 
     deleteClick(itemType, itemId) {
-        apiClient.delete(environment.api.baseUrl, itemType, itemId).then((res) => {
+        this.apiClient.delete(environment.api.baseUrl, itemType, itemId).then((res) => {
             this.fetchData(itemType);
             this.fetchData("queueItems");
         }, (err) => {
@@ -226,14 +234,14 @@ export default class Lab extends React.Component {
 
     saveItem(item, itemType, itemId) {
         if (itemId) {
-            apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
+            this.apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
                 .then((res) => {
                 this.updateStateItem(res.response, itemType, "read", false);
             }, (err) => {
                 console.error(err);
             });
         } else {
-            apiClient.post(environment.api.baseUrl, itemType, item).then(
+            this.apiClient.post(environment.api.baseUrl, itemType, item).then(
                 (res) => {
                     this.updateStateItem(res.response, itemType, "read", true);
                 }, (err) => {
@@ -244,7 +252,7 @@ export default class Lab extends React.Component {
     }
 
     up(itemId) {
-        apiClient.patch(
+        this.apiClient.patch(
             environment.api.baseUrl, "queueItems", {"item": itemId}, "up"
         ).then(res => {
             this.fetchData("queueItems");
@@ -254,7 +262,7 @@ export default class Lab extends React.Component {
     }
 
     down(itemId) {
-        apiClient.patch(
+        this.apiClient.patch(
             environment.api.baseUrl, "queueItems", {"item": itemId}, "down"
         ).then(res => {
             this.fetchData("queueItems");
