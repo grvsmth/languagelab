@@ -1,4 +1,5 @@
 import CardList from "./cardList.js";
+import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
 
 import apiClient from "./apiClient.js";
@@ -29,6 +30,7 @@ export default class Lab extends React.Component {
 
         this.state = {
             "activity": "read",
+            "currentUser": localStorage.getItem("token-auth"),
             "exercises": [],
             "languages": [],
             "lastUpdated": "",
@@ -51,7 +53,6 @@ export default class Lab extends React.Component {
 
     fetchAll() {
         const loading = {};
-        this.fetchData("currentUser");
 
         const thingsToLoad = Object.values(config.api.endpoint).concat([
             "users"
@@ -104,13 +105,27 @@ export default class Lab extends React.Component {
         this.setState(targetState);
     }
 
-    fetchToken() {
+    loginClick(event) {
+        const loadTime = new moment();
+        const options = {
+            "username": document.getElementById("username").value,
+            "password": document.getElementById("password").value
+        };
 
-            if (dataType === "token-auth") {
-                if (res.token) {
-                    localStorage.setItem("token-auth", res.token);
-                }
+        apiClient.post(environment.api.baseUrl, "token-auth", options)
+            .then((res) => {
+                console.log(res);
+                localStorage.setItem("token-auth", res.token);
+                this.setState(
+                    {
+                        "token": res,
+                        "lastUpdated": loadTime.format(),
+                    }
+                );
+            }, (err) => {
+                console.error(err);
             }
+        );
     }
 
     logout() {
@@ -278,12 +293,20 @@ export default class Lab extends React.Component {
         this.selectByRank(rank + 1);
     }
 
-    cardList() {
+    body() {
+        if (!this.state.currentUser) {
+            return React.createElement(
+                LoginForm,
+                {"loginClick": this.loginClick.bind(this)},
+                null
+            );
+        }
         return React.createElement(
             CardList,
             {
                 "activity": this.state.activity,
                 "checkClick": this.checkClick,
+                "currentUser": this.currentUser,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
                 "editItem": this.editItem.bind(this),
@@ -339,7 +362,7 @@ export default class Lab extends React.Component {
             "div",
             {"className": "container"},
             this.nav(),
-            this.cardList()
+            this.body()
         );
     }
 }
