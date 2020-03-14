@@ -75,11 +75,7 @@ export default class Lab extends React.Component {
             environment.api.baseUrl, dataType
         ].join("/");
 
-        const options = {
-            "headers": {"Authorization": "JWT " + this.state.token}
-        };
-
-        this.apiClient.fetchData(apiUrl, options).then((res) => {
+        this.apiClient.fetchData(apiUrl).then((res) => {
             this.setState(
                 {
                     [dataType]: res,

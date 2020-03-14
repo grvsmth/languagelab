@@ -30,6 +30,10 @@ export default class LanguageLabClient {
         if (!this.token) {
             return null;
         }
+        if (!options.hasOwnProperty("headers")) {
+            options.headers = {};
+        }
+        options.headers.Authorization = "JWT " + this.token;
 
         return new Promise((resolve, reject) => {
             fetch(url, options).then((res) => {
