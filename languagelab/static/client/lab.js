@@ -105,6 +105,10 @@ export default class Lab extends React.Component {
         this.setState(targetState);
     }
 
+    handleTokenError(err) {
+        console.error(err);
+    }
+
     loginClick(event) {
         const loadTime = new moment();
         const options = {
@@ -114,17 +118,16 @@ export default class Lab extends React.Component {
 
         apiClient.post(environment.api.baseUrl, "token-auth", options)
             .then((res) => {
-                console.log(res);
                 localStorage.setItem("token-auth", res.token);
                 this.setState(
                     {
+                        "currentUser": options.username,
                         "token": res,
                         "lastUpdated": loadTime.format(),
                     }
                 );
-            }, (err) => {
-                console.error(err);
-            }
+            },
+            this.handleTokenError.bind(this)
         );
     }
 
