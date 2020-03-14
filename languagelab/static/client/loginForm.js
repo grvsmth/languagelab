@@ -71,14 +71,22 @@ export default class LoginForm extends React.Component {
         );
     }
 
-    render() {
+    messageDiv() {
+        return React.createElement(
+            "div",
+            {"className": "text-danger"},
+            this.props.message
+        );
+    }
 
+    render() {
         return React.createElement(
             "form",
             {"name": "loginForm"},
             this.usernameGroup(),
             this.passwordGroup(),
-            this.submitButton()
+            this.submitButton(),
+            this.messageDiv()
         )
     }
 }

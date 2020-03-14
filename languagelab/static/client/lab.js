@@ -30,7 +30,6 @@ export default class Lab extends React.Component {
 
         this.state = {
             "activity": "read",
-            "currentUser": localStorage.getItem("token-auth"),
             "exercises": [],
             "languages": [],
             "lastUpdated": "",
@@ -38,15 +37,17 @@ export default class Lab extends React.Component {
             "loading": {},
             "loggedIn": false,
             "media": [],
+            "message": "",
             "queueItems": [],
             "selectedItem": null,
             "selectedType": "queueItems",
-            "users": []
+            "users": [],
+            "token": localStorage.getItem("token-auth")
         };
     }
 
     componentDidMount() {
-        if (!this.state.lastUpdated) {
+        if (!this.state.lastUpdated && this.state.token) {
             this.fetchAll();
         }
     }
@@ -54,9 +55,9 @@ export default class Lab extends React.Component {
     fetchAll() {
         const loading = {};
 
-        const thingsToLoad = Object.values(config.api.endpoint).concat([
-            "users"
-        ]);
+        const thingsToLoad = Object.values(config.api.endpoint).concat(
+            ["currentUser", "users"]
+        );
 
         thingsToLoad.forEach((endpoint) => {
             loading[endpoint] = true;
@@ -105,8 +106,21 @@ export default class Lab extends React.Component {
         this.setState(targetState);
     }
 
+    handleToken(res) {
+        const loadTime = new moment();
+        localStorage.setItem("token-auth", res.token);
+        this.setState(
+            {
+                "token": res,
+                "lastUpdated": loadTime.format(),
+            }
+        );
+        this.fetchAll();
+    }
+
     handleTokenError(err) {
         console.error(err);
+        this.setState({"message": err.error.statusText});
     }
 
     loginClick(event) {
@@ -117,17 +131,8 @@ export default class Lab extends React.Component {
         };
 
         apiClient.post(environment.api.baseUrl, "token-auth", options)
-            .then((res) => {
-                localStorage.setItem("token-auth", res.token);
-                this.setState(
-                    {
-                        "currentUser": options.username,
-                        "token": res,
-                        "lastUpdated": loadTime.format(),
-                    }
-                );
-            },
-            this.handleTokenError.bind(this)
+            .then(
+                this.handleToken.bind(this), this.handleTokenError.bind(this)
         );
     }
 
@@ -300,7 +305,10 @@ export default class Lab extends React.Component {
         if (!this.state.currentUser) {
             return React.createElement(
                 LoginForm,
-                {"loginClick": this.loginClick.bind(this)},
+                {
+                    "loginClick": this.loginClick.bind(this),
+                    "message": this.state.message
+                },
                 null
             );
         }
