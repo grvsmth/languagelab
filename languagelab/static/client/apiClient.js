@@ -6,10 +6,15 @@ export default class LanguageLabClient {
 
     constructor(props) {
         this.token = "";
+        this.baseUrl = "";
     }
 
     setToken(token) {
         this.token = token;
+    }
+
+    setBaseUrl(baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
     extractCookie(cookieKey) {
@@ -127,6 +132,27 @@ export default class LanguageLabClient {
     post(baseUrl, endpoint, data) {
         const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [baseUrl, endpoint, ""].join("/");
+        const options = {
+            "method": "POST",
+            "headers": {
+                "X-CSRFToken": csrftoken,
+                'Content-Type': 'application/json'
+            },
+            "body": JSON.stringify(data)
+        };
+
+        return new Promise((resolve, reject) => {
+            this.fetchData(apiUrl, options).then((res) => {
+                resolve({"type": endpoint, "response": res});
+            }, (err) => {
+                reject({"type": endpoint, "error": err});
+            });
+        });
+    }
+
+    login(data) {
+        const csrftoken = this.extractCookie("csrftoken");
+        const apiUrl = [this.baseUrl, "token-auth", ""].join("/");
         const options = {
             "method": "POST",
             "headers": {

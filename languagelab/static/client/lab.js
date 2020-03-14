@@ -30,6 +30,7 @@ export default class Lab extends React.Component {
 
         this.apiClient = new LanguageLabClient();
         this.apiClient.setToken(localStorage.getItem("token-auth"));
+        this.apiClient.setBaseUrl(environment.api.baseUrl);
 
         this.state = {
             "activity": "read",
@@ -134,9 +135,8 @@ export default class Lab extends React.Component {
             "password": document.getElementById("password").value
         };
 
-        this.apiClient.post(environment.api.baseUrl, "token-auth", options)
-            .then(
-                this.handleToken.bind(this), this.handleTokenError.bind(this)
+        this.apiClient.login(options).then(
+            this.handleToken.bind(this), this.handleTokenError.bind(this)
         );
     }
 
