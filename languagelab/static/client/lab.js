@@ -64,7 +64,7 @@ export default class Lab extends React.Component {
 
         thingsToLoad.forEach((endpoint) => {
             loading[endpoint] = true;
-            this.fetchData(endpoint);
+            this.fetchData(endpoint).catch(console.error);
         });
         this.setState({"loading": loading});
     }
@@ -111,6 +111,8 @@ export default class Lab extends React.Component {
 
     handleToken(res) {
         const loadTime = new moment();
+        console.log("handleToken()", res);
+        // TODO throw error if no token
         this.apiClient.setToken(
             res.response.token, loadTime.format(), config.api.tokenLife
         );

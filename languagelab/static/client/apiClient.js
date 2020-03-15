@@ -11,7 +11,7 @@ export default class LanguageLabClient {
     }
 
     setToken(token, tokenTime, tokenLife) {
-        console.log(`${tokenTime}`);
+        console.log("setToken", token);
         this.token = token;
         this.tokenTime = new moment(tokenTime);
         this.tokenLife = tokenLife;
@@ -24,8 +24,12 @@ export default class LanguageLabClient {
     tokenExpired() {
         const now = new moment().format();
         const tokenTimeFormat = this.tokenTime.format();
-        const difference = new moment().diff(this.tokenTime);
-        console.log(`${now} - ${tokenTimeFormat} = ${difference}`);
+        const difference = new moment().diff(this.tokenTime, "seconds");
+        console.log(`${now} - ${tokenTimeFormat} = ${difference} ? ${this.tokenLife}`);
+        if (difference - this.tokenLife > 10) {
+            return false;
+        }
+        return true;
     }
 
     extractCookie(cookieKey) {
@@ -53,36 +57,38 @@ export default class LanguageLabClient {
             if (!this.token) {
                 reject("No token!");
             }
-            this.tokenExpired();
-            fetch(url, options).then((res) => {
-                if (res.status === 204) {
-                    resolve();
-                    return;
-                } else if (res.status < 200 || res.status > 299) {
-                    reject(res);
-                    return;
-                }
-
-                res.json().then((resJson) => {
-                    if (!resJson.hasOwnProperty("results")) {
-                        resolve(resJson);
+            reject("abort!");
+            this.checkToken().then(() => {
+                fetch(url, options).then((res) => {
+                    if (res.status === 204) {
+                        resolve();
+                        return;
+                    } else if (res.status < 200 || res.status > 299) {
+                        reject(res);
+                        return;
                     }
 
-                    results = results.concat(resJson.results);
-                    if (resJson.next) {
-                        this.fetchData(resJson.next, options, results).then(
-                            resolve, reject
-                        );
-                    } else {
-                       resolve(results);
-                    }
+                    res.json().then((resJson) => {
+                        if (!resJson.hasOwnProperty("results")) {
+                            resolve(resJson);
+                        }
+
+                        results = results.concat(resJson.results);
+                        if (resJson.next) {
+                            this.fetchData(resJson.next, options, results).then(
+                                resolve, reject
+                            );
+                        } else {
+                           resolve(results);
+                        }
+                    }, (err) => {
+                        reject(err);
+                    });
                 }, (err) => {
                     reject(err);
                 });
-            }, (err) => {
-                reject(err);
             });
-        });
+        }, reject());
     }
 
     updateLanguages(baseUrl) {
@@ -185,6 +191,7 @@ export default class LanguageLabClient {
     }
 
     login(data) {
+        console.log("login", data);
         const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [this.baseUrl, "token-auth", ""].join("/");
         const options = {
@@ -198,10 +205,31 @@ export default class LanguageLabClient {
 
         return new Promise((resolve, reject) => {
             fetch(apiUrl, options).then((res) => {
-                resolve({"type": "token-auth", "response": res});
+                if (res.status < 200 || res.status > 299) {
+                    reject(res);
+                    return;
+                }
+
+                res.json().then((resJson) => {
+                    resolve({"type": "token-auth", "response": resJson});
+                }, (err) => {
+                    reject({"type": "token-auth", "error": err});
+                });
             }, (err) => {
                 reject({"type": "token-auth", "error": err});
             });
+        });
+    }
+
+    checkToken() {
+        return new Promise((resolve, reject) => {
+            if (!this.tokenExpired()) {
+                console.log("Not expired!");
+                resolve();
+            }
+            console.log("Expired!");
+            reject("abort!");
+            // this.refreshToken().then(resolve());
         });
     }
 }
