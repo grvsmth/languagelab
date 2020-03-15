@@ -5,13 +5,14 @@
 export default class LanguageLabClient {
 
     constructor(props) {
+        this.expiredError = "Expired token!";
+
         this.token = "";
         this.tokenTime = null;
         this.baseUrl = "";
     }
 
     setToken(token, tokenTime, tokenLife) {
-        console.log("setToken", token);
         this.token = token;
         this.tokenTime = new moment(tokenTime);
         this.tokenLife = tokenLife;
@@ -26,7 +27,7 @@ export default class LanguageLabClient {
         const tokenTimeFormat = this.tokenTime.format();
         const difference = new moment().diff(this.tokenTime, "seconds");
         console.log(`${now} - ${tokenTimeFormat} = ${difference} ? ${this.tokenLife}`);
-        if (difference - this.tokenLife > 10) {
+        if (this.tokenLife - difference > 10) {
             return false;
         }
         return true;
@@ -47,17 +48,16 @@ export default class LanguageLabClient {
     }
 
     fetchData(url, options={}, results=[]) {
-        console.log(this.token);
-        if (!options.hasOwnProperty("headers")) {
-            options.headers = {};
-        }
-        options.headers.Authorization = "JWT " + this.token;
-
         return new Promise((resolve, reject) => {
             if (!this.token) {
-                reject("No token!");
+                reject("No token in API client object!");
             }
-            reject("abort!");
+
+            if (!options.hasOwnProperty("headers")) {
+                options.headers = {};
+            }
+            options.headers.Authorization = "JWT " + this.token;
+
             this.checkToken().then(() => {
                 fetch(url, options).then((res) => {
                     if (res.status === 204) {
@@ -81,14 +81,10 @@ export default class LanguageLabClient {
                         } else {
                            resolve(results);
                         }
-                    }, (err) => {
-                        reject(err);
-                    });
-                }, (err) => {
-                    reject(err);
-                });
-            });
-        }, reject());
+                    }, reject);
+                }, reject);
+            }, reject);
+        });
     }
 
     updateLanguages(baseUrl) {
@@ -191,7 +187,6 @@ export default class LanguageLabClient {
     }
 
     login(data) {
-        console.log("login", data);
         const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [this.baseUrl, "token-auth", ""].join("/");
         const options = {
@@ -224,12 +219,10 @@ export default class LanguageLabClient {
     checkToken() {
         return new Promise((resolve, reject) => {
             if (!this.tokenExpired()) {
-                console.log("Not expired!");
                 resolve();
+                return;
             }
-            console.log("Expired!");
-            reject("abort!");
-            // this.refreshToken().then(resolve());
+            throw new Error("Expired token!");
         });
     }
 }

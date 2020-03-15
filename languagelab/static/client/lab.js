@@ -62,10 +62,19 @@ export default class Lab extends React.Component {
             ["currentUser", "users"]
         );
 
-        thingsToLoad.forEach((endpoint) => {
-            loading[endpoint] = true;
-            this.fetchData(endpoint).catch(console.error);
-        });
+        try {
+            thingsToLoad.forEach((endpoint) => {
+                loading[endpoint] = true;
+                this.fetchData(endpoint);
+            });
+        } catch(error) {
+            if (error === apiClient.expiredError) {
+                console.log("Expired!");
+                this.refreshToken().then(this.fetchAll());
+            } else {
+                throw new Error(error);
+            }
+        }
         this.setState({"loading": loading});
     }
 
@@ -111,8 +120,12 @@ export default class Lab extends React.Component {
 
     handleToken(res) {
         const loadTime = new moment();
-        console.log("handleToken()", res);
-        // TODO throw error if no token
+        if (!res.hasOwnProperty("response")) {
+            throw new Error("No response property!");
+        }
+        if (!res.response.hasOwnProperty("token")) {
+            throw new Error("No token in response!");
+        }
         this.apiClient.setToken(
             res.response.token, loadTime.format(), config.api.tokenLife
         );
@@ -368,7 +381,6 @@ export default class Lab extends React.Component {
     }
 
     render() {
-        console.log(this.state);
         return React.createElement(
             "div",
             {"className": "container"},
