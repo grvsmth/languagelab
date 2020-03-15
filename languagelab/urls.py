@@ -17,7 +17,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
-from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 from languagelab.api.views import(
     UserViewSet,
@@ -48,5 +48,6 @@ urlpatterns = [
         include('rest_framework.urls', namespace='rest_framework')
         ),
     path('api/{}/currentUser/'.format(API_VERSION), current_user),
-    path('api/{}/token-auth/'.format(API_VERSION), obtain_jwt_token)
+    path('api/{}/token-auth/'.format(API_VERSION), obtain_jwt_token),
+    path('api/{}/token-refresh/'.format(API_VERSION), refresh_jwt_token)
 ] + static(STATIC_URL, document_root=STATIC_ROOT)

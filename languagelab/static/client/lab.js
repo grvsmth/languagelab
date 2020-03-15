@@ -29,7 +29,6 @@ export default class Lab extends React.Component {
         };
 
         this.apiClient = new LanguageLabClient();
-        this.apiClient.setToken(localStorage.getItem("token-auth"));
         this.apiClient.setBaseUrl(environment.api.baseUrl);
 
         this.state = {
@@ -46,7 +45,7 @@ export default class Lab extends React.Component {
             "selectedItem": null,
             "selectedType": "queueItems",
             "users": [],
-            "token": this.apiClient.token
+            "token": ""
         };
     }
 
@@ -111,14 +110,9 @@ export default class Lab extends React.Component {
     }
 
     handleToken(res) {
-        console.log(res);
         const loadTime = new moment();
-        localStorage.setItem("token-auth", res.response.token);
-        this.setState(
-            {
-                "token": res.response.token,
-                "lastUpdated": loadTime.format(),
-            }
+        this.apiClient.setToken(
+            res.response.token, loadTime.format(), config.api.tokenLife
         );
         this.fetchAll();
     }
