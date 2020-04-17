@@ -59,11 +59,45 @@ export default class Home extends React.Component {
     }
 
     navUl() {
+        if (!this.props.currentUser) {
+            return null;
+        }
+
         return React.createElement(
             "ul",
             {"className": "navbar-nav mr-auto"},
-            Object.keys(this.props.itemType).map(this.navItem.bind(this))
+            Object.keys(this.props.itemType)
+                .map(this.navItem.bind(this))
         );
+    }
+
+    welcomeItem(username) {
+        if (!this.props.currentUser) {
+            return null;
+        }
+
+        return React.createElement(
+            "span",
+            {
+                "className": "nav-item"
+            },
+            `Welcome ${this.props.currentUser.username}!`
+        )
+    }
+
+    logoutButton() {
+        if (!this.props.currentUser) {
+            return null;
+        }
+
+        return React.createElement(
+            "button",
+            {
+                "className": "btn btn-secondary ml-1",
+                "onClick": this.props.logout
+            },
+            "Logout"
+        )
     }
 
     navContent() {
@@ -73,7 +107,9 @@ export default class Home extends React.Component {
                 "className": "collapse navbar-collapse",
                 "id": "navContent"
             },
-            this.navUl()
+            this.navUl(),
+            this.welcomeItem(),
+            this.logoutButton()
         );
     }
 

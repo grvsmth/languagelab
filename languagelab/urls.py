@@ -17,18 +17,28 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
-from languagelab.api import views
+from languagelab.api.views import(
+    UserViewSet,
+    GroupViewSet,
+    LanguageViewSet,
+    MediaItemViewSet,
+    ExerciseViewSet,
+    LessonViewSet,
+    QueueItemViewSet,
+    current_user
+    )
 from languagelab.settings import API_VERSION, STATIC_ROOT, STATIC_URL
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
-router.register(r'languages', views.LanguageViewSet)
-router.register(r'media', views.MediaItemViewSet)
-router.register(r'exercises', views.ExerciseViewSet)
-router.register(r'lessons', views.LessonViewSet)
-router.register(r'queueItems', views.QueueItemViewSet)
+router.register(r'users', UserViewSet)
+router.register(r'groups', GroupViewSet)
+router.register(r'languages', LanguageViewSet)
+router.register(r'media', MediaItemViewSet)
+router.register(r'exercises', ExerciseViewSet)
+router.register(r'lessons', LessonViewSet)
+router.register(r'queueItems', QueueItemViewSet)
 
 urlpatterns = [
     path('api/{}/'.format(API_VERSION), include(router.urls)),
@@ -36,5 +46,8 @@ urlpatterns = [
     path(
         'api-auth/',
         include('rest_framework.urls', namespace='rest_framework')
-        )
+        ),
+    path('api/{}/currentUser/'.format(API_VERSION), current_user),
+    path('api/{}/token-auth/'.format(API_VERSION), obtain_jwt_token),
+    path('api/{}/token-refresh/'.format(API_VERSION), refresh_jwt_token)
 ] + static(STATIC_URL, document_root=STATIC_ROOT)

@@ -1,7 +1,8 @@
 import CardList from "./cardList.js";
+import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
 
-import apiClient from "./apiClient.js";
+import LanguageLabClient from "./apiClient.js";
 import util from "./util.js";
 
 import config from "./config.js";
@@ -27,38 +28,54 @@ export default class Lab extends React.Component {
             "next": this.next.bind(this)
         };
 
+        this.apiClient = new LanguageLabClient();
+        this.apiClient.setBaseUrl(environment.api.baseUrl);
+
         this.state = {
             "activity": "read",
-            "lastUpdated": "",
-            "loading": {
-                "media": false,
-                "users": false,
-                "languages": false
-            },
             "exercises": [],
-            "lessons": [],
-            "media": [],
-            "users": [],
             "languages": [],
+            "lastUpdated": "",
+            "lessons": [],
+            "loading": {},
+            "loggedIn": false,
+            "media": [],
+            "message": "",
             "queueItems": [],
             "selectedItem": null,
-            "selectedType": "queueItems"
+            "selectedType": "queueItems",
+            "users": [],
+            "token": ""
         };
     }
 
     componentDidMount() {
-        if (!this.state.lastUpdated) {
-            this.setState({"loading": {
-                "media": true,
-                "languages": true,
-                "users": true
-            }});
-            this.fetchData("queueItems");
-            this.fetchData("exercises");
-            this.fetchData("media");
-            this.fetchData("users");
-            this.fetchData("languages");
+        if (!this.state.lastUpdated && this.state.token) {
+            this.fetchAll();
         }
+    }
+
+    fetchAll() {
+        const loading = {};
+
+        const thingsToLoad = Object.values(config.api.endpoint).concat(
+            ["currentUser", "users"]
+        );
+
+        try {
+            thingsToLoad.forEach((endpoint) => {
+                loading[endpoint] = true;
+                this.fetchData(endpoint);
+            });
+        } catch(error) {
+            if (error === apiClient.expiredError) {
+                console.log("Expired!");
+                this.refreshToken().then(this.fetchAll());
+            } else {
+                throw new Error(error);
+            }
+        }
+        this.setState({"loading": loading});
     }
 
     fetchData(dataType) {
@@ -67,7 +84,7 @@ export default class Lab extends React.Component {
             environment.api.baseUrl, dataType
         ].join("/");
 
-        apiClient.fetchData(apiUrl).then((res) => {
+        this.apiClient.fetchData(apiUrl).then((res) => {
             this.setState(
                 {
                     [dataType]: res,
@@ -101,6 +118,44 @@ export default class Lab extends React.Component {
         this.setState(targetState);
     }
 
+    handleToken(res) {
+        const loadTime = new moment();
+        if (!res.hasOwnProperty("response")) {
+            throw new Error("No response property!");
+        }
+        if (!res.response.hasOwnProperty("token")) {
+            throw new Error("No token in response!");
+        }
+        this.apiClient.setToken(
+            res.response.token, loadTime.format(), config.api.tokenLife
+        );
+        this.fetchAll();
+    }
+
+    handleTokenError(err) {
+        console.error(err);
+        this.setState({"message": err.error.statusText});
+    }
+
+    loginClick(event) {
+        const loadTime = new moment();
+        const options = {
+            "username": document.getElementById("username").value,
+            "password": document.getElementById("password").value
+        };
+
+        this.apiClient.login(options).then(
+            this.handleToken.bind(this), this.handleTokenError.bind(this)
+        );
+    }
+
+    logout() {
+        if (this.state.currentUser) {
+            this.setState({"currentUser": null, "activity": "login"});
+            return;
+        }
+    }
+
     removeFromQueue(queueItemId) {
         this.deleteClick("queueItems", queueItemId);
     }
@@ -109,7 +164,7 @@ export default class Lab extends React.Component {
         const queueItem = {
             "exercise": exerciseId
         };
-        apiClient.post(environment.api.baseUrl, "queueItems", queueItem).then(
+        this.apiClient.post(environment.api.baseUrl, "queueItems", queueItem).then(
             (res) => {
                 this.fetchData("queueItems");
             }, (err) => {
@@ -124,7 +179,7 @@ export default class Lab extends React.Component {
     checkClick(itemType, itemId, itemKey, itemChecked) {
         event.preventDefault();
         const payload = {[itemKey]: itemChecked};
-        apiClient.patch(environment.api.baseUrl, itemType, payload, itemId)
+        this.apiClient.patch(environment.api.baseUrl, itemType, payload, itemId)
             .then((res) => {
             this.updateStateItem(res, itemType);
         }, (err) => {
@@ -174,7 +229,7 @@ export default class Lab extends React.Component {
     }
 
     deleteClick(itemType, itemId) {
-        apiClient.delete(environment.api.baseUrl, itemType, itemId).then((res) => {
+        this.apiClient.delete(environment.api.baseUrl, itemType, itemId).then((res) => {
             this.fetchData(itemType);
             this.fetchData("queueItems");
         }, (err) => {
@@ -184,14 +239,14 @@ export default class Lab extends React.Component {
 
     saveItem(item, itemType, itemId) {
         if (itemId) {
-            apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
+            this.apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
                 .then((res) => {
                 this.updateStateItem(res.response, itemType, "read", false);
             }, (err) => {
                 console.error(err);
             });
         } else {
-            apiClient.post(environment.api.baseUrl, itemType, item).then(
+            this.apiClient.post(environment.api.baseUrl, itemType, item).then(
                 (res) => {
                     this.updateStateItem(res.response, itemType, "read", true);
                 }, (err) => {
@@ -202,7 +257,7 @@ export default class Lab extends React.Component {
     }
 
     up(itemId) {
-        apiClient.patch(
+        this.apiClient.patch(
             environment.api.baseUrl, "queueItems", {"item": itemId}, "up"
         ).then(res => {
             this.fetchData("queueItems");
@@ -212,7 +267,7 @@ export default class Lab extends React.Component {
     }
 
     down(itemId) {
-        apiClient.patch(
+        this.apiClient.patch(
             environment.api.baseUrl, "queueItems", {"item": itemId}, "down"
         ).then(res => {
             this.fetchData("queueItems");
@@ -259,12 +314,23 @@ export default class Lab extends React.Component {
         this.selectByRank(rank + 1);
     }
 
-    cardList() {
+    body() {
+        if (!this.state.currentUser) {
+            return React.createElement(
+                LoginForm,
+                {
+                    "loginClick": this.loginClick.bind(this),
+                    "message": this.state.message
+                },
+                null
+            );
+        }
         return React.createElement(
             CardList,
             {
                 "activity": this.state.activity,
                 "checkClick": this.checkClick,
+                "currentUser": this.currentUser,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
                 "editItem": this.editItem.bind(this),
@@ -304,8 +370,10 @@ export default class Lab extends React.Component {
         return React.createElement(
             Navbar,
             {
-                "activeItem": "Queue",
+                "activeItem": this.state.selectedType,
+                "currentUser": this.state.currentUser,
                 "itemType": config.api.endpoint,
+                "logout": this.logout.bind(this),
                 "navClick": this.navClick
             },
             null
@@ -317,7 +385,7 @@ export default class Lab extends React.Component {
             "div",
             {"className": "container"},
             this.nav(),
-            this.cardList()
+            this.body()
         );
     }
 }
