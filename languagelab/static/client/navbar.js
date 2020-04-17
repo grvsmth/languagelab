@@ -93,7 +93,7 @@ export default class Home extends React.Component {
         return React.createElement(
             "button",
             {
-                "className": "btn btn-secondary",
+                "className": "btn btn-secondary ml-1",
                 "onClick": this.props.logout
             },
             "Logout"
