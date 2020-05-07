@@ -137,6 +137,12 @@ class QueueItemViewSet(ModelViewSet):
     )
     rank = IntegerField(read_only=True, min_value=1, default=1)
 
+    def get_queryset(self):
+        return QueueItem.objects.all().filter(
+            user=self.request.user,
+            rank__isnull=False
+        ).order_by('rank')
+
     def nextRank(self):
         nextRank = 1
         userItems = self.queryset.filter(user=self.request.user)
