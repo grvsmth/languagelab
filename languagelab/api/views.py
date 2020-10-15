@@ -1,3 +1,8 @@
+"""
+
+Views for the Language Lab REST API
+
+"""
 from django.contrib.auth.models import User, Group
 from django.db.models import Max
 from django.http import JsonResponse
@@ -15,7 +20,6 @@ from rest_framework.status import HTTP_204_NO_CONTENT
 from logging import basicConfig, getLogger
 
 from languagelab.api.iso639client import getIso639, makeLanguage
-
 from languagelab.api.models import (
     Exercise, Language, Lesson, MediaItem, QueueItem
     )
@@ -34,6 +38,7 @@ from languagelab.api.serializers import (
 LOG = getLogger()
 basicConfig(level="DEBUG")
 
+
 @api_view(['GET'])
 def current_user(request):
     """
@@ -42,6 +47,7 @@ def current_user(request):
 
     serializer = UserSerializer(request.user, context={'request': request})
     return Response(serializer.data)
+
 
 class UserViewSet(ModelViewSet):
     """
@@ -67,7 +73,10 @@ class LanguageViewSet(ModelViewSet):
     serializer_class = LanguageSerializer
 
     @action(detail=False, methods=['post'])
-    def updateAll(self, request):
+    def update_all(self, request):
+        """
+        Update all the languages from the source
+        """
         counter = 0
         res = getIso639()
 

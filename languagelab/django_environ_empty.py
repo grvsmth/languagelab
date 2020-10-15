@@ -7,6 +7,9 @@ from json import dumps
 from os import environ
 
 def set_environ():
+    """
+    Update the environment variables
+    """
     environ.update({
         'DJANGO_SITE_ID': '1',
         'DJANGO_SECRET_KEY': '',

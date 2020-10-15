@@ -1,5 +1,5 @@
 /*
-
+    Client for the customized LanguageLab API
 */
 
 export default class LanguageLabClient {
@@ -24,9 +24,10 @@ export default class LanguageLabClient {
 
     tokenExpired() {
         const now = new moment().format();
-        const tokenTimeFormat = this.tokenTime.format();
         const difference = new moment().diff(this.tokenTime, "seconds");
-        console.log(`${now} - ${tokenTimeFormat} = ${difference} ? ${this.tokenLife}`);
+        console.log(
+            `${now} - ${this.tokenTime.format()} = ${difference} ? ${this.tokenLife}`
+        );
         if (this.tokenLife - difference > 10) {
             return false;
         }
@@ -58,30 +59,42 @@ export default class LanguageLabClient {
             }
             options.headers.Authorization = "JWT " + this.token;
 
-            this.checkToken().then(() => {
-                fetch(url, options).then((res) => {
-                    if (res.status === 204) {
-                        resolve();
-                        return;
-                    } else if (res.status < 200 || res.status > 299) {
-                        reject(res);
-                        return;
+            try{
+                this.checkToken();
+            } catch (error) {
+                if (error.message === this.expiredError) {
+                    console.log("Expired token in fetchData!");
+                    this.refreshToken().then(() => {
+                        this.fetchData(url, options, results).then(
+                        resolve, reject
+                        );
+                    });
+                } else {
+                    throw new Error(error);
+                }
+            }
+            fetch(url, options).then((res) => {
+                if (res.status === 204) {
+                    resolve();
+                    return;
+                } else if (res.status < 200 || res.status > 299) {
+                    reject(res);
+                    return;
+                }
+
+                res.json().then((resJson) => {
+                    if (!resJson.hasOwnProperty("results")) {
+                        resolve(resJson);
                     }
 
-                    res.json().then((resJson) => {
-                        if (!resJson.hasOwnProperty("results")) {
-                            resolve(resJson);
-                        }
-
-                        results = results.concat(resJson.results);
-                        if (resJson.next) {
-                            this.fetchData(resJson.next, options, results).then(
-                                resolve, reject
-                            );
-                        } else {
-                           resolve(results);
-                        }
-                    }, reject);
+                    results = results.concat(resJson.results);
+                    if (resJson.next) {
+                        this.fetchData(resJson.next, options, results).then(
+                            resolve, reject
+                        );
+                    } else {
+                       resolve(results);
+                    }
                 }, reject);
             }, reject);
         });
@@ -89,7 +102,7 @@ export default class LanguageLabClient {
 
     updateLanguages(baseUrl) {
         const csrftoken = this.extractCookie("csrftoken");
-        const apiUrl = [baseUrl, "languages", "updateAll", ""].join("/");
+        const apiUrl = [baseUrl, "languages", "update_all", ""].join("/");
         const options = {
             "method": "POST",
             "mode": "cors",
@@ -166,8 +179,9 @@ export default class LanguageLabClient {
     }
 
     refreshToken() {
+        const endpoint = "token-refresh";
         const csrftoken = this.extractCookie("csrftoken");
-        const apiUrl = [this.baseUrl, "token-refresh", ""].join("/");
+        const apiUrl = [this.baseUrl, endpoint, ""].join("/");
         const options = {
             "method": "POST",
             "headers": {
@@ -217,12 +231,9 @@ export default class LanguageLabClient {
     }
 
     checkToken() {
-        return new Promise((resolve, reject) => {
-            if (!this.tokenExpired()) {
-                resolve();
-                return;
-            }
+        if (this.tokenExpired()) {
             throw new Error("Expired token!");
-        });
+        }
+        return;
     }
 }

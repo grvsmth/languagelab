@@ -68,8 +68,8 @@ export default class Lab extends React.Component {
                 this.fetchData(endpoint);
             });
         } catch(error) {
-            if (error === apiClient.expiredError) {
-                console.log("Expired!");
+            if (error === this.apiClient.expiredError) {
+                console.log("Expired token in fetchAll!");
                 this.refreshToken().then(this.fetchAll());
             } else {
                 throw new Error(error);
@@ -138,7 +138,6 @@ export default class Lab extends React.Component {
     }
 
     loginClick(event) {
-        const loadTime = new moment();
         const options = {
             "username": document.getElementById("username").value,
             "password": document.getElementById("password").value
