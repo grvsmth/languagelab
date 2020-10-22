@@ -211,3 +211,7 @@ LOGGING = {
         }
     }
 }
+
+JWT_AUTH = {
+    'JWT_ALLOW_REFRESH': True
+}
