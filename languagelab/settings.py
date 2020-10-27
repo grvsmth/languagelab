@@ -214,7 +214,7 @@ LOGGING = {
 }
 
 
-JWT_EXPIRATION_SECONDS = 3600
+JWT_EXPIRATION_SECONDS = environ.get('JWT_EXPIRATION_SECONDS', 3600)
 
 def jwt_response_payload_handler(token, user=None, request=None):
     return {
