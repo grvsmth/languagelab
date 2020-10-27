@@ -59,7 +59,7 @@ export default class LanguageLabClient {
         const now = new moment().format();
         const difference = new moment().diff(this.tokenTime, "seconds");
         if (this.tokenLife <= difference) {
-            throw new Error("Expired token!");
+            throw new Error(this.expiredError);
         }
 
         if (this.tokenLife - difference < refreshThreshold) {
