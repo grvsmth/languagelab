@@ -112,8 +112,11 @@ export default class Lab extends React.Component {
                     "loading": {[dataType]: false}
                 }
             );
-        }, this.handleFetchError
-        );
+        }, (err) => {
+            this.handleFetchError(
+                {"type": dataType, "error": err}
+            );
+        });
     }
 
     /*
