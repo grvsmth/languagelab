@@ -171,8 +171,9 @@ export default class Lab extends React.Component {
         if (!res.response.hasOwnProperty("token")) {
             throw new Error("No token in response!");
         }
+
         this.apiClient.setToken(
-            res.response.token, loadTime.format(), config.api.tokenLife
+            res.response.token, loadTime.format(), res.response.expiresIn
         );
         this.fetchAll();
     }
@@ -184,7 +185,7 @@ export default class Lab extends React.Component {
     */
     handleTokenError(err) {
         console.error(err);
-        this.setState({"message": err.error.statusText});
+        this.setState({"message": err.statusText});
     }
 
     /*

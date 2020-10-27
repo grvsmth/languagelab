@@ -48,7 +48,6 @@ def current_user(request):
     serializer = UserSerializer(request.user, context={'request': request})
     return Response(serializer.data)
 
-
 class UserViewSet(ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
