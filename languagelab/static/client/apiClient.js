@@ -2,6 +2,8 @@
     Client for the customized LanguageLab API
 */
 
+const refreshThreshold = 60;
+
 export default class LanguageLabClient {
 
     /*
@@ -9,7 +11,8 @@ export default class LanguageLabClient {
         Define the class attributes
 
     */
-    constructor(props) {
+    constructor() {
+        this.handleToken;
         this.expiredError = "Expired token!";
 
         this.token = "";
@@ -27,6 +30,15 @@ export default class LanguageLabClient {
         this.token = token;
         this.tokenTime = new moment(tokenTime);
         this.tokenLife = tokenLife;
+    }
+
+    /*
+
+        Set the method to handle a new token
+
+    */
+    setHandleToken(handler) {
+        this.handleToken = handler;
     }
 
     /*
@@ -49,8 +61,12 @@ export default class LanguageLabClient {
         console.log(
             `${now} - ${this.tokenTime.format()} = ${difference} ? ${this.tokenLife}`
         );
-        if (this.tokenLife - difference < 10) {
+        if (this.tokenLife <= difference) {
             throw new Error("Expired token!");
+        }
+
+        if (this.tokenLife - difference < refreshThreshold) {
+            this.refreshToken();
         }
     }
 
@@ -91,23 +107,7 @@ export default class LanguageLabClient {
             }
             options.headers.Authorization = "JWT " + this.token;
 
-            try{
-                this.checkToken();
-            } catch (error) {
-                if (error.message === this.expiredError) {
-                    console.log("Expired token in fetchData!");
-                    this.refreshToken().then(() => {
-                        this.fetchData(url, options, results);
-                        /*
-                        .then(
-                        resolve, reject
-                        );
-                        */
-                    });
-                } else {
-                    throw new Error(error);
-                }
-            }
+            this.checkToken();
             fetch(url, options).then((res) => {
                 if (res.status === 204) {
                     resolve();
@@ -256,16 +256,19 @@ export default class LanguageLabClient {
 
         console.log("refresh-token", options.body);
 
-        return new Promise((resolve, reject) => {
-            fetch(apiUrl, options).then((res) => {
-                if (res.status === 204) {
-                    console.log("refreshtoken", res);
-                    resolve();
-                    return;
-                } else if (res.status < 200 || res.status > 299) {
-                    reject(res);
-                    return;
-                }
+        fetch(apiUrl, options).then((res) => {
+            if (res.status < 200 || res.status > 299) {
+                console.log(res);
+                throw new Error("Error refreshing token!");
+            }
+
+            res.json().then((resJson) => {
+                this.handleToken(
+                    {"type": "token-auth", "response": resJson}
+                );
+            }, (err) => {
+                console.log(res);
+                throw new Error("Error reading token JSON!");
             });
         });
     }

@@ -1,3 +1,8 @@
+/*
+
+    Main page for Language Lab, with state handling
+
+*/
 import CardList from "./cardList.js";
 import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
@@ -9,6 +14,11 @@ import config from "./config.js";
 import environment from "./environment.js";
 
 export default class Lab extends React.Component {
+    /*
+
+        Bind methods, instantiate API client and set sefault state
+
+    */
     constructor(props) {
         super(props);
 
@@ -30,6 +40,7 @@ export default class Lab extends React.Component {
 
         this.apiClient = new LanguageLabClient();
         this.apiClient.setBaseUrl(environment.api.baseUrl);
+        this.apiClient.setHandleToken(this.handleToken.bind(this));
 
         this.state = {
             "activity": "read",
@@ -45,16 +56,27 @@ export default class Lab extends React.Component {
             "selectedItem": null,
             "selectedType": "queueItems",
             "users": [],
-            "token": ""
+            "token": "",
+            "tokenExpired": false
         };
     }
 
+    /*
+
+        If we haven't fetched anything yet, fetch it all
+
+    */
     componentDidMount() {
         if (!this.state.lastUpdated && this.state.token) {
             this.fetchAll();
         }
     }
 
+    /*
+
+        Pull the list of things to load from the config, and fetch them all
+
+    */
     fetchAll() {
         const loading = {};
 
@@ -62,22 +84,20 @@ export default class Lab extends React.Component {
             ["currentUser", "users"]
         );
 
-        try {
-            thingsToLoad.forEach((endpoint) => {
-                loading[endpoint] = true;
-                this.fetchData(endpoint);
-            });
-        } catch(error) {
-            if (error === this.apiClient.expiredError) {
-                console.log("Expired token in fetchAll!");
-                this.refreshToken().then(this.fetchAll());
-            } else {
-                throw new Error(error);
-            }
-        }
+        thingsToLoad.forEach((endpoint) => {
+            loading[endpoint] = true;
+            this.fetchData(endpoint);
+        });
         this.setState({"loading": loading});
     }
 
+    /*
+
+        Get a timestamp, compose an API url from the datatype and config, and
+        call fetchData in the API client.  Once the data is received, save it to
+        state.
+
+    */
     fetchData(dataType) {
         const loadTime = new moment();
         const apiUrl = [
@@ -92,11 +112,29 @@ export default class Lab extends React.Component {
                     "loading": {[dataType]: false}
                 }
             );
-        }, (err) => {
-            console.error(err);
-        });
+        }, this.handleFetchError
+        );
     }
 
+    /*
+
+        Handle fetch errors.  If the token is expired, then make the user log
+        in again.
+
+    */
+    handleFetchError(err) {
+        console.log("message", err.error.message);
+        if (err.error.message === this.apiClient.expiredError) {
+            this.logout();
+        }
+    }
+
+
+    /*
+
+        Update specific state items when received from the API
+
+    */
     updateStateItem(res, itemType, activity=null, resetSelected=false) {
         const items = [...this.state[itemType]];
         const index = items.findIndex((item) => item.id === res.id);
@@ -118,6 +156,12 @@ export default class Lab extends React.Component {
         this.setState(targetState);
     }
 
+    /*
+
+        If the token is well-formed, save it to state, along with the received
+        time and the expected token life
+
+    */
     handleToken(res) {
         const loadTime = new moment();
         if (!res.hasOwnProperty("response")) {
@@ -126,17 +170,29 @@ export default class Lab extends React.Component {
         if (!res.response.hasOwnProperty("token")) {
             throw new Error("No token in response!");
         }
+        console.log("handleToken", res);
         this.apiClient.setToken(
             res.response.token, loadTime.format(), config.api.tokenLife
         );
         this.fetchAll();
     }
 
+    /*
+
+        If we have an error getting the token, handle that.
+
+    */
     handleTokenError(err) {
         console.error(err);
         this.setState({"message": err.error.statusText});
     }
 
+    /*
+
+        Retrieve the username and password from the form, and then pass it to
+        the API login function
+
+    */
     loginClick(event) {
         const options = {
             "username": document.getElementById("username").value,
@@ -148,6 +204,11 @@ export default class Lab extends React.Component {
         );
     }
 
+    /*
+
+        Clear the user ID from state and set the activity to login
+
+    */
     logout() {
         if (this.state.currentUser) {
             this.setState({"currentUser": null, "activity": "login"});
@@ -155,10 +216,20 @@ export default class Lab extends React.Component {
         }
     }
 
+    /*
+
+        Remove an item from the queue
+
+    */
     removeFromQueue(queueItemId) {
         this.deleteClick("queueItems", queueItemId);
     }
 
+    /*
+
+        Add an exercise to the queue
+
+    */
     addToQueue(exerciseId) {
         const queueItem = {
             "exercise": exerciseId
@@ -166,26 +237,40 @@ export default class Lab extends React.Component {
         this.apiClient.post(environment.api.baseUrl, "queueItems", queueItem).then(
             (res) => {
                 this.fetchData("queueItems");
-            }, (err) => {
-                console.error(err);
-        });
+            }, this.handleFetchError
+        );
     }
 
+    /*
+
+        Handle various queue operations: add, remove, up, down.  These are
+        specified in an Object.
+
+    */
     queueClick(operationName, id) {
         this.queueOperation[operationName](id);
     }
 
+    /*
+
+        Handle a click on a checkbox: update the API and save state
+
+    */
     checkClick(itemType, itemId, itemKey, itemChecked) {
         event.preventDefault();
         const payload = {[itemKey]: itemChecked};
         this.apiClient.patch(environment.api.baseUrl, itemType, payload, itemId)
             .then((res) => {
             this.updateStateItem(res, itemType);
-        }, (err) => {
-            console.error(err);
-        });
+        }, this.handleFetchError
+        );
     }
 
+    /*
+
+        Select an item and put the interface into edit mode
+
+    */
     editItem(itemId) {
         var queueItem;
         if (this.state.selectedType === "queueItems") {
@@ -201,6 +286,11 @@ export default class Lab extends React.Component {
         })
     }
 
+    /*
+
+        Select an item.  Used when playing media in mediaCard.js
+
+    */
     selectItem(itemId) {
         this.setState({"selectedItem": itemId});
     }
@@ -231,9 +321,8 @@ export default class Lab extends React.Component {
         this.apiClient.delete(environment.api.baseUrl, itemType, itemId).then((res) => {
             this.fetchData(itemType);
             this.fetchData("queueItems");
-        }, (err) => {
-            console.error(err);
-        });
+        }, this.handleFetchError
+        );
     }
 
     saveItem(item, itemType, itemId) {
@@ -242,15 +331,13 @@ export default class Lab extends React.Component {
                 .then((res) => {
                 this.updateStateItem(res.response, itemType, "read", false);
             }, (err) => {
-                console.error(err);
+                this.handleFetchError(err);
             });
         } else {
             this.apiClient.post(environment.api.baseUrl, itemType, item).then(
                 (res) => {
                     this.updateStateItem(res.response, itemType, "read", true);
-                }, (err) => {
-                    console.error(err);
-                }
+                }, this.handleFetchError
             );
         }
     }
@@ -260,9 +347,8 @@ export default class Lab extends React.Component {
             environment.api.baseUrl, "queueItems", {"item": itemId}, "up"
         ).then(res => {
             this.fetchData("queueItems");
-        }, err => {
-            console.error(err);
-        });
+        }, this.handleFetchError
+        );
     }
 
     down(itemId) {
@@ -270,9 +356,8 @@ export default class Lab extends React.Component {
             environment.api.baseUrl, "queueItems", {"item": itemId}, "down"
         ).then(res => {
             this.fetchData("queueItems");
-        }, err => {
-            console.error(err);
-        });
+        }, this.handleFetchError
+        );
     }
 
     maxRank() {
