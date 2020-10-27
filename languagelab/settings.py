@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+from datetime import timedelta
 from json import loads
 from logging import basicConfig, getLogger
 from os import environ, path
@@ -210,4 +211,20 @@ LOGGING = {
             'propagate': True,
         }
     }
+}
+
+
+JWT_EXPIRATION_SECONDS = environ.get('JWT_EXPIRATION_SECONDS', '3600')
+
+def jwt_response_payload_handler(token, user=None, request=None):
+    return {
+        'token': token,
+        'expiresIn': JWT_EXPIRATION_SECONDS
+    }
+
+
+JWT_AUTH = {
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_EXPIRATION_DELTA': timedelta(seconds=int(JWT_EXPIRATION_SECONDS)),
+    'JWT_RESPONSE_PAYLOAD_HANDLER': jwt_response_payload_handler
 }

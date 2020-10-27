@@ -10,8 +10,7 @@ const config = {
             "Lessons": "lessons",
             "Queue": "queueItems",
             "Languages": "languages"
-        },
-        "tokenLife": 300
+        }
     },
     "formatName": {
         "au": "audio",
