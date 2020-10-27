@@ -112,7 +112,10 @@ export default class Lab extends React.Component {
                     "loading": {[dataType]: false}
                 }
             );
-        }, this.handleFetchError
+        }, (err) => {
+            this.handleFetchError(
+                {"type": dataType, "error": err}
+            );
         );
     }
 
@@ -123,6 +126,7 @@ export default class Lab extends React.Component {
 
     */
     handleFetchError(err) {
+        console.log(err);
         if (err.error.message === this.apiClient.expiredError) {
             this.logout();
             return;
