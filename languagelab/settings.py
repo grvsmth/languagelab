@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+from datetime import timedelta
 from json import loads
 from logging import basicConfig, getLogger
 from os import environ, path
@@ -213,5 +214,6 @@ LOGGING = {
 }
 
 JWT_AUTH = {
-    'JWT_ALLOW_REFRESH': True
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_EXPIRATION_DELTA': timedelta(seconds=3600)
 }

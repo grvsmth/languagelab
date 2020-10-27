@@ -123,10 +123,11 @@ export default class Lab extends React.Component {
 
     */
     handleFetchError(err) {
-        console.log("message", err.error.message);
         if (err.error.message === this.apiClient.expiredError) {
             this.logout();
+            return;
         }
+        console.log("message", err.error.message);
     }
 
 
@@ -170,7 +171,6 @@ export default class Lab extends React.Component {
         if (!res.response.hasOwnProperty("token")) {
             throw new Error("No token in response!");
         }
-        console.log("handleToken", res);
         this.apiClient.setToken(
             res.response.token, loadTime.format(), config.api.tokenLife
         );

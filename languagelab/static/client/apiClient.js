@@ -58,9 +58,6 @@ export default class LanguageLabClient {
     checkToken() {
         const now = new moment().format();
         const difference = new moment().diff(this.tokenTime, "seconds");
-        console.log(
-            `${now} - ${this.tokenTime.format()} = ${difference} ? ${this.tokenLife}`
-        );
         if (this.tokenLife <= difference) {
             throw new Error("Expired token!");
         }
@@ -254,11 +251,8 @@ export default class LanguageLabClient {
             "body": JSON.stringify({"token": this.token})
         };
 
-        console.log("refresh-token", options.body);
-
         fetch(apiUrl, options).then((res) => {
             if (res.status < 200 || res.status > 299) {
-                console.log(res);
                 throw new Error("Error refreshing token!");
             }
 
