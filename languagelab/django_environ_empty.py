@@ -7,6 +7,9 @@ from json import dumps
 from os import environ
 
 def set_environ():
+    """
+    Update the environment variables
+    """
     environ.update({
         'DJANGO_SITE_ID': '1',
         'DJANGO_SECRET_KEY': '',
@@ -28,5 +31,6 @@ def set_environ():
         'DJANGO_TEMPLATES_DIR': '',
         'DJANGO_STATICFILES_DIR': '',
         'DJANGO_ALLOWED_HOSTS': '[]',
-        'DJANGO_TIMEZONE': ''
+        'DJANGO_TIMEZONE': '',
+        'JWT_EXPIRATION_SECONDS': '3600'
         })

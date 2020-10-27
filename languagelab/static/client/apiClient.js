@@ -1,38 +1,78 @@
 /*
-
+    Client for the customized LanguageLab API
 */
+
+const refreshThreshold = 60;
 
 export default class LanguageLabClient {
 
-    constructor(props) {
+    /*
+
+        Define the class attributes
+
+    */
+    constructor() {
+        this.handleToken;
         this.expiredError = "Expired token!";
 
         this.token = "";
+        this.tokenLife = 0;
         this.tokenTime = null;
         this.baseUrl = "";
     }
 
-    setToken(token, tokenTime, tokenLife) {
+    /*
+
+        Set the token, the time when the token was refreshed, and the token life
+
+    */
+    setToken(token, tokenTime, tokenLife=this.tokenLife) {
         this.token = token;
         this.tokenTime = new moment(tokenTime);
         this.tokenLife = tokenLife;
     }
 
+    /*
+
+        Set the method to handle a new token
+
+    */
+    setHandleToken(handler) {
+        this.handleToken = handler;
+    }
+
+    /*
+
+        Set the base URL for connecting to the API
+
+    */
     setBaseUrl(baseUrl) {
         this.baseUrl = baseUrl;
     }
 
-    tokenExpired() {
+    /*
+
+        Throw an error if we've passed the time when the token was due to expire
+
+    */
+    checkToken() {
         const now = new moment().format();
-        const tokenTimeFormat = this.tokenTime.format();
         const difference = new moment().diff(this.tokenTime, "seconds");
-        console.log(`${now} - ${tokenTimeFormat} = ${difference} ? ${this.tokenLife}`);
-        if (this.tokenLife - difference > 10) {
-            return false;
+        if (this.tokenLife <= difference) {
+            throw new Error(this.expiredError);
         }
-        return true;
+
+        if (this.tokenLife - difference < refreshThreshold) {
+            this.refreshToken();
+        }
     }
 
+    /*
+
+        Given a web cookie, parse it and extract the value specified by the
+        cookieKey parameter
+
+    */
     extractCookie(cookieKey) {
         var cookieValue;
         if (!document.cookie || document.cookie == '') {
@@ -47,6 +87,12 @@ export default class LanguageLabClient {
         return cookieValue;
     }
 
+    /*
+
+        Fetch data from the API, passing in options and handling pagination
+        and expired tokens
+
+    */
     fetchData(url, options={}, results=[]) {
         return new Promise((resolve, reject) => {
             if (!this.token) {
@@ -58,38 +104,42 @@ export default class LanguageLabClient {
             }
             options.headers.Authorization = "JWT " + this.token;
 
-            this.checkToken().then(() => {
-                fetch(url, options).then((res) => {
-                    if (res.status === 204) {
-                        resolve();
-                        return;
-                    } else if (res.status < 200 || res.status > 299) {
-                        reject(res);
-                        return;
+            this.checkToken();
+            fetch(url, options).then((res) => {
+                if (res.status === 204) {
+                    resolve();
+                    return;
+                } else if (res.status < 200 || res.status > 299) {
+                    reject(res);
+                    return;
+                }
+
+                res.json().then((resJson) => {
+                    if (!resJson.hasOwnProperty("results")) {
+                        resolve(resJson);
                     }
 
-                    res.json().then((resJson) => {
-                        if (!resJson.hasOwnProperty("results")) {
-                            resolve(resJson);
-                        }
-
-                        results = results.concat(resJson.results);
-                        if (resJson.next) {
-                            this.fetchData(resJson.next, options, results).then(
-                                resolve, reject
-                            );
-                        } else {
-                           resolve(results);
-                        }
-                    }, reject);
+                    results = results.concat(resJson.results);
+                    if (resJson.next) {
+                        this.fetchData(resJson.next, options, results).then(
+                            resolve, reject
+                        );
+                    } else {
+                       resolve(results);
+                    }
                 }, reject);
             }, reject);
         });
     }
 
+    /*
+
+        Retrieve the list of languages (not finished)
+
+    */
     updateLanguages(baseUrl) {
         const csrftoken = this.extractCookie("csrftoken");
-        const apiUrl = [baseUrl, "languages", "updateAll", ""].join("/");
+        const apiUrl = [baseUrl, "languages", "update_all", ""].join("/");
         const options = {
             "method": "POST",
             "mode": "cors",
@@ -103,6 +153,12 @@ export default class LanguageLabClient {
         });
     }
 
+    /*
+
+        Convert the data to a JSON and assemble the headers and options for a
+        PATCH request
+
+    */
     patch(baseUrl, endpoint, data, id=null) {
         const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [baseUrl, endpoint, id, ""].join("/");
@@ -124,6 +180,12 @@ export default class LanguageLabClient {
         });
     }
 
+    /*
+
+        Assemble the headers and options for a DELETE request with a given
+        endpoint and ID
+
+    */
     delete(baseUrl, endpoint, id) {
         const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [baseUrl, endpoint, id, ""].join("/");
@@ -144,6 +206,12 @@ export default class LanguageLabClient {
         });
     }
 
+    /*
+
+        Convert the data to a JSON and assemble the headers and options for a
+        POST request
+
+    */
     post(baseUrl, endpoint, data) {
         const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [baseUrl, endpoint, ""].join("/");
@@ -165,9 +233,15 @@ export default class LanguageLabClient {
         });
     }
 
+    /*
+
+        Request a new refresh token
+
+    */
     refreshToken() {
+        const endpoint = "token-refresh";
         const csrftoken = this.extractCookie("csrftoken");
-        const apiUrl = [this.baseUrl, "token-refresh", ""].join("/");
+        const apiUrl = [this.baseUrl, endpoint, ""].join("/");
         const options = {
             "method": "POST",
             "headers": {
@@ -177,15 +251,27 @@ export default class LanguageLabClient {
             "body": JSON.stringify({"token": this.token})
         };
 
-        return new Promise((resolve, reject) => {
-            this.fetchData(apiUrl, options).then((res) => {
-                resolve({"type": "token-auth", "response": res});
+        fetch(apiUrl, options).then((res) => {
+            if (res.status < 200 || res.status > 299) {
+                throw new Error("Error refreshing token!");
+            }
+
+            res.json().then((resJson) => {
+                this.handleToken(
+                    {"type": "token-auth", "response": resJson}
+                );
             }, (err) => {
-                reject({"type": endpoint, "error": err});
+                console.log(res);
+                throw new Error("Error reading token JSON!");
             });
         });
     }
 
+    /*
+
+        Assemble and send a login request to the API
+
+    */
     login(data) {
         const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [this.baseUrl, "token-auth", ""].join("/");
@@ -213,16 +299,6 @@ export default class LanguageLabClient {
             }, (err) => {
                 reject({"type": "token-auth", "error": err});
             });
-        });
-    }
-
-    checkToken() {
-        return new Promise((resolve, reject) => {
-            if (!this.tokenExpired()) {
-                resolve();
-                return;
-            }
-            throw new Error("Expired token!");
         });
     }
 }
