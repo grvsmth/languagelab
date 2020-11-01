@@ -3,7 +3,10 @@
 Views for the Language Lab REST API
 
 """
-from django.contrib.auth.models import User, Group
+from logging import basicConfig, getLogger
+
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
 from django.db.models import Max
 from django.http import JsonResponse
 
@@ -17,9 +20,7 @@ from rest_framework.serializers import (
     )
 from rest_framework.status import HTTP_204_NO_CONTENT
 
-from logging import basicConfig, getLogger
-
-from languagelab.api.iso639client import getIso639, makeLanguage
+from languagelab.api.iso639client import get_iso639, make_language
 from languagelab.api.models import (
     Exercise, Language, Lesson, MediaItem, QueueItem
     )
@@ -52,7 +53,7 @@ class UserViewSet(ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = User.objects.all().order_by('-date_joined')
+    queryset = get_user_model().objects.all().order_by('-date_joined')
     serializer_class = UserSerializerWithToken
 
 
@@ -71,16 +72,17 @@ class LanguageViewSet(ModelViewSet):
     queryset = Language.objects.all().order_by('id')
     serializer_class = LanguageSerializer
 
+    @staticmethod
     @action(detail=False, methods=['post'])
-    def update_all(self, request):
+    def update_all(request):
         """
         Update all the languages from the source
         """
         counter = 0
-        res = getIso639()
+        res = get_iso639()
 
         for entry in res:
-            language = makeLanguage(entry)
+            language = make_language(entry)
             language.save()
             counter += 1
 
@@ -108,7 +110,7 @@ class ExerciseViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
 
-    def destroy(self, request, *args, **kwargs):
+    def destroy(self, request):
         self.perform_destroy(self.get_object())
         QueueItem.objects.renumber(user=self.request.user)
         return Response(status=HTTP_204_NO_CONTENT)
@@ -146,43 +148,74 @@ class QueueItemViewSet(ModelViewSet):
     rank = IntegerField(read_only=True, min_value=1, default=1)
 
     def get_queryset(self):
+        """
+
+        Retrieve a filtered querySet for the queue items
+
+        """
         return QueueItem.objects.all().filter(
             user=self.request.user,
             rank__isnull=False
         ).order_by('rank')
 
-    def nextRank(self):
-        nextRank = 1
-        userItems = self.queryset.filter(user=self.request.user)
-        maxRank = userItems.aggregate(Max('rank'))['rank__max']
+    def next_rank(self):
+        """
 
-        if maxRank:
-            nextRank = maxRank + 1
+        If we want to add an item to the end of the queue, what rank would it
+        have?
 
-        return nextRank
+        """
+        next_rank = 1
+        user_items = self.queryset.filter(user=self.request.user)
+        max_rank = user_items.aggregate(Max('rank'))['rank__max']
+
+        if max_rank:
+            next_rank = max_rank + 1
+
+        return next_rank
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, rank=self.nextRank())
+        """
 
-    def destroy(self, request, *args, **kwargs):
+        Override default perform_create with next_rank()
+
+        """
+        serializer.save(user=self.request.user, rank=self.next_rank())
+
+    def destroy(self, request):
+        """
+
+        Override default destroy method, renumbering the queue items
+
+        """
         self.perform_destroy(self.get_object())
         QueueItem.objects.renumber(user=self.request.user)
         return Response(status=HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['patch'])
     def up(self, request):
+        """
+
+        Move the item up in the rank list by calling the .up() method
+
+        """
         QueueItem.objects.up(
-            userId=self.request.user,
-            itemId=self.request.data['item']
+            user_id=self.request.user,
+            item_id=self.request.data['item']
             )
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['patch'])
     def down(self, request):
+        """
+
+        Move the item down in the rank list by calling the .down() method
+
+        """
         QueueItem.objects.down(
-            userId=self.request.user,
-            itemId=self.request.data['item']
+            user_id=self.request.user,
+            item_id=self.request.data['item']
             )
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)

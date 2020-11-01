@@ -1,4 +1,11 @@
-from django.contrib.auth.models import User, Group
+"""
+
+Serializers for LanguageLab Library API
+
+"""
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
+
 from rest_framework.serializers import (
     CharField,
     CurrentUserDefault,
@@ -21,22 +28,43 @@ from languagelab.api.models import (
 
 
 class UserSerializer(ModelSerializer):
+    """
+
+    A serializer to store and retrieve the User model
+
+    """
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ['id', 'url', 'username', 'email', 'groups']
 
 
 class UserSerializerWithToken(ModelSerializer):
+    """
+
+    User serializer including a JWT token for the user
+
+    """
 
     token = SerializerMethodField()
     password = CharField(write_only=True)
 
-    def get_token(self, obj):
+    @staticmethod
+    def get_token(obj):
+        """
+
+        Retrieve the token associated with the object
+
+        """
         payload = api_settings.JWT_PAYLOAD_HANDLER(obj)
         token = api_settings.JWT_ENCODE_HANDLER(payload)
         return token
 
     def create(self, validated_data):
+        """
+
+        Validate the password if there is none
+
+        """
         password = validated_data.pop('password', None)
         instance = self.Meta.model(**validated_data)
 
@@ -47,17 +75,27 @@ class UserSerializerWithToken(ModelSerializer):
         return instance
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('token', 'username', 'password')
 
 
 class GroupSerializer(ModelSerializer):
+    """
+
+    A class to store and retrieve groups
+
+    """
     class Meta:
         model = Group
         fields = ['id', 'url', 'name']
 
 
 class LanguageSerializer(ModelSerializer):
+    """
+
+    Store and retrieve Languages
+
+    """
     class Meta:
         model = Language
         fields = ['id', 'name', 'code']
@@ -65,6 +103,11 @@ class LanguageSerializer(ModelSerializer):
 
 
 class MediaItemSerializer(TaggitSerializer, ModelSerializer):
+    """
+
+    Store and retrieve media items
+
+    """
     tags = TagListSerializerField()
     uploader = PrimaryKeyRelatedField(
         # set it to read_only as we're handling the writing part ourselves
@@ -94,6 +137,11 @@ class MediaItemSerializer(TaggitSerializer, ModelSerializer):
 
 
 class ExerciseSerializer(ModelSerializer):
+    """
+
+    Store and retrieve Exercises
+
+    """
     creator = PrimaryKeyRelatedField(
         # set it to read_only as we're handling the writing part ourselves
         read_only=True,
@@ -120,6 +168,11 @@ class ExerciseSerializer(ModelSerializer):
         ordering = ['-id']
 
 class LessonSerializer(TaggitSerializer, ModelSerializer):
+    """
+
+    Store and retrieve Lessons
+
+    """
     tags = TagListSerializerField()
     creator = PrimaryKeyRelatedField(
         # set it to read_only as we're handling the writing part ourselves
@@ -146,6 +199,11 @@ class LessonSerializer(TaggitSerializer, ModelSerializer):
 
 
 class QueueItemSerializer(ModelSerializer):
+    """
+
+    Store and retrieve queue items
+
+    """
     user = PrimaryKeyRelatedField(
         # set it to read_only as we're handling the writing part ourselves
         read_only=True,

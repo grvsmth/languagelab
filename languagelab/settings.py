@@ -217,6 +217,11 @@ LOGGING = {
 JWT_EXPIRATION_SECONDS = environ.get('JWT_EXPIRATION_SECONDS', '3600')
 
 def jwt_response_payload_handler(token, user=None, request=None):
+    """
+
+    Specialized JWT response payload handler that tells us the expiration time
+
+    """
     return {
         'token': token,
         'expiresIn': JWT_EXPIRATION_SECONDS
