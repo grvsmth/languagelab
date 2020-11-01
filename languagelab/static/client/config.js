@@ -9,7 +9,8 @@ const config = {
             "Exercises": "exercises",
             "Lessons": "lessons",
             "Queue": "queueItems",
-            "Languages": "languages"
+            "Languages": "languages",
+            "Users": "users"
         }
     },
     "formatName": {
@@ -45,6 +46,9 @@ const config = {
             "icon": "oi-caret-right",
             "color": "info"
         }
+    },
+    "navUrl": {
+        "Users": "/admin/"
     }
 };
 

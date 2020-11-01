@@ -29,13 +29,24 @@ export default class Home extends React.Component {
     }
 
     navLink(key) {
+        var href = "#";
+        var target = "_self";
+        var onClick = this.navClick;
+
+        if (this.props.navUrl.hasOwnProperty(key)) {
+            href = this.props.navUrl[key];
+            target = "_blank";
+            onClick = null;
+        }
+
         return React.createElement(
             "a",
             {
                 "className": "nav-link",
-                "href": "#",
+                "href": href,
+                "target": target,
                 "id": this.props.itemType[key],
-                "onClick": this.navClick
+                "onClick": onClick
             },
             key,
             this.srOnlySpan(key)

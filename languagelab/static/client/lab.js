@@ -462,7 +462,8 @@ export default class Lab extends React.Component {
                 "currentUser": this.state.currentUser,
                 "itemType": config.api.endpoint,
                 "logout": this.logout.bind(this),
-                "navClick": this.navClick
+                "navClick": this.navClick,
+                "navUrl": config.navUrl
             },
             null
         );
