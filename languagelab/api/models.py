@@ -1,4 +1,10 @@
+"""
+
+Models for LangaugeLab Library
+
+"""
 from datetime import timedelta
+from logging import basicConfig, getLogger
 
 from django.conf import settings
 from django.db.models import (
@@ -16,8 +22,6 @@ from django.db.models import (
     TextField
     )
 from django.utils.timezone import now
-
-from logging import basicConfig, getLogger
 
 from taggit.managers import TaggableManager
 
@@ -128,49 +132,67 @@ class QueueManager (Manager):
     """
     Manager for queue operations
     """
-    def userQueue(self, userId):
-        return super(
-            QueueManager,
-            self
-        ).get_queryset().filter(
-            user=userId,
+    def user_queue(self, user_id):
+        """
+
+        Get the queue filtered for a specific user
+
+        """
+        return super().get_queryset().filter(
+            user=user_id,
             rank__isnull=False
         ).order_by('rank')
 
     def renumber(self, user):
+        """
+
+        Renumber the queue items for a given user
+
+        """
         i = 1
-        queue = self.userQueue(user)
-        for (queueItem) in queue:
-            if (queueItem.completed is None):
-                queueItem.rank = i
-                queueItem.save()
+        queue = self.user_queue(user)
+        for queue_item in queue:
+            if queue_item.completed is None:
+                queue_item.rank = i
+                queue_item.save()
                 i += 1
 
-    def up(self, userId, itemId):
-        queue = self.userQueue(userId)
-        itemQueryset = queue.filter(id=itemId)
-        oldRank = itemQueryset[0].rank
+    def up(self, user_id, item_id):
+        """
 
-        if oldRank < 2 or oldRank > queue.count():
+        Move the current item up in the ranking (by lowering its rank number)
+
+        """
+        queue = self.user_queue(user_id)
+        item_queryset = queue.filter(id=item_id)
+        old_rank = item_queryset[0].rank
+
+        if old_rank < 2 or old_rank > queue.count():
             return queue
 
-        newRank = oldRank - 1
-        queue.filter(rank=newRank).update(rank=oldRank)
-        itemQueryset.update(rank=newRank)
+        new_rank = old_rank - 1
+        queue.filter(rank=new_rank).update(rank=old_rank)
+        item_queryset.update(rank=new_rank)
 
         return queue
 
-    def down(self, userId, itemId):
-        queue = self.userQueue(userId)
-        itemQueryset = queue.filter(id=itemId)
-        oldRank = itemQueryset[0].rank
+    def down(self, user_id, item_id):
+        """
 
-        if oldRank < 1 or oldRank >= queue.count():
+        Move the specified item down in the ranking (by increasing its rank
+        number)
+
+        """
+        queue = self.user_queue(user_id)
+        item_queryset = queue.filter(id=item_id)
+        old_rank = item_queryset[0].rank
+
+        if old_rank < 1 or old_rank >= queue.count():
             return queue
 
-        newRank = oldRank + 1
-        queue.filter(rank=newRank).update(rank=oldRank)
-        itemQueryset.update(rank=newRank)
+        new_rank = old_rank + 1
+        queue.filter(rank=new_rank).update(rank=old_rank)
+        item_queryset.update(rank=new_rank)
 
         return queue
 

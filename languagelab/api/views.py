@@ -72,8 +72,9 @@ class LanguageViewSet(ModelViewSet):
     queryset = Language.objects.all().order_by('id')
     serializer_class = LanguageSerializer
 
+    @staticmethod
     @action(detail=False, methods=['post'])
-    def update_all(self, request):
+    def update_all(request):
         """
         Update all the languages from the source
         """
@@ -199,8 +200,8 @@ class QueueItemViewSet(ModelViewSet):
 
         """
         QueueItem.objects.up(
-            userId=self.request.user,
-            itemId=self.request.data['item']
+            user_id=self.request.user,
+            item_id=self.request.data['item']
             )
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)
@@ -213,8 +214,8 @@ class QueueItemViewSet(ModelViewSet):
 
         """
         QueueItem.objects.down(
-            userId=self.request.user,
-            itemId=self.request.data['item']
+            user_id=self.request.user,
+            item_id=self.request.data['item']
             )
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)
