@@ -17,8 +17,8 @@ export default class Home extends React.Component {
         this.props.navClick(event.target.id);
     }
 
-    srOnlySpan(key) {
-        if (this.props.selectedType !== key) {
+    srOnlySpan(model) {
+        if (this.props.selectedType !== model.endpoint) {
             return null;
         }
         return React.createElement(
@@ -28,13 +28,13 @@ export default class Home extends React.Component {
         );
     }
 
-    navLink(key) {
+    navLink(model) {
         var href = "#";
         var target = "_self";
         var onClick = this.navClick;
 
-        if (this.props.navUrl.hasOwnProperty(key)) {
-            href = this.props.navUrl[key];
+        if (this.props.navUrl.hasOwnProperty(model.endpoint)) {
+            href = this.props.navUrl[model.endpoint];
             target = "_blank";
             onClick = null;
         }
@@ -45,17 +45,17 @@ export default class Home extends React.Component {
                 "className": "nav-link",
                 "href": href,
                 "target": target,
-                "id": this.props.itemType[key],
+                "id": model.endpoint,
                 "onClick": onClick
             },
-            key,
-            this.srOnlySpan(key)
+            model.menu,
+            this.srOnlySpan(model)
         );
     }
 
-    navItem(key) {
+    navItem(model) {
         var className = "nav-item";
-        if (this.props.selectedType === key) {
+        if (this.props.activeItem === model.endpoint) {
             className = "nav-item active";
         }
 
@@ -63,9 +63,9 @@ export default class Home extends React.Component {
             "li",
             {
                 "className": className,
-                "key": key
+                "key": model.endpoint
             },
-            this.navLink(key)
+            this.navLink(model)
         )
     }
 
@@ -77,8 +77,7 @@ export default class Home extends React.Component {
         return React.createElement(
             "ul",
             {"className": "navbar-nav mr-auto"},
-            Object.keys(this.props.itemType)
-                .map(this.navItem.bind(this))
+            this.props.models.map(this.navItem.bind(this))
         );
     }
 
