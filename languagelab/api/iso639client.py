@@ -1,3 +1,8 @@
+"""
+
+Client for retrieving the list of languages from iso639-3.sil.org
+
+"""
 from codecs import iterdecode
 from csv import DictReader
 from logging import basicConfig, getLogger
@@ -11,7 +16,12 @@ basicConfig(level="DEBUG")
 
 ISO639URL = 'https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab'
 
-def getIso639():
+def get_iso639():
+    """
+
+    Retrieve the list of languages from sil.org
+
+    """
     response = get(ISO639URL, stream=True)
     response.encoding = 'UTF-8'
 
@@ -19,5 +29,10 @@ def getIso639():
 
     return DictReader(iso639iter, delimiter="\t")
 
-def makeLanguage(iso639row):
+def make_language(iso639row):
+    """
+
+    Create a Language object based on the ISO 639-3 entry
+
+    """
     return Language (name=iso639row['Ref_Name'], code=iso639row['Id'])
