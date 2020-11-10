@@ -167,6 +167,7 @@ class ExerciseSerializer(ModelSerializer):
             ]
         ordering = ['-id']
 
+
 class LessonSerializer(TaggitSerializer, ModelSerializer):
     """
 

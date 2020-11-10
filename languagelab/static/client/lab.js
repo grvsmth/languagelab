@@ -23,6 +23,7 @@ export default class Lab extends React.Component {
         super(props);
 
         this.checkClick = this.checkClick.bind(this);
+        this.handleFetchError = this.handleFetchError.bind(this);
         this.navClick = this.navClick.bind(this);
 
         this.queueOperation = {
@@ -129,7 +130,11 @@ export default class Lab extends React.Component {
             this.logout();
             return;
         }
-        console.log("message", err.error.message);
+        if (err.hasOwnProperty("error")) {
+            console.log("message", err.error.message);
+        } else {
+            console.log("error", err.message);
+        }
     }
 
 
@@ -329,6 +334,7 @@ export default class Lab extends React.Component {
     }
 
     saveItem(item, itemType, itemId) {
+        console.log(`saveItem(${itemType})`, item);
         if (itemId) {
             this.apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
                 .then((res) => {

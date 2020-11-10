@@ -3,6 +3,7 @@ import util from "./util.js";
 import ExerciseCard from "./exerciseCard.js";
 import DoExerciseCard from "./doExerciseCard.js";
 import ExerciseFormCard from "./exerciseFormCard.js";
+import LessonFormCard from "./lessonFormCard.js";
 import MediaCard from "./mediaCard.js";
 import MediaFormCard from "./mediaFormCard.js";
 
@@ -159,6 +160,25 @@ export default class CardList extends React.Component {
         );
     }
 
+    lessonCard(lesson, users) {
+        var cardComponent = LessonFormCard;
+
+        const options = {
+            "key": lesson.id,
+            "lesson": lesson,
+            "users": users,
+            "setActivity": this.props.setActivity,
+            "saveItem": this.props.saveItem,
+            "selectedType": this.props.selectedType
+        };
+
+        return React.createElement(
+            cardComponent,
+            options,
+            null
+        );
+    }
+
     exerciseFormCard(key, exercise, mediaItem, users) {
         var options = {
             "key": key,
@@ -270,6 +290,12 @@ export default class CardList extends React.Component {
                     return this.mediaCard({"id": cardId}, [this.props.users[0]])
                 }
 
+                if (this.props.selectedType === "lessons") {
+                    return this.lessonCard(
+                        {"id": cardId}, [this.props.users[0]]
+                    );
+                }
+
                 return this.exerciseFormCard(
                     cardId,
                     {"id": cardId},
@@ -299,6 +325,7 @@ export default class CardList extends React.Component {
     }
 
     render() {
+        console.log("selectedType", this.props.selectedType);
         const myType = typeInfo[this.props.selectedType];
         return React.createElement(
             "div",

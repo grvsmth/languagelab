@@ -118,11 +118,11 @@ class Lesson (Model):
         verbose_name="creator",
         on_delete=CASCADE
     )
-    level = IntegerField("Level", db_index=True)
+    level = IntegerField("Level", db_index=True, default=0)
     exercises = ManyToManyField(Exercise, verbose_name="exercises")
     isAvailable = BooleanField("Available", db_index=True)
     isPublic = BooleanField("Public", db_index=True)
-    description = TextField("Instructions")
+    description = TextField("Instructions", blank=True)
     notes = TextField("Notes", null=True, blank=True)
     tags = TaggableManager()
     created = DateTimeField("Created", auto_now_add=True)
