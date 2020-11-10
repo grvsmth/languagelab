@@ -80,9 +80,8 @@ export default class Lab extends React.Component {
     fetchAll() {
         const loading = {};
 
-        const thingsToLoad = Object.values(config.api.endpoint).concat(
-            ["currentUser", "users"]
-        );
+        const thingsToLoad = config.api.models.map(model => model.endpoint)
+            .concat(["currentUser"]);
 
         thingsToLoad.forEach((endpoint) => {
             loading[endpoint] = true;
@@ -458,9 +457,9 @@ export default class Lab extends React.Component {
         return React.createElement(
             Navbar,
             {
-                "activeItem": this.state.selectedType,
+                "selectedType": this.state.selectedType,
                 "currentUser": this.state.currentUser,
-                "itemType": config.api.endpoint,
+                "models": config.api.models,
                 "logout": this.logout.bind(this),
                 "navClick": this.navClick,
                 "navUrl": config.navUrl

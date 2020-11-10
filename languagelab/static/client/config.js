@@ -4,14 +4,38 @@ const config = {
     "tagSplitRE": /\s*[,;]+\s*/,
     "api": {
         "baseUrl": "https://languagelab.grieve-smith.com/api/0.2",
-        "endpoint": {
-            "Media": "media",
-            "Exercises": "exercises",
-            "Lessons": "lessons",
-            "Queue": "queueItems",
-            "Languages": "languages",
-            "Users": "users"
-        }
+        "models": [
+            {
+                "menu": "Media",
+                "endpoint": "media",
+                "item": "Media item"
+            },
+            {
+                "menu": "Exercises",
+                "endpoint": "exercises",
+                "item": "exercise"
+            },
+            {
+                "endpoint": "lessons",
+                "menu": "Lessons",
+                "item": "lesson"
+            },
+            {
+                "endpoint": "queueItems",
+                "menu": "Queue",
+                "item": "queue item"
+            },
+            {
+                "endpoint": "languages",
+                "menu": "Languages",
+                "item": "language"
+            },
+            {
+                "endpoint": "users",
+                "menu": "Users",
+                "item": "user"
+            }
+        ]
     },
     "formatName": {
         "au": "audio",
@@ -48,7 +72,7 @@ const config = {
         }
     },
     "navUrl": {
-        "Users": "/admin/"
+        "users": "/admin/"
     }
 };
 
