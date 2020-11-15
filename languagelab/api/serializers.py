@@ -175,6 +175,8 @@ class LessonSerializer(TaggitSerializer, ModelSerializer):
 
     """
     tags = TagListSerializerField()
+    exercises = ExerciseSerializer(read_only=True, many=True)
+
     creator = PrimaryKeyRelatedField(
         # set it to read_only as we're handling the writing part ourselves
         read_only=True,

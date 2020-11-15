@@ -334,7 +334,6 @@ export default class Lab extends React.Component {
     }
 
     saveItem(item, itemType, itemId) {
-        console.log(`saveItem(${itemType})`, item);
         if (itemId) {
             this.apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
                 .then((res) => {
@@ -343,6 +342,11 @@ export default class Lab extends React.Component {
                 this.handleFetchError(err);
             });
         } else {
+            if (itemType === "lessons") {
+                // item.exercises = [];
+                item.level = 1;
+            }
+            console.log(`saveItem(${itemType})`, item);
             this.apiClient.post(environment.api.baseUrl, itemType, item).then(
                 (res) => {
                     this.updateStateItem(res.response, itemType, "read", true);

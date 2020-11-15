@@ -163,7 +163,7 @@ export default class LessonFormCard extends React.Component {
             "div",
             {"className": "form-row mt-3"},
             this.textInputDiv("name"),
-            this.textInputDiv("creator"),
+            this.textInputDiv("description"),
             commonElements.checkboxDiv(
                 "isAvailable",
                 this.props.lesson.isAvailable,
@@ -216,8 +216,9 @@ export default class LessonFormCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "form-row mt-3"},
-            this.textInputDiv("description"),
-            this.tagsInputDiv()
+            this.textInputDiv("notes"),
+            this.tagsInputDiv(),
+            this.textInputDiv("level")
         );
     }
 
