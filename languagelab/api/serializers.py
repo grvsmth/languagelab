@@ -37,7 +37,6 @@ class UserSerializer(ModelSerializer):
         model = get_user_model()
         fields = ['id', 'url', 'username', 'email', 'groups']
 
-
 class UserSerializerWithToken(ModelSerializer):
     """
 
@@ -76,8 +75,9 @@ class UserSerializerWithToken(ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('token', 'username', 'password')
-
+        fields = (
+            'id', 'email', 'groups', 'token', 'url', 'username', 'password'
+        )
 
 class GroupSerializer(ModelSerializer):
     """

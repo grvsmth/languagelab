@@ -39,7 +39,7 @@ export default class LessonCard extends React.Component {
         return React.createElement(
             "h6",
             {"className": "card-subtitle text-dark"},
-            `${this.props.lesson.creator} (added ${createdText}`,
+            `${this.props.lesson.description} (created ${createdText}`,
             this.bySpan(),
             ")"
         );
@@ -142,7 +142,7 @@ export default class LessonCard extends React.Component {
         console.log("render", this.props);
         return React.createElement(
             "div",
-            {"className": "card bg-secondary text-white mb-3"},
+            {"className": "card border-secondary bg-light mb-3"},
             this.cardBody()
         );
     }

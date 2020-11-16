@@ -237,11 +237,15 @@ export default class CardList extends React.Component {
         var queueItem;
         var users = [];
 
+        console.log("makeElement()", item);
         if (this.props.users) {
             // Find user associated with the item
             // TODO find current user
+            console.log("this.props.users", this.props.users);
             const userFieldName = typeInfo[this.props.selectedType].userField;
+            console.log("userFieldName", userFieldName);
             const user = util.findItem(this.props.users, item[userFieldName]);
+            console.log("user", user);
             if (user) {
                 users.push(user);
             }
