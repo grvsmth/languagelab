@@ -426,7 +426,7 @@ export default class Lab extends React.Component {
             {
                 "activity": this.state.activity,
                 "checkClick": this.checkClick,
-                "currentUser": this.currentUser,
+                "currentUser": this.state.currentUser,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
                 "editItem": this.editItem.bind(this),

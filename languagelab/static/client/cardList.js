@@ -237,21 +237,31 @@ export default class CardList extends React.Component {
         );
     }
 
+    makeUsers(item) {
+        var users = [];
+
+        if (this.props.users) {
+            const userFieldName = typeInfo[this.props.selectedType].userField;
+            const userId = item[userFieldName];
+
+            const user = util.findItem(this.props.users, userId);
+            if (user) {
+                users.push(user);
+            }
+
+            if (this.props.currentUser && this.props.currentUser.id != userId) {
+                users.push(this.props.currentUser)
+            }
+        }
+        return users;
+    }
+
     makeElement(item) {
         var exercise;
         var mediaItem;
         var queueItem;
-        var users = [];
 
-        if (this.props.users) {
-            // Find user associated with the item
-            // TODO find current user
-            const userFieldName = typeInfo[this.props.selectedType].userField;
-            const user = util.findItem(this.props.users, item[userFieldName]);
-            if (user) {
-                users.push(user);
-            }
-        }
+        const users = this.makeUsers(item);
 
         if (this.props.selectedType === "media") {
             return this.mediaCard(item, users);
