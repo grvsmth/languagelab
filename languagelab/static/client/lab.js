@@ -343,8 +343,7 @@ export default class Lab extends React.Component {
             });
         } else {
             if (itemType === "lessons") {
-                // item.exercises = [];
-                item.level = 1;
+                item.level = parseInt(item.level);
             }
             console.log(`saveItem(${itemType})`, item);
             this.apiClient.post(environment.api.baseUrl, itemType, item).then(

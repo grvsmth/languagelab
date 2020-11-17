@@ -166,7 +166,7 @@ export default class CardList extends React.Component {
     lessonCard(lesson, users) {
         var cardComponent = LessonCard;
 
-        if (this.props.activity === "add" && typeof mediaItem.id !== "number") {
+        if (this.props.activity === "add" && typeof lesson.id !== "number") {
             cardComponent = LessonFormCard;
         }
 

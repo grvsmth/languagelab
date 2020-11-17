@@ -27,7 +27,6 @@ export default class LessonCard extends React.Component {
         return React.createElement(
             "span",
             {"className": "text-info"},
-            " by ",
             this.props.users[0].username
         );
     }
@@ -39,7 +38,8 @@ export default class LessonCard extends React.Component {
         return React.createElement(
             "h6",
             {"className": "card-subtitle text-dark"},
-            `${this.props.lesson.description} (created ${createdText}`,
+            `${this.props.lesson.description} (level ${this.props.lesson.level},
+              created ${createdText} by `,
             this.bySpan(),
             ")"
         );
@@ -113,12 +113,21 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    notesDiv() {
+        return React.createElement(
+            "div",
+            {},
+            this.props.lesson.notes
+        );
+    }
+
     cardBody() {
         return React.createElement(
             "div",
             {"className": "card-body"},
             this.itemTitle(),
             this.itemSubtitle(),
+            this.notesDiv(),
             this.tagsSpan(),
             commonElements.checkboxDiv(
                 "isAvailable",
