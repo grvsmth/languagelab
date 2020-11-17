@@ -50,7 +50,7 @@ export default class ExerciseCard extends React.Component {
                 "queueClick": this.props.queueClick,
                 "selectedType": this.props.selectedType,
                 "startExercise": this.props.startExercise,
-                "users": this.props.users
+                "itemUser": this.props.itemUser
             },
             null
         );

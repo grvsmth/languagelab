@@ -20,14 +20,14 @@ export default class LessonCard extends React.Component {
     }
 
     bySpan() {
-        if (!this.props.users || this.props.users.length < 1) {
+        if (!this.props.itemUser) {
             return null;
         }
 
         return React.createElement(
             "span",
             {"className": "text-info"},
-            this.props.users[0].username
+            this.props.itemUser.username
         );
     }
 

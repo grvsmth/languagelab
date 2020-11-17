@@ -22,7 +22,7 @@ export default class ExerciseCardBody extends React.Component {
     }
 
     bySpan() {
-        if (!this.props.users) {
+        if (!this.props.itemUser) {
             return null;
         }
 
@@ -30,7 +30,7 @@ export default class ExerciseCardBody extends React.Component {
             "span",
             {"className": "text-dark"},
             " by ",
-            this.props.users[0].username
+            this.props.itemUser.username
         );
     }
 

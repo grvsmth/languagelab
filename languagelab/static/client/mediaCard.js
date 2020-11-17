@@ -36,7 +36,7 @@ export default class MediaCard extends React.Component {
     }
 
     bySpan() {
-        if (!this.props.users || this.props.users.length < 1) {
+        if (!this.props.itemUser) {
             return null;
         }
 
@@ -44,7 +44,7 @@ export default class MediaCard extends React.Component {
             "span",
             {"className": "text-info"},
             " by ",
-            this.props.users[0].username
+            this.props.itemUser.username
         );
     }
 
