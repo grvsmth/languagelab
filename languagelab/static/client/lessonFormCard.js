@@ -244,7 +244,6 @@ export default class LessonFormCard extends React.Component {
     }
 
     render() {
-        console.log("lessonFormCard", this.props);
         return React.createElement(
             "div",
             {"className": "card bg-light mb-3"},
