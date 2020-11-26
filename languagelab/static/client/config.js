@@ -21,11 +21,6 @@ const config = {
                 "item": "lesson"
             },
             {
-                "endpoint": "queueItems",
-                "menu": "Queue",
-                "item": "queue item"
-            },
-            {
                 "endpoint": "languages",
                 "menu": "Languages",
                 "item": "language"

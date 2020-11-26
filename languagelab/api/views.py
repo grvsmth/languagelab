@@ -140,23 +140,7 @@ class QueueItemViewSet(ModelViewSet):
     queryset = QueueItem.objects.all().order_by('rank')
     serializer_class = QueueItemSerializer
 
-    user = PrimaryKeyRelatedField(
-        # set it to read_only as we're handling the writing part ourselves
-        read_only=True,
-        default=CurrentUserDefault()
-    )
     rank = IntegerField(read_only=True, min_value=1, default=1)
-
-    def get_queryset(self):
-        """
-
-        Retrieve a filtered querySet for the queue items
-
-        """
-        return QueueItem.objects.all().filter(
-            user=self.request.user,
-            rank__isnull=False
-        ).order_by('rank')
 
     def next_rank(self):
         """
@@ -166,8 +150,8 @@ class QueueItemViewSet(ModelViewSet):
 
         """
         next_rank = 1
-        user_items = self.queryset.filter(user=self.request.user)
-        max_rank = user_items.aggregate(Max('rank'))['rank__max']
+        lesson_items = self.queryset.filter(lesson=self.request.lessson)
+        max_rank = lesson_items.aggregate(Max('rank'))['rank__max']
 
         if max_rank:
             next_rank = max_rank + 1
@@ -180,7 +164,7 @@ class QueueItemViewSet(ModelViewSet):
         Override default perform_create with next_rank()
 
         """
-        serializer.save(user=self.request.user, rank=self.next_rank())
+        serializer.save(rank=self.next_rank())
 
     def destroy(self, request):
         """
@@ -189,7 +173,7 @@ class QueueItemViewSet(ModelViewSet):
 
         """
         self.perform_destroy(self.get_object())
-        QueueItem.objects.renumber(user=self.request.user)
+        QueueItem.objects.renumber(lesson=self.request.lesson)
         return Response(status=HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['patch'])
@@ -200,7 +184,7 @@ class QueueItemViewSet(ModelViewSet):
 
         """
         QueueItem.objects.up(
-            user_id=self.request.user,
+            lesson_id=self.request.lesson,
             item_id=self.request.data['item']
             )
         serializer = self.serializer_class(self.queryset, many=True)
@@ -214,7 +198,7 @@ class QueueItemViewSet(ModelViewSet):
 
         """
         QueueItem.objects.down(
-            user_id=self.request.user,
+            lesson_id=self.request.lesson,
             item_id=self.request.data['item']
             )
         serializer = self.serializer_class(self.queryset, many=True)

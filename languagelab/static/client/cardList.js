@@ -177,6 +177,7 @@ export default class CardList extends React.Component {
         }
 
         const options = {
+            "deleteClick": this.props.deleteClick,
             "editItem": this.props.editItem,
             "key": lesson.id,
             "lesson": lesson,
@@ -213,7 +214,7 @@ export default class CardList extends React.Component {
         );
     }
 
-    exerciseCard(key, queueItem, exercise, mediaItem) {
+    exerciseCard(key, queueItem, exercise, mediaItem, lessons) {
 
         var options = {
             "checkClick": this.props.checkClick,
@@ -228,7 +229,8 @@ export default class CardList extends React.Component {
             "queueItem": queueItem,
             "selectedType": this.props.selectedType,
             "startExercise": this.props.startExercise,
-            "itemUser": this.itemUser(exercise)
+            "itemUser": this.itemUser(exercise),
+            "lessons": lessons
         };
 
         return React.createElement(
@@ -297,7 +299,9 @@ export default class CardList extends React.Component {
                 return this.exerciseFormCard(item.id, exercise, mediaItem);
             }
         }
-        return this.exerciseCard(item.id, queueItem, exercise,  mediaItem);
+        return this.exerciseCard(
+            item.id, queueItem, exercise,  mediaItem, this.props.lessons
+        );
     }
 
     addCard(addable, cardId="form") {

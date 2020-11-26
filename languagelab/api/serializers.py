@@ -218,7 +218,7 @@ class QueueItemSerializer(ModelSerializer):
         model = QueueItem
         fields = [
             'id',
-            'user',
+            'lesson',
             'exercise',
             'rank',
             'started',

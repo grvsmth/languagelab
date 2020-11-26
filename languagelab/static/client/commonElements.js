@@ -52,8 +52,30 @@ exports.checkboxDiv = function(key, checked, labelText, itemId, callback=null) {
     );
 };
 
+exports.itemOption = function(optionKey, optionValue) {
+    return React.createElement(
+        "option",
+        {"value": optionKey},
+        optionValue
+    );
+};
 
-
-
+exports.itemSelect = function(fieldName, options, inputId, defaultValue) {
+    return React.createElement(
+        "select",
+        {
+            "className": "form-control",
+            "id": inputId,
+            "name": fieldName,
+            "defaultValue": defaultValue
+        },
+        ...Object.keys(options).map((optionKey) => {
+            return exports.itemOption(
+                optionKey,
+                options[optionKey]
+            );
+        })
+    );
+};
 
 export default exports;

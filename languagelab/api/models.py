@@ -132,38 +132,38 @@ class QueueManager (Manager):
     """
     Manager for queue operations
     """
-    def user_queue(self, user_id):
+    def lesson_queue(self, lesson_id):
         """
 
-        Get the queue filtered for a specific user
+        Get the queue filtered for a specific lesson
 
         """
         return super().get_queryset().filter(
-            user=user_id,
+            lesson=lesson_id,
             rank__isnull=False
         ).order_by('rank')
 
-    def renumber(self, user):
+    def renumber(self, lesson_id):
         """
 
-        Renumber the queue items for a given user
+        Renumber the queue items for a given lesson
 
         """
         i = 1
-        queue = self.user_queue(user)
+        queue = self.lesson_queue(lesson_id)
         for queue_item in queue:
             if queue_item.completed is None:
                 queue_item.rank = i
                 queue_item.save()
                 i += 1
 
-    def up(self, user_id, item_id):
+    def up(self, lesson_id, item_id):
         """
 
         Move the current item up in the ranking (by lowering its rank number)
 
         """
-        queue = self.user_queue(user_id)
+        queue = self.lesson_queue(lesson_id)
         item_queryset = queue.filter(id=item_id)
         old_rank = item_queryset[0].rank
 
@@ -176,14 +176,14 @@ class QueueManager (Manager):
 
         return queue
 
-    def down(self, user_id, item_id):
+    def down(self, lesson_id, item_id):
         """
 
         Move the specified item down in the ranking (by increasing its rank
         number)
 
         """
-        queue = self.user_queue(user_id)
+        queue = self.lesson_queue(lesson_id)
         item_queryset = queue.filter(id=item_id)
         old_rank = item_queryset[0].rank
 
@@ -199,12 +199,13 @@ class QueueManager (Manager):
 
 class QueueItem (Model):
     """
-    Model for tracking exercises in a user queue
+    Model for tracking exercises in a lesson queue
     """
-    user = ForeignKey(
-        settings.AUTH_USER_MODEL,
-        verbose_name="user",
-        on_delete=CASCADE
+    lesson = ForeignKey(
+        Lesson,
+        verbose_name="lesson",
+        on_delete=CASCADE,
+        blank=True
     )
     exercise = ForeignKey(
         Exercise,
