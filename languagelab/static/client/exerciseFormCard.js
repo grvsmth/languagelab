@@ -130,27 +130,15 @@ export default class ExerciseFormCard extends React.Component {
         );
     }
 
-    selectDiv(fieldName, optionList) {
-        if (!optionList) {
-            return null;
-        }
-
-        const inputId = [fieldName, this.props.exercise.id].join("_");
-        return React.createElement(
-            "div",
-            {},
-            commonElements.itemLabel(fieldName, inputId),
-            commonElements.itemSelect(
-                fieldName, optionList, inputId, this.props.exercise[fieldName]
-            )
-        );
-    }
-
     mediaRow() {
         return React.createElement(
             "div",
             {"class-name": "form-row-mt-3"},
-            this.selectDiv("media", util.listToObject(this.props.media))
+            commonElements.selectDiv(
+                "media",
+                util.listToObject(this.props.media),
+                this.props.exercise
+            )
         )
 
     }

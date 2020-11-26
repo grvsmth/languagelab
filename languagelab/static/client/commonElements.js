@@ -78,4 +78,22 @@ exports.itemSelect = function(fieldName, options, inputId, defaultValue) {
     );
 };
 
+exports.selectDiv = function(fieldName, optionList, parent) {
+    if (!optionList) {
+        return null;
+    }
+
+    const inputId = [fieldName, parent.id].join("_");
+    return React.createElement(
+        "div",
+        {},
+        exports.itemLabel(fieldName, inputId),
+        exports.itemSelect(
+            fieldName, optionList, inputId, parent[fieldName]
+        )
+    );
+};
+
+
+
 export default exports;
