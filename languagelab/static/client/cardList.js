@@ -176,15 +176,22 @@ export default class CardList extends React.Component {
             cardComponent = LessonFormCard;
         }
 
+        const selected = this.props.selectedType === "lessons"
+            && this.props.selectedItem === lesson.id;
+
         const options = {
+            "activity": this.props.activity,
             "deleteClick": this.props.deleteClick,
             "editItem": this.props.editItem,
+            "exercises": this.props.exercises,
             "key": lesson.id,
             "lesson": lesson,
             "itemUser": this.itemUser(lesson),
             "setActivity": this.props.setActivity,
             "saveItem": this.props.saveItem,
-            "selectedType": this.props.selectedType
+            "selected": selected,
+            "selectedType": this.props.selectedType,
+            "startLesson": this.props.startLesson
         };
 
         return React.createElement(
@@ -343,6 +350,7 @@ export default class CardList extends React.Component {
     }
 
     render() {
+        console.log(this.props);
         const myType = typeInfo[this.props.selectedType];
         return React.createElement(
             "div",

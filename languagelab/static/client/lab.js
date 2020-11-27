@@ -317,6 +317,13 @@ export default class Lab extends React.Component {
         this.setState({"selectedItem": itemId});
     }
 
+    startLesson(lessonId) {
+        this.setState({
+            "activity": "do",
+            "selectedItem": lessonId
+        });
+    }
+
     startExercise(exerciseId) {
         var queueItem;
         if (this.state.selectedType === "queueItems") {
@@ -456,6 +463,7 @@ export default class Lab extends React.Component {
                 "queueNav": this.queueNav,
                 "saveItem": this.saveItem.bind(this),
                 "setActivity": this.setActivity.bind(this),
+                "startLesson": this.startLesson.bind(this),
                 "startExercise": this.startExercise.bind(this),
                 "selectItem": this.selectItem.bind(this),
                 "selectedItem": this.state.selectedItem,

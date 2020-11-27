@@ -11,6 +11,10 @@ export default class LessonCard extends React.Component {
         this.editClick = this.editClick.bind(this);
     }
 
+    startLesson() {
+        this.props.startLesson(this.props.lesson.id);
+    }
+
     itemTitle() {
         return React.createElement(
             "h5",
@@ -137,7 +141,8 @@ export default class LessonCard extends React.Component {
             "button",
             {
                 "type": "button",
-                "className": "btn btn-info btn-sm ml-2"
+                "className": "btn btn-info btn-sm ml-2",
+                "onClick": this.startLesson.bind(this)
             },
             "Start lesson"
         );
@@ -149,6 +154,17 @@ export default class LessonCard extends React.Component {
             {"className": "ml-2"},
             this.howManyExercises(),
             this.doQueueButton()
+        );
+    }
+
+    doQueueDiv() {
+        if (!this.props.selected) {
+            return null;
+        }
+        return React.createElement(
+            "div",
+            {},
+            JSON.stringify(this.props.lesson.queueItems)
         );
     }
 
@@ -174,7 +190,8 @@ export default class LessonCard extends React.Component {
                 this.props.lesson.id,
                 this.checkboxClick
                 ),
-            this.linkDiv()
+            this.linkDiv(),
+            this.doQueueDiv()
         );
     }
 
