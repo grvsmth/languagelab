@@ -109,7 +109,8 @@ export default class LessonCard extends React.Component {
             {},
             this.editLink(),
             " ",
-            this.deleteLink()
+            this.deleteLink(),
+            this.queueSpan()
         );
     }
 
@@ -118,6 +119,36 @@ export default class LessonCard extends React.Component {
             "div",
             {},
             this.props.lesson.notes
+        );
+    }
+
+    howManyExercises() {
+        if (this.props.lesson.queueItems.length == 1) {
+            return "1 exercise";
+        }
+        return this.props.lesson.queueItems.length + " exercises";
+    }
+
+    doQueueButton() {
+        if (this.props.lesson.queueItems.length < 1) {
+            return null;
+        }
+        return React.createElement(
+            "button",
+            {
+                "type": "button",
+                "className": "btn btn-info btn-sm ml-2"
+            },
+            "Start lesson"
+        );
+    }
+
+    queueSpan() {
+        return React.createElement(
+            "span",
+            {"className": "ml-2"},
+            this.howManyExercises(),
+            this.doQueueButton()
         );
     }
 
