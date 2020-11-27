@@ -119,7 +119,6 @@ class Lesson (Model):
         on_delete=CASCADE
     )
     level = IntegerField("Level", db_index=True, default=0)
-    exercises = ManyToManyField(Exercise, verbose_name="exercises")
     isAvailable = BooleanField("Available", db_index=True)
     isPublic = BooleanField("Public", db_index=True)
     description = TextField("Instructions", blank=True)
@@ -204,6 +203,7 @@ class QueueItem (Model):
     lesson = ForeignKey(
         Lesson,
         verbose_name="lesson",
+        related_name="queueItems",
         on_delete=CASCADE,
         blank=True
     )

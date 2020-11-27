@@ -64,6 +64,7 @@ export default class QueueFooter extends React.Component {
     }
 
     badgeSpan() {
+        console.log("lesson", this.props.lesson);
         return React.createElement(
             "span",
             {},

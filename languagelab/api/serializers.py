@@ -168,39 +168,6 @@ class ExerciseSerializer(ModelSerializer):
         ordering = ['-id']
 
 
-class LessonSerializer(TaggitSerializer, ModelSerializer):
-    """
-
-    Store and retrieve Lessons
-
-    """
-    tags = TagListSerializerField()
-    exercises = ExerciseSerializer(read_only=True, many=True)
-
-    creator = PrimaryKeyRelatedField(
-        # set it to read_only as we're handling the writing part ourselves
-        read_only=True,
-        default=CurrentUserDefault()
-    )
-
-    class Meta:
-        model = Lesson
-        fields = [
-            'id',
-            'name',
-            'creator',
-            'level',
-            'exercises',
-            'isAvailable',
-            'isPublic',
-            'description',
-            'notes',
-            'tags',
-            'created'
-            ]
-        ordering = ['-id']
-
-
 class QueueItemSerializer(ModelSerializer):
     """
 
@@ -220,3 +187,36 @@ class QueueItemSerializer(ModelSerializer):
             'completed'
             ]
         ordering = ['-rank']
+
+
+class LessonSerializer(TaggitSerializer, ModelSerializer):
+    """
+
+    Store and retrieve Lessons
+
+    """
+    tags = TagListSerializerField()
+    queueItems = QueueItemSerializer(many=True, read_only=True)
+
+    creator = PrimaryKeyRelatedField(
+        # set it to read_only as we're handling the writing part ourselves
+        read_only=True,
+        default=CurrentUserDefault()
+    )
+
+    class Meta:
+        model = Lesson
+        fields = [
+            'id',
+            'name',
+            'created',
+            'creator',
+            'level',
+            'isAvailable',
+            'isPublic',
+            'description',
+            'notes',
+            'queueItems',
+            'tags'
+            ]
+        ordering = ['-id']

@@ -148,6 +148,7 @@ export default class LessonCard extends React.Component {
     }
 
     render() {
+        console.log("this.props", this.props);
         return React.createElement(
             "div",
             {"className": "card border-secondary bg-light mb-3"},
