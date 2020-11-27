@@ -1,5 +1,6 @@
 import config from "./config.js";
 import commonElements from "./commonElements.js";
+import LessonQueue from "./lessonQueue.js";
 import util from "./util.js";
 
 export default class LessonCard extends React.Component {
@@ -165,9 +166,12 @@ export default class LessonCard extends React.Component {
             return null;
         }
         return React.createElement(
-            "div",
-            {},
-            JSON.stringify(this.props.lesson.queueItems)
+            LessonQueue,
+            {
+                "exercises": this.props.exercises,
+                "queue": this.props.lesson.queueItems
+            },
+            null
         );
     }
 
