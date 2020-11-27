@@ -4,6 +4,7 @@ Views for the Language Lab REST API
 
 """
 from logging import basicConfig, getLogger
+from json import dumps
 
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -142,15 +143,18 @@ class QueueItemViewSet(ModelViewSet):
 
     rank = IntegerField(read_only=True, min_value=1, default=1)
 
-    def next_rank(self):
+    def next_rank(self, lesson=None):
         """
 
         If we want to add an item to the end of the queue, what rank would it
         have?
 
         """
+        if (lesson is None):
+            lesson = self.request.data['lessson']
+
         next_rank = 1
-        lesson_items = self.queryset.filter(lesson=self.request.lessson)
+        lesson_items = self.queryset.filter(lesson=lesson)
         max_rank = lesson_items.aggregate(Max('rank'))['rank__max']
 
         if max_rank:
@@ -164,7 +168,7 @@ class QueueItemViewSet(ModelViewSet):
         Override default perform_create with next_rank()
 
         """
-        serializer.save(rank=self.next_rank())
+        serializer.save(rank=self.next_rank(self.request.data['lesson']))
 
     def destroy(self, request):
         """

@@ -19,16 +19,20 @@ export default class QueueFooter extends React.Component {
         );
     }
 
+    addClick(event) {
+        const inputSelector = ["#lesson", this.props.exerciseId].join("_");
+        const lessonId = parseInt(document.querySelector(inputSelector).value);
+
+        this.props.queueClick("add", this.props.exerciseId, lessonId);
+    }
+
     queueClick(event) {
         const idParts = event.currentTarget.id.split("_");
         if (!idParts) {
             return;
         }
-        var id = this.props.exerciseId
-        if (idParts[0] !== "add") {
-            id = this.props.queueItem.id;
-        }
-        this.props.queueClick(idParts[0], id);
+
+        this.props.queueClick(idParts[0], this.props.queueItem.id);
     }
 
     rankButton(buttonContent) {
@@ -75,7 +79,7 @@ export default class QueueFooter extends React.Component {
                 "type": "button",
                 "className": "btn btn-success btn-sm",
                 "id": "add",
-                "onClick": this.queueClick
+                "onClick": this.addClick.bind(this)
             },
             "Add to lesson",
         );
@@ -96,7 +100,19 @@ export default class QueueFooter extends React.Component {
         );
     }
 
+    lessonMessage() {
+        return React.createElement(
+            "div",
+            {"className": "card-footer"},
+            config.message.lessonQueue
+        )
+    }
+
     addFooter() {
+        if (!this.props.lessons) {
+            return this.lessonMessage();
+        }
+
         return React.createElement(
             "div",
             {"className": "card-footer"},

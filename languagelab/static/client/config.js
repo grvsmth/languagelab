@@ -68,6 +68,9 @@ const config = {
     },
     "navUrl": {
         "users": "/admin/"
+    },
+    "message": {
+        "lessonQueue": "If you add lessons, you can add this exercise to a lesson"
     }
 };
 

@@ -207,11 +207,6 @@ class QueueItemSerializer(ModelSerializer):
     Store and retrieve queue items
 
     """
-    user = PrimaryKeyRelatedField(
-        # set it to read_only as we're handling the writing part ourselves
-        read_only=True,
-        default=CurrentUserDefault()
-    )
     rank = IntegerField(read_only=True, min_value=1)
 
     class Meta:

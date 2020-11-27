@@ -126,15 +126,27 @@ export default class Lab extends React.Component {
 
     */
     handleFetchError(err) {
-        if (err.error.message === this.apiClient.expiredError) {
-            this.logout();
+        if (err.hasOwnProperty("error")) {
+            if (err.error.message) {
+                if (err.error.message === this.apiClient.expiredError) {
+                    this.logout();
+                    return;
+                } else {
+                    console.log("err.error.message", err.error.message);
+                    return;
+                }
+            } else if (err.error.statusText) {
+                console.log("err.error.statusText", err.error.statusText);
+                return;
+            }
+            console.log("err.error", err.error);
             return;
         }
-        if (err.hasOwnProperty("error")) {
-            console.log("message", err.error.message);
-        } else {
-            console.log("error", err.message);
+        if (err.hasOwnProperty("message")) {
+            console.log("err.message", err.message);
+            return;
         }
+        console.log("error", err);
     }
 
 
@@ -238,10 +250,12 @@ export default class Lab extends React.Component {
         Add an exercise to the queue
 
     */
-    addToQueue(exerciseId) {
+    addToQueue(exerciseId, lessonId) {
         const queueItem = {
-            "exercise": exerciseId
+            "exercise": exerciseId,
+            "lesson": lessonId
         };
+        console.log("addToQueue", queueItem);
         this.apiClient.post(environment.api.baseUrl, "queueItems", queueItem).then(
             (res) => {
                 this.fetchData("queueItems");
@@ -255,8 +269,8 @@ export default class Lab extends React.Component {
         specified in an Object.
 
     */
-    queueClick(operationName, id) {
-        this.queueOperation[operationName](id);
+    queueClick(operationName, id, lessonId=null) {
+        this.queueOperation[operationName](id, lessonId);
     }
 
     /*
