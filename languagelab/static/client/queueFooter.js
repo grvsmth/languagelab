@@ -81,19 +81,26 @@ export default class QueueFooter extends React.Component {
         );
     }
 
-    addFooter() {
-
+    lessonSpan() {
         const inputId = ["lesson", this.props.exerciseId].join("_");
 
         return React.createElement(
-            "div",
-            {"className": "card-footer"},
+            "span",
+            {"className": "d-inline-block mr-2"},
             commonElements.itemSelect(
                 "lesson",
-                this.props.lessons,
+                util.listToObject(this.props.lessons),
                 inputId,
                 null
-            ),
+            )
+        );
+    }
+
+    addFooter() {
+        return React.createElement(
+            "div",
+            {"className": "card-footer"},
+            this.lessonSpan(),
             this.addButton()
         );
     }
