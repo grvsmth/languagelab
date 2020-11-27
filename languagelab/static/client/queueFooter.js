@@ -64,7 +64,6 @@ export default class QueueFooter extends React.Component {
     }
 
     badgeSpan() {
-        console.log("lesson", this.props.lesson);
         return React.createElement(
             "span",
             {},
@@ -78,7 +77,7 @@ export default class QueueFooter extends React.Component {
             "button",
             {
                 "type": "button",
-                "className": "btn btn-success btn-sm",
+                "className": "btn btn-success btn-sm mx-2",
                 "id": "add",
                 "onClick": this.addClick.bind(this)
             },
@@ -91,7 +90,7 @@ export default class QueueFooter extends React.Component {
 
         return React.createElement(
             "span",
-            {"className": "d-inline-block mr-2"},
+            {"className": "d-inline-block"},
             commonElements.itemSelect(
                 "lesson",
                 util.listToObject(this.props.lessons),
@@ -109,6 +108,18 @@ export default class QueueFooter extends React.Component {
         )
     }
 
+    exerciseLessons() {
+        if (!this.props.exerciseLessons) {
+            return null;
+        }
+
+        return React.createElement(
+            "span",
+            {},
+            `in ${this.props.exerciseLessons.length} lessons`
+        );
+    }
+
     addFooter() {
         if (!this.props.lessons) {
             return this.lessonMessage();
@@ -118,7 +129,8 @@ export default class QueueFooter extends React.Component {
             "div",
             {"className": "card-footer"},
             this.lessonSpan(),
-            this.addButton()
+            this.addButton(),
+            this.exerciseLessons()
         );
     }
 

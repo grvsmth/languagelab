@@ -210,6 +210,7 @@ class QueueItem (Model):
     exercise = ForeignKey(
         Exercise,
         verbose_name="exercise",
+        related_name="queueItems",
         on_delete=CASCADE
     )
     rank = IntegerField(

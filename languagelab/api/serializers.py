@@ -136,38 +136,6 @@ class MediaItemSerializer(TaggitSerializer, ModelSerializer):
         ordering = ['-id']
 
 
-class ExerciseSerializer(ModelSerializer):
-    """
-
-    Store and retrieve Exercises
-
-    """
-    creator = PrimaryKeyRelatedField(
-        # set it to read_only as we're handling the writing part ourselves
-        read_only=True,
-        default=CurrentUserDefault()
-    )
-
-    class Meta:
-        model = Exercise
-        fields = [
-            'id',
-            'name',
-            'creator',
-            'media',
-            'dialogue',
-            'description',
-            'isAvailable',
-            'isPublic',
-            'audioOnly',
-            'startTime',
-            'endTime',
-            'notes',
-            'created'
-            ]
-        ordering = ['-id']
-
-
 class QueueItemSerializer(ModelSerializer):
     """
 
@@ -187,6 +155,39 @@ class QueueItemSerializer(ModelSerializer):
             'completed'
             ]
         ordering = ['-rank']
+
+class ExerciseSerializer(ModelSerializer):
+    """
+
+    Store and retrieve Exercises
+
+    """
+    creator = PrimaryKeyRelatedField(
+        # set it to read_only as we're handling the writing part ourselves
+        read_only=True,
+        default=CurrentUserDefault()
+    )
+    queueItems = QueueItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Exercise
+        fields = [
+            'id',
+            'name',
+            'creator',
+            'media',
+            'dialogue',
+            'description',
+            'isAvailable',
+            'isPublic',
+            'audioOnly',
+            'startTime',
+            'endTime',
+            'notes',
+            'created',
+            'queueItems'
+            ]
+        ordering = ['-id']
 
 
 class LessonSerializer(TaggitSerializer, ModelSerializer):
