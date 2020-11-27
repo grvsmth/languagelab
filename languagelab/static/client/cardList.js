@@ -191,7 +191,7 @@ export default class CardList extends React.Component {
             "saveItem": this.props.saveItem,
             "selected": selected,
             "selectedType": this.props.selectedType,
-            "startLesson": this.props.startLesson
+            "toggleLesson": this.props.toggleLesson
         };
 
         return React.createElement(

@@ -11,8 +11,8 @@ export default class LessonCard extends React.Component {
         this.editClick = this.editClick.bind(this);
     }
 
-    startLesson() {
-        this.props.startLesson(this.props.lesson.id);
+    toggleLesson() {
+        this.props.toggleLesson(this.props.lesson.id);
     }
 
     itemTitle() {
@@ -137,14 +137,17 @@ export default class LessonCard extends React.Component {
         if (this.props.lesson.queueItems.length < 1) {
             return null;
         }
+
+        const btnClass = this.props.selected ? "btn-secondary" : "btn-info";
+        const actionInfo = this.props.selected ? "End lesson": "Start lesson";
         return React.createElement(
             "button",
             {
                 "type": "button",
-                "className": "btn btn-info btn-sm ml-2",
-                "onClick": this.startLesson.bind(this)
+                "className": "btn " + btnClass + " btn-sm ml-2",
+                "onClick": this.toggleLesson.bind(this)
             },
-            "Start lesson"
+            actionInfo
         );
     }
 
