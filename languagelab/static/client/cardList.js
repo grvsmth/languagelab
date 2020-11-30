@@ -119,7 +119,7 @@ export default class CardList extends React.Component {
             "key": key,
             "exercise": exercise,
             "exitClick": this.props.exitDo,
-            "itemUser": this.itemUser(exercise),
+            "exerciseUser": this.itemUser(exercise, "exercises"),
             "queueNav": this.props.queueNav,
             "languages": this.findLanguage(exercise),
             "lesson": lesson,
@@ -179,7 +179,9 @@ export default class CardList extends React.Component {
                 this.props.exercises, this.props.selectedItem
             );
 
-            return this.doCard(lesson.id, exercise, lesson);
+            const mediaItem = util.findItem(this.props.media, exercise.media);
+
+            return this.doCard(lesson.id, exercise, mediaItem);
         }
 
         if (this.props.activity === "edit" && selected) {
@@ -233,17 +235,17 @@ export default class CardList extends React.Component {
     }
 
     exerciseCard(exercise) {
+        const mediaItem = util.findItem(this.props.media, exercise.media);
+
         if (this.props.selectedItem === exercise.id) {
             if (this.props.activity === "edit") {
                 return this.exerciseFormCard(exercise);
             }
 
             if (this.props.activity === "do") {
-                return this.doCard(exercise);
+                return this.doCard(exercise.id, exercise.media);
             }
         }
-
-        const mediaItem = util.findItem(this.props.media, exercise.media);
 
         var options = {
             "checkClick": this.props.checkClick,
@@ -273,12 +275,12 @@ export default class CardList extends React.Component {
         Find the user associated with the item
 
     */
-    itemUser(item) {
+    itemUser(item, type=this.props.selectedType) {
         if (!this.props.users) {
             return null;
         }
 
-        const userFieldName = typeInfo[this.props.selectedType].userField;
+        const userFieldName = typeInfo[type].userField;
         const user = util.findItem(this.props.users, item[userFieldName]);
 
         return user;
