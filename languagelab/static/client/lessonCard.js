@@ -1,6 +1,6 @@
 import config from "./config.js";
 import commonElements from "./commonElements.js";
-import LessonQueue from "./lessonQueue.js";
+import DoExerciseCard from "./doExerciseCard.js";
 import util from "./util.js";
 
 export default class LessonCard extends React.Component {
@@ -161,20 +161,6 @@ export default class LessonCard extends React.Component {
         );
     }
 
-    doQueueDiv() {
-        if (!this.props.selected) {
-            return null;
-        }
-        return React.createElement(
-            LessonQueue,
-            {
-                "exercises": this.props.exercises,
-                "queue": this.props.lesson.queueItems
-            },
-            null
-        );
-    }
-
     cardBody() {
         return React.createElement(
             "div",
@@ -197,8 +183,7 @@ export default class LessonCard extends React.Component {
                 this.props.lesson.id,
                 this.checkboxClick
                 ),
-            this.linkDiv(),
-            this.doQueueDiv()
+            this.linkDiv()
         );
     }
 

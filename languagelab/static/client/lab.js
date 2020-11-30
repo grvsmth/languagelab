@@ -53,9 +53,9 @@ export default class Lab extends React.Component {
             "loggedIn": false,
             "media": [],
             "message": "",
-            "queueItems": [],
             "selectedItem": null,
-            "selectedType": "queueItems",
+            "selectedLesson": null,
+            "selectedType": "lessons",
             "users": [],
             "token": "",
             "tokenExpired": false
@@ -255,9 +255,8 @@ export default class Lab extends React.Component {
             "exercise": exerciseId,
             "lesson": lessonId
         };
-        console.log("addToQueue", queueItem);
-        this.apiClient.post(environment.api.baseUrl, "queueItems", queueItem).then(
-            (res) => {
+        this.apiClient.post(environment.api.baseUrl, "queueItems", queueItem)
+            .then(() => {
                 this.fetchData("lessons");
             }, this.handleFetchError
         );
@@ -294,17 +293,9 @@ export default class Lab extends React.Component {
 
     */
     editItem(itemId) {
-        var queueItem;
-        if (this.state.selectedType === "queueItems") {
-            queueItem = this.state.queueItems.find(
-                (queueItem) => queueItem.exercise === itemId
-            );
-        }
-
-        const selectedItem = queueItem ? queueItem.id : itemId;
         this.setState({
             "activity": "edit",
-            "selectedItem": selectedItem
+            "selectedItem": itemId
         })
     }
 
@@ -321,27 +312,22 @@ export default class Lab extends React.Component {
         if (this.state.activity === "do" && this.state.selectedItem == lessonId) {
             this.setState({
                 "activity": "read",
-                "selectedItem": null
+                "selectedItem": null,
+                "selectedLesson": null
             });
             return;
         }
         this.setState({
             "activity": "do",
-            "selectedItem": lessonId
+            "selectedItem": util.findItem(this.state.lessons, lessonId),
+            "selectedLesson": lessonId,
         });
     }
 
     startExercise(exerciseId) {
-        var queueItem;
-        if (this.state.selectedType === "queueItems") {
-            queueItem = this.state.queueItems.find(
-                (queueItem) => queueItem.exercise === exerciseId
-            );
-        }
-        const selectedItem = queueItem ? queueItem.id : exerciseId;
         this.setState({
             "activity": "do",
-            "selectedItem": selectedItem
+            "selectedItem": exerciseId
         });
     }
 
@@ -354,10 +340,10 @@ export default class Lab extends React.Component {
     }
 
     deleteClick(itemType, itemId) {
-        this.apiClient.delete(environment.api.baseUrl, itemType, itemId).then((res) => {
-            this.fetchData(itemType);
-            this.fetchData("queueItems");
-        }, this.handleFetchError
+        this.apiClient.delete(environment.api.baseUrl, itemType, itemId)
+            .then((res) => {
+                this.fetchData(itemType);
+            }, this.handleFetchError
         );
     }
 
@@ -401,11 +387,19 @@ export default class Lab extends React.Component {
     }
 
     maxRank() {
-        if (this.state.queueItems.length < 1) {
+        if (!this.state.selectedLesson) {
             return 0;
         }
 
-        const last = this.state.queueItems[this.state.queueItems.length - 1];
+        const lesson = util.findItem(
+            this.state.lessons, this.state.selectedLesson
+        );
+
+        if (lesson.queueItems.length < 1) {
+            return 0;
+        }
+
+        const last = this.state.queueItems[lesson.queueItems.length - 1];
         return last.rank;
     }
 
@@ -466,7 +460,6 @@ export default class Lab extends React.Component {
                 "maxRank": this.maxRank.bind(this),
                 "media": this.state.media,
                 "queueClick": this.queueClick.bind(this),
-                "queueItems": this.state.queueItems,
                 "queueNav": this.queueNav,
                 "saveItem": this.saveItem.bind(this),
                 "setActivity": this.setActivity.bind(this),
@@ -474,6 +467,7 @@ export default class Lab extends React.Component {
                 "startExercise": this.startExercise.bind(this),
                 "selectItem": this.selectItem.bind(this),
                 "selectedItem": this.state.selectedItem,
+                "selectedLesson": this.state.selectedLesson,
                 "selectedType": this.state.selectedType,
                 "users": this.state.users
             },
