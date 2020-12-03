@@ -14,6 +14,7 @@ export default class DoExerciseCard extends React.Component {
             "playModelFirst", "playModelSecond", "playModel", "playMimic"
         ];
         this.player = React.createRef();
+        this.rank = this.determineRank();
         this.recorderOptions = {
             "audioBitsPerSecond": 128000, "sampleRate": 48000
         };
@@ -90,6 +91,23 @@ export default class DoExerciseCard extends React.Component {
         const endMoment = new moment(endString, this.timeFormat);
         const durationMoment = moment.duration(endMoment.diff(startMoment));
         return util.formatDuration(durationMoment, 3);
+    }
+
+    determineRank() {
+        if (!this.props.lesson) {
+            return null;
+        }
+
+        if (!this.props.lesson.queueItems) {
+            return null;
+        }
+
+        const queueItem = this.props.lesson.queueItems.find(
+            item => item.exercise == this.props.exercise.id
+                && item.lesson == this.props.lesson.id
+        );
+
+        return queueItem.rank;
     }
 
     itemTitle() {
@@ -311,18 +329,18 @@ export default class DoExerciseCard extends React.Component {
     }
 
     queueNav(direction) {
-        this.props.queueNav[direction](this.props.queueItem.rank);
+        this.props.queueNav[direction](this.rank);
     }
 
     navDisabled(direction) {
-        if (!this.props.queueItem) {
+        if (!this.rank) {
             return "disabled";
         }
         if (direction === "previous") {
-            return this.props.queueItem.rank <= 1 ? "disabled" : null;
+            return this.rank <= 1 ? "disabled" : null;
         }
         if (direction === "next") {
-            return this.props.queueItem.rank >= this.props.maxRank
+            return this.rank >= this.props.maxRank
                 ? "disabled" : null;
         }
         return null;
@@ -478,9 +496,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     render() {
-        if (this.props.bodyOnly) {
-            return this.cardBody();
-        }
+        console.log("this.rank", this.rank);
 
         return React.createElement(
             "div",

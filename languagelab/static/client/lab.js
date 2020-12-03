@@ -436,7 +436,9 @@ export default class Lab extends React.Component {
     }
 
     exitDo() {
-        this.setState({"activity": "read", "selectedItem": null});
+        this.setState(
+            {"activity": "read", "selectedItem": null, "selectedLesson": null}
+        );
     }
 
     next(rank) {
