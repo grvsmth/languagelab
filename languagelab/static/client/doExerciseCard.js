@@ -329,6 +329,9 @@ export default class DoExerciseCard extends React.Component {
     }
 
     navButton(direction) {
+        if (this.props.selectedType !== "lessons") {
+            return null;
+        }
         const disabled = this.navDisabled(direction);
         return React.createElement(
             "button",
