@@ -308,6 +308,20 @@ export default class Lab extends React.Component {
         this.setState({"selectedItem": itemId});
     }
 
+    firstExerciseId(lessonId) {
+        console.log()
+        const lesson = util.findItem(this.state.lessons, lessonId);
+        if (!lesson) {
+            return null;
+        }
+
+        if (!lesson.queueItems) {
+            return null;
+        }
+
+        return lesson.queueItems[0].exercise;
+    }
+
     toggleLesson(lessonId) {
         if (this.state.activity === "do" && this.state.selectedItem == lessonId) {
             this.setState({
@@ -319,7 +333,7 @@ export default class Lab extends React.Component {
         }
         this.setState({
             "activity": "do",
-            "selectedItem": util.findItem(this.state.lessons, lessonId),
+            "selectedItem": this.firstExerciseId(lessonId),
             "selectedLesson": lessonId,
         });
     }
