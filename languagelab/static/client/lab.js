@@ -413,7 +413,7 @@ export default class Lab extends React.Component {
             return 0;
         }
 
-        const last = this.state.queueItems[lesson.queueItems.length - 1];
+        const last = lesson.queueItems[lesson.queueItems.length - 1];
         return last.rank;
     }
 
