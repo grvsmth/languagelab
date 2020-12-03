@@ -108,9 +108,13 @@ export default class CardList extends React.Component {
         return util.findItem(this.props.exercises, selection.exercise);
     }
 
-    doCard(key, exercise, mediaItem) {
+    doCard(key, exercise) {
         const lesson = util.findItem(
             this.props.lessons, this.props.selectedLesson
+        );
+
+        const mediaItem = util.findItem(
+            this.props.media, exercise.media
         );
 
         const options = {
@@ -181,7 +185,7 @@ export default class CardList extends React.Component {
 
             const mediaItem = util.findItem(this.props.media, exercise.media);
 
-            return this.doCard(lesson.id, exercise, mediaItem);
+            return this.doCard(lesson.id, exercise);
         }
 
         if (this.props.activity === "edit" && selected) {
@@ -244,7 +248,7 @@ export default class CardList extends React.Component {
             }
 
             if (this.props.activity === "do") {
-                return this.doCard(exercise.id, exercise.media);
+                return this.doCard(exercise.id, exercise);
             }
         }
 
