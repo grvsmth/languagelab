@@ -418,14 +418,16 @@ export default class Lab extends React.Component {
     }
 
     selectByRank(rank) {
-        const queueItem = this.state.queueItems.find(
+        const lesson = util.findItem(
+            this.state.lessons, this.state.selectedLesson
+        );
+
+        const queueItem = lesson.queueItems.find(
             (queueItem) => queueItem.rank === rank
         );
 
-        const selectedItem = this.state.selectedType === "queueItems"
-            ? queueItem.id : queueItem.exercise;
-
-        this.setState({"selectedItem": selectedItem});
+        console.log(`Setting selectedItem to ${queueItem.exercise}`);
+        this.setState({"selectedItem": queueItem.exercise});
     }
 
     previous(rank) {

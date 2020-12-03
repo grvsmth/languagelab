@@ -108,6 +108,14 @@ export default class CardList extends React.Component {
         return util.findItem(this.props.exercises, selection.exercise);
     }
 
+    exerciseRank(lesson, exercise) {
+        const queueItem = lesson.queueItems.find(
+            item => item.exercise == exercise.id && item.lesson == lesson.id
+        );
+
+        return queueItem.rank;
+    }
+
     doCard(key, exercise) {
         const lesson = util.findItem(
             this.props.lessons, this.props.selectedLesson
@@ -129,6 +137,7 @@ export default class CardList extends React.Component {
             "lesson": lesson,
             "maxRank": this.props.maxRank(),
             "mediaItem": mediaItem,
+            "rank": this.exerciseRank(lesson, exercise),
             "selectedType": this.props.selectedType
         };
 
