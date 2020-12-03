@@ -1,4 +1,5 @@
 import commonElements from "./commonElements.js";
+import config from "./config.js";
 import util from "./util.js";
 
 
@@ -14,9 +15,6 @@ export default class DoExerciseCard extends React.Component {
             "playModelFirst", "playModelSecond", "playModel", "playMimic"
         ];
         this.player = React.createRef();
-        this.recorderOptions = {
-            "audioBitsPerSecond": 128000, "sampleRate": 48000
-        };
         this.statusColor = {
             "error": "danger",
             "warning": "warning",
@@ -27,7 +25,6 @@ export default class DoExerciseCard extends React.Component {
             "ready": "info",
             "recording": "danger"
         };
-        this.timeFormat = "HH:mm:ss.S";
 
         this.state = {
             "clickedAction": "",
@@ -61,7 +58,7 @@ export default class DoExerciseCard extends React.Component {
     handleGetInput(stream) {
         window.stream = stream;
         this.mediaRecorder = new window.MediaRecorder(
-            stream, this.recorderOptions
+            stream, config.audio.options
         );
         this.mediaRecorder.ondataavailable = this.onDataAvailable.bind(this);
         this.setState({"recordDisabled": false});
@@ -86,17 +83,17 @@ export default class DoExerciseCard extends React.Component {
     }
 
     duration(startString, endString) {
-        const startMoment = new moment(startString, this.timeFormat);
-        const endMoment = new moment(endString, this.timeFormat);
+        const startMoment = new moment(startString, config.timeFormat);
+        const endMoment = new moment(endString, config.timeFormat);
         const durationMoment = moment.duration(endMoment.diff(startMoment));
         return util.formatDuration(durationMoment, 3);
     }
 
-    itemTitle() {
+    title(prop) {
         return React.createElement(
             "h5",
             {"className": "card-title"},
-            this.props.exercise.name
+            prop.name
         );
     }
 
@@ -117,7 +114,7 @@ export default class DoExerciseCard extends React.Component {
         const timeRange = util.timeRange(
             this.props.exercise.startTime,
             this.props.exercise.endTime,
-            this.timeFormat
+            config.timeFormat
         );
 
         var mediaName = "";
@@ -131,6 +128,22 @@ export default class DoExerciseCard extends React.Component {
             {"className": "card-subtitle text-muted"},
             mediaName,
             timeRange
+        );
+    }
+
+    lessonSubtitle() {
+        const createdText = new moment(this.props.lesson.created)
+            .format(config.dateTimeFormat);
+
+        const howManyExercises = util.howManyExercises(
+            this.props.lesson.queueItems
+        );
+
+        return React.createElement(
+            "h6",
+            {"className": "card-subtitle text-dark"},
+            this.props.lesson.description,
+            ` (${howManyExercises}, level ${this.props.lesson.level})`
         );
     }
 
@@ -464,11 +477,24 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    cardHeader() {
+        if (!this.props.lesson) {
+            return null;
+        }
+
+        return React.createElement(
+            "div",
+            {"className": "card-header"},
+            this.title(this.props.lesson),
+            this.lessonSubtitle()
+        );
+    }
+
     cardBody() {
         return React.createElement(
             "div",
             {"className": "card-body"},
-            this.itemTitle(),
+            this.title(this.props.exercise),
             this.itemSubtitle(),
             this.descriptionRow(),
             this.playerDiv(),
@@ -481,6 +507,7 @@ export default class DoExerciseCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "card bg-light mb-3"},
+            this.cardHeader(),
             this.cardBody()
         );
     }

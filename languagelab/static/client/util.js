@@ -29,16 +29,23 @@ exports.timeRange = function(startTime, endTime, timeFormat) {
         2
     );
     return `${startTimeString} - ${endTimeString}`;
-
-
-}
+};
 
 exports.listToObject = function(inputList) {
     const outputObject = inputList.reduce((object, item) => {
             object[item.id] = item.name;
             return object;
-        }, {});
-        return outputObject;
+        }, {}
+    );
+    return outputObject;
+};
+
+exports.howManyExercises = function(queueItems) {
+    if (queueItems.length == 1) {
+        return "1 exercise";
     }
+
+    return queueItems.length + " exercises";
+};
 
 export default exports;

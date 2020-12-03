@@ -109,9 +109,17 @@ export default class CardList extends React.Component {
     }
 
     exerciseRank(lesson, exercise) {
+        if (!lesson) {
+            return null;
+        }
+
         const queueItem = lesson.queueItems.find(
             item => item.exercise == exercise.id && item.lesson == lesson.id
         );
+
+        if (!queueItem) {
+            return null;
+        }
 
         return queueItem.rank;
     }

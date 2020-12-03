@@ -127,13 +127,6 @@ export default class LessonCard extends React.Component {
         );
     }
 
-    howManyExercises() {
-        if (this.props.lesson.queueItems.length == 1) {
-            return "1 exercise";
-        }
-        return this.props.lesson.queueItems.length + " exercises";
-    }
-
     doQueueButton() {
         if (this.props.lesson.queueItems.length < 1) {
             return null;
@@ -156,7 +149,7 @@ export default class LessonCard extends React.Component {
         return React.createElement(
             "span",
             {"className": "ml-2"},
-            this.howManyExercises(),
+            util.howManyExercises(this.props.lesson.queueItems),
             this.doQueueButton()
         );
     }
