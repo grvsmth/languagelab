@@ -341,6 +341,28 @@ export default class DoExerciseCard extends React.Component {
         return null;
     }
 
+    navButtonElements(direction) {
+        if (!this.props.queueInfo.hasOwnProperty(direction)) {
+            return commonElements.iconSpan(this.props.doButton[direction].icon);
+        }
+
+        if (direction === "previous") {
+            return React.createElement(
+                "span",
+                {},
+                commonElements.iconSpan(this.props.doButton[direction].icon),
+                " " + this.props.queueInfo[direction].name
+            );
+        }
+
+        return React.createElement(
+            "span",
+            {},
+            this.props.queueInfo[direction].name + " ",
+            commonElements.iconSpan(this.props.doButton[direction].icon)
+        );
+    }
+
     navButton(direction) {
         if (this.props.selectedType !== "lessons") {
             return null;
@@ -354,7 +376,7 @@ export default class DoExerciseCard extends React.Component {
                 "className": "btn btn-" + this.props.doButton[direction].color,
                 "disabled": disabled
             },
-            commonElements.iconSpan(this.props.doButton[direction].icon)
+            this.navButtonElements(direction)
         );
     }
 

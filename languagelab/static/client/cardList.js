@@ -124,6 +124,36 @@ export default class CardList extends React.Component {
         return queueItem.rank;
     }
 
+    queueInfo(lesson, rank, maxRank) {
+        const queueInfo = {};
+
+        if (rank > 1) {
+            const previousQueueItem = lesson.queueItems.find(
+                item => item.rank == rank - 1
+            );
+
+            const previousExercise = util.findItem(
+                this.props.exercises,
+                previousQueueItem.exercise
+            );
+            if (previousExercise) {
+                queueInfo["previous"] = previousExercise;
+            }
+        }
+
+        if (rank < maxRank) {
+            const nextExercise = util.findItem(
+                this.props.exercises,
+                lesson.queueItems.find(item => item.rank == rank + 1).exercise
+            );
+            if (nextExercise) {
+                queueInfo["next"] = nextExercise;
+            }
+        }
+
+        return queueInfo;
+    }
+
     doCard(key, exercise) {
         const lesson = util.findItem(
             this.props.lessons, this.props.selectedLesson
@@ -133,6 +163,9 @@ export default class CardList extends React.Component {
             this.props.media, exercise.media
         );
 
+        const rank = this.exerciseRank(lesson, exercise);
+        const maxRank = this.props.maxRank();
+
         const options = {
             "currentUser": this.props.currentUser,
             "doButton": this.props.doButton,
@@ -140,12 +173,13 @@ export default class CardList extends React.Component {
             "exercise": exercise,
             "exitClick": this.props.exitDo,
             "exerciseUser": this.itemUser(exercise, "exercises"),
-            "queueNav": this.props.queueNav,
             "languages": this.findLanguage(exercise),
             "lesson": lesson,
-            "maxRank": this.props.maxRank(),
+            "maxRank": maxRank,
             "mediaItem": mediaItem,
-            "rank": this.exerciseRank(lesson, exercise),
+            "queueNav": this.props.queueNav,
+            "queueInfo": this.queueInfo(lesson, rank, maxRank),
+            "rank": rank,
             "selectedType": this.props.selectedType
         };
 
