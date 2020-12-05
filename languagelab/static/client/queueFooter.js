@@ -86,6 +86,14 @@ export default class QueueFooter extends React.Component {
         );
     }
 
+    firstLesson() {
+        if (!this.props.exerciseLessons.length) {
+            return null;
+        }
+
+        return this.props.exerciseLessons[0].lesson;
+    }
+
     lessonSpan() {
         const inputId = ["lesson", this.props.exerciseId].join("_");
 
@@ -96,7 +104,7 @@ export default class QueueFooter extends React.Component {
                 "lesson",
                 util.listToObject(this.props.lessons),
                 inputId,
-                null
+                this.firstLesson()
             )
         );
     }
@@ -126,7 +134,6 @@ export default class QueueFooter extends React.Component {
             return this.lessonMessage();
         }
 
-        console.log(this.props);
         return React.createElement(
             "div",
             {"className": "card-footer"},
