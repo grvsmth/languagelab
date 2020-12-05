@@ -4,6 +4,7 @@ import util from "./util.js";
 
 const timeFormat = "HH:mm:ss.S";
 
+
 export default class QueueFooter extends React.Component {
     constructor(props) {
         super(props);
@@ -77,7 +78,7 @@ export default class QueueFooter extends React.Component {
             "button",
             {
                 "type": "button",
-                "className": "btn btn-success btn-sm mx-2",
+                "className": "btn btn-success btn-sm ml-2",
                 "id": "add",
                 "onClick": this.addClick.bind(this)
             },
@@ -115,8 +116,8 @@ export default class QueueFooter extends React.Component {
 
         return React.createElement(
             "span",
-            {},
-            `in ${this.props.exerciseLessons.length} lessons`
+            {"className": "mr-2"},
+            `In ${this.props.exerciseLessons.length} lessons`
         );
     }
 
@@ -125,12 +126,13 @@ export default class QueueFooter extends React.Component {
             return this.lessonMessage();
         }
 
+        console.log(this.props);
         return React.createElement(
             "div",
             {"className": "card-footer"},
+            this.exerciseLessons(),
             this.lessonSpan(),
             this.addButton(),
-            this.exerciseLessons()
         );
     }
 

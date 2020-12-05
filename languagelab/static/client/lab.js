@@ -258,6 +258,7 @@ export default class Lab extends React.Component {
         this.apiClient.post(environment.api.baseUrl, "queueItems", queueItem)
             .then(() => {
                 this.fetchData("lessons");
+                this.fetchData("exercises");
             }, this.handleFetchError
         );
     }
