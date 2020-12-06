@@ -4,6 +4,7 @@
 
 */
 import CardList from "./cardList.js";
+import InfoArea from "./infoArea.js";
 import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
 
@@ -45,6 +46,7 @@ export default class Lab extends React.Component {
 
         this.state = {
             "activity": "read",
+            "alerts": [],
             "exercises": [],
             "languages": [],
             "lastUpdated": "",
@@ -112,11 +114,7 @@ export default class Lab extends React.Component {
                     "loading": {[dataType]: false}
                 }
             );
-        }, (err) => {
-            this.handleFetchError(
-                {"type": dataType, "error": err}
-            );
-        });
+        }, this.handleFetchError);
     }
 
     /*
@@ -126,27 +124,39 @@ export default class Lab extends React.Component {
 
     */
     handleFetchError(err) {
+        const alert = {
+            "id": util.maxId(this.state.alerts).id + 1,
+            "title": "Fetch error",
+            "status": "danger",
+            "message": err
+        };
+
         if (err.hasOwnProperty("error")) {
             if (err.error.message) {
+                console.log("err.error.message", err.error.message);
                 if (err.error.message === this.apiClient.expiredError) {
                     this.logout();
                     return;
-                } else {
-                    console.log("err.error.message", err.error.message);
-                    return;
                 }
+                alert.message = err.error.message;
+                this.updateStateItem(alert, "alerts");
             } else if (err.error.statusText) {
                 console.log("err.error.statusText", err.error.statusText);
+                alert.message = err.error.statusText;
+                this.updateStateItem(alert, "alerts");
                 return;
             }
             console.log("err.error", err.error);
-            return;
+            alert.message = err.error;
         }
+
         if (err.hasOwnProperty("message")) {
             console.log("err.message", err.message);
-            return;
+            alert.message = err.message;
+        } else {
+            console.log("err", err);
         }
-        console.log("error", err);
+        this.updateStateItem(alert, "alerts");
     }
 
 
@@ -159,11 +169,16 @@ export default class Lab extends React.Component {
         const items = [...this.state[itemType]];
         const index = items.findIndex((item) => item.id === res.id);
 
+        console.log(itemType, JSON.stringify(items));
+        console.log("index", index);
+
         if (index < 0) {
             items.push(res);
         } else {
             items[index] = res;
         }
+
+        console.log("after", items);
 
         const targetState = {[itemType]: items};
         if (activity) {
@@ -204,7 +219,13 @@ export default class Lab extends React.Component {
     */
     handleTokenError(err) {
         console.error(err);
-        this.setState({"message": err.statusText});
+        const alert = {
+            "id": util.maxId(this.state.alerts).id + 1,
+            "title": "Fetch error",
+            "status": "danger",
+            "message": err
+        };
+        this.updateStateItem(alert, "alerts");
     }
 
     /*
@@ -303,7 +324,6 @@ export default class Lab extends React.Component {
         } else {
             targetState.selectedItem = itemId;
         }
-        console.log("editItem", targetState);
 
         this.setState(targetState);
     }
@@ -374,10 +394,9 @@ export default class Lab extends React.Component {
         if (itemId) {
             this.apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
                 .then((res) => {
-                this.updateStateItem(res.response, itemType, "read", false);
-            }, (err) => {
-                this.handleFetchError(err);
-            });
+                    this.updateStateItem(res.response, itemType, "read", false);
+                }, this.handleFetchError
+            );
         } else {
             if (itemType === "lessons") {
                 item.level = parseInt(item.level);
@@ -435,7 +454,6 @@ export default class Lab extends React.Component {
             (queueItem) => queueItem.rank === rank
         );
 
-        console.log(`Setting selectedItem to ${queueItem.exercise}`);
         this.setState({"selectedItem": queueItem.exercise});
     }
 
@@ -510,6 +528,13 @@ export default class Lab extends React.Component {
                 "selectedType": itemType
             }
         );
+        const alert = {
+            "id": util.maxId(this.state.alerts).id + 1,
+            "title": "Nav click!",
+            "status": "primary",
+            "message": `You clicked ${itemType}`
+        };
+        this.updateStateItem(alert, "alerts");
     }
 
     nav() {
@@ -527,11 +552,24 @@ export default class Lab extends React.Component {
         );
     }
 
+    infoArea() {
+        return React.createElement(
+            InfoArea,
+            {
+                "alerts": this.state.alerts,
+                "selectedType": this.state.selectedType,
+                "selectedLesson": this.state.selectedLesson
+            },
+            null
+        )
+    }
+
     render() {
         return React.createElement(
             "div",
             {"className": "container"},
             this.nav(),
+            this.infoArea(),
             this.body()
         );
     }
