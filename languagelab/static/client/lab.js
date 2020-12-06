@@ -181,6 +181,7 @@ export default class Lab extends React.Component {
         }
         if (resetSelected) {
             targetState.selectedItem = null;
+            targetState.selectedLesson = null;
         }
 
         this.setState(targetState);
@@ -368,11 +369,12 @@ export default class Lab extends React.Component {
         });
     }
 
-    setActivity(activity, itemId=null) {
-        var targetState = {"activity": activity};
-        if (itemId) {
-            targetState.selectedItem = itemId;
-        }
+    setActivity(activity, itemId=null, lessonId=null) {
+        const targetState = {
+            "activity": activity,
+            "selectedItem": itemId,
+            "selectedLesson": lessonId
+        };
         this.setState(targetState);
     }
 
@@ -388,7 +390,7 @@ export default class Lab extends React.Component {
         if (itemId) {
             this.apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
                 .then((res) => {
-                    this.updateStateItem(res.response, itemType, "read", false);
+                    this.updateStateItem(res.response, itemType, "read", true);
                 }, this.handleFetchError
             );
         } else {
