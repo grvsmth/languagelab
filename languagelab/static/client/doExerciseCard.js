@@ -131,22 +131,6 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
-    lessonSubtitle() {
-        const createdText = new moment(this.props.lesson.created)
-            .format(config.dateTimeFormat);
-
-        const howManyExercises = util.howManyExercises(
-            this.props.lesson.queueItems
-        );
-
-        return React.createElement(
-            "h6",
-            {"className": "card-subtitle text-dark"},
-            this.props.lesson.description,
-            ` (${howManyExercises}, level ${this.props.lesson.level})`
-        );
-    }
-
     descriptionRow() {
         var languageText = "";
         if (this.props.languages
@@ -508,7 +492,7 @@ export default class DoExerciseCard extends React.Component {
             "div",
             {"className": "card-header"},
             this.title(this.props.lesson),
-            this.lessonSubtitle()
+            commonElements.lessonSubtitle(this.props.lesson)
         );
     }
 

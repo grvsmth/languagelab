@@ -1,4 +1,5 @@
 import config from "./config.js";
+import util from "./util.js";
 
 const exports = {};
 
@@ -97,6 +98,21 @@ exports.selectDiv = function(fieldName, optionList, parent) {
     );
 };
 
+exports.lessonSubtitle = function(lesson) {
+    const createdText = new moment(lesson.created)
+        .format(config.dateTimeFormat);
+
+    const howManyExercises = util.howManyExercises(
+        lesson.queueItems
+    );
+
+    return React.createElement(
+        "h6",
+        {"className": "card-subtitle text-dark"},
+        lesson.description,
+        ` (${howManyExercises}, level ${lesson.level})`
+    );
+};
 
 
 export default exports;

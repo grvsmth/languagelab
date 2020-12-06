@@ -550,12 +550,17 @@ export default class Lab extends React.Component {
     }
 
     infoArea() {
+        const lesson = util.findItem(
+            this.state.lessons, this.state.selectedLesson
+        );
+
         return React.createElement(
             InfoArea,
             {
+                "activity": this.state.activity,
                 "alerts": this.state.alerts,
                 "selectedType": this.state.selectedType,
-                "selectedLesson": this.state.selectedLesson,
+                "lesson": lesson,
                 "dismissAlert": this.dismissAlert.bind(this)
             },
             null

@@ -1,3 +1,5 @@
+import commonElements from "./commonElements.js";
+
 export default class InfoArea extends React.Component {
 
     componentDidMount() {
@@ -25,7 +27,6 @@ export default class InfoArea extends React.Component {
             {
                 "className": "close",
                 "type": "button",
-                "aria-label": "Close"
             },
             this.hiddenX(id)
         );
@@ -50,25 +51,51 @@ export default class InfoArea extends React.Component {
         return this.props.alerts.map(this.alertDiv.bind(this));
     }
 
-    lessonQueueHeader() {
+    itemTitle() {
+        return React.createElement(
+            "h5",
+            {"className": "card-title"},
+            this.props.lesson.name
+        );
+    }
+
+    lessonQueueBody() {
         return React.createElement(
             "div",
-            {
-                "className": ""
-            },
-            JSON.stringify(this.props.selectedLesson)
+            {"className": "card-body"},
+            this.itemTitle(),
+            commonElements.lessonSubtitle(this.props.lesson)
+        );
+    }
+
+    lessonQueueHeader() {
+        if (this.props.selectedType === "lessons"
+            && this.props.activity === "editQueue"
+        ) {
+            return React.createElement(
+                "div",
+                {
+                    "className": "card bg-light border-secondary"
+                },
+                this.lessonQueueBody()
+            );
+        }
+        return null;
+    }
+
+    body() {
+        return React.createElement(
+            "div",
+            {"className": "sticky-top"},
+            this.alertSeries(),
+            this.lessonQueueHeader()
         );
     }
 
     render() {
-        if (this.props.alerts.length) {
-            return this.alertSeries();
-        }
-
-        if (this.props.selectedType === "lessons"
-            && this.props.activity === "editQueue"
-        ) {
-            return this.lessonQueueHeader();
+        console.log(this.props);
+        if (this.props.alerts.length || this.props.activity === "editQueue") {
+            return this.body();
         }
         return null;
     }
