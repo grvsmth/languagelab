@@ -294,10 +294,18 @@ export default class Lab extends React.Component {
 
     */
     editItem(itemId) {
-        this.setState({
+        const targetState = {
             "activity": "edit",
-            "selectedItem": itemId
-        })
+        };
+
+        if (this.state.selectedType === "lessons") {
+            targetState.selectedLesson = itemId;
+        } else {
+            targetState.selectedItem = itemId;
+        }
+        console.log("editItem", targetState);
+
+        this.setState(targetState);
     }
 
     /*

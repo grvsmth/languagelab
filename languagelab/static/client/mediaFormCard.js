@@ -325,19 +325,7 @@ export default class MediaFormCard extends React.Component {
             {"className": "form-row mt-3"},
             this.tagsInputDiv(),
             this.selectDiv("format", config.formatName),
-            this.selectDiv("language", this.languageObject()),
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.mediaItem.isAvailable,
-                "available",
-                this.props.mediaItem.id
-            ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.mediaItem.isPublic,
-                "public",
-                this.props.mediaItem.id
-            )
+            this.selectDiv("language", this.languageObject())
         );
     }
 

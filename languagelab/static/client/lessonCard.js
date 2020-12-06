@@ -162,20 +162,6 @@ export default class LessonCard extends React.Component {
             this.itemSubtitle(),
             this.notesDiv(),
             this.tagsSpan(),
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.lesson.isAvailable,
-                "available",
-                this.props.lesson.id,
-                this.checkboxClick
-                ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.lesson.isPublic,
-                "public",
-                this.props.lesson.id,
-                this.checkboxClick
-                ),
             this.linkDiv()
         );
     }

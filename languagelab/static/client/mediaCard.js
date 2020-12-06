@@ -196,20 +196,6 @@ export default class MediaCard extends React.Component {
             this.playerDiv(),
             this.tagsSpan(),
             this.rightsSpan(),
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.mediaItem.isAvailable,
-                "available",
-                this.props.mediaItem.id,
-                this.checkboxClick
-                ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.mediaItem.isPublic,
-                "public",
-                this.props.mediaItem.id,
-                this.checkboxClick
-                ),
             this.linkDiv()
         );
     }
