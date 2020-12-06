@@ -218,7 +218,7 @@ export default class LessonFormCard extends React.Component {
             {"className": "form-row mt-3"},
             this.textInputDiv("notes"),
             this.tagsInputDiv(),
-            this.textInputDiv("level")
+            this.textInputDiv("level", null, "0")
         );
     }
 
