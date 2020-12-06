@@ -7,6 +7,9 @@ export default class InfoArea extends React.Component {
     }
 
     dismissHandler(id) {
+        if (id === "queue") {
+            this.props.setActivity("read");
+        }
         this.props.dismissAlert(id);
     }
 
@@ -64,7 +67,8 @@ export default class InfoArea extends React.Component {
             "div",
             {"className": "card-body"},
             this.itemTitle(),
-            commonElements.lessonSubtitle(this.props.lesson)
+            commonElements.lessonSubtitle(this.props.lesson),
+            this.dismissButton("queue")
         );
     }
 

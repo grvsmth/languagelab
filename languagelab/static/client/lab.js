@@ -559,9 +559,10 @@ export default class Lab extends React.Component {
             {
                 "activity": this.state.activity,
                 "alerts": this.state.alerts,
-                "selectedType": this.state.selectedType,
+                "dismissAlert": this.dismissAlert.bind(this),
                 "lesson": lesson,
-                "dismissAlert": this.dismissAlert.bind(this)
+                "selectedType": this.state.selectedType,
+                "setActivity": this.setActivity.bind(this)
             },
             null
         )
