@@ -71,7 +71,8 @@ const config = {
     },
     "message": {
         "lessonQueue": "If you add lessons, you can add this exercise to a lesson"
-    }
+    },
+    "hideIsAvailablePublic": true
 };
 
 export default config;

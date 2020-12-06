@@ -1,3 +1,5 @@
+import config from "./config.js";
+
 const exports = {};
 
 exports.iconSpan = function(iconClass) {
@@ -39,9 +41,10 @@ exports.checkboxInput = function(key, checked, inputId, callback) {
 
 exports.checkboxDiv = function(key, checked, labelText, itemId, callback=null) {
     const inputId = [key, itemId].join("_");
+    const displayClass = config.hideIsAvailablePublic ? " d-none" : null;
     return React.createElement(
         "div",
-        {"className": "form-check form-check-inline mx-1"},
+        {"className": "form-check form-check-inline mx-1" + displayClass},
         exports.checkboxInput(
             key,
             checked,

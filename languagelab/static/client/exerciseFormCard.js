@@ -185,6 +185,7 @@ export default class ExerciseFormCard extends React.Component {
             this.nameRow(),
             this.mediaRow(),
             this.timeRow(),
+            this.checkboxRow(),
             this.submitRow()
         );
     }

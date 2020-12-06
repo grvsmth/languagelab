@@ -227,8 +227,8 @@ export default class LanguageLabClient {
         return new Promise((resolve, reject) => {
             this.fetchData(apiUrl, options).then((res) => {
                 resolve({"type": endpoint, "response": res});
-            }, (err) => {
-                reject({"type": endpoint, "error": err});
+            }, (err) =>{
+                reject(err.statusText)
             });
         });
     }

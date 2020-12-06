@@ -138,7 +138,7 @@ export default class LessonCard extends React.Component {
             "button",
             {
                 "type": "button",
-                "className": "btn " + btnClass + " btn-sm",
+                "className": "btn " + btnClass + " btn-sm ml-2",
                 "onClick": this.toggleLesson.bind(this)
             },
             actionInfo
@@ -150,6 +150,10 @@ export default class LessonCard extends React.Component {
     }
 
     editQueueButton() {
+        if (!this.props.lesson.queueItems.length) {
+            return null;
+        }
+
         return React.createElement(
             "div",
             {
@@ -178,6 +182,20 @@ export default class LessonCard extends React.Component {
             this.itemSubtitle(),
             this.notesDiv(),
             this.tagsDiv(),
+            commonElements.checkboxDiv(
+                "isAvailable",
+                this.props.lesson.isAvailable,
+                "available",
+                this.props.lesson.id,
+                this.checkboxClick
+                ),
+            commonElements.checkboxDiv(
+                "isPublic",
+                this.props.lesson.isPublic,
+                "public",
+                this.props.lesson.id,
+                this.checkboxClick
+                ),
             this.linkDiv()
         );
     }

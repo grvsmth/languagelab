@@ -32,10 +32,11 @@ export default class InfoArea extends React.Component {
     }
 
     alertDiv(alert) {
+        const statusClass = "alert-" + alert.status;
         return React.createElement(
             "div",
             {
-                "className": "alert alert-primary alert-dismissible",
+                "className": "alert alert-dismissible " + statusClass,
                 "role": "alert",
                 "key": alert.id,
                 "id": "alert_" + alert.id
