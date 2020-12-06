@@ -91,14 +91,14 @@ export default class LessonCard extends React.Component {
         );
     }
 
-    tagsSpan() {
+    tagsDiv() {
         if (this.props.lesson.tags.length < 1) {
             return null;
         }
 
         return React.createElement(
-            "span",
-            {},
+            "div",
+            {"className": "my-2"},
             ...this.props.lesson.tags.map((tag) => {
                 return this.tagBadge(tag);
             })
@@ -161,7 +161,7 @@ export default class LessonCard extends React.Component {
             this.itemTitle(),
             this.itemSubtitle(),
             this.notesDiv(),
-            this.tagsSpan(),
+            this.tagsDiv(),
             this.linkDiv()
         );
     }

@@ -10,6 +10,7 @@ import MediaFormCard from "./mediaFormCard.js";
 
 const typeInfo = {
     "media": {
+        "singular": "media item",
         "userField": "uploader",
         "card": MediaCard,
         "formCard": MediaFormCard,
@@ -17,6 +18,7 @@ const typeInfo = {
         "doable": false
     },
     "exercises": {
+        "singular": "exercise",
         "userField": "creator",
         "card": ExerciseCard,
         "formCard": ExerciseFormCard,
@@ -24,6 +26,7 @@ const typeInfo = {
         "doable": true
     },
     "lessons": {
+        "singular": "lesson",
         "userField": "creator",
         "card": LessonCard,
         "formCard": LessonFormCard,
@@ -31,6 +34,7 @@ const typeInfo = {
         "doable": false
     },
     "languages": {
+        "singular": "language",
         "userField": "",
         "addable": true,
         "doable": false
@@ -63,7 +67,7 @@ export default class CardList extends React.Component {
                 "className": "btn btn-primary",
                 "onClick": this.addClick.bind(this)
             },
-            `Add ${this.props.selectedType} item`
+            "Add " + typeInfo[this.props.selectedType].singular
         );
     }
 
@@ -387,12 +391,14 @@ export default class CardList extends React.Component {
     render() {
         console.log(this.props);
         const myType = typeInfo[this.props.selectedType];
+        const addable = this.props.activity != "editQueue" && myType.addable;
+
         return React.createElement(
             "div",
             {"className": ""},
-            this.addCard(myType.addable, "initial"),
+            this.addCard(addable, "initial"),
             this.makeElements(myType),
-            this.addCard(myType.addable, "final")
+            this.addCard(addable, "final")
         );
     }
 }
