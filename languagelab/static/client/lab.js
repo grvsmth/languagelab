@@ -125,7 +125,7 @@ export default class Lab extends React.Component {
     */
     handleFetchError(err) {
         const alert = {
-            "id": util.maxId(this.state.alerts).id + 1,
+            "id": util.maxId(this.state.alerts) + 1,
             "title": "Fetch error",
             "status": "danger",
             "message": err
@@ -169,16 +169,11 @@ export default class Lab extends React.Component {
         const items = [...this.state[itemType]];
         const index = items.findIndex((item) => item.id === res.id);
 
-        console.log(itemType, JSON.stringify(items));
-        console.log("index", index);
-
         if (index < 0) {
             items.push(res);
         } else {
             items[index] = res;
         }
-
-        console.log("after", items);
 
         const targetState = {[itemType]: items};
         if (activity) {
@@ -220,7 +215,7 @@ export default class Lab extends React.Component {
     handleTokenError(err) {
         console.error(err);
         const alert = {
-            "id": util.maxId(this.state.alerts).id + 1,
+            "id": util.maxId(this.state.alerts) + 1,
             "title": "Fetch error",
             "status": "danger",
             "message": err
@@ -338,7 +333,6 @@ export default class Lab extends React.Component {
     }
 
     firstExerciseId(lessonId) {
-        console.log()
         const lesson = util.findItem(this.state.lessons, lessonId);
         if (!lesson) {
             return null;
@@ -528,13 +522,6 @@ export default class Lab extends React.Component {
                 "selectedType": itemType
             }
         );
-        const alert = {
-            "id": util.maxId(this.state.alerts).id + 1,
-            "title": "Nav click!",
-            "status": "primary",
-            "message": `You clicked ${itemType}`
-        };
-        this.updateStateItem(alert, "alerts");
     }
 
     nav() {
@@ -552,13 +539,22 @@ export default class Lab extends React.Component {
         );
     }
 
+    dismissAlert(id) {
+        const alerts = [...this.state.alerts];
+        const alertIndex = alerts.findIndex((alert) => alert.id == id);
+
+        alerts.splice(alertIndex, 1);
+        this.setState({"alerts": alerts});
+    }
+
     infoArea() {
         return React.createElement(
             InfoArea,
             {
                 "alerts": this.state.alerts,
                 "selectedType": this.state.selectedType,
-                "selectedLesson": this.state.selectedLesson
+                "selectedLesson": this.state.selectedLesson,
+                "dismissAlert": this.dismissAlert.bind(this)
             },
             null
         )

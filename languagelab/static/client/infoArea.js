@@ -1,22 +1,51 @@
 export default class InfoArea extends React.Component {
 
-    alertDiv(alert, index) {
-        const alertId = "alert_" + index;
+    componentDidMount() {
 
+    }
+
+    dismissHandler(id) {
+        this.props.dismissAlert(id);
+    }
+
+    hiddenX(id) {
+        return React.createElement(
+            "span",
+            {
+                "aria-hidden": "true",
+                "onClick": this.dismissHandler.bind(this, id)
+            },
+            "×"
+        );
+    }
+
+    dismissButton(id) {
+        return React.createElement(
+            "button",
+            {
+                "className": "close",
+                "type": "button",
+                "aria-label": "Close"
+            },
+            this.hiddenX(id)
+        );
+    }
+
+    alertDiv(alert) {
         return React.createElement(
             "div",
             {
                 "className": "alert alert-primary alert-dismissible",
                 "role": "alert",
-                "key": alertId,
-                "id": alertId
+                "key": alert.id,
+                "id": "alert_" + alert.id
             },
-            alert.message
+            alert.message,
+            this.dismissButton(alert.id)
         );
     }
 
     alertSeries() {
-        console.log(this.props.alerts);
         return this.props.alerts.map(this.alertDiv.bind(this));
     }
 
