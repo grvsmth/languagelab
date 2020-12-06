@@ -230,6 +230,10 @@ export default class CardList extends React.Component {
     lessonCard(lesson) {
         var cardComponent = LessonCard;
 
+        if (this.props.activity === "editQueue") {
+            return this.exerciseCard(lesson);
+        }
+
         const selected = this.props.selectedType === "lessons"
             && this.props.selectedLesson === lesson.id;
 
@@ -375,6 +379,17 @@ export default class CardList extends React.Component {
         return null;
     }
 
+    makeItemList(myType) {
+        if (this.props.activity !== "editQueue") {
+            return this.props[this.props.selectedType];
+        }
+
+        const lesson = util.findItem(
+            this.props.lessons, this.props.selectedLesson
+        );
+        return lesson.queueItems.map(this.queueExercise.bind(this));
+    }
+
     makeElements(myType) {
         if (!this.props[this.props.selectedType].length
             || !myType.hasOwnProperty("card")) {
@@ -385,7 +400,9 @@ export default class CardList extends React.Component {
             );
         }
 
-        return this.props[this.props.selectedType].map(this.makeElement, this);
+        const itemList = this.makeItemList(myType);
+
+        return itemList.map(this.makeElement, this);
     }
 
     render() {

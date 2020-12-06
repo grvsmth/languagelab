@@ -55,7 +55,7 @@ export default class InfoArea extends React.Component {
             {
                 "className": ""
             },
-            JSON.stringify(this.props.lesson)
+            JSON.stringify(this.props.selectedLesson)
         );
     }
 
@@ -65,7 +65,7 @@ export default class InfoArea extends React.Component {
         }
 
         if (this.props.selectedType === "lessons"
-            && this.props.activity === "queueEdit"
+            && this.props.activity === "editQueue"
         ) {
             return this.lessonQueueHeader();
         }
