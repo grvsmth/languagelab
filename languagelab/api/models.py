@@ -17,7 +17,6 @@ from django.db.models import (
     ForeignKey,
     IntegerField,
     Manager,
-    ManyToManyField,
     Model,
     TextField
     )
@@ -156,22 +155,25 @@ class QueueManager (Manager):
                 queue_item.save()
                 i += 1
 
-    def up(self, lesson_id, item_id):
+    def up(self, item_id):
         """
 
         Move the current item up in the ranking (by lowering its rank number)
 
         """
-        queue = self.lesson_queue(lesson_id)
-        item_queryset = queue.filter(id=item_id)
-        old_rank = item_queryset[0].rank
+        LOG.error("up({})".format(item_id))
+        item = super().get_queryset().get(id=item_id)
+        LOG.error("lesson = {}".format(item.lesson.id))
+        queue = self.lesson_queue(item.lesson.id)
+        old_rank = item.rank
+        LOG.error("old_rank = {}".format(old_rank))
 
         if old_rank < 2 or old_rank > queue.count():
             return queue
 
         new_rank = old_rank - 1
         queue.filter(rank=new_rank).update(rank=old_rank)
-        item_queryset.update(rank=new_rank)
+        queue.filter(id=item_id).update(rank=new_rank)
 
         return queue
 

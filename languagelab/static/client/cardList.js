@@ -112,14 +112,22 @@ export default class CardList extends React.Component {
         return util.findItem(this.props.exercises, selection.exercise);
     }
 
+    queueItem(lesson, exercise) {
+        if (!lesson) {
+            return null;
+        }
+
+        return lesson.queueItems.find(
+            item => item.exercise == exercise.id && item.lesson == lesson.id
+        );
+    }
+
     exerciseRank(lesson, exercise) {
         if (!lesson) {
             return null;
         }
 
-        const queueItem = lesson.queueItems.find(
-            item => item.exercise == exercise.id && item.lesson == lesson.id
-        );
+        const queueItem = this.queueItem(lesson, exercise);
 
         if (!queueItem) {
             return null;
@@ -300,6 +308,9 @@ export default class CardList extends React.Component {
 
     exerciseCard(exercise) {
         const mediaItem = util.findItem(this.props.media, exercise.media);
+        const lesson = util.findItem(
+            this.props.lessons, this.props.selectedLesson
+        );
 
         if (this.props.selectedItem === exercise.id) {
             if (this.props.activity === "edit") {
@@ -321,6 +332,7 @@ export default class CardList extends React.Component {
             "mediaItem": mediaItem,
             "maxRank": this.props.maxRank(),
             "queueClick": this.props.queueClick,
+            "queueItem": this.queueItem(lesson, exercise),
             "selectedType": this.props.selectedType,
             "startExercise": this.props.startExercise,
             "itemUser": this.itemUser(exercise),

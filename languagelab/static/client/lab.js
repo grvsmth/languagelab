@@ -259,7 +259,11 @@ export default class Lab extends React.Component {
 
     */
     removeFromQueue(queueItemId) {
-        this.deleteClick("queueItems", queueItemId);
+        this.apiClient.delete(environment.api.baseUrl, "queueItems", itemId)
+            .then((res) => {
+                this.fetchData(lessons);
+            }, this.handleFetchError
+        );
     }
 
     /*
@@ -410,7 +414,7 @@ export default class Lab extends React.Component {
         this.apiClient.patch(
             environment.api.baseUrl, "queueItems", {"item": itemId}, "up"
         ).then(res => {
-            this.fetchData("queueItems");
+            this.fetchData("lessons");
         }, this.handleFetchError
         );
     }
@@ -419,7 +423,7 @@ export default class Lab extends React.Component {
         this.apiClient.patch(
             environment.api.baseUrl, "queueItems", {"item": itemId}, "down"
         ).then(res => {
-            this.fetchData("queueItems");
+            this.fetchData("lessons");
         }, this.handleFetchError
         );
     }

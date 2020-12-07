@@ -170,14 +170,16 @@ class QueueItemViewSet(ModelViewSet):
         """
         serializer.save(rank=self.next_rank(self.request.data['lesson']))
 
-    def destroy(self, request):
+    def destroy(self, request, pk):
         """
 
         Override default destroy method, renumbering the queue items
 
         """
+        queue_item = self.get_object()
+        lesson_id = queue_item.get("lesson")
         self.perform_destroy(self.get_object())
-        QueueItem.objects.renumber(lesson=self.request.lesson)
+        QueueItem.objects.renumber(lesson=lesson_id)
         return Response(status=HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['patch'])
@@ -188,7 +190,6 @@ class QueueItemViewSet(ModelViewSet):
 
         """
         QueueItem.objects.up(
-            lesson_id=self.request.lesson,
             item_id=self.request.data['item']
             )
         serializer = self.serializer_class(self.queryset, many=True)
@@ -202,7 +203,6 @@ class QueueItemViewSet(ModelViewSet):
 
         """
         QueueItem.objects.down(
-            lesson_id=self.request.lesson,
             item_id=self.request.data['item']
             )
         serializer = self.serializer_class(self.queryset, many=True)

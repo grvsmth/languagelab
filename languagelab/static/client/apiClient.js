@@ -188,7 +188,7 @@ export default class LanguageLabClient {
     */
     delete(baseUrl, endpoint, id) {
         const csrftoken = this.extractCookie("csrftoken");
-        const apiUrl = [baseUrl, endpoint, id, ""].join("/");
+        const apiUrl = [baseUrl, endpoint, id].join("/");
         const options = {
             "method": "DELETE",
             "headers": {
@@ -201,7 +201,7 @@ export default class LanguageLabClient {
             this.fetchData(apiUrl, options).then((res) => {
                 resolve({"type": endpoint, "response": res});
             }, (err) => {
-                reject({"type": endpoint, "error": err});
+                reject(err.statusText);
             });
         });
     }
@@ -294,10 +294,10 @@ export default class LanguageLabClient {
                 res.json().then((resJson) => {
                     resolve({"type": "token-auth", "response": resJson});
                 }, (err) => {
-                    reject({"type": "token-auth", "error": err});
+                    reject("Error getting token: " + err);
                 });
             }, (err) => {
-                reject({"type": "token-auth", "error": err});
+                reject("Error getting token: " + err);
             });
         });
     }
