@@ -197,7 +197,7 @@ class LessonSerializer(TaggitSerializer, ModelSerializer):
 
     """
     tags = TagListSerializerField()
-    queueItems = QueueItemSerializer(many=True, read_only=True)
+    queueItems = SerializerMethodField()
 
     creator = PrimaryKeyRelatedField(
         # set it to read_only as we're handling the writing part ourselves
@@ -221,3 +221,7 @@ class LessonSerializer(TaggitSerializer, ModelSerializer):
             'tags'
             ]
         ordering = ['-id']
+
+    def get_queueItems(self, instance):
+        queueItems = instance.queueItems.all().order_by('rank')
+        return QueueItemSerializer(queueItems, many=True).data

@@ -51,6 +51,7 @@ export default class InfoArea extends React.Component {
     }
 
     alertSeries() {
+        console.log("alertSeries", this.props.alerts);
         return this.props.alerts.map(this.alertDiv.bind(this));
     }
 
@@ -73,6 +74,7 @@ export default class InfoArea extends React.Component {
     }
 
     lessonQueueHeader() {
+        console.log("lessonQueueHeader");
         if (this.props.selectedType === "lessons"
             && this.props.activity === "editQueue"
         ) {
