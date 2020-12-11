@@ -259,8 +259,9 @@ export default class Lab extends React.Component {
 
     */
     removeFromQueue(queueItemId) {
-        this.apiClient.delete(environment.api.baseUrl, "queueItems", itemId)
-            .then((res) => {
+        this.apiClient.delete(
+            environment.api.baseUrl, "queueItems", queueItemId
+        ).then((res) => {
                 this.fetchData(lessons);
             }, this.handleFetchError
         );

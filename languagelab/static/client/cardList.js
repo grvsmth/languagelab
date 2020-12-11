@@ -154,9 +154,15 @@ export default class CardList extends React.Component {
         }
 
         if (rank < maxRank) {
+            console.log(`nextRank = ${rank + 1}`);
+            const nextQueueItem = lesson.queueItems.find(
+                item => item.rank == rank + 1
+            );
+            console.log("nextQueueItem", nextQueueItem);
+
             const nextExercise = util.findItem(
                 this.props.exercises,
-                lesson.queueItems.find(item => item.rank == rank + 1).exercise
+                nextQueueItem.exercise
             );
             if (nextExercise) {
                 queueInfo["next"] = nextExercise;

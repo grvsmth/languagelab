@@ -170,16 +170,16 @@ class QueueItemViewSet(ModelViewSet):
         """
         serializer.save(rank=self.next_rank(self.request.data['lesson']))
 
-    def destroy(self, request, pk):
+    def destroy(self, request, pk=None):
         """
 
         Override default destroy method, renumbering the queue items
 
         """
         queue_item = self.get_object()
-        lesson_id = queue_item.get("lesson")
-        self.perform_destroy(self.get_object())
-        QueueItem.objects.renumber(lesson=lesson_id)
+        lesson_id = queue_item.lesson
+        self.perform_destroy(queue_item)
+        QueueItem.objects.renumber(lesson_id=lesson_id)
         return Response(status=HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['patch'])
