@@ -31,6 +31,7 @@ export default class DoExerciseCard extends React.Component {
             "clickedAction": "",
             "status": "loading",
             "mimicCount": 0,
+            "nowPlaying": this.props.mediaItem.mediaUrl,
             "onlyExercise": true,
             "recordDisabled": true,
             "statusText": "Ready",
@@ -201,7 +202,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     afterPlay(player) {
-        console.log("afterPlay");
+        console.log("afterPlay", this.state);
 
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
 
@@ -224,8 +225,8 @@ export default class DoExerciseCard extends React.Component {
                 });
                 player.currentTime = startSeconds;
             } else {
-                player.
                 this.setState({
+                    "nowPlaying": this.state.userAudioUrl,
                     "status": "playMimic",
                     "statusText": "Now playing recorded audio"
                 });
@@ -287,7 +288,7 @@ export default class DoExerciseCard extends React.Component {
             {
                 "id": "audio1",
                 "ref": this.player,
-                "src": this.props.mediaItem.mediaUrl,
+                "src": this.state.nowPlaying,
                 "controls": true,
                 "onEnded": this.afterPlay,
                 "onLoadedMetadata": this.loadedMetadata.bind(this),
