@@ -455,6 +455,7 @@ export default class Lab extends React.Component {
             (queueItem) => queueItem.rank === rank
         );
 
+        console.log(`selectByRank(${rank})`, queueItem);
         this.setState({"selectedItem": queueItem.exercise});
     }
 
@@ -526,6 +527,7 @@ export default class Lab extends React.Component {
             {
                 "activity": "read",
                 "selectedItem": null,
+                "selectedLesson": null,
                 "selectedType": itemType
             }
         );

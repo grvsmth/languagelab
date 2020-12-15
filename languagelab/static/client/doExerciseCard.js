@@ -2,6 +2,10 @@ import commonElements from "./commonElements.js";
 import config from "./config.js";
 import util from "./util.js";
 
+const playActivities = [
+    "play", "playModelFirst", "playModelSecond", "playModel", "playMimic"
+];
+
 
 export default class DoExerciseCard extends React.Component {
     constructor(props) {
@@ -11,9 +15,6 @@ export default class DoExerciseCard extends React.Component {
         this.handleGetInput = this.handleGetInput.bind(this);
         this.handleError = this.handleError.bind(this);
         this.mediaRecorder = null;
-        this.playActivities = [
-            "playModelFirst", "playModelSecond", "playModel", "playMimic"
-        ];
         this.player = React.createRef();
         this.statusColor = {
             "error": "danger",
@@ -28,13 +29,10 @@ export default class DoExerciseCard extends React.Component {
 
         this.state = {
             "clickedAction": "",
-            "status": "ready",
-            "endSeconds": this.timeAsSeconds(this.props.exercise.endTime),
+            "status": "loading",
             "mimicCount": 0,
-            "nowPlaying": this.props.mediaItem.mediaUrl,
             "onlyExercise": true,
             "recordDisabled": true,
-            "startSeconds": this.timeAsSeconds(this.props.exercise.startTime),
             "statusText": "Ready",
             "userAudioUrl": ""
         };
@@ -65,6 +63,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     handleGetMediaError(error) {
+        // TODO throw error up to lab.js for alert
         if (error.code === 8) {
             this.setState({
                 "statusText": "Unable to find a recording device!",
@@ -162,43 +161,50 @@ export default class DoExerciseCard extends React.Component {
     }
 
     loadedMetadata(event) {
-        if (this.state.startSeconds < 0) {
+        const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
+        console.log("startSeconds = ", startSeconds);
+
+        if (startSeconds < 0) {
             return;
         }
 
-        if (this.state.nowPlaying === this.props.mediaItem.mediaUrl) {
-            if (this.state.startSeconds > event.target.duration) {
-                const msg = `Your startTime of ${this.props.exercise.startTime}
-                seconds is greater than the total duration
-                (${event.target.duration} seconds) of this media clip.`;
-                this.setState({
-                    "statusText": msg,
-                    "status": "error"
-                });
-                return;
-            }
-            event.target.currentTime = this.state.startSeconds;
-            if (event.target.currentTime !== this.state.startSeconds) {
-                const msg = `Unable to set start time.  You may need to use a
-                different browser or host your media on a server that supports <a
-                target="_blank"
-                href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests"
-                >byte-range requests</a>.`;
-                this.setState({
-                    "statusText": msg,
-                    "status": "error"
-                });
-                return;
-            }
+        if (playActivities.includes(this.state.status)) {
+            event.target.play().catch(this.handleError, this.state.status);
+            return;
         }
 
-        if (this.playActivities.includes(this.state.status)) {
-            event.target.play().catch(this.handleError, this.state.status);
+        if (startSeconds > event.target.duration) {
+            const msg = `Your startTime of ${this.props.exercise.startTime}
+            seconds is greater than the total duration
+            (${event.target.duration} seconds) of this media clip.`;
+            this.setState({
+                "statusText": msg,
+                "status": "error"
+            });
+            return;
         }
+        event.target.currentTime = startSeconds;
+        if (event.target.currentTime !== startSeconds) {
+            const msg = `Unable to set start time.  You may need to use a
+            different browser or host your media on a server that supports <a
+            target="_blank"
+            href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests"
+            >byte-range requests</a>.`;
+            this.setState({
+                "statusText": msg,
+                "status": "error"
+            });
+            return;
+        }
+
+        this.setState({"status": "ready"});
     }
 
     afterPlay(player) {
         console.log("afterPlay");
+
+        const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
+
         if (this.state.clickedAction === "mimic"
             && this.state.status === "playModelFirst") {
             this.mediaRecorder.start();
@@ -216,10 +222,10 @@ export default class DoExerciseCard extends React.Component {
                     "clickedAction": null,
                     "statusText": "No recorded audio found",
                 });
-                player.currentTime = this.state.startSeconds;
+                player.currentTime = startSeconds;
             } else {
+                player.
                 this.setState({
-                    "nowPlaying": this.state.userAudioUrl,
                     "status": "playMimic",
                     "statusText": "Now playing recorded audio"
                 });
@@ -236,19 +242,23 @@ export default class DoExerciseCard extends React.Component {
             });
             return;
         }
-        player.currentTime = this.state.startSeconds;
+        player.currentTime = startSeconds;
         this.setState({"status": "ready"});
     }
 
     timeUpdateHandler(event) {
+        console.log("timeUpdateHandler", this.state.status);
         if (this.state.status === "playModel"
             && !this.state.onlyExercise) {
             return;
         }
-        if (!this.playActivities.includes(this.state.status)) {
+
+        if (!playActivities.includes(this.state.status)) {
             return;
         }
-        if (event.target.currentTime < this.state.endSeconds) {
+
+        const endSeconds = this.timeAsSeconds(this.props.exercise.endTime);
+        if (event.target.currentTime < endSeconds) {
             return;
         }
 
@@ -266,7 +276,10 @@ export default class DoExerciseCard extends React.Component {
     }
 
     makePlayer() {
-        const timeUpdateHandler = this.state.startSeconds < this.state.endSeconds
+        const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
+        const endSeconds = this.timeAsSeconds(this.props.exercise.endTime);
+
+        const timeUpdateHandler = startSeconds < endSeconds
             ? this.timeUpdateHandler.bind(this) : null;
 
         return React.createElement(
@@ -274,7 +287,7 @@ export default class DoExerciseCard extends React.Component {
             {
                 "id": "audio1",
                 "ref": this.player,
-                "src": this.state.nowPlaying,
+                "src": this.props.mediaItem.mediaUrl,
                 "controls": true,
                 "onEnded": this.afterPlay,
                 "onLoadedMetadata": this.loadedMetadata.bind(this),
@@ -381,6 +394,8 @@ export default class DoExerciseCard extends React.Component {
     }
 
     mimicClick(event) {
+        const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
+
         if (this.state.status === "recording") {
             console.log("Stop recording!");
             this.mediaRecorder.stop();
@@ -389,7 +404,7 @@ export default class DoExerciseCard extends React.Component {
                 "nowPlaying": this.props.mediaItem.mediaUrl,
                 "statusText": "Now playing " + this.props.mediaItem.name
             });
-            this.player.current.currentTime = this.state.startSeconds;
+            this.player.current.currentTime = startSeconds;
 
             this.player.current.play()
                 .catch(this.handleError, "playModelSecond");
@@ -397,8 +412,8 @@ export default class DoExerciseCard extends React.Component {
             return;
         }
 
-        if (this.state.nowPlaying === this.props.mediaItem.mediaUrl) {
-            this.player.current.currentTime = this.state.startSeconds;
+        if (playActivities + ["ready"].includes(this.state.status)) {
+            this.player.current.currentTime = startSeconds;
             this.player.current.play().catch(
                 this.handleError, "mimicButtonClick"
             );
@@ -416,7 +431,7 @@ export default class DoExerciseCard extends React.Component {
         if (this.state.clickedAction === "mimic") {
             if (this.state.status === "recording") {
                 colorClass = "danger";
-            } else if (this.playActivities.includes(
+            } else if (playActivities.includes(
                 this.state.status
             )) {
                 colorClass = "success";
@@ -510,6 +525,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     render() {
+        console.log(this.props);
         return React.createElement(
             "div",
             {"className": "card bg-light mb-3"},
