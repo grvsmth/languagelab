@@ -6,7 +6,6 @@ const playActivities = [
     "play", "playModelFirst", "playModelSecond", "playModel", "playMimic"
 ];
 
-
 export default class DoExerciseCard extends React.Component {
     constructor(props) {
         super(props);
@@ -29,11 +28,12 @@ export default class DoExerciseCard extends React.Component {
 
         this.state = {
             "clickedAction": "",
-            "status": "loading",
+            "mediaStatus": "loading",
             "mimicCount": 0,
             "nowPlaying": this.props.mediaItem.mediaUrl,
             "onlyExercise": true,
             "recordDisabled": true,
+            "status": "ready",
             "statusText": "Ready",
             "userAudioUrl": ""
         };
@@ -163,14 +163,10 @@ export default class DoExerciseCard extends React.Component {
 
     loadedMetadata(event) {
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
+        console.log("loadedMetadata", this.state);
         console.log("startSeconds = ", startSeconds);
 
         if (startSeconds < 0) {
-            return;
-        }
-
-        if (playActivities.includes(this.state.status)) {
-            event.target.play().catch(this.handleError, this.state.status);
             return;
         }
 
@@ -198,7 +194,7 @@ export default class DoExerciseCard extends React.Component {
             return;
         }
 
-        this.setState({"status": "ready"});
+        this.setState({"mediaStatus": "ready"});
     }
 
     afterPlay(player) {
@@ -226,6 +222,7 @@ export default class DoExerciseCard extends React.Component {
                 player.currentTime = startSeconds;
             } else {
                 this.setState({
+                    "mediaStatus": "loading",
                     "nowPlaying": this.state.userAudioUrl,
                     "status": "playMimic",
                     "statusText": "Now playing recorded audio"
@@ -401,6 +398,7 @@ export default class DoExerciseCard extends React.Component {
             console.log("Stop recording!");
             this.mediaRecorder.stop();
             this.setState({
+                "mediaStatus": "loading",
                 "status": "playModelSecond",
                 "nowPlaying": this.props.mediaItem.mediaUrl,
                 "statusText": "Now playing " + this.props.mediaItem.name
@@ -413,14 +411,13 @@ export default class DoExerciseCard extends React.Component {
             return;
         }
 
-        if (playActivities + ["ready"].includes(this.state.status)) {
-            this.player.current.currentTime = startSeconds;
-            this.player.current.play().catch(
-                this.handleError, "mimicButtonClick"
-            );
+        if (!playableActivities.includes(this.state.status)) {
+            return;
         }
+
         this.setState({
             "clickedAction": "mimic",
+            "mediaStatus": "loading",
             "status": "playModelFirst",
             "nowPlaying": this.props.mediaItem.mediaUrl,
             "statusText": "Now playing " + this.props.mediaItem.name
@@ -487,6 +484,10 @@ export default class DoExerciseCard extends React.Component {
     }
 
     controls() {
+        if (this.player.current) {
+            this.player.current.play()
+                .catch(this.handleError, this.state.status);
+        }
         return React.createElement(
             "div",
             {
