@@ -6,6 +6,8 @@ const playActivities = [
     "play", "playModelFirst", "playModelSecond", "playModel", "playMimic"
 ];
 
+const playableActivities = playActivities + ["ready"];
+
 export default class DoExerciseCard extends React.Component {
     constructor(props) {
         super(props);
@@ -29,7 +31,7 @@ export default class DoExerciseCard extends React.Component {
         this.state = {
             "clickedAction": "",
             "mediaStatus": "loading",
-            "mimicCount": 0,
+            "mimicCount": {},
             "nowPlaying": this.props.mediaItem.mediaUrl,
             "onlyExercise": true,
             "recordDisabled": true,
@@ -162,6 +164,11 @@ export default class DoExerciseCard extends React.Component {
     }
 
     loadedMetadata(event) {
+        if (this.state.status === "playMimic") {
+            this.setState({"mediaStatus": "ready"});
+            return;
+        }
+
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
         console.log("loadedMetadata", this.state);
         console.log("startSeconds = ", startSeconds);
@@ -195,6 +202,7 @@ export default class DoExerciseCard extends React.Component {
         }
 
         this.setState({"mediaStatus": "ready"});
+        console.log("setting mediaStatus to ready");
     }
 
     afterPlay(player) {
@@ -216,7 +224,6 @@ export default class DoExerciseCard extends React.Component {
             if (this.state.userAudioUrl.length < 11) {
                 this.setState({
                     "status": "warning",
-                    "clickedAction": null,
                     "statusText": "No recorded audio found",
                 });
                 player.currentTime = startSeconds;
@@ -232,12 +239,15 @@ export default class DoExerciseCard extends React.Component {
         }
 
         if (this.state.status === "playMimic") {
-            this.setState({
+            this.setState(prevState => ({
                 "status": "ready",
                 "statusText": "Ready",
                 "clickedAction": null,
-                "mimicCount": this.state.mimicCount + 1
-            });
+                "mimicCount": {
+                    ...prevState.mimicCount,
+                    [this.props.exercise.id]: this.exerciseCount() + 1
+                }
+            }));
             return;
         }
         player.currentTime = startSeconds;
@@ -375,11 +385,19 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    exerciseCount() {
+        if(this.state.mimicCount.hasOwnProperty(this.props.exercise.id)) {
+            return this.state.mimicCount[this.props.exercise.id];
+        }
+
+        return 0;
+    }
+
     mimicCountSpan() {
         return React.createElement(
             "span",
             {"className": "badge badge-light"},
-            this.state.mimicCount
+            this.exerciseCount()
         );
     }
 
@@ -415,9 +433,12 @@ export default class DoExerciseCard extends React.Component {
             return;
         }
 
+        const mediaStatus = this.state.nowPlaying === this.props.mediaItem.mediaUrl ?
+            "ready": "loading";
+
         this.setState({
             "clickedAction": "mimic",
-            "mediaStatus": "loading",
+            "mediaStatus": mediaStatus,
             "status": "playModelFirst",
             "nowPlaying": this.props.mediaItem.mediaUrl,
             "statusText": "Now playing " + this.props.mediaItem.name
@@ -484,9 +505,16 @@ export default class DoExerciseCard extends React.Component {
     }
 
     controls() {
+        console.log("controls()", this.state);
         if (this.player.current) {
-            this.player.current.play()
-                .catch(this.handleError, this.state.status);
+            console.log("paused?", this.player.current.paused);
+            if (this.player.current.paused
+                && this.state.mediaStatus === "ready"
+                && playActivities.includes(this.state.status)
+            ) {
+                this.player.current.play()
+                    .catch(this.handleError, this.state.status);
+            }
         }
         return React.createElement(
             "div",
