@@ -351,19 +351,24 @@ export default class DoExerciseCard extends React.Component {
             return commonElements.iconSpan(this.props.doButton[direction].icon);
         }
 
+        const nameText = util.truncateString(
+            this.props.queueInfo[direction].name,
+            config.exerciseNameLimit
+        );
+
         if (direction === "previous") {
             return React.createElement(
                 "span",
                 {},
                 commonElements.iconSpan(this.props.doButton[direction].icon),
-                " " + this.props.queueInfo[direction].name
+                " " + nameText
             );
         }
 
         return React.createElement(
             "span",
             {},
-            this.props.queueInfo[direction].name + " ",
+            nameText + " ",
             commonElements.iconSpan(this.props.doButton[direction].icon)
         );
     }
