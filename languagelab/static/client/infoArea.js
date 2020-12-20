@@ -13,25 +13,26 @@ export default class InfoArea extends React.Component {
         this.props.dismissAlert(id);
     }
 
-    hiddenX(id) {
+    hiddenX(id, text=null) {
         return React.createElement(
             "span",
             {
                 "aria-hidden": "true",
                 "onClick": this.dismissHandler.bind(this, id)
             },
-            "×"
+            "×",
+            text
         );
     }
 
-    dismissButton(id) {
+    dismissButton(id, text=null) {
         return React.createElement(
             "button",
             {
                 "className": "close",
                 "type": "button",
             },
-            this.hiddenX(id)
+            this.hiddenX(id, text)
         );
     }
 
@@ -69,7 +70,7 @@ export default class InfoArea extends React.Component {
             {"className": "card-body"},
             this.itemTitle(),
             commonElements.lessonSubtitle(this.props.lesson),
-            this.dismissButton("queue")
+            this.dismissButton("queue", "Close queue")
         );
     }
 
