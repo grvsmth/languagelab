@@ -189,8 +189,9 @@ class QueueItemViewSet(ModelViewSet):
         Move the item up in the rank list by calling the .up() method
 
         """
-        QueueItem.objects.up(
-            item_id=self.request.data['item']
+        QueueItem.objects.move(
+            item_id=self.request.data['item'],
+            direction="up"
             )
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)
@@ -202,8 +203,9 @@ class QueueItemViewSet(ModelViewSet):
         Move the item down in the rank list by calling the .down() method
 
         """
-        QueueItem.objects.down(
-            item_id=self.request.data['item']
+        QueueItem.objects.move(
+            item_id=self.request.data['item'],
+            direction="down"
             )
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)

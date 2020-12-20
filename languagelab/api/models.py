@@ -155,45 +155,39 @@ class QueueManager (Manager):
                 queue_item.save()
                 i += 1
 
-    def up(self, item_id):
+    @staticmethod
+    def is_unmovable(queue, old_rank, direction):
+        if direction == "up":
+            return old_rank < 2 or old_rank > queue.count()
+
+        return old_rank < 1 or old_rank >= queue.count()
+
+    @staticmethod
+    def new_rank(old_rank, direction):
+        if direction == "up":
+            return old_rank - 1
+
+        return old_rank + 1
+
+    def move(self, item_id, direction):
         """
 
         Move the current item up in the ranking (by lowering its rank number)
 
         """
-        LOG.error("up({})".format(item_id))
+        LOG.error("move({}, {})".format(item_id, direction))
         item = super().get_queryset().get(id=item_id)
         LOG.error("lesson = {}".format(item.lesson.id))
         queue = self.lesson_queue(item.lesson.id)
         old_rank = item.rank
         LOG.error("old_rank = {}".format(old_rank))
 
-        if old_rank < 2 or old_rank > queue.count():
+        if self.is_unmovable(queue, old_rank, direction):
             return queue
 
-        new_rank = old_rank - 1
+        new_rank = self.new_rank(old_rank, direction)
         queue.filter(rank=new_rank).update(rank=old_rank)
         queue.filter(id=item_id).update(rank=new_rank)
-
-        return queue
-
-    def down(self, lesson_id, item_id):
-        """
-
-        Move the specified item down in the ranking (by increasing its rank
-        number)
-
-        """
-        queue = self.lesson_queue(lesson_id)
-        item_queryset = queue.filter(id=item_id)
-        old_rank = item_queryset[0].rank
-
-        if old_rank < 1 or old_rank >= queue.count():
-            return queue
-
-        new_rank = old_rank + 1
-        queue.filter(rank=new_rank).update(rank=old_rank)
-        item_queryset.update(rank=new_rank)
 
         return queue
 
