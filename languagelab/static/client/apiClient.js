@@ -174,9 +174,7 @@ export default class LanguageLabClient {
         return new Promise((resolve, reject) => {
             this.fetchData(apiUrl, options).then((res) => {
                 resolve({"type": endpoint, "response": res});
-            }, (err) => {
-                reject({"type": endpoint, "error": err});
-            });
+            }, reject);
         });
     }
 
@@ -200,9 +198,7 @@ export default class LanguageLabClient {
         return new Promise((resolve, reject) => {
             this.fetchData(apiUrl, options).then((res) => {
                 resolve({"type": endpoint, "response": res});
-            }, (err) => {
-                reject(err.statusText);
-            });
+            }, reject);
         });
     }
 
@@ -227,9 +223,7 @@ export default class LanguageLabClient {
         return new Promise((resolve, reject) => {
             this.fetchData(apiUrl, options).then((res) => {
                 resolve({"type": endpoint, "response": res});
-            }, (err) =>{
-                reject(err.statusText)
-            });
+            }, reject);
         });
     }
 
