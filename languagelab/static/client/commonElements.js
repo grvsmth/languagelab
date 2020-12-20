@@ -40,9 +40,18 @@ exports.checkboxInput = function(key, checked, inputId, callback) {
     );
 };
 
+exports.displayCheckbox = function(key) {
+    if (["isAvailable", "isPublic"].includes(key)) {
+        return config.hideIsAvailablePublic ? " d-none" : null;
+    }
+
+    return null;
+};
+
 exports.checkboxDiv = function(key, checked, labelText, itemId, callback=null) {
     const inputId = [key, itemId].join("_");
-    const displayClass = config.hideIsAvailablePublic ? " d-none" : null;
+    const displayClass = exports.displayCheckbox(key);
+
     return React.createElement(
         "div",
         {"className": "form-check form-check-inline mx-1" + displayClass},

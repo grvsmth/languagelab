@@ -62,4 +62,12 @@ exports.maxId = function(items) {
     return items.reduce(exports.biggerId).id;
 };
 
+exports.truncateString = function(stringText, limit=5) {
+    if (stringText.length < limit) {
+        return stringText;
+    }
+
+    return stringText.substring(0, limit - 1) + "…";
+};
+
 export default exports;
