@@ -107,7 +107,7 @@ export default class LanguageLabClient {
             this.checkToken();
             fetch(url, options).then((res) => {
                 if (res.status === 204) {
-                    resolve();
+                    resolve(res);
                     return;
                 } else if (res.status < 200 || res.status > 299) {
                     reject(res);
@@ -197,7 +197,7 @@ export default class LanguageLabClient {
 
         return new Promise((resolve, reject) => {
             this.fetchData(apiUrl, options).then((res) => {
-                resolve({"type": endpoint, "response": res});
+                resolve(res);
             }, reject);
         });
     }

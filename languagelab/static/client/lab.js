@@ -148,6 +148,14 @@ export default class Lab extends React.Component {
             }
             console.log("err.error", err.error);
             alert.message = err.error;
+            return;
+        }
+
+        if (err.hasOwnProperty("statusText")) {
+            console.log("err.statusText", err.statusText);
+            alert.message = err.statusText;
+            this.updateStateItem(alert, "alerts");
+            return;
         }
 
         if (err.hasOwnProperty("message")) {
@@ -262,7 +270,7 @@ export default class Lab extends React.Component {
         this.apiClient.delete(
             environment.api.baseUrl, "queueItems", queueItemId
         ).then((res) => {
-                this.fetchData(lessons);
+                this.fetchData("lessons");
             }, this.handleFetchError
         );
     }
@@ -455,7 +463,6 @@ export default class Lab extends React.Component {
             (queueItem) => queueItem.rank === rank
         );
 
-        console.log(`selectByRank(${rank})`, queueItem);
         this.setState({"selectedItem": queueItem.exercise});
     }
 
