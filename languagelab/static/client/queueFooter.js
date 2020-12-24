@@ -130,7 +130,7 @@ export default class QueueFooter extends React.Component {
     }
 
     addFooter() {
-        if (!this.props.lessons) {
+        if (!this.props.lessons || !this.props.lessons.length) {
             return this.lessonMessage();
         }
 
