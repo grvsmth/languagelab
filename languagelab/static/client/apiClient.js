@@ -107,7 +107,7 @@ export default class LanguageLabClient {
             this.checkToken();
             fetch(url, options).then((res) => {
                 if (res.status === 204) {
-                    resolve();
+                    resolve(res);
                     return;
                 } else if (res.status < 200 || res.status > 299) {
                     reject(res);
@@ -174,9 +174,7 @@ export default class LanguageLabClient {
         return new Promise((resolve, reject) => {
             this.fetchData(apiUrl, options).then((res) => {
                 resolve({"type": endpoint, "response": res});
-            }, (err) => {
-                reject({"type": endpoint, "error": err});
-            });
+            }, reject);
         });
     }
 
@@ -188,7 +186,7 @@ export default class LanguageLabClient {
     */
     delete(baseUrl, endpoint, id) {
         const csrftoken = this.extractCookie("csrftoken");
-        const apiUrl = [baseUrl, endpoint, id, ""].join("/");
+        const apiUrl = [baseUrl, endpoint, id].join("/");
         const options = {
             "method": "DELETE",
             "headers": {
@@ -199,10 +197,8 @@ export default class LanguageLabClient {
 
         return new Promise((resolve, reject) => {
             this.fetchData(apiUrl, options).then((res) => {
-                resolve({"type": endpoint, "response": res});
-            }, (err) => {
-                reject({"type": endpoint, "error": err});
-            });
+                resolve(res);
+            }, reject);
         });
     }
 
@@ -227,9 +223,7 @@ export default class LanguageLabClient {
         return new Promise((resolve, reject) => {
             this.fetchData(apiUrl, options).then((res) => {
                 resolve({"type": endpoint, "response": res});
-            }, (err) => {
-                reject({"type": endpoint, "error": err});
-            });
+            }, reject);
         });
     }
 
@@ -294,10 +288,10 @@ export default class LanguageLabClient {
                 res.json().then((resJson) => {
                     resolve({"type": "token-auth", "response": resJson});
                 }, (err) => {
-                    reject({"type": "token-auth", "error": err});
+                    reject("Error getting token: " + err);
                 });
             }, (err) => {
-                reject({"type": "token-auth", "error": err});
+                reject("Error getting token: " + err);
             });
         });
     }

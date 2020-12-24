@@ -17,9 +17,6 @@ from os import environ, path
 
 from .django_environ import set_environ
 
-LOG = getLogger()
-basicConfig(level="DEBUG")
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
 APP_DIR = path.dirname((path.abspath(__file__)))
@@ -31,6 +28,9 @@ API_VERSION = "0.2"
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = environ.get('DJANGO_SECRET_KEY')
+
+LOG = getLogger()
+basicConfig(level="DEBUG")
 
 # We are setting this because we are also setting DEFAULT_PERMISSION_CLASSES to
 # ['rest_framework.permissions.IsAuthenticated']

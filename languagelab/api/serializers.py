@@ -37,7 +37,6 @@ class UserSerializer(ModelSerializer):
         model = get_user_model()
         fields = ['id', 'url', 'username', 'email', 'groups']
 
-
 class UserSerializerWithToken(ModelSerializer):
     """
 
@@ -76,8 +75,9 @@ class UserSerializerWithToken(ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('token', 'username', 'password')
-
+        fields = (
+            'id', 'email', 'groups', 'token', 'url', 'username', 'password'
+        )
 
 class GroupSerializer(ModelSerializer):
     """
@@ -136,6 +136,26 @@ class MediaItemSerializer(TaggitSerializer, ModelSerializer):
         ordering = ['-id']
 
 
+class QueueItemSerializer(ModelSerializer):
+    """
+
+    Store and retrieve queue items
+
+    """
+    rank = IntegerField(read_only=True, min_value=1)
+
+    class Meta:
+        model = QueueItem
+        fields = [
+            'id',
+            'lesson',
+            'exercise',
+            'rank',
+            'started',
+            'completed'
+            ]
+        ordering = ['-rank']
+
 class ExerciseSerializer(ModelSerializer):
     """
 
@@ -147,6 +167,7 @@ class ExerciseSerializer(ModelSerializer):
         read_only=True,
         default=CurrentUserDefault()
     )
+    queueItems = QueueItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Exercise
@@ -163,9 +184,11 @@ class ExerciseSerializer(ModelSerializer):
             'startTime',
             'endTime',
             'notes',
-            'created'
+            'created',
+            'queueItems'
             ]
         ordering = ['-id']
+
 
 class LessonSerializer(TaggitSerializer, ModelSerializer):
     """
@@ -174,6 +197,8 @@ class LessonSerializer(TaggitSerializer, ModelSerializer):
 
     """
     tags = TagListSerializerField()
+    queueItems = SerializerMethodField()
+
     creator = PrimaryKeyRelatedField(
         # set it to read_only as we're handling the writing part ourselves
         read_only=True,
@@ -185,40 +210,18 @@ class LessonSerializer(TaggitSerializer, ModelSerializer):
         fields = [
             'id',
             'name',
+            'created',
             'creator',
             'level',
-            'exercises',
             'isAvailable',
             'isPublic',
             'description',
             'notes',
-            'tags',
-            'created'
+            'queueItems',
+            'tags'
             ]
         ordering = ['-id']
 
-
-class QueueItemSerializer(ModelSerializer):
-    """
-
-    Store and retrieve queue items
-
-    """
-    user = PrimaryKeyRelatedField(
-        # set it to read_only as we're handling the writing part ourselves
-        read_only=True,
-        default=CurrentUserDefault()
-    )
-    rank = IntegerField(read_only=True, min_value=1)
-
-    class Meta:
-        model = QueueItem
-        fields = [
-            'id',
-            'user',
-            'exercise',
-            'rank',
-            'started',
-            'completed'
-            ]
-        ordering = ['-rank']
+    def get_queueItems(self, instance):
+        queueItems = instance.queueItems.all().order_by('rank')
+        return QueueItemSerializer(queueItems, many=True).data

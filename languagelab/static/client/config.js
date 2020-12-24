@@ -21,11 +21,6 @@ const config = {
                 "item": "lesson"
             },
             {
-                "endpoint": "queueItems",
-                "menu": "Queue",
-                "item": "queue item"
-            },
-            {
                 "endpoint": "languages",
                 "menu": "Languages",
                 "item": "language"
@@ -73,7 +68,12 @@ const config = {
     },
     "navUrl": {
         "users": "/admin/"
-    }
+    },
+    "message": {
+        "lessonQueue": "If you add lessons, you can add this exercise to a lesson"
+    },
+    "hideIsAvailablePublic": true,
+    "exerciseNameLimit": 20
 };
 
 export default config;

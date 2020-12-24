@@ -1,6 +1,12 @@
 import commonElements from "./commonElements.js";
+import config from "./config.js";
 import util from "./util.js";
 
+const playActivities = [
+    "play", "playModelFirst", "playModelSecond", "playModel", "playMimic"
+];
+
+const playableActivities = playActivities + ["ready"];
 
 export default class DoExerciseCard extends React.Component {
     constructor(props) {
@@ -10,13 +16,7 @@ export default class DoExerciseCard extends React.Component {
         this.handleGetInput = this.handleGetInput.bind(this);
         this.handleError = this.handleError.bind(this);
         this.mediaRecorder = null;
-        this.playActivities = [
-            "playModelFirst", "playModelSecond", "playModel", "playMimic"
-        ];
         this.player = React.createRef();
-        this.recorderOptions = {
-            "audioBitsPerSecond": 128000, "sampleRate": 48000
-        };
         this.statusColor = {
             "error": "danger",
             "warning": "warning",
@@ -27,17 +27,15 @@ export default class DoExerciseCard extends React.Component {
             "ready": "info",
             "recording": "danger"
         };
-        this.timeFormat = "HH:mm:ss.S";
 
         this.state = {
             "clickedAction": "",
-            "status": "ready",
-            "endSeconds": this.timeAsSeconds(this.props.exercise.endTime),
-            "mimicCount": 0,
+            "mediaStatus": "loading",
+            "mimicCount": {},
             "nowPlaying": this.props.mediaItem.mediaUrl,
             "onlyExercise": true,
             "recordDisabled": true,
-            "startSeconds": this.timeAsSeconds(this.props.exercise.startTime),
+            "status": "ready",
             "statusText": "Ready",
             "userAudioUrl": ""
         };
@@ -61,13 +59,14 @@ export default class DoExerciseCard extends React.Component {
     handleGetInput(stream) {
         window.stream = stream;
         this.mediaRecorder = new window.MediaRecorder(
-            stream, this.recorderOptions
+            stream, config.audio.options
         );
         this.mediaRecorder.ondataavailable = this.onDataAvailable.bind(this);
         this.setState({"recordDisabled": false});
     }
 
     handleGetMediaError(error) {
+        // TODO throw error up to lab.js for alert
         if (error.code === 8) {
             this.setState({
                 "statusText": "Unable to find a recording device!",
@@ -86,22 +85,22 @@ export default class DoExerciseCard extends React.Component {
     }
 
     duration(startString, endString) {
-        const startMoment = new moment(startString, this.timeFormat);
-        const endMoment = new moment(endString, this.timeFormat);
+        const startMoment = new moment(startString, config.timeFormat);
+        const endMoment = new moment(endString, config.timeFormat);
         const durationMoment = moment.duration(endMoment.diff(startMoment));
         return util.formatDuration(durationMoment, 3);
     }
 
-    itemTitle() {
+    title(prop) {
         return React.createElement(
             "h5",
             {"className": "card-title"},
-            this.props.exercise.name
+            prop.name
         );
     }
 
     bySpan() {
-        if (!this.props.users) {
+        if (!this.props.itemUser) {
             return null;
         }
 
@@ -109,7 +108,7 @@ export default class DoExerciseCard extends React.Component {
             "span",
             {"className": "text-dark"},
             " by ",
-            this.props.users[0].username
+            this.props.itemUser.username
         );
     }
 
@@ -117,7 +116,7 @@ export default class DoExerciseCard extends React.Component {
         const timeRange = util.timeRange(
             this.props.exercise.startTime,
             this.props.exercise.endTime,
-            this.timeFormat
+            config.timeFormat
         );
 
         var mediaName = "";
@@ -165,43 +164,52 @@ export default class DoExerciseCard extends React.Component {
     }
 
     loadedMetadata(event) {
-        if (this.state.startSeconds < 0) {
+        if (this.state.status === "playMimic") {
+            this.setState({"mediaStatus": "ready"});
             return;
         }
 
-        if (this.state.nowPlaying === this.props.mediaItem.mediaUrl) {
-            if (this.state.startSeconds > event.target.duration) {
-                const msg = `Your startTime of ${this.props.exercise.startTime}
-                seconds is greater than the total duration
-                (${event.target.duration} seconds) of this media clip.`;
-                this.setState({
-                    "statusText": msg,
-                    "status": "error"
-                });
-                return;
-            }
-            event.target.currentTime = this.state.startSeconds;
-            if (event.target.currentTime !== this.state.startSeconds) {
-                const msg = `Unable to set start time.  You may need to use a
-                different browser or host your media on a server that supports <a
-                target="_blank"
-                href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests"
-                >byte-range requests</a>.`;
-                this.setState({
-                    "statusText": msg,
-                    "status": "error"
-                });
-                return;
-            }
+        const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
+        console.log("loadedMetadata", this.state);
+        console.log("startSeconds = ", startSeconds);
+
+        if (startSeconds < 0) {
+            return;
         }
 
-        if (this.playActivities.includes(this.state.status)) {
-            event.target.play().catch(this.handleError, this.state.status);
+        if (startSeconds > event.target.duration) {
+            const msg = `Your startTime of ${this.props.exercise.startTime}
+            seconds is greater than the total duration
+            (${event.target.duration} seconds) of this media clip.`;
+            this.setState({
+                "statusText": msg,
+                "status": "error"
+            });
+            return;
         }
+        event.target.currentTime = startSeconds;
+        if (event.target.currentTime !== startSeconds) {
+            const msg = `Unable to set start time.  You may need to use a
+            different browser or host your media on a server that supports <a
+            target="_blank"
+            href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests"
+            >byte-range requests</a>.`;
+            this.setState({
+                "statusText": msg,
+                "status": "error"
+            });
+            return;
+        }
+
+        this.setState({"mediaStatus": "ready"});
+        console.log("setting mediaStatus to ready");
     }
 
     afterPlay(player) {
-        console.log("afterPlay");
+        console.log("afterPlay", this.state);
+
+        const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
+
         if (this.state.clickedAction === "mimic"
             && this.state.status === "playModelFirst") {
             this.mediaRecorder.start();
@@ -216,12 +224,12 @@ export default class DoExerciseCard extends React.Component {
             if (this.state.userAudioUrl.length < 11) {
                 this.setState({
                     "status": "warning",
-                    "clickedAction": null,
                     "statusText": "No recorded audio found",
                 });
-                player.currentTime = this.state.startSeconds;
+                player.currentTime = startSeconds;
             } else {
                 this.setState({
+                    "mediaStatus": "loading",
                     "nowPlaying": this.state.userAudioUrl,
                     "status": "playMimic",
                     "statusText": "Now playing recorded audio"
@@ -231,27 +239,34 @@ export default class DoExerciseCard extends React.Component {
         }
 
         if (this.state.status === "playMimic") {
-            this.setState({
+            this.setState(prevState => ({
                 "status": "ready",
                 "statusText": "Ready",
                 "clickedAction": null,
-                "mimicCount": this.state.mimicCount + 1
-            });
+                "mimicCount": {
+                    ...prevState.mimicCount,
+                    [this.props.exercise.id]: this.exerciseCount() + 1
+                }
+            }));
             return;
         }
-        player.currentTime = this.state.startSeconds;
+        player.currentTime = startSeconds;
         this.setState({"status": "ready"});
     }
 
     timeUpdateHandler(event) {
+        console.log("timeUpdateHandler", this.state.status);
         if (this.state.status === "playModel"
             && !this.state.onlyExercise) {
             return;
         }
-        if (!this.playActivities.includes(this.state.status)) {
+
+        if (!playActivities.includes(this.state.status)) {
             return;
         }
-        if (event.target.currentTime < this.state.endSeconds) {
+
+        const endSeconds = this.timeAsSeconds(this.props.exercise.endTime);
+        if (event.target.currentTime < endSeconds) {
             return;
         }
 
@@ -269,7 +284,10 @@ export default class DoExerciseCard extends React.Component {
     }
 
     makePlayer() {
-        const timeUpdateHandler = this.state.startSeconds < this.state.endSeconds
+        const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
+        const endSeconds = this.timeAsSeconds(this.props.exercise.endTime);
+
+        const timeUpdateHandler = startSeconds < endSeconds
             ? this.timeUpdateHandler.bind(this) : null;
 
         return React.createElement(
@@ -311,24 +329,54 @@ export default class DoExerciseCard extends React.Component {
     }
 
     queueNav(direction) {
-        this.props.queueNav[direction](this.props.queueItem.rank);
+        this.props.queueNav[direction](this.props.rank);
     }
 
     navDisabled(direction) {
-        if (!this.props.queueItem) {
+        if (!this.props.rank) {
             return "disabled";
         }
         if (direction === "previous") {
-            return this.props.queueItem.rank <= 1 ? "disabled" : null;
+            return this.props.rank <= 1 ? "disabled" : null;
         }
         if (direction === "next") {
-            return this.props.queueItem.rank >= this.props.maxRank
+            return this.props.rank >= this.props.maxRank
                 ? "disabled" : null;
         }
         return null;
     }
 
+    navButtonElements(direction) {
+        if (!this.props.queueInfo.hasOwnProperty(direction)) {
+            return commonElements.iconSpan(this.props.doButton[direction].icon);
+        }
+
+        const nameText = util.truncateString(
+            this.props.queueInfo[direction].name,
+            config.exerciseNameLimit
+        );
+
+        if (direction === "previous") {
+            return React.createElement(
+                "span",
+                {},
+                commonElements.iconSpan(this.props.doButton[direction].icon),
+                " " + nameText
+            );
+        }
+
+        return React.createElement(
+            "span",
+            {},
+            nameText + " ",
+            commonElements.iconSpan(this.props.doButton[direction].icon)
+        );
+    }
+
     navButton(direction) {
+        if (this.props.selectedType !== "lessons") {
+            return null;
+        }
         const disabled = this.navDisabled(direction);
         return React.createElement(
             "button",
@@ -338,15 +386,23 @@ export default class DoExerciseCard extends React.Component {
                 "className": "btn btn-" + this.props.doButton[direction].color,
                 "disabled": disabled
             },
-            commonElements.iconSpan(this.props.doButton[direction].icon)
+            this.navButtonElements(direction)
         );
+    }
+
+    exerciseCount() {
+        if(this.state.mimicCount.hasOwnProperty(this.props.exercise.id)) {
+            return this.state.mimicCount[this.props.exercise.id];
+        }
+
+        return 0;
     }
 
     mimicCountSpan() {
         return React.createElement(
             "span",
             {"className": "badge badge-light"},
-            this.state.mimicCount
+            this.exerciseCount()
         );
     }
 
@@ -359,15 +415,18 @@ export default class DoExerciseCard extends React.Component {
     }
 
     mimicClick(event) {
+        const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
+
         if (this.state.status === "recording") {
             console.log("Stop recording!");
             this.mediaRecorder.stop();
             this.setState({
+                "mediaStatus": "loading",
                 "status": "playModelSecond",
                 "nowPlaying": this.props.mediaItem.mediaUrl,
                 "statusText": "Now playing " + this.props.mediaItem.name
             });
-            this.player.current.currentTime = this.state.startSeconds;
+            this.player.current.currentTime = startSeconds;
 
             this.player.current.play()
                 .catch(this.handleError, "playModelSecond");
@@ -375,14 +434,16 @@ export default class DoExerciseCard extends React.Component {
             return;
         }
 
-        if (this.state.nowPlaying === this.props.mediaItem.mediaUrl) {
-            this.player.current.currentTime = this.state.startSeconds;
-            this.player.current.play().catch(
-                this.handleError, "mimicButtonClick"
-            );
+        if (!playableActivities.includes(this.state.status)) {
+            return;
         }
+
+        const mediaStatus = this.state.nowPlaying === this.props.mediaItem.mediaUrl ?
+            "ready": "loading";
+
         this.setState({
             "clickedAction": "mimic",
+            "mediaStatus": mediaStatus,
             "status": "playModelFirst",
             "nowPlaying": this.props.mediaItem.mediaUrl,
             "statusText": "Now playing " + this.props.mediaItem.name
@@ -394,7 +455,7 @@ export default class DoExerciseCard extends React.Component {
         if (this.state.clickedAction === "mimic") {
             if (this.state.status === "recording") {
                 colorClass = "danger";
-            } else if (this.playActivities.includes(
+            } else if (playActivities.includes(
                 this.state.status
             )) {
                 colorClass = "success";
@@ -449,6 +510,17 @@ export default class DoExerciseCard extends React.Component {
     }
 
     controls() {
+        console.log("controls()", this.state);
+        if (this.player.current) {
+            console.log("paused?", this.player.current.paused);
+            if (this.player.current.paused
+                && this.state.mediaStatus === "ready"
+                && playActivities.includes(this.state.status)
+            ) {
+                this.player.current.play()
+                    .catch(this.handleError, this.state.status);
+            }
+        }
         return React.createElement(
             "div",
             {
@@ -461,11 +533,24 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    cardHeader() {
+        if (!this.props.lesson) {
+            return null;
+        }
+
+        return React.createElement(
+            "div",
+            {"className": "card-header"},
+            this.title(this.props.lesson),
+            commonElements.lessonSubtitle(this.props.lesson)
+        );
+    }
+
     cardBody() {
         return React.createElement(
             "div",
             {"className": "card-body"},
-            this.itemTitle(),
+            this.title(this.props.exercise),
             this.itemSubtitle(),
             this.descriptionRow(),
             this.playerDiv(),
@@ -475,9 +560,11 @@ export default class DoExerciseCard extends React.Component {
     }
 
     render() {
+        console.log(this.props);
         return React.createElement(
             "div",
             {"className": "card bg-light mb-3"},
+            this.cardHeader(),
             this.cardBody()
         );
     }

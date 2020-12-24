@@ -4,6 +4,7 @@ Views for the Language Lab REST API
 
 """
 from logging import basicConfig, getLogger
+from json import dumps
 
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -140,34 +141,21 @@ class QueueItemViewSet(ModelViewSet):
     queryset = QueueItem.objects.all().order_by('rank')
     serializer_class = QueueItemSerializer
 
-    user = PrimaryKeyRelatedField(
-        # set it to read_only as we're handling the writing part ourselves
-        read_only=True,
-        default=CurrentUserDefault()
-    )
     rank = IntegerField(read_only=True, min_value=1, default=1)
 
-    def get_queryset(self):
-        """
-
-        Retrieve a filtered querySet for the queue items
-
-        """
-        return QueueItem.objects.all().filter(
-            user=self.request.user,
-            rank__isnull=False
-        ).order_by('rank')
-
-    def next_rank(self):
+    def next_rank(self, lesson=None):
         """
 
         If we want to add an item to the end of the queue, what rank would it
         have?
 
         """
+        if (lesson is None):
+            lesson = self.request.data['lessson']
+
         next_rank = 1
-        user_items = self.queryset.filter(user=self.request.user)
-        max_rank = user_items.aggregate(Max('rank'))['rank__max']
+        lesson_items = self.queryset.filter(lesson=lesson)
+        max_rank = lesson_items.aggregate(Max('rank'))['rank__max']
 
         if max_rank:
             next_rank = max_rank + 1
@@ -180,16 +168,18 @@ class QueueItemViewSet(ModelViewSet):
         Override default perform_create with next_rank()
 
         """
-        serializer.save(user=self.request.user, rank=self.next_rank())
+        serializer.save(rank=self.next_rank(self.request.data['lesson']))
 
-    def destroy(self, request):
+    def destroy(self, request, pk=None):
         """
 
         Override default destroy method, renumbering the queue items
 
         """
-        self.perform_destroy(self.get_object())
-        QueueItem.objects.renumber(user=self.request.user)
+        queue_item = self.get_object()
+        lesson_id = queue_item.lesson
+        self.perform_destroy(queue_item)
+        QueueItem.objects.renumber(lesson_id=lesson_id)
         return Response(status=HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['patch'])
@@ -199,9 +189,9 @@ class QueueItemViewSet(ModelViewSet):
         Move the item up in the rank list by calling the .up() method
 
         """
-        QueueItem.objects.up(
-            user_id=self.request.user,
-            item_id=self.request.data['item']
+        QueueItem.objects.move(
+            item_id=self.request.data['item'],
+            direction="up"
             )
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)
@@ -213,9 +203,9 @@ class QueueItemViewSet(ModelViewSet):
         Move the item down in the rank list by calling the .down() method
 
         """
-        QueueItem.objects.down(
-            user_id=self.request.user,
-            item_id=self.request.data['item']
+        QueueItem.objects.move(
+            item_id=self.request.data['item'],
+            direction="down"
             )
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)

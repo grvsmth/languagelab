@@ -15,8 +15,6 @@ export default class ExerciseFormCard extends React.Component {
         this.props.setActivity("read");
     }
 
-
-
     processField(node) {
         if (node.type === "checkbox") {
             return node.checked;
@@ -132,60 +130,24 @@ export default class ExerciseFormCard extends React.Component {
         );
     }
 
-    itemOption(optionKey, optionValue) {
-        return React.createElement(
-            "option",
-            {"value": optionKey},
-            optionValue
-        );
-    }
-
-    itemChange(event) {
-        console.dir(event.target);
-    }
-
-    itemSelect(fieldName, options, inputId) {
-        return React.createElement(
-            "select",
-            {
-                "className": "form-control",
-                "id": inputId,
-                "name": fieldName,
-                "onChange": this.itemChange.bind(this),
-                "defaultValue": this.props.exercise[fieldName]
-            },
-            ...Object.keys(options).map((optionKey) => {
-                return this.itemOption(
-                    optionKey,
-                    options[optionKey]
-                );
-            })
-        );
-    }
-
-    selectDiv(fieldName, optionList) {
-        if (!optionList) {
-            return null;
-        }
-
-        const inputId = [fieldName, this.props.exercise.id].join("_");
-        return React.createElement(
-            "div",
-            {},
-            commonElements.itemLabel(fieldName, inputId),
-            this.itemSelect(fieldName, optionList, inputId)
-        );
-    }
-
     mediaRow() {
         return React.createElement(
             "div",
             {"class-name": "form-row-mt-3"},
-            this.selectDiv("media", util.listToObject(this.props.media))
+            commonElements.selectDiv(
+                "media",
+                util.listToObject(this.props.media),
+                this.props.exercise
+            )
         )
 
     }
 
+    /*
+
+        Not currently implemented
+
+    */
     checkboxRow() {
         return React.createElement(
             "div",

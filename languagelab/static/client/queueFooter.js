@@ -4,6 +4,7 @@ import util from "./util.js";
 
 const timeFormat = "HH:mm:ss.S";
 
+
 export default class QueueFooter extends React.Component {
     constructor(props) {
         super(props);
@@ -19,16 +20,20 @@ export default class QueueFooter extends React.Component {
         );
     }
 
+    addClick(event) {
+        const inputSelector = ["#lesson", this.props.exerciseId].join("_");
+        const lessonId = parseInt(document.querySelector(inputSelector).value);
+
+        this.props.queueClick("add", this.props.exerciseId, lessonId);
+    }
+
     queueClick(event) {
         const idParts = event.currentTarget.id.split("_");
         if (!idParts) {
             return;
         }
-        var id = this.props.exerciseId
-        if (idParts[0] !== "add") {
-            id = this.props.queueItem.id;
-        }
-        this.props.queueClick(idParts[0], id);
+
+        this.props.queueClick(idParts[0], this.props.queueItem.id);
     }
 
     rankButton(buttonContent) {
@@ -73,23 +78,73 @@ export default class QueueFooter extends React.Component {
             "button",
             {
                 "type": "button",
-                "className": "btn btn-success btn-sm",
+                "className": "btn btn-success btn-sm ml-2",
                 "id": "add",
-                "onClick": this.queueClick
+                "onClick": this.addClick.bind(this)
             },
-            "Add to queue"
+            "Add to lesson",
+        );
+    }
+
+    firstLesson() {
+        if (!this.props.exerciseLessons.length) {
+            return null;
+        }
+
+        return this.props.exerciseLessons[0].lesson;
+    }
+
+    lessonSpan() {
+        const inputId = ["lesson", this.props.exerciseId].join("_");
+
+        return React.createElement(
+            "span",
+            {"className": "d-inline-block"},
+            commonElements.itemSelect(
+                "lesson",
+                util.listToObject(this.props.lessons),
+                inputId,
+                this.firstLesson()
+            )
+        );
+    }
+
+    lessonMessage() {
+        return React.createElement(
+            "div",
+            {"className": "card-footer"},
+            config.message.lessonQueue
+        )
+    }
+
+    exerciseLessons() {
+        if (!this.props.exerciseLessons) {
+            return null;
+        }
+
+        return React.createElement(
+            "span",
+            {"className": "mr-2"},
+            `In ${this.props.exerciseLessons.length} lessons`
         );
     }
 
     addFooter() {
+        if (!this.props.lessons) {
+            return this.lessonMessage();
+        }
+
         return React.createElement(
             "div",
             {"className": "card-footer"},
-            this.addButton()
+            this.exerciseLessons(),
+            this.lessonSpan(),
+            this.addButton(),
         );
     }
 
     rankButtonGroup() {
+        console.log(this.props);
         return React.createElement(
             "div",
             {

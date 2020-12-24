@@ -17,7 +17,6 @@ from django.db.models import (
     ForeignKey,
     IntegerField,
     Manager,
-    ManyToManyField,
     Model,
     TextField
     )
@@ -118,11 +117,10 @@ class Lesson (Model):
         verbose_name="creator",
         on_delete=CASCADE
     )
-    level = IntegerField("Level", db_index=True)
-    exercises = ManyToManyField(Exercise, verbose_name="exercises")
+    level = IntegerField("Level", db_index=True, default=0)
     isAvailable = BooleanField("Available", db_index=True)
     isPublic = BooleanField("Public", db_index=True)
-    description = TextField("Instructions")
+    description = TextField("Instructions", blank=True)
     notes = TextField("Notes", null=True, blank=True)
     tags = TaggableManager()
     created = DateTimeField("Created", auto_now_add=True)
@@ -132,83 +130,83 @@ class QueueManager (Manager):
     """
     Manager for queue operations
     """
-    def user_queue(self, user_id):
+    def lesson_queue(self, lesson_id):
         """
 
-        Get the queue filtered for a specific user
+        Get the queue filtered for a specific lesson
 
         """
         return super().get_queryset().filter(
-            user=user_id,
+            lesson=lesson_id,
             rank__isnull=False
         ).order_by('rank')
 
-    def renumber(self, user):
+    def renumber(self, lesson_id):
         """
 
-        Renumber the queue items for a given user
+        Renumber the queue items for a given lesson
 
         """
         i = 1
-        queue = self.user_queue(user)
+        queue = self.lesson_queue(lesson_id)
         for queue_item in queue:
             if queue_item.completed is None:
                 queue_item.rank = i
                 queue_item.save()
                 i += 1
 
-    def up(self, user_id, item_id):
+    @staticmethod
+    def is_unmovable(queue, old_rank, direction):
+        if direction == "up":
+            return old_rank < 2 or old_rank > queue.count()
+
+        return old_rank < 1 or old_rank >= queue.count()
+
+    @staticmethod
+    def new_rank(old_rank, direction):
+        if direction == "up":
+            return old_rank - 1
+
+        return old_rank + 1
+
+    def move(self, item_id, direction):
         """
 
         Move the current item up in the ranking (by lowering its rank number)
 
         """
-        queue = self.user_queue(user_id)
-        item_queryset = queue.filter(id=item_id)
-        old_rank = item_queryset[0].rank
+        LOG.error("move({}, {})".format(item_id, direction))
+        item = super().get_queryset().get(id=item_id)
+        LOG.error("lesson = {}".format(item.lesson.id))
+        queue = self.lesson_queue(item.lesson.id)
+        old_rank = item.rank
+        LOG.error("old_rank = {}".format(old_rank))
 
-        if old_rank < 2 or old_rank > queue.count():
+        if self.is_unmovable(queue, old_rank, direction):
             return queue
 
-        new_rank = old_rank - 1
+        new_rank = self.new_rank(old_rank, direction)
         queue.filter(rank=new_rank).update(rank=old_rank)
-        item_queryset.update(rank=new_rank)
-
-        return queue
-
-    def down(self, user_id, item_id):
-        """
-
-        Move the specified item down in the ranking (by increasing its rank
-        number)
-
-        """
-        queue = self.user_queue(user_id)
-        item_queryset = queue.filter(id=item_id)
-        old_rank = item_queryset[0].rank
-
-        if old_rank < 1 or old_rank >= queue.count():
-            return queue
-
-        new_rank = old_rank + 1
-        queue.filter(rank=new_rank).update(rank=old_rank)
-        item_queryset.update(rank=new_rank)
+        queue.filter(id=item_id).update(rank=new_rank)
 
         return queue
 
 
 class QueueItem (Model):
     """
-    Model for tracking exercises in a user queue
+    Model for tracking exercises in a lesson queue
     """
-    user = ForeignKey(
-        settings.AUTH_USER_MODEL,
-        verbose_name="user",
-        on_delete=CASCADE
+    lesson = ForeignKey(
+        Lesson,
+        verbose_name="lesson",
+        related_name="queueItems",
+        on_delete=CASCADE,
+        blank=True
     )
     exercise = ForeignKey(
         Exercise,
         verbose_name="exercise",
+        related_name="queueItems",
         on_delete=CASCADE
     )
     rank = IntegerField(
