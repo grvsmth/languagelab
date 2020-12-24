@@ -154,11 +154,9 @@ export default class CardList extends React.Component {
         }
 
         if (rank < maxRank) {
-            console.log(`nextRank = ${rank + 1}`);
             const nextQueueItem = lesson.queueItems.find(
                 item => item.rank == rank + 1
             );
-            console.log("nextQueueItem", nextQueueItem);
 
             const nextExercise = util.findItem(
                 this.props.exercises,
@@ -424,7 +422,6 @@ export default class CardList extends React.Component {
     }
 
     render() {
-        console.log(this.props);
         const myType = typeInfo[this.props.selectedType];
         const addable = this.props.activity != "editQueue" && myType.addable;
 
