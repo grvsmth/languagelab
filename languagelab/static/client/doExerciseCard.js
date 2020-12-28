@@ -3,7 +3,7 @@ import config from "./config.js";
 import util from "./util.js";
 
 const playActivities = [
-    "play", "playModelFirst", "playModelSecond", "playModel", "playMimic"
+    "playModelFirst", "playModelSecond", "playModel", "playMimic"
 ];
 
 const playableActivities = playActivities + ["ready"];
@@ -276,12 +276,24 @@ export default class DoExerciseCard extends React.Component {
         this.afterPlay(event.target);
     }
 
-    playHandler(event) {
-        if (this.state.status === "ready") {
+    setPlayingMessage() {
+        if (this.state.nowPlaying === this.props.mediaItem.mediaUrl) {
             this.setState({
                 "status": "playModel",
                 "statusText": "Now playing " + this.props.mediaItem.name
             });
+            return;
+        }
+
+        this.setState({
+            "status": "playMimic",
+            "statusText": "Now playing recorded audio"
+        });
+    }
+
+    playHandler(event) {
+        if (this.state.status === "ready") {
+            this.setPlayingMessage();
         }
     }
 
