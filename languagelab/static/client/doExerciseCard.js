@@ -8,6 +8,8 @@ const playActivities = [
 
 const playableActivities = playActivities + ["ready"];
 
+const activeStatuses = playActivities + ["recording"];
+
 export default class DoExerciseCard extends React.Component {
     constructor(props) {
         super(props);
@@ -333,6 +335,10 @@ export default class DoExerciseCard extends React.Component {
     }
 
     navDisabled(direction) {
+        if (activeStatuses.includes(this.state.status)) {
+            return "disabled";
+        }
+
         if (!this.props.rank) {
             return "disabled";
         }
