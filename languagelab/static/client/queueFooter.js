@@ -36,16 +36,22 @@ export default class QueueFooter extends React.Component {
         this.props.queueClick(idParts[0], this.props.queueItem.id);
     }
 
-    rankButton(buttonContent) {
-        var disabled = false;
+    isRankButtonDisabled(buttonContent) {
         if (buttonContent === "up" && this.props.queueItem.rank <= 1) {
-            disabled = true;
+            return true;
         }
 
         if (buttonContent === "down"
             && this.props.queueItem.rank >= this.props.maxRank) {
-            disabled = true;
+            return true;
         }
+
+        return false;
+    }
+
+    rankButton(buttonContent) {
+        const disabled = this.isRankButtonDisabled(buttonContent);
+
         const iconClass = config.queueButton[buttonContent]["icon"];
         const btnClass = "btn-" + config.queueButton[buttonContent]["color"];
         const buttonId = [buttonContent, this.props.queueItem.id].join("_");
