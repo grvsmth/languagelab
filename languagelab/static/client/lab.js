@@ -349,7 +349,7 @@ export default class Lab extends React.Component {
             return;
         }
         this.setState({
-            "activity": "do",
+            "activity": "loadExercise",
             "selectedItem": this.firstExerciseId(lessonId),
             "selectedLesson": lessonId,
         });
@@ -357,7 +357,7 @@ export default class Lab extends React.Component {
 
     startExercise(exerciseId) {
         this.setState({
-            "activity": "do",
+            "activity": "loadExercise",
             "selectedItem": exerciseId
         });
     }
@@ -443,7 +443,10 @@ export default class Lab extends React.Component {
             (queueItem) => queueItem.rank === rank
         );
 
-        this.setState({"selectedItem": queueItem.exercise});
+        this.setState({
+            "selectedItem": queueItem.exercise,
+            "activity": "loadExercise"
+        });
     }
 
     previous(rank) {

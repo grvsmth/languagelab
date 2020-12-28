@@ -41,6 +41,8 @@ const typeInfo = {
     }
 };
 
+const doActivities = ["do", "loadExercise"];
+
 export default class CardList extends React.Component {
     constructor(props) {
         super(props);
@@ -183,6 +185,7 @@ export default class CardList extends React.Component {
         const maxRank = this.props.maxRank();
 
         const options = {
+            "activity": this.props.activity,
             "currentUser": this.props.currentUser,
             "doButton": this.props.doButton,
             "key": key,
@@ -196,7 +199,8 @@ export default class CardList extends React.Component {
             "queueNav": this.props.queueNav,
             "queueInfo": this.queueInfo(lesson, rank, maxRank),
             "rank": rank,
-            "selectedType": this.props.selectedType
+            "selectedType": this.props.selectedType,
+            "setActivity": this.props.setActivity
         };
 
         return React.createElement(
@@ -249,7 +253,7 @@ export default class CardList extends React.Component {
         const selected = this.props.selectedType === "lessons"
             && this.props.selectedLesson === lesson.id;
 
-        if (this.props.activity === "do" && selected) {
+        if (doActivities.includes(this.props.activity) && selected) {
             const exercise = util.findItem(
                 this.props.exercises, this.props.selectedItem
             );
@@ -321,7 +325,7 @@ export default class CardList extends React.Component {
                 return this.exerciseFormCard(exercise);
             }
 
-            if (this.props.activity === "do") {
+            if (doActivities.includes(this.props.activity)) {
                 return this.doCard(exercise.id, exercise);
             }
         }

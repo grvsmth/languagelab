@@ -165,32 +165,26 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
-    loadedMetadata(event) {
-        if (this.state.status === "playMimic") {
-            this.setState({"mediaStatus": "ready"});
-            return;
-        }
-
+    setStartTime(player) {
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
-        console.log("loadedMetadata", this.state);
         console.log("startSeconds = ", startSeconds);
 
         if (startSeconds < 0) {
             return;
         }
 
-        if (startSeconds > event.target.duration) {
+        if (startSeconds > player.duration) {
             const msg = `Your startTime of ${this.props.exercise.startTime}
             seconds is greater than the total duration
-            (${event.target.duration} seconds) of this media clip.`;
+            (${player.duration} seconds) of this media clip.`;
             this.setState({
                 "statusText": msg,
                 "status": "error"
             });
             return;
         }
-        event.target.currentTime = startSeconds;
-        if (event.target.currentTime !== startSeconds) {
+        player.currentTime = startSeconds;
+        if (player.currentTime !== startSeconds) {
             const msg = `Unable to set start time.  You may need to use a
             different browser or host your media on a server that supports <a
             target="_blank"
@@ -200,10 +194,22 @@ export default class DoExerciseCard extends React.Component {
                 "statusText": msg,
                 "status": "error"
             });
+        }
+    }
+
+    loadedMetadata(event) {
+        if (this.state.status === "playMimic") {
+            this.setState({"mediaStatus": "ready"});
             return;
         }
 
+        console.log("loadedMetadata", this.state);
+        this.setStartTime(event.target);
+
         this.setState({"mediaStatus": "ready"});
+        this.props.setActivity(
+            "do", this.props.exercise.id, this.props.lesson.id
+        );
         console.log("setting mediaStatus to ready");
     }
 
@@ -304,12 +310,15 @@ export default class DoExerciseCard extends React.Component {
         const timeUpdateHandler = startSeconds < endSeconds
             ? this.timeUpdateHandler.bind(this) : null;
 
+        const nowPlaying = this.props.activity === "loadExercise"
+            ? this.props.mediaItem.mediaUrl : this.state.nowPlaying;
+
         return React.createElement(
             "audio",
             {
                 "id": "audio1",
                 "ref": this.player,
-                "src": this.state.nowPlaying,
+                "src": nowPlaying,
                 "controls": true,
                 "onEnded": this.afterPlay,
                 "onLoadedMetadata": this.loadedMetadata.bind(this),
@@ -530,6 +539,13 @@ export default class DoExerciseCard extends React.Component {
     controls() {
         console.log("controls()", this.state);
         if (this.player.current) {
+            if (this.props.activity === "loadExercise") {
+                // this.setStartTime(this.player.current);
+                this.props.setActivity(
+                    "do", this.props.exercise.id, this.props.lesson.id
+                );
+            }
+
             console.log("paused?", this.player.current.paused);
             if (this.player.current.paused
                 && this.state.mediaStatus === "ready"
@@ -538,7 +554,9 @@ export default class DoExerciseCard extends React.Component {
                 this.player.current.play()
                     .catch(this.handleError, this.state.status);
             }
+
         }
+
         return React.createElement(
             "div",
             {
