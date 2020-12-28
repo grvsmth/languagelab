@@ -131,26 +131,6 @@ export default class Lab extends React.Component {
             "message": err
         };
 
-        if (err.hasOwnProperty("error")) {
-            if (err.error.message) {
-                console.log("err.error.message", err.error.message);
-                if (err.error.message === this.apiClient.expiredError) {
-                    this.logout();
-                    return;
-                }
-                alert.message = err.error.message;
-                this.updateStateItem(alert, "alerts");
-            } else if (err.error.statusText) {
-                console.log("err.error.statusText", err.error.statusText);
-                alert.message = err.error.statusText;
-                this.updateStateItem(alert, "alerts");
-                return;
-            }
-            console.log("err.error", err.error);
-            alert.message = err.error;
-            return;
-        }
-
         if (err.hasOwnProperty("statusText")) {
             console.log("err.statusText", err.statusText);
             alert.message = err.statusText;
