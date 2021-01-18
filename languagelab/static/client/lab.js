@@ -47,20 +47,25 @@ export default class Lab extends React.Component {
         this.state = {
             "activity": "read",
             "alerts": [],
+            "clickedAction": "",
             "exercises": [],
             "languages": [],
             "lastUpdated": "",
             "lessons": [],
             "loading": {},
-            "loggedIn": false,
+            "onlyExercise": true,
             "media": [],
-            "message": "",
+            "mimicCount": {},
+            "nowPlaying": "",
             "selectedItem": null,
             "selectedLesson": null,
             "selectedType": "lessons",
+            "status": "ready",
+            "statusText": "Ready",
             "users": [],
             "token": "",
-            "tokenExpired": false
+            "tokenExpired": false,
+            "userAudioUrl": ""
         };
     }
 
@@ -73,6 +78,30 @@ export default class Lab extends React.Component {
         if (!this.state.lastUpdated && this.state.token) {
             this.fetchAll();
         }
+    }
+
+    setStatus(input) {
+        this.setState({
+            "status": input.status,
+            "statusText": input.statusText
+        })
+    }
+
+    setUserAudioUrl(url) {
+        this.setState({"userAudioUrl": url});
+    }
+
+
+    afterMimic(prevMimicCount) {
+        this.setState(prevState => ({
+            "status": "ready",
+            "statusText": "Ready",
+            "clickedAction": null,
+            "mimicCount": {
+                ...prevState.mimicCount,
+                [prevState.currentItem.id]: prevMimicCount + 1
+            }
+        }));
     }
 
     /*
@@ -469,13 +498,22 @@ export default class Lab extends React.Component {
         this.selectByRank(rank + 1);
     }
 
+    playModel(increment) {
+        this.setState({
+            "clickedAction": "mimic",
+            "nowPlaying": this.state.mediaItem.mediaUrl,
+            "status": "playModel" + increment,
+            "statusText": "Now playing " + this.state.mediaItem.name
+        });
+
+    }
+
     body() {
         if (!this.state.currentUser) {
             return React.createElement(
                 LoginForm,
                 {
-                    "loginClick": this.loginClick.bind(this),
-                    "message": this.state.message
+                    "loginClick": this.loginClick.bind(this)
                 },
                 null
             );
@@ -483,30 +521,25 @@ export default class Lab extends React.Component {
         return React.createElement(
             CardList,
             {
-                "activity": this.state.activity,
+                "afterMimic": this.afterMimic.bind(this),
                 "checkClick": this.checkClick,
-                "currentUser": this.state.currentUser,
                 "deleteClick": this.deleteClick.bind(this),
+                "doState": this.state.do,
                 "doButton": config.doButton,
                 "editItem": this.editItem.bind(this),
-                "exercises": this.state.exercises,
                 "exitDo": this.exitDo.bind(this),
-                "languages": this.state.languages,
-                "lessons": this.state.lessons,
-                "loading": this.state.loading,
                 "maxRank": this.maxRank.bind(this),
-                "media": this.state.media,
+                "playModel": this.playModel.bind(this),
                 "queueClick": this.queueClick.bind(this),
                 "queueNav": this.queueNav,
                 "saveItem": this.saveItem.bind(this),
+                "state": this.state,
                 "setActivity": this.setActivity.bind(this),
                 "toggleLesson": this.toggleLesson.bind(this),
                 "startExercise": this.startExercise.bind(this),
                 "selectItem": this.selectItem.bind(this),
-                "selectedItem": this.state.selectedItem,
-                "selectedLesson": this.state.selectedLesson,
-                "selectedType": this.state.selectedType,
-                "users": this.state.users
+                "setStatus": this.setStatus.bind(this),
+                "setUserAudioUrl": this.setUserAudioUrl.bind(this)
             },
             null
         );
