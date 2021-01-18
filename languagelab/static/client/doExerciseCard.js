@@ -186,6 +186,8 @@ export default class DoExerciseCard extends React.Component {
     }
 
     loadedMetadata(event) {
+        console.log("loadedMetadata()", event);
+
         if (this.props.state.status === "playMimic") {
             return;
         }
@@ -193,9 +195,14 @@ export default class DoExerciseCard extends React.Component {
         console.log("loadedMetadata", this.props.state);
         this.setStartTime(event.target);
 
+
         this.props.setActivity(
             "do", this.props.exercise.id, this.props.lesson.id
         );
+
+        if (playActivities.includes(this.props.state.status)) {
+            this.player.current.play();
+        }
     }
 
     afterPlay(player) {
@@ -284,7 +291,7 @@ export default class DoExerciseCard extends React.Component {
         const timeUpdateHandler = startSeconds < endSeconds
             ? this.timeUpdateHandler.bind(this) : null;
 
-        const nowPlaying = this.props.activity === "loadExercise"
+        const nowPlaying = this.props.state.activity === "loadExercise"
             ? this.props.mediaItem.mediaUrl : this.props.state.nowPlaying;
 
         return React.createElement(
@@ -375,7 +382,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     navButton(direction) {
-        if (this.props.selectedType !== "lessons") {
+        if (this.props.state.selectedType !== "lessons") {
             return null;
         }
         const disabled = this.navDisabled(direction);
@@ -416,6 +423,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     mimicClick(event) {
+        console.log("mimicClick()", this.props.state);
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
 
         if (this.props.state.status === "recording") {
@@ -500,8 +508,6 @@ export default class DoExerciseCard extends React.Component {
     }
 
     controls() {
-
-        console.log("controls()", this.props.state);
         if (this.player.current) {
             if (this.props.state.activity === "loadExercise") {
                 // this.setStartTime(this.player.current);

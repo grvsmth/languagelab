@@ -499,11 +499,18 @@ export default class Lab extends React.Component {
     }
 
     playModel(increment) {
+        const exercise = util.findItem(
+            this.state.exercises,
+            this.state.selectedItem
+        );
+
+        const mediaItem = util.findItem(this.state.media, exercise.media);
         this.setState({
             "clickedAction": "mimic",
-            "nowPlaying": this.state.mediaItem.mediaUrl,
+            "mediaStatus": "loading",
+            "nowPlaying": mediaItem.mediaUrl,
             "status": "playModel" + increment,
-            "statusText": "Now playing " + this.state.mediaItem.name
+            "statusText": "Now playing " + mediaItem.name
         });
 
     }
