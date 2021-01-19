@@ -186,6 +186,7 @@ export default class CardList extends React.Component {
 
         const options = {
             "activity": this.props.state.activity,
+            "afterMimic": this.props.afterMimic,
             "currentUser": this.props.currentUser,
             "doButton": this.props.doButton,
             "key": key,
@@ -202,6 +203,7 @@ export default class CardList extends React.Component {
             "rank": rank,
             "setActivity": this.props.setActivity,
             "setStatus": this.props.setStatus,
+            "setUserAudioUrl": this.props.setUserAudioUrl,
             "state": this.props.state
         };
 

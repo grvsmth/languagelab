@@ -228,6 +228,7 @@ export default class DoExerciseCard extends React.Component {
                 });
                 player.currentTime = startSeconds;
             } else {
+                // TODO switch to recorded audio
                 this.props.setStatus({
                     "status": "playMimic",
                     "statusText": "Now playing recorded audio"
@@ -445,7 +446,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     mimicButton() {
-        const recordDisabled = activeStatuses.includes(
+        const mimicDisabled = playActivities.includes(
             this.props.state.status
         );
 
@@ -465,7 +466,7 @@ export default class DoExerciseCard extends React.Component {
             {
                 "type": "button",
                 "className": className,
-                "disabled": recordDisabled,
+                "disabled": mimicDisabled,
                 "onClick": this.mimicClick.bind(this)
             },
             "Mimic ",
