@@ -146,6 +146,16 @@ export default class Lab extends React.Component {
         }, this.handleFetchError);
     }
 
+    addAlert(title, message, status="danger") {
+        const alert = {
+            "id": util.maxId(this.state.alerts) + 1,
+            "title": "Fetch error",
+            "status": "danger",
+            "message": err
+        };
+        this.updateStateItem(alert, "alerts");
+    }
+
     /*
 
         Handle fetch errors.  If the token is expired, then make the user log
@@ -153,27 +163,20 @@ export default class Lab extends React.Component {
 
     */
     handleFetchError(err) {
-        const alert = {
-            "id": util.maxId(this.state.alerts) + 1,
-            "title": "Fetch error",
-            "status": "danger",
-            "message": err
-        };
-
         if (err.hasOwnProperty("statusText")) {
             console.log("err.statusText", err.statusText);
-            alert.message = err.statusText;
-            this.updateStateItem(alert, "alerts");
+            this.addAlert("Fetch error", statusText);
             return;
         }
 
         if (err.hasOwnProperty("message")) {
             console.log("err.message", err.message);
-            alert.message = err.message;
-        } else {
-            console.log("err", err);
+            this.addAlert("Fetch error", err.message);
+            return;
         }
-        this.updateStateItem(alert, "alerts");
+
+        console.log("err", err);
+        this.addAlert("Fetch error", err);
     }
 
 
@@ -232,13 +235,7 @@ export default class Lab extends React.Component {
     */
     handleTokenError(err) {
         console.error(err);
-        const alert = {
-            "id": util.maxId(this.state.alerts) + 1,
-            "title": "Fetch error",
-            "status": "danger",
-            "message": err
-        };
-        this.updateStateItem(alert, "alerts");
+        this.addAlert("Token error", err);
     }
 
     /*
@@ -357,9 +354,6 @@ export default class Lab extends React.Component {
 
     firstExerciseId(lessonId) {
         const lesson = util.findItem(this.state.lessons, lessonId);
-        if (!lesson) {
-            return null;
-        }
 
         if (!lesson.queueItems) {
             return null;
@@ -385,8 +379,15 @@ export default class Lab extends React.Component {
     }
 
     startExercise(exerciseId) {
+        const mediaItem = util.findItem(this.state.media, exercise.media);
+        if (!mediaItem.hasOwnProperty("mediaUrl")) {
+            this.addAlert("Media error", "Unable to find media for exercise!");
+            return;
+        }
+
         this.setState({
             "activity": "loadExercise",
+            "nowPlaying": mediaItem.mediaUrl,
             "selectedItem": exerciseId
         });
     }
@@ -505,6 +506,11 @@ export default class Lab extends React.Component {
         );
 
         const mediaItem = util.findItem(this.state.media, exercise.media);
+        if (!mediaItem.hasOwnProperty("mediaUrl")) {
+            this.addAlert("Media error", "Unable to find media for exercise!");
+            return;
+        }
+
         this.setState({
             "clickedAction": "mimic",
             "mediaStatus": "loading",
