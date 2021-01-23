@@ -375,6 +375,11 @@ export default class Lab extends React.Component {
         this.startExercise(this.firstExerciseId(lessonId), lessonId);
     }
 
+    toggleOnlyExercise() {
+        const prevOnlyExercise = this.state.onlyExercise;
+        this.setState(prevState => ({"onlyExercise": !prevState.onlyExercise}));
+    }
+
     onMediaLoaded() {
         this.setState({
             "mediaStatus": "ready"
@@ -541,6 +546,10 @@ export default class Lab extends React.Component {
             targetState.nowPlaying = mediaItem.mediaUrl;
         }
 
+        if (increment === "Only") {
+            targetState.clickedAction = "play"
+        }
+
         this.setState(targetState);
 
     }
@@ -573,6 +582,7 @@ export default class Lab extends React.Component {
                 "saveItem": this.saveItem.bind(this),
                 "state": this.state,
                 "setActivity": this.setActivity.bind(this),
+                "toggleOnlyExercise": this.toggleOnlyExercise.bind(this),
                 "toggleLesson": this.toggleLesson.bind(this),
                 "startExercise": this.startExercise.bind(this),
                 "selectItem": this.selectItem.bind(this),

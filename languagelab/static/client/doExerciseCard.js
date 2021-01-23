@@ -3,7 +3,7 @@ import config from "./config.js";
 import util from "./util.js";
 
 const playActivities = [
-    "playModelFirst", "playModelSecond", "playModel", "playMimic"
+    "playModelFirst", "playModelSecond", "playModelOnly", "playMimic"
 ];
 
 const playableActivities = playActivities + ["ready"];
@@ -23,7 +23,7 @@ export default class DoExerciseCard extends React.Component {
             "error": "danger",
             "warning": "warning",
             "playMimic": "success",
-            "playModel": "info",
+            "playModelOnly": "info",
             "playModelFirst": "success",
             "playModelSecond": "success",
             "ready": "info",
@@ -187,20 +187,23 @@ export default class DoExerciseCard extends React.Component {
     }
 
     loadedMetadata(event) {
-        console.log("loadedMetadata()", event);
 
         if (this.props.state.status === "playMimic") {
-            this.player.current.play();
+            console.log("loadedMetadata()", "playMimic");
+            this.player.current.play()
+                .catch(this.handleError, this.props.state.status);
             return;
         }
 
-        console.log("loadedMetadata", this.props.state);
         this.setStartTime(event.target);
 
         this.props.onMediaLoaded();
 
         if (playActivities.includes(this.props.state.status)) {
-            this.player.current.play();
+            console.log("loadedMetadata()", this.props.state.status);
+
+            this.player.current.play()
+                .catch(this.handleError, this.props.state.status);
             return;
         }
 
@@ -238,12 +241,14 @@ export default class DoExerciseCard extends React.Component {
             this.props.afterMimic(this.exerciseCount());
             return;
         }
+
+        this.props.setStatus({"status": "ready", "statusText": ""});
         player.currentTime = startSeconds;
     }
 
     timeUpdateHandler(event) {
         console.log("timeUpdateHandler", this.props.state.status);
-        if (this.props.state.status === "playModel"
+        if (this.props.state.status === "playModelOnly"
             && !this.props.state.onlyExercise) {
             return;
         }
@@ -263,17 +268,11 @@ export default class DoExerciseCard extends React.Component {
 
     setPlayingMessage() {
         if (this.props.state.nowPlaying === this.props.mediaItem.mediaUrl) {
-            this.props.setStatus({
-                "status": "playModel",
-                "statusText": "Now playing " + this.props.mediaItem.name
-            });
+            this.props.playModel("Only");
             return;
         }
 
-        this.props.setStatus({
-            "status": "playMimic",
-            "statusText": "Now playing recorded audio"
-        });
+        this.props.playMimic();
     }
 
     playHandler(event) {
@@ -509,6 +508,7 @@ export default class DoExerciseCard extends React.Component {
                 && this.props.state.mediaStatus === "ready"
                 && playActivities.includes(this.props.state.status)
             ) {
+                console.log("controls()", this.props.state.status);
                 this.player.current.play()
                     .catch(this.handleError, this.props.state.status);
             }

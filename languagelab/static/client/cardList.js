@@ -205,7 +205,8 @@ export default class CardList extends React.Component {
             "setActivity": this.props.setActivity,
             "setStatus": this.props.setStatus,
             "setUserAudioUrl": this.props.setUserAudioUrl,
-            "state": this.props.state
+            "state": this.props.state,
+            "toggleOnlyExercise": this.props.toggleOnlyExercise
         };
 
         return React.createElement(
