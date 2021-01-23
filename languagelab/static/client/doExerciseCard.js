@@ -40,6 +40,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     onDataAvailable(event) {
+        console.log("onDataAvailable", event);
         const userAudioUrl = window.URL.createObjectURL(
             event.data,
             {"type": "audio/ogg"}
@@ -189,20 +190,20 @@ export default class DoExerciseCard extends React.Component {
         console.log("loadedMetadata()", event);
 
         if (this.props.state.status === "playMimic") {
+            this.player.current.play();
             return;
         }
 
         console.log("loadedMetadata", this.props.state);
         this.setStartTime(event.target);
 
-
-        this.props.setActivity(
-            "do", this.props.exercise.id, this.props.lesson.id
-        );
+        this.props.onMediaLoaded();
 
         if (playActivities.includes(this.props.state.status)) {
             this.player.current.play();
+            return;
         }
+
     }
 
     afterPlay(player) {
@@ -228,11 +229,7 @@ export default class DoExerciseCard extends React.Component {
                 });
                 player.currentTime = startSeconds;
             } else {
-                // TODO switch to recorded audio
-                this.props.setStatus({
-                    "status": "playMimic",
-                    "statusText": "Now playing recorded audio"
-                });
+                this.props.playMimic();
             }
             return;
         }
@@ -292,15 +289,12 @@ export default class DoExerciseCard extends React.Component {
         const timeUpdateHandler = startSeconds < endSeconds
             ? this.timeUpdateHandler.bind(this) : null;
 
-        const nowPlaying = this.props.state.activity === "loadExercise"
-            ? this.props.mediaItem.mediaUrl : this.props.state.nowPlaying;
-
         return React.createElement(
             "audio",
             {
                 "id": "audio1",
                 "ref": this.player,
-                "src": nowPlaying,
+                "src": this.props.state.nowPlaying,
                 "controls": true,
                 "onEnded": this.afterPlay,
                 "onLoadedMetadata": this.loadedMetadata.bind(this),
@@ -510,13 +504,6 @@ export default class DoExerciseCard extends React.Component {
 
     controls() {
         if (this.player.current) {
-            if (this.props.state.activity === "loadExercise") {
-                // this.setStartTime(this.player.current);
-                this.props.setActivity(
-                    "do", this.props.exercise.id, this.props.lesson.id
-                );
-            }
-
             console.log("paused?", this.player.current.paused);
             if (this.player.current.paused
                 && this.props.state.mediaStatus === "ready"

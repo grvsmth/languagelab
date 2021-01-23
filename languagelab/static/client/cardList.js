@@ -185,7 +185,6 @@ export default class CardList extends React.Component {
         const maxRank = this.props.maxRank();
 
         const options = {
-            "activity": this.props.state.activity,
             "afterMimic": this.props.afterMimic,
             "currentUser": this.props.currentUser,
             "doButton": this.props.doButton,
@@ -197,8 +196,10 @@ export default class CardList extends React.Component {
             "lesson": lesson,
             "maxRank": maxRank,
             "mediaItem": mediaItem,
+            "onMediaLoaded": this.props.onMediaLoaded,
             "queueNav": this.props.queueNav,
             "queueInfo": this.queueInfo(lesson, rank, maxRank),
+            "playMimic": this.props.playMimic,
             "playModel": this.props.playModel,
             "rank": rank,
             "setActivity": this.props.setActivity,
@@ -261,9 +262,6 @@ export default class CardList extends React.Component {
             const exercise = util.findItem(
                 this.props.state.exercises, this.props.state.selectedItem
             );
-
-            const mediaItem = util.findItem(this.props.state.media, exercise.media);
-
             return this.doCard(lesson.id, exercise);
         }
 

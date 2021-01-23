@@ -93,13 +93,14 @@ export default class Lab extends React.Component {
 
 
     afterMimic(prevMimicCount) {
+        console.log("AfterMimic", prevMimicCount);
         this.setState(prevState => ({
             "status": "ready",
             "statusText": "Ready",
             "clickedAction": null,
             "mimicCount": {
                 ...prevState.mimicCount,
-                [prevState.currentItem]: prevMimicCount + 1
+                [prevState.selectedItem]: prevMimicCount + 1
             }
         }));
     }
@@ -371,25 +372,35 @@ export default class Lab extends React.Component {
             });
             return;
         }
+        this.startExercise(this.firstExerciseId(lessonId), lessonId);
+    }
+
+    onMediaLoaded() {
         this.setState({
-            "activity": "loadExercise",
-            "selectedItem": this.firstExerciseId(lessonId),
-            "selectedLesson": lessonId,
+            "mediaStatus": "ready"
         });
     }
 
-    startExercise(exerciseId) {
+    startExercise(exerciseId, lessonId=null) {
+        const exercise = util.findItem(this.state.exercises, exerciseId);
         const mediaItem = util.findItem(this.state.media, exercise.media);
+
         if (!mediaItem.hasOwnProperty("mediaUrl")) {
             this.addAlert("Media error", "Unable to find media for exercise!");
             return;
         }
 
-        this.setState({
-            "activity": "loadExercise",
+        const targetState = {
+            "activity": "do",
+            "mediaStatus": "loading",
             "nowPlaying": mediaItem.mediaUrl,
             "selectedItem": exerciseId
-        });
+        };
+
+        if (lessonId) {
+            targetState.selectedLesson = lessonId;
+        }
+        this.setState(targetState);
     }
 
     setActivity(activity, itemId=null, lessonId=null) {
@@ -499,6 +510,14 @@ export default class Lab extends React.Component {
         this.selectByRank(rank + 1);
     }
 
+    playMimic() {
+        this.setState({
+            "nowPlaying": this.state.userAudioUrl,
+            "status": "playMimic",
+            "statusText": "Now playing recorded audio"
+        });
+    }
+
     playModel(increment) {
         const exercise = util.findItem(
             this.state.exercises,
@@ -511,13 +530,18 @@ export default class Lab extends React.Component {
             return;
         }
 
-        this.setState({
+        const targetState = {
             "clickedAction": "mimic",
-            "mediaStatus": "loading",
-            "nowPlaying": mediaItem.mediaUrl,
             "status": "playModel" + increment,
             "statusText": "Now playing " + mediaItem.name
-        });
+        };
+
+        if (this.state.nowPlaying !== mediaItem.mediaUrl) {
+            targetState.mediaStatus = "loading";
+            targetState.nowPlaying = mediaItem.mediaUrl;
+        }
+
+        this.setState(targetState);
 
     }
 
@@ -537,11 +561,12 @@ export default class Lab extends React.Component {
                 "afterMimic": this.afterMimic.bind(this),
                 "checkClick": this.checkClick,
                 "deleteClick": this.deleteClick.bind(this),
-                "doState": this.state.do,
                 "doButton": config.doButton,
                 "editItem": this.editItem.bind(this),
                 "exitDo": this.exitDo.bind(this),
                 "maxRank": this.maxRank.bind(this),
+                "onMediaLoaded": this.onMediaLoaded.bind(this),
+                "playMimic": this.playMimic.bind(this),
                 "playModel": this.playModel.bind(this),
                 "queueClick": this.queueClick.bind(this),
                 "queueNav": this.queueNav,
