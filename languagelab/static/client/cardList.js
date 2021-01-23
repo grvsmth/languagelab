@@ -334,6 +334,7 @@ export default class CardList extends React.Component {
         }
 
         var options = {
+            "activity": this.props.state.activity,
             "checkClick": this.props.checkClick,
             "deleteClick": this.props.deleteClick,
             "editItem": this.props.editItem,
@@ -429,6 +430,7 @@ export default class CardList extends React.Component {
     }
 
     render() {
+        console.log(this.props);
         const myType = typeInfo[this.props.state.selectedType];
         const addable = this.props.state.activity != "editQueue" && myType.addable;
 

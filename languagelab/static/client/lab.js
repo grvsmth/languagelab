@@ -93,7 +93,6 @@ export default class Lab extends React.Component {
 
 
     afterMimic(prevMimicCount) {
-        console.log("AfterMimic", prevMimicCount);
         this.setState(prevState => ({
             "status": "ready",
             "statusText": "Ready",
@@ -332,7 +331,7 @@ export default class Lab extends React.Component {
     */
     editItem(itemId) {
         const targetState = {
-            "activity": "edit",
+            "activity": "edit"
         };
 
         if (this.state.selectedType === "lessons") {

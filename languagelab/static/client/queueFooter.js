@@ -150,7 +150,6 @@ export default class QueueFooter extends React.Component {
     }
 
     rankButtonGroup() {
-        console.log(this.props);
         return React.createElement(
             "div",
             {

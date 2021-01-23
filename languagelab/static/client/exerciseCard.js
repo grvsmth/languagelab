@@ -41,6 +41,7 @@ export default class ExerciseCard extends React.Component {
         return React.createElement(
             ExerciseCardBody,
             {
+                "activity": this.props.activity,
                 "checkClick": this.props.checkClick,
                 "deleteClick": this.props.deleteClick,
                 "editItem": this.props.editItem,

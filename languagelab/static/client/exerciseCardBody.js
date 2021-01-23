@@ -118,6 +118,11 @@ export default class ExerciseCardBody extends React.Component {
             || this.props.selectedType === "queueItems") {
             return null;
         }
+
+        if (this.props.activity === "editQueue") {
+            return null;
+        }
+
         return React.createElement(
             "div",
             {},
@@ -150,6 +155,9 @@ export default class ExerciseCardBody extends React.Component {
     }
 
     startButton() {
+        if (this.props.activity === "editQueue") {
+            return null;
+        }
         return React.createElement(
             "button",
             {
