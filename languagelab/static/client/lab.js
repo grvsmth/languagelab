@@ -151,7 +151,7 @@ export default class Lab extends React.Component {
             "id": util.maxId(this.state.alerts) + 1,
             "title": "Fetch error",
             "status": "danger",
-            "message": err
+            "message": message
         };
         this.updateStateItem(alert, "alerts");
     }
