@@ -18,6 +18,7 @@ export default class DoExerciseCard extends React.Component {
         this.handleGetInput = this.handleGetInput.bind(this);
         this.handleError = this.handleError.bind(this);
         this.mediaRecorder = null;
+        this.mimicButton = React.createRef();
         this.player = React.createRef();
         this.statusColor = {
             "error": "danger",
@@ -39,8 +40,11 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    componentDidUpdate() {
+        this.mimicButton.current.focus();
+    }
+
     onDataAvailable(event) {
-        console.log("onDataAvailable", event);
         const userAudioUrl = window.URL.createObjectURL(
             event.data,
             {"type": "audio/ogg"}
@@ -57,7 +61,6 @@ export default class DoExerciseCard extends React.Component {
     }
 
     handleGetMediaError(error) {
-        // TODO throw error up to lab.js for alert
         if (error.code === 8) {
             this.props.setStatus({
                 "statusText": "Unable to find a recording device!",
@@ -156,7 +159,6 @@ export default class DoExerciseCard extends React.Component {
 
     setStartTime() {
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
-        console.log("startSeconds = ", startSeconds);
 
         if (startSeconds < 0) {
             return;
@@ -187,31 +189,19 @@ export default class DoExerciseCard extends React.Component {
     }
 
     loadedMetadata(event) {
-
-        if (this.props.state.status === "playMimic") {
-            console.log("loadedMetadata()", "playMimic");
-            this.player.current.play()
-                .catch(this.handleError, this.props.state.status);
-            return;
+        if (this.props.state.status !== "playMimic") {
+            this.setStartTime();
+            this.props.onMediaLoaded();
         }
 
-        this.setStartTime();
-
-        this.props.onMediaLoaded();
-
         if (playActivities.includes(this.props.state.status)) {
-            console.log("loadedMetadata()", this.props.state.status);
-
             this.player.current.play()
                 .catch(this.handleError, this.props.state.status);
-            return;
         }
 
     }
 
     afterPlay(player) {
-        console.log("afterPlay", this.props.state);
-
         if (this.props.state.clickedAction === "mimic"
             && this.props.state.status === "playModelFirst") {
             this.mediaRecorder.start();
@@ -244,7 +234,6 @@ export default class DoExerciseCard extends React.Component {
     }
 
     timeUpdateHandler(event) {
-        console.log("timeUpdateHandler", this.props.state.status);
         if (this.props.state.status === "playModelOnly"
             && !this.props.state.onlyExercise) {
             return;
@@ -413,17 +402,11 @@ export default class DoExerciseCard extends React.Component {
     }
 
     mimicClick(event) {
-        console.log("mimicClick()", this.props.state);
-
         if (this.props.state.status === "recording") {
-            console.log("Stop recording!");
             this.mediaRecorder.stop();
+
             this.props.playModel("Second");
             this.setStartTime();
-
-            this.player.current.play()
-                .catch(this.handleError, "playModelSecond");
-
             return;
         }
 
@@ -435,7 +418,7 @@ export default class DoExerciseCard extends React.Component {
         this.props.playModel("First");
     }
 
-    mimicButton() {
+    makeMimicButton() {
         const mimicDisabled = playActivities.includes(
             this.props.state.status
         );
@@ -457,7 +440,8 @@ export default class DoExerciseCard extends React.Component {
                 "type": "button",
                 "className": className,
                 "disabled": mimicDisabled,
-                "onClick": this.mimicClick.bind(this)
+                "onClick": this.mimicClick.bind(this),
+                "ref": this.mimicButton
             },
             "Mimic ",
             this.mimicCountSpan()
@@ -500,16 +484,13 @@ export default class DoExerciseCard extends React.Component {
 
     controls() {
         if (this.player.current) {
-            console.log("paused?", this.player.current.paused);
             if (this.player.current.paused
                 && this.props.state.mediaStatus === "ready"
                 && playActivities.includes(this.props.state.status)
             ) {
-                console.log("controls()", this.props.state.status);
                 this.player.current.play()
                     .catch(this.handleError, this.props.state.status);
             }
-
         }
 
         return React.createElement(
@@ -518,7 +499,7 @@ export default class DoExerciseCard extends React.Component {
                 "className": "btn-group btn-group"
             },
             this.navButton("previous"),
-            this.mimicButton(),
+            this.makeMimicButton(),
             this.exitButton(),
             this.navButton("next")
         );
