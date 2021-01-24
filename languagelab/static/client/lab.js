@@ -488,9 +488,21 @@ export default class Lab extends React.Component {
             (queueItem) => queueItem.rank === rank
         );
 
+        const exercise = util.findItem(
+            this.state.exercises,
+            queueItem.exercise
+        );
+
+        const mediaItem = util.findItem(this.state.media, exercise.media);
+        if (!mediaItem.hasOwnProperty("mediaUrl")) {
+            this.addAlert("Media error", "Unable to find media for exercise!");
+            return;
+        }
+
         this.setState({
-            "selectedItem": queueItem.exercise,
-            "activity": "loadExercise"
+            "activity": "loadExercise",
+            "nowPlaying": mediaItem.mediaUrl,
+            "selectedItem": queueItem.exercise
         });
     }
 

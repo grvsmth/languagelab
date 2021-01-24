@@ -154,7 +154,7 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
-    setStartTime(player) {
+    setStartTime() {
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
         console.log("startSeconds = ", startSeconds);
 
@@ -162,18 +162,18 @@ export default class DoExerciseCard extends React.Component {
             return;
         }
 
-        if (startSeconds > player.duration) {
+        if (startSeconds > this.player.current.duration) {
             const msg = `Your startTime of ${this.props.exercise.startTime}
             seconds is greater than the total duration
-            (${player.duration} seconds) of this media clip.`;
+            (${this.player.current.duration} seconds) of this media clip.`;
             this.props.setStatus({
                 "statusText": msg,
                 "status": "error"
             });
             return;
         }
-        player.currentTime = startSeconds;
-        if (player.currentTime !== startSeconds) {
+        this.player.current.currentTime = startSeconds;
+        if (this.player.current.currentTime !== startSeconds) {
             const msg = `Unable to set start time.  You may need to use a
             different browser or host your media on a server that supports <a
             target="_blank"
@@ -195,7 +195,7 @@ export default class DoExerciseCard extends React.Component {
             return;
         }
 
-        this.setStartTime(event.target);
+        this.setStartTime();
 
         this.props.onMediaLoaded();
 
@@ -211,8 +211,6 @@ export default class DoExerciseCard extends React.Component {
 
     afterPlay(player) {
         console.log("afterPlay", this.props.state);
-
-        const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
 
         if (this.props.state.clickedAction === "mimic"
             && this.props.state.status === "playModelFirst") {
@@ -230,7 +228,7 @@ export default class DoExerciseCard extends React.Component {
                     "status": "warning",
                     "statusText": "No recorded audio found",
                 });
-                player.currentTime = startSeconds;
+                this.setStartTime();
             } else {
                 this.props.playMimic();
             }
@@ -243,7 +241,6 @@ export default class DoExerciseCard extends React.Component {
         }
 
         this.props.setStatus({"status": "ready", "statusText": ""});
-        player.currentTime = startSeconds;
     }
 
     timeUpdateHandler(event) {
@@ -266,19 +263,18 @@ export default class DoExerciseCard extends React.Component {
         this.afterPlay(event.target);
     }
 
-    setPlayingMessage() {
+    playHandler(event) {
+        if (this.props.state.status !== "ready") {
+            return;
+        }
+
         if (this.props.state.nowPlaying === this.props.mediaItem.mediaUrl) {
+            this.setStartTime();
             this.props.playModel("Only");
             return;
         }
 
         this.props.playMimic();
-    }
-
-    playHandler(event) {
-        if (this.props.state.status === "ready") {
-            this.setPlayingMessage();
-        }
     }
 
     makePlayer() {
@@ -418,13 +414,12 @@ export default class DoExerciseCard extends React.Component {
 
     mimicClick(event) {
         console.log("mimicClick()", this.props.state);
-        const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
 
         if (this.props.state.status === "recording") {
             console.log("Stop recording!");
             this.mediaRecorder.stop();
             this.props.playModel("Second");
-            this.player.current.currentTime = startSeconds;
+            this.setStartTime();
 
             this.player.current.play()
                 .catch(this.handleError, "playModelSecond");
@@ -435,6 +430,8 @@ export default class DoExerciseCard extends React.Component {
         if (!playableActivities.includes(this.props.state.status)) {
             return;
         }
+
+        this.setStartTime();
         this.props.playModel("First");
     }
 
