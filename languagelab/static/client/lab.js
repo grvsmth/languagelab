@@ -80,6 +80,11 @@ export default class Lab extends React.Component {
         }
     }
 
+    keyHandler(event) {
+        console.log("keyHandler", event.key);
+        this.addAlert("Key pressed", event.key, "success");
+    }
+
     setStatus(input) {
         this.setState({
             "status": input.status,
@@ -150,7 +155,7 @@ export default class Lab extends React.Component {
         const alert = {
             "id": util.maxId(this.state.alerts) + 1,
             "title": "Fetch error",
-            "status": "danger",
+            "status": status,
             "message": message
         };
         this.updateStateItem(alert, "alerts");
@@ -661,7 +666,10 @@ export default class Lab extends React.Component {
     render() {
         return React.createElement(
             "div",
-            {"className": "container"},
+            {
+                "className": "container",
+                "onKeyUp": this.keyHandler.bind(this)
+            },
             this.nav(),
             this.infoArea(),
             this.body()

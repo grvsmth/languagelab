@@ -462,13 +462,19 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    exitClick(event) {
+        const tracks = window.stream.getTracks().forEach((track) => track.stop());
+
+        this.props.exitClick(event);
+    }
+
     exitButton() {
         return React.createElement(
             "button",
             {
                 "type": "button",
                 "className": "btn btn-info",
-                "onClick": this.props.exitClick
+                "onClick": this.exitClick.bind(this)
             },
             commonElements.iconSpan("oi-circle-x")
         );
