@@ -15,10 +15,11 @@ export default class LoginForm extends React.Component {
         );
     }
 
-    formInput(fieldName) {
+    formInput(fieldName, autofocus=false) {
         return React.createElement(
             "input",
             {
+                "autoFocus": autofocus,
                 "className": "form-control",
                 "id": fieldName,
                 "name": fieldName,
@@ -33,7 +34,7 @@ export default class LoginForm extends React.Component {
             "div",
             {"className": "form-group"},
             this.formLabel("username"),
-            this.formInput("username")
+            this.formInput("username", true)
         );
     }
 
@@ -64,8 +65,7 @@ export default class LoginForm extends React.Component {
             "button",
             {
                 "className": "btn btn-success",
-                "onClick": this.props.loginClick,
-                "type": "button"
+                "type": "submit"
             },
             "Log in"
         );
@@ -74,7 +74,10 @@ export default class LoginForm extends React.Component {
     render() {
         return React.createElement(
             "form",
-            {"name": "loginForm"},
+            {
+                "name": "loginForm",
+                "onSubmit": this.props.loginClick
+            },
             this.usernameGroup(),
             this.passwordGroup(),
             this.submitButton()

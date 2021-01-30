@@ -245,6 +245,7 @@ export default class Lab extends React.Component {
 
     */
     loginClick(event) {
+        event.preventDefault();
         const options = {
             "username": document.getElementById("username").value,
             "password": document.getElementById("password").value
