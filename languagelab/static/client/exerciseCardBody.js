@@ -9,8 +9,6 @@ export default class ExerciseCardBody extends React.Component {
         super(props);
 
         this.checkboxClick = this.checkboxClick.bind(this);
-        this.deleteClick = this.deleteClick.bind(this);
-        this.editClick = this.editClick.bind(this);
         this.startClick = this.startClick.bind(this);
     }
 
@@ -86,7 +84,7 @@ export default class ExerciseCardBody extends React.Component {
     }
 
     editClick(event) {
-        this.props.editItem(this.props.exercise.id);
+        this.props.selectItem(this.props.exercise.id, true);
     }
 
     deleteClick(event) {
@@ -100,7 +98,7 @@ export default class ExerciseCardBody extends React.Component {
     editLink() {
         return React.createElement(
             "a",
-            {"className": "text-primary", "onClick": this.editClick},
+            {"className": "text-primary", "onClick": this.editClick.bind(this)},
             "edit"
         );
     }
@@ -108,7 +106,10 @@ export default class ExerciseCardBody extends React.Component {
     deleteLink() {
         return React.createElement(
             "a",
-            {"className": "text-danger", "onClick": this.deleteClick},
+            {
+                "className": "text-danger",
+                "onClick": this.deleteClick.bind(this)
+            },
             "delete"
         );
     }
@@ -150,7 +151,7 @@ export default class ExerciseCardBody extends React.Component {
         return React.createElement(
             "div",
             options,
-            this.props.item[fieldName]
+            this.props.exercise[fieldName]
         );
     }
 

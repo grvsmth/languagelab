@@ -361,7 +361,7 @@ export default class DoExerciseCard extends React.Component {
     }
 
     navButton(direction) {
-        if (this.props.state.selectedType !== "lessons") {
+        if (this.props.state.selected.itemType !== "lessons") {
             return null;
         }
         const disabled = this.navDisabled(direction);
@@ -465,7 +465,7 @@ export default class DoExerciseCard extends React.Component {
     exitClick(event) {
         const tracks = window.stream.getTracks().forEach((track) => track.stop());
 
-        this.props.exitClick(event);
+        this.props.exitClick(this.props.state.selected.itemType);
     }
 
     exitButton() {

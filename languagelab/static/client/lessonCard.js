@@ -8,8 +8,6 @@ export default class LessonCard extends React.Component {
         super(props);
 
         this.checkboxClick = this.checkboxClick.bind(this);
-        this.deleteClick = this.deleteClick.bind(this);
-        this.editClick = this.editClick.bind(this);
     }
 
     toggleLesson() {
@@ -60,7 +58,7 @@ export default class LessonCard extends React.Component {
     }
 
     editClick(event) {
-        this.props.editItem(this.props.lesson.id);
+        this.props.selectItem(this.props.lesson.id, true);
     }
 
     deleteClick(event) {
@@ -70,7 +68,7 @@ export default class LessonCard extends React.Component {
     editLink() {
         return React.createElement(
             "a",
-            {"className": "text-primary", "onClick": this.editClick},
+            {"className": "text-primary", "onClick": this.editClick.bind(this)},
             "edit"
         );
     }
@@ -78,7 +76,10 @@ export default class LessonCard extends React.Component {
     deleteLink() {
         return React.createElement(
             "a",
-            {"className": "text-danger", "onClick": this.deleteClick},
+            {
+                "className": "text-danger",
+                "onClick": this.deleteClick.bind(this)
+            },
             "delete"
         );
     }
