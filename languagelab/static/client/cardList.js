@@ -57,7 +57,7 @@ export default class CardList extends React.Component {
     }
 
     addClick(event) {
-        this.props.setActivity("add", event.target.id);
+        this.props.selectItem(event.target.id, "add");
     }
 
     addButtonElement(cardId) {
@@ -225,7 +225,9 @@ export default class CardList extends React.Component {
             cardComponent = MediaFormCard;
         }
 
-        if (this.props.state.activity === "add" && typeof mediaItem.id !== "number") {
+        if (this.props.state.activity === "add"
+            && typeof mediaItem.id !== "number"
+            ) {
             cardComponent = MediaFormCard;
         }
 
@@ -372,15 +374,16 @@ export default class CardList extends React.Component {
     }
 
     addCard(addable, cardId="form") {
+        const selectedState = this.props.state.selected;
         if (cardId === "initial"
-            && !this.props.state[this.props.state.selected.itemType].length) {
+            && !this.props.state[selectedState.itemType].length) {
             return null;
         }
 
         if (this.props.state.activity === "add"
-            && this.props.state.selected[this.props.state.itemType] === cardId
+            && selectedState[selectedState.itemType] === cardId
             ) {
-            return this.typeInfo[this.props.state.itemType].formCard(
+            return this.itemCard[selectedState.itemType](
                 {"id": cardId}
             );
         }

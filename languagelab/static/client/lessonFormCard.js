@@ -7,8 +7,6 @@ export default class LessonFormCard extends React.Component {
     constructor(props) {
         super(props);
 
-        this.cancelClick = this.cancelClick.bind(this);
-        this.saveClick = this.saveClick.bind(this);
     }
 
     cancelClick() {
@@ -193,7 +191,7 @@ export default class LessonFormCard extends React.Component {
             {
                 "type": "button",
                 "className": "btn btn-success btn-sm m-1",
-                "onClick": this.saveClick
+                "onClick": this.saveClick.bind(this)
             },
             "Save"
         );
@@ -205,7 +203,7 @@ export default class LessonFormCard extends React.Component {
             {
                 "type": "button",
                 "className": "btn btn-danger btn-sm m-1",
-                "onClick": this.cancelClick
+                "onClick": this.cancelClick.bind(this)
             },
             "Cancel"
         );

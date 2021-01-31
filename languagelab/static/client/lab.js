@@ -60,7 +60,7 @@ export default class Lab extends React.Component {
                 "exercises": null,
                 "languages": null,
                 "lessons": null,
-                "mediaItems": null,
+                "media": null,
                 "itemType": "lessons"
             },
             "status": "ready",
@@ -342,15 +342,15 @@ export default class Lab extends React.Component {
         starting the edit activity
 
     */
-    selectItem(itemId, edit=false) {
+    selectItem(itemId, activity=null) {
         const targetState = {
             "selected": {
                 ...this.state.selected,
                 [this.state.selected.itemType]: itemId
             }
         };
-        if (edit) {
-            targetState.activity = "edit";
+        if (activity) {
+            targetState.activity = activity;
         }
         this.setState(targetState);
     }

@@ -84,7 +84,7 @@ export default class ExerciseCardBody extends React.Component {
     }
 
     editClick(event) {
-        this.props.selectItem(this.props.exercise.id, true);
+        this.props.selectItem(this.props.exercise.id, "edit");
     }
 
     deleteClick(event) {

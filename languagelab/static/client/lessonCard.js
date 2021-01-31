@@ -58,7 +58,7 @@ export default class LessonCard extends React.Component {
     }
 
     editClick(event) {
-        this.props.selectItem(this.props.lesson.id, true);
+        this.props.selectItem(this.props.lesson.id, "edit");
     }
 
     deleteClick(event) {
