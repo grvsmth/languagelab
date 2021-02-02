@@ -1,4 +1,5 @@
 const config = {
+    "version": "0.2alpha",
     "dateTimeFormat": "MMM D, YYYY h:mm a",
     "timeFormat": "HH:mm:ss.S",
     "tagSplitRE": /\s*[,;]+\s*/,

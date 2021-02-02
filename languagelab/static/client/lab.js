@@ -584,7 +584,7 @@ export default class Lab extends React.Component {
                 "checkClick": this.checkClick,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
-                "exitDo": this.readMode.bind(this),
+                "readMode": this.readMode.bind(this),
                 "maxRank": this.maxRank.bind(this),
                 "onMediaLoaded": this.onMediaLoaded.bind(this),
                 "playMimic": this.playMimic.bind(this),
@@ -608,12 +608,16 @@ export default class Lab extends React.Component {
     readMode(itemType="lessons") {
         this.setState((prevState) => ({
             "activity": "read",
+            "clickedAction": null,
+            "nowPlaying": null,
             "selected": {
                 ...prevState.selected,
                 "exercises": null,
-                "lessons": null,
-                "itemType": itemType
-            }
+                "itemType": itemType,
+                "lessons": null
+            },
+            "status": "ready",
+            "statusText": ""
         }));
     }
 
@@ -621,12 +625,13 @@ export default class Lab extends React.Component {
         return React.createElement(
             Navbar,
             {
-                "selectedType": this.state.selected.itemType,
                 "currentUser": this.state.currentUser,
-                "models": config.api.models,
                 "logout": this.logout.bind(this),
+                "models": config.api.models,
                 "navClick": this.readMode.bind(this),
-                "navUrl": config.navUrl
+                "navUrl": config.navUrl,
+                "selectedType": this.state.selected.itemType,
+                "version": config.version
             },
             null
         );

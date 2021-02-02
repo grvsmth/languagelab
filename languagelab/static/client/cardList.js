@@ -190,7 +190,7 @@ export default class CardList extends React.Component {
             "doButton": this.props.doButton,
             "key": key,
             "exercise": exercise,
-            "exitClick": this.props.exitDo,
+            "readMode": this.props.readMode,
             "exerciseUser": this.itemUser(exercise, "exercises"),
             "languages": this.findLanguage(exercise),
             "lesson": lesson,
