@@ -70,7 +70,7 @@ class LanguageViewSet(ModelViewSet):
     """
     API endpoint for viewing available languages
     """
-    queryset = Language.objects.all().order_by('id')
+    queryset = Language.objects.all().order_by('name')
     serializer_class = LanguageSerializer
 
     @staticmethod
@@ -88,6 +88,15 @@ class LanguageViewSet(ModelViewSet):
             counter += 1
 
         return JsonResponse({"success": "true", "items": counter})
+
+    @staticmethod
+    @action(detail=False, methods=['get'])
+    def list_all(request):
+        """
+        Update all the languages from the source
+        """
+        res = get_iso639()
+        return JsonResponse({"success": "true", "items": res})
 
 
 class MediaItemViewSet(ModelViewSet):

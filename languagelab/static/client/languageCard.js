@@ -13,8 +13,8 @@ export default class LanguageCard extends React.Component {
 
     cardText() {
         return React.createElement(
-            "p",
-            {"className": "card-text"},
+            "span",
+            {"className": "card-text mr-3"},
             this.props.language.code
         );
     }
@@ -35,13 +35,21 @@ export default class LanguageCard extends React.Component {
         );
     }
 
+    textRow() {
+        return React.createElement(
+            "p",
+            {},
+            this.cardText(),
+            this.editButton()
+        );
+    }
+
     cardBody() {
         return React.createElement(
             "div",
             {"className": "card-body"},
             this.cardTitle(),
-            this.cardText(),
-            this.editButton()
+            this.textRow()
         );
     }
 
