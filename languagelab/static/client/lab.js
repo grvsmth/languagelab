@@ -107,7 +107,7 @@ export default class Lab extends React.Component {
             "clickedAction": null,
             "mimicCount": {
                 ...prevState.mimicCount,
-                [prevState.selected.exercise]: prevMimicCount + 1
+                [prevState.selected.exercises]: prevMimicCount + 1
             }
         }));
     }
