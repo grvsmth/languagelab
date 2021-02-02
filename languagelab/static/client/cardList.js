@@ -4,6 +4,7 @@ import ExerciseCard from "./exerciseCard.js";
 import DoExerciseCard from "./doExerciseCard.js";
 import ExerciseFormCard from "./exerciseFormCard.js";
 import LanguageCard from "./languageCard.js";
+import LanguageFormCard from "./languageFormCard.js";
 import LessonCard from "./lessonCard.js";
 import LessonFormCard from "./lessonFormCard.js";
 import MediaCard from "./mediaCard.js";
@@ -244,10 +245,10 @@ export default class CardList extends React.Component {
                 "key": mediaItem.id,
                 "languages": languages,
                 "mediaItem": mediaItem,
+                "saveItem": this.props.saveItem,
                 "selectItem": this.props.selectItem,
                 "selectedItem": this.props.state.selected.mediaItem,
                 "setActivity": this.props.setActivity,
-                "saveItem": this.props.saveItem,
                 "itemUser": this.itemUser(mediaItem)
             },
             null
@@ -255,12 +256,30 @@ export default class CardList extends React.Component {
     }
 
     languageCard(language) {
+        var cardComponent = LanguageCard;
+
+        if (this.props.state.activity === "edit"
+            && this.props.state.selected.languages === language.id) {
+            cardComponent = LanguageFormCard;
+        }
+
+        if (this.props.state.activity === "add"
+            && typeof language.id !== "number"
+            ) {
+            cardComponent = LanguageFormCard;
+        }
+
         return React.createElement(
-            LanguageCard,
+            cardComponent,
             {
+                "checkClick": this.props.checkClick,
+                "deleteClick": this.props.deleteClick,
                 "key": language.id,
                 "language": language,
-                "selectItem": this.props.selectItem
+                "languages": this.props.state.languages,
+                "saveItem": this.props.saveItem,
+                "selectItem": this.props.selectItem,
+                "setActivity": this.props.setActivity
             },
             null
         );
@@ -410,9 +429,9 @@ export default class CardList extends React.Component {
         return null;
     }
 
-    makeItemList(myType) {
+    makeItemList(itemType) {
         if (this.props.state.activity !== "editQueue") {
-            return this.props.state[this.props.state.selected.itemType];
+            return this.props.state[itemType];
         }
 
         const lesson = util.findItem(
@@ -421,34 +440,32 @@ export default class CardList extends React.Component {
         return lesson.queueItems.map(this.queueExercise.bind(this));
     }
 
-    makeElements(myType) {
-        if (!this.props.state[this.props.state.selected.itemType].length
-            || !myType.hasOwnProperty("card")) {
+    makeElements(itemType) {
+        if (!this.props.state[itemType].length
+            || !typeInfo[itemType].hasOwnProperty("card")) {
             return React.createElement(
                 "div",
                 {"className": "card"},
-                `No ${this.props.state.selected.itemType} loaded`
+                `No ${itemType} loaded`
             );
         }
 
-        const itemList = this.makeItemList(myType);
+        const itemList = this.makeItemList(itemType);
 
         return itemList.map(this.makeElement, this);
     }
 
     render() {
         console.log(this.props);
-        const myType = typeInfo[this.props.state.selected.itemType];
-        const addable = this.props.state.activity != "editQueue" && myType.addable;
+        const itemType = this.props.state.selected.itemType;
+        const addable = this.props.state.activity != "editQueue"
+            && typeInfo[itemType].addable;
 
         return React.createElement(
             "div",
-            {
-                "className": typeInfo[this.props.state.selected.itemType]
-                    .cardLayout
-            },
+            {"className": typeInfo[itemType].cardLayout},
             this.addCard(addable, "initial"),
-            this.makeElements(myType),
+            this.makeElements(itemType),
             this.addCard(addable, "final")
         );
     }

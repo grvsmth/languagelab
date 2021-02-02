@@ -210,6 +210,7 @@ export default class Lab extends React.Component {
         }
         if (resetSelected) {
             targetState.selected = {
+                ...this.state.selected,
                 "exercises": null,
                 "lessons": null
             };

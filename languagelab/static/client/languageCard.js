@@ -20,7 +20,7 @@ export default class LanguageCard extends React.Component {
     }
 
     editClick() {
-        this.props.selectItem(this.props.language.id, "languages");
+        this.props.selectItem(this.props.language.id, "edit");
     }
 
     editButton() {
@@ -28,7 +28,7 @@ export default class LanguageCard extends React.Component {
             "button",
             {
                 "className": "btn btn-sm btn-primary",
-                "onClick": this.editclick,
+                "onClick": this.editClick.bind(this),
                 "type": "button"
             },
             "Edit"
@@ -40,7 +40,8 @@ export default class LanguageCard extends React.Component {
             "div",
             {"className": "card-body"},
             this.cardTitle(),
-            this.cardText()
+            this.cardText(),
+            this.editButton()
         );
     }
 
