@@ -3,6 +3,7 @@ import util from "./util.js";
 import ExerciseCard from "./exerciseCard.js";
 import DoExerciseCard from "./doExerciseCard.js";
 import ExerciseFormCard from "./exerciseFormCard.js";
+import LanguageCard from "./languageCard.js";
 import LessonCard from "./lessonCard.js";
 import LessonFormCard from "./lessonFormCard.js";
 import MediaCard from "./mediaCard.js";
@@ -10,34 +11,36 @@ import MediaFormCard from "./mediaFormCard.js";
 
 const typeInfo = {
     "media": {
-        "singular": "media item",
-        "userField": "uploader",
-        "card": MediaCard,
-        "formCard": MediaFormCard,
         "addable": true,
-        "doable": false
+        "card": MediaCard,
+        "doable": false,
+        "formCard": MediaFormCard,
+        "singular": "media item",
+        "userField": "uploader"
     },
     "exercises": {
-        "singular": "exercise",
-        "userField": "creator",
-        "card": ExerciseCard,
-        "formCard": ExerciseFormCard,
         "addable": true,
-        "doable": true
+        "card": ExerciseCard,
+        "doable": true,
+        "formCard": ExerciseFormCard,
+        "singular": "exercise",
+        "userField": "creator"
     },
     "lessons": {
-        "singular": "lesson",
-        "userField": "creator",
-        "card": LessonCard,
-        "formCard": LessonFormCard,
         "addable": true,
-        "doable": false
+        "card": LessonCard,
+        "doable": false,
+        "formCard": LessonFormCard,
+        "singular": "lesson",
+        "userField": "creator"
     },
     "languages": {
-        "singular": "language",
-        "userField": "",
         "addable": true,
-        "doable": false
+        "card": LanguageCard,
+        "cardLayout": "card-columns",
+        "doable": false,
+        "singular": "language",
+        "userField": ""
     }
 };
 
@@ -49,6 +52,7 @@ export default class CardList extends React.Component {
 
         this.itemCard = {
             "exercises": this.exerciseCard.bind(this),
+            "languages": this.languageCard.bind(this),
             "lessons": this.lessonCard.bind(this),
             "media": this.mediaCard.bind(this)
         }
@@ -250,6 +254,18 @@ export default class CardList extends React.Component {
         );
     }
 
+    languageCard(language) {
+        return React.createElement(
+            LanguageCard,
+            {
+                "key": language.id,
+                "language": language,
+                "selectItem": this.props.selectItem
+            },
+            null
+        );
+    }
+
     lessonCard(lesson) {
         var cardComponent = LessonCard;
 
@@ -427,7 +443,10 @@ export default class CardList extends React.Component {
 
         return React.createElement(
             "div",
-            {"className": ""},
+            {
+                "className": typeInfo[this.props.state.selected.itemType]
+                    .cardLayout
+            },
             this.addCard(addable, "initial"),
             this.makeElements(myType),
             this.addCard(addable, "final")
