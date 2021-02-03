@@ -47,20 +47,25 @@ export default class Lab extends React.Component {
         this.state = {
             "activity": "read",
             "alerts": [],
+            "clickedAction": "",
             "exercises": [],
             "languages": [],
             "lastUpdated": "",
             "lessons": [],
             "loading": {},
-            "loggedIn": false,
+            "onlyExercise": true,
             "media": [],
-            "message": "",
+            "mimicCount": {},
+            "nowPlaying": "",
             "selectedItem": null,
             "selectedLesson": null,
             "selectedType": "lessons",
+            "status": "ready",
+            "statusText": "Ready",
             "users": [],
             "token": "",
-            "tokenExpired": false
+            "tokenExpired": false,
+            "userAudioUrl": ""
         };
     }
 
@@ -73,6 +78,35 @@ export default class Lab extends React.Component {
         if (!this.state.lastUpdated && this.state.token) {
             this.fetchAll();
         }
+    }
+
+    keyHandler(event) {
+        console.log("keyHandler", event.key);
+        this.addAlert("Key pressed", event.key, "success");
+    }
+
+    setStatus(input) {
+        this.setState({
+            "status": input.status,
+            "statusText": input.statusText
+        })
+    }
+
+    setUserAudioUrl(url) {
+        this.setState({"userAudioUrl": url});
+    }
+
+
+    afterMimic(prevMimicCount) {
+        this.setState(prevState => ({
+            "status": "ready",
+            "statusText": "Ready",
+            "clickedAction": null,
+            "mimicCount": {
+                ...prevState.mimicCount,
+                [prevState.selectedItem]: prevMimicCount + 1
+            }
+        }));
     }
 
     /*
@@ -117,6 +151,16 @@ export default class Lab extends React.Component {
         }, this.handleFetchError);
     }
 
+    addAlert(title, message, status="danger") {
+        const alert = {
+            "id": util.maxId(this.state.alerts) + 1,
+            "title": "Fetch error",
+            "status": status,
+            "message": message
+        };
+        this.updateStateItem(alert, "alerts");
+    }
+
     /*
 
         Handle fetch errors.  If the token is expired, then make the user log
@@ -124,47 +168,20 @@ export default class Lab extends React.Component {
 
     */
     handleFetchError(err) {
-        const alert = {
-            "id": util.maxId(this.state.alerts) + 1,
-            "title": "Fetch error",
-            "status": "danger",
-            "message": err
-        };
-
-        if (err.hasOwnProperty("error")) {
-            if (err.error.message) {
-                console.log("err.error.message", err.error.message);
-                if (err.error.message === this.apiClient.expiredError) {
-                    this.logout();
-                    return;
-                }
-                alert.message = err.error.message;
-                this.updateStateItem(alert, "alerts");
-            } else if (err.error.statusText) {
-                console.log("err.error.statusText", err.error.statusText);
-                alert.message = err.error.statusText;
-                this.updateStateItem(alert, "alerts");
-                return;
-            }
-            console.log("err.error", err.error);
-            alert.message = err.error;
-            return;
-        }
-
         if (err.hasOwnProperty("statusText")) {
             console.log("err.statusText", err.statusText);
-            alert.message = err.statusText;
-            this.updateStateItem(alert, "alerts");
+            this.addAlert("Fetch error", statusText);
             return;
         }
 
         if (err.hasOwnProperty("message")) {
             console.log("err.message", err.message);
-            alert.message = err.message;
-        } else {
-            console.log("err", err);
+            this.addAlert("Fetch error", err.message);
+            return;
         }
-        this.updateStateItem(alert, "alerts");
+
+        console.log("err", err);
+        this.addAlert("Fetch error", err);
     }
 
 
@@ -223,13 +240,7 @@ export default class Lab extends React.Component {
     */
     handleTokenError(err) {
         console.error(err);
-        const alert = {
-            "id": util.maxId(this.state.alerts) + 1,
-            "title": "Fetch error",
-            "status": "danger",
-            "message": err
-        };
-        this.updateStateItem(alert, "alerts");
+        this.addAlert("Token error", err);
     }
 
     /*
@@ -239,6 +250,7 @@ export default class Lab extends React.Component {
 
     */
     loginClick(event) {
+        event.preventDefault();
         const options = {
             "username": document.getElementById("username").value,
             "password": document.getElementById("password").value
@@ -325,7 +337,7 @@ export default class Lab extends React.Component {
     */
     editItem(itemId) {
         const targetState = {
-            "activity": "edit",
+            "activity": "edit"
         };
 
         if (this.state.selectedType === "lessons") {
@@ -348,9 +360,6 @@ export default class Lab extends React.Component {
 
     firstExerciseId(lessonId) {
         const lesson = util.findItem(this.state.lessons, lessonId);
-        if (!lesson) {
-            return null;
-        }
 
         if (!lesson.queueItems) {
             return null;
@@ -368,18 +377,40 @@ export default class Lab extends React.Component {
             });
             return;
         }
+        this.startExercise(this.firstExerciseId(lessonId), lessonId);
+    }
+
+    toggleOnlyExercise() {
+        const prevOnlyExercise = this.state.onlyExercise;
+        this.setState(prevState => ({"onlyExercise": !prevState.onlyExercise}));
+    }
+
+    onMediaLoaded() {
         this.setState({
-            "activity": "do",
-            "selectedItem": this.firstExerciseId(lessonId),
-            "selectedLesson": lessonId,
+            "mediaStatus": "ready"
         });
     }
 
-    startExercise(exerciseId) {
-        this.setState({
+    startExercise(exerciseId, lessonId=null) {
+        const exercise = util.findItem(this.state.exercises, exerciseId);
+        const mediaItem = util.findItem(this.state.media, exercise.media);
+
+        if (!mediaItem.hasOwnProperty("mediaUrl")) {
+            this.addAlert("Media error", "Unable to find media for exercise!");
+            return;
+        }
+
+        const targetState = {
             "activity": "do",
+            "mediaStatus": "loading",
+            "nowPlaying": mediaItem.mediaUrl,
             "selectedItem": exerciseId
-        });
+        };
+
+        if (lessonId) {
+            targetState.selectedLesson = lessonId;
+        }
+        this.setState(targetState);
     }
 
     setActivity(activity, itemId=null, lessonId=null) {
@@ -463,7 +494,22 @@ export default class Lab extends React.Component {
             (queueItem) => queueItem.rank === rank
         );
 
-        this.setState({"selectedItem": queueItem.exercise});
+        const exercise = util.findItem(
+            this.state.exercises,
+            queueItem.exercise
+        );
+
+        const mediaItem = util.findItem(this.state.media, exercise.media);
+        if (!mediaItem.hasOwnProperty("mediaUrl")) {
+            this.addAlert("Media error", "Unable to find media for exercise!");
+            return;
+        }
+
+        this.setState({
+            "activity": "loadExercise",
+            "nowPlaying": mediaItem.mediaUrl,
+            "selectedItem": queueItem.exercise
+        });
     }
 
     previous(rank) {
@@ -486,13 +532,51 @@ export default class Lab extends React.Component {
         this.selectByRank(rank + 1);
     }
 
+    playMimic() {
+        this.setState({
+            "nowPlaying": this.state.userAudioUrl,
+            "status": "playMimic",
+            "statusText": "Now playing recorded audio"
+        });
+    }
+
+    playModel(increment) {
+        const exercise = util.findItem(
+            this.state.exercises,
+            this.state.selectedItem
+        );
+
+        const mediaItem = util.findItem(this.state.media, exercise.media);
+        if (!mediaItem.hasOwnProperty("mediaUrl")) {
+            this.addAlert("Media error", "Unable to find media for exercise!");
+            return;
+        }
+
+        const targetState = {
+            "clickedAction": "mimic",
+            "status": "playModel" + increment,
+            "statusText": "Now playing " + mediaItem.name
+        };
+
+        if (this.state.nowPlaying !== mediaItem.mediaUrl) {
+            targetState.mediaStatus = "loading";
+            targetState.nowPlaying = mediaItem.mediaUrl;
+        }
+
+        if (increment === "Only") {
+            targetState.clickedAction = "play"
+        }
+
+        this.setState(targetState);
+
+    }
+
     body() {
         if (!this.state.currentUser) {
             return React.createElement(
                 LoginForm,
                 {
-                    "loginClick": this.loginClick.bind(this),
-                    "message": this.state.message
+                    "loginClick": this.loginClick.bind(this)
                 },
                 null
             );
@@ -500,30 +584,27 @@ export default class Lab extends React.Component {
         return React.createElement(
             CardList,
             {
-                "activity": this.state.activity,
+                "afterMimic": this.afterMimic.bind(this),
                 "checkClick": this.checkClick,
-                "currentUser": this.state.currentUser,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
                 "editItem": this.editItem.bind(this),
-                "exercises": this.state.exercises,
                 "exitDo": this.exitDo.bind(this),
-                "languages": this.state.languages,
-                "lessons": this.state.lessons,
-                "loading": this.state.loading,
                 "maxRank": this.maxRank.bind(this),
-                "media": this.state.media,
+                "onMediaLoaded": this.onMediaLoaded.bind(this),
+                "playMimic": this.playMimic.bind(this),
+                "playModel": this.playModel.bind(this),
                 "queueClick": this.queueClick.bind(this),
                 "queueNav": this.queueNav,
                 "saveItem": this.saveItem.bind(this),
+                "state": this.state,
                 "setActivity": this.setActivity.bind(this),
+                "toggleOnlyExercise": this.toggleOnlyExercise.bind(this),
                 "toggleLesson": this.toggleLesson.bind(this),
                 "startExercise": this.startExercise.bind(this),
                 "selectItem": this.selectItem.bind(this),
-                "selectedItem": this.state.selectedItem,
-                "selectedLesson": this.state.selectedLesson,
-                "selectedType": this.state.selectedType,
-                "users": this.state.users
+                "setStatus": this.setStatus.bind(this),
+                "setUserAudioUrl": this.setUserAudioUrl.bind(this)
             },
             null
         );
@@ -585,7 +666,10 @@ export default class Lab extends React.Component {
     render() {
         return React.createElement(
             "div",
-            {"className": "container"},
+            {
+                "className": "container",
+                "onKeyUp": this.keyHandler.bind(this)
+            },
             this.nav(),
             this.infoArea(),
             this.body()

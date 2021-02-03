@@ -1,11 +1,7 @@
 const exports = {};
 
 exports.findItem = function(items, id) {
-    const item = items.find((item) => item.id === id);
-    if (item && typeof item !== "undefined") {
-        return item;
-    }
-    return;
+    return items.find((item) => item.id === id);
 };
 
 exports.formatDuration = function(durationMoment, fixed=6) {

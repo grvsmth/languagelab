@@ -41,6 +41,7 @@ export default class ExerciseCard extends React.Component {
         return React.createElement(
             ExerciseCardBody,
             {
+                "activity": this.props.activity,
                 "checkClick": this.props.checkClick,
                 "deleteClick": this.props.deleteClick,
                 "editItem": this.props.editItem,
@@ -76,9 +77,14 @@ export default class ExerciseCard extends React.Component {
     }
 
     render() {
+        var className = "card bg-light";
+        if (this.props.activity !== "editQueue") {
+            className += " mb-3";
+        };
+
         return React.createElement(
             "div",
-            {"className": "card bg-light mb-3"},
+            {"className": className},
             this.cardHeader(),
             this.cardBody(),
             this.cardFooter()
