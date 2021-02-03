@@ -74,7 +74,10 @@ const config = {
         "lessonQueue": "If you add lessons, you can add this exercise to a lesson"
     },
     "hideIsAvailablePublic": true,
-    "exerciseNameLimit": 20
+    "exerciseNameLimit": 20,
+    "iso639": {
+        "url": "https://iso639-3.sil.org/code_tables/639/data"
+    }
 };
 
 export default config;

@@ -657,6 +657,7 @@ export default class Lab extends React.Component {
                 "activity": this.state.activity,
                 "alerts": this.state.alerts,
                 "dismissAlert": this.dismissAlert.bind(this),
+                "iso639": config.iso639,
                 "lesson": lesson,
                 "selectedType": this.state.selected.itemType,
                 "setActivity": this.setActivity.bind(this)
