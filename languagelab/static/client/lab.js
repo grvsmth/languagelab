@@ -5,6 +5,7 @@
 */
 import CardList from "./cardList.js";
 import InfoArea from "./infoArea.js";
+import LoadingModal from "./loadingModal.js";
 import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
 
@@ -666,6 +667,16 @@ export default class Lab extends React.Component {
         )
     }
 
+    loadingModal() {
+        return React.createElement(
+            LoadingModal,
+            {
+                "itemType": this.state.selected.itemType,
+                "loading": this.state.loading
+            }
+        );
+    }
+
     render() {
         return React.createElement(
             "div",
@@ -674,7 +685,8 @@ export default class Lab extends React.Component {
             },
             this.nav(),
             this.infoArea(),
-            this.body()
+            this.body(),
+            this.loadingModal()
         );
     }
 }
