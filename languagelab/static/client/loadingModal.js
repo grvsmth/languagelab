@@ -29,17 +29,36 @@ export default class LoadingModal extends React.Component {
         );
     }
 
-    dialog() {
+    body() {
         return React.createElement(
             "div",
-            {"className": "modal-dialog"},
+            {"className": "modal-body"},
             this.spinner()
         );
     }
 
+    content() {
+        return React.createElement(
+            "div",
+            {"className": "modal-content"},
+            this.body()
+        );
+    }
+
+    dialog() {
+        return React.createElement(
+            "div",
+            {"className": "modal-dialog modal-dialog-centered modal-xl"},
+            this.content()
+        );
+    }
+
+    doNothing(event) {
+        event.preventDefault();
+    }
+
     render() {
         if (!this.loading()) {
-            console.log("finished loading");
             return null;
         }
 
@@ -49,9 +68,11 @@ export default class LoadingModal extends React.Component {
                 "aria-hidden": false,
                 "className": "modal show",
                 "data-show": true,
+                "data-backdrop": "static",
                 "ref": this.modal,
                 "style": {"display": "block"},
-                "tabIndex": "-1"
+                "tabIndex": "-1",
+                "onClick": this.doNothing
             },
             this.dialog()
         );

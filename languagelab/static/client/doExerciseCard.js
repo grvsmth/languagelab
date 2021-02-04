@@ -463,7 +463,9 @@ export default class DoExerciseCard extends React.Component {
     }
 
     exitClick(event) {
-        const tracks = window.stream.getTracks().forEach((track) => track.stop());
+        const tracks = window.stream.getTracks().forEach(
+            (track) => track.stop()
+        );
 
         this.props.readMode(this.props.state.selected.itemType);
     }
