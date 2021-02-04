@@ -354,7 +354,7 @@ export default class CardList extends React.Component {
         );
 
         if (this.props.state.selected.exercises === exercise.id) {
-            if (this.props.state.activity === "edit") {
+            if (["edit", "add"].includes(this.props.state.activity)) {
                 return this.exerciseFormCard(exercise);
             }
 
