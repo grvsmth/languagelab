@@ -579,6 +579,11 @@ export default class Lab extends React.Component {
                 null
             );
         }
+
+        if (this.state.loading[this.state.selected.itemType]) {
+            return null;
+        }
+
         return React.createElement(
             CardList,
             {
