@@ -3,10 +3,9 @@ import config from "./config.js";
 import util from "./util.js";
 import commonElements from "./commonElements.js";
 
-export default class LessonFormCard extends React.Component {
+export default class LanguageFormCard extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
     cancelClick() {
@@ -17,13 +16,6 @@ export default class LessonFormCard extends React.Component {
         if (node.type === "checkbox") {
             return node.checked;
         }
-        if (node.name === "tags") {
-            if (node.value.length < 1) {
-                return [];
-            }
-            const tags = node.value.split(config.tagSplitRE);
-            return tags;
-        }
         return node.value;
     }
 
@@ -33,20 +25,15 @@ export default class LessonFormCard extends React.Component {
         )
         const formData = Array.from(formInputs.values())
             .reduce((object, item) => {
-                if (item.name === "lessonFile") {
-                    // TODO handle later
-                    return object;
-                }
                 object[item.name] = this.processField(item);
                 return object;
             }, {});
 
-        const audio1 = document.querySelector("#audio1");
         var itemId = null;
-        if (typeof this.props.lesson.id === "number") {
-            itemId = this.props.lesson.id;
+        if (typeof this.props.language.id === "number") {
+            itemId = this.props.language.id;
         }
-        this.props.saveItem(formData, "lessons", itemId);
+        this.props.saveItem(formData, "languages", itemId);
     }
 
     textInput(fieldName, inputId, onChange, defaultValue) {
@@ -74,46 +61,17 @@ export default class LessonFormCard extends React.Component {
         if (defaultVal) {
             defaultValue = defaultVal;
         }
-        if (this.props.lesson.hasOwnProperty(fieldName)) {
-            defaultValue = this.props.lesson[fieldName];
+        if (this.props.language.hasOwnProperty(fieldName)) {
+            defaultValue = this.props.language[fieldName];
         }
 
-        const inputId = [fieldName, this.props.lesson.id].join("_");
+        const inputId = [fieldName, this.props.language.id].join("_");
         return React.createElement(
             "div",
             {"className": "col-sm"},
             commonElements.itemLabel(fieldName, inputId),
             this.textInput(fieldName, inputId, onChange, defaultValue)
         );
-    }
-
-    tagsInput(inputId) {
-        var defaultValue = "";
-        if (this.props.lesson.tags) {
-            defaultValue = this.props.lesson.tags.join(", ");
-        }
-        return React.createElement(
-            "input",
-            {
-                "id": inputId,
-                "className": "form-control",
-                "type": "text",
-                "name": "tags",
-                "defaultValue": defaultValue
-            },
-            null
-        );
-    }
-
-    tagsInputDiv() {
-        const inputId = "tags_" + this.props.lesson.id;
-
-        return React.createElement(
-            "div",
-            {"className": "col-sm"},
-            commonElements.itemLabel("tags", inputId),
-            this.tagsInput(inputId)
-        )
     }
 
     itemOption(optionKey, optionValue) {
@@ -131,7 +89,7 @@ export default class LessonFormCard extends React.Component {
                 "className": "form-control",
                 "id": inputId,
                 "name": fieldName,
-                "defaultValue": this.props.lesson[fieldName]
+                "defaultValue": this.props.language[fieldName]
             },
             ...Object.keys(options).map((optionKey) => {
                 return this.itemOption(
@@ -147,7 +105,7 @@ export default class LessonFormCard extends React.Component {
             return null;
         }
 
-        const inputId = [fieldName, this.props.lesson.id].join("_");
+        const inputId = [fieldName, this.props.language.id].join("_");
         return React.createElement(
             "div",
             {"className": "form-group mx-1"},
@@ -157,31 +115,12 @@ export default class LessonFormCard extends React.Component {
     }
 
     nameRow() {
-        /*
-
-            The "isAvailable" and "isPublic" checkboxes are currently not
-            implemented, but this is what would display them
-
-
-
-        */
         return React.createElement(
             "div",
             {"className": "form-row mt-3"},
             this.textInputDiv("name"),
-            this.textInputDiv("description"),
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.lesson.isAvailable,
-                "available",
-                this.props.lesson.id
-            ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.lesson.isPublic,
-                "public",
-                this.props.lesson.id
-            )
+            this.textInputDiv("creator"),
+            this.textInputDiv("rights")
         );
     }
 
@@ -218,16 +157,6 @@ export default class LessonFormCard extends React.Component {
         );
     }
 
-    optionsRow() {
-        return React.createElement(
-            "div",
-            {"className": "form-row mt-3"},
-            this.textInputDiv("notes"),
-            this.tagsInputDiv(),
-            this.textInputDiv("level", null, "0")
-        );
-    }
-
     submitRow() {
         return React.createElement(
             "div",
@@ -241,10 +170,10 @@ export default class LessonFormCard extends React.Component {
             "form",
             {
                 "className": "card-body",
-                "id": "form_" + this.props.lesson.id
+                "id": "form_" + this.props.language.id
             },
-            this.nameRow(),
-            this.optionsRow(),
+            this.textInputDiv("name"),
+            this.textInputDiv("code"),
             this.submitRow()
         );
     }
@@ -252,7 +181,7 @@ export default class LessonFormCard extends React.Component {
     render() {
         return React.createElement(
             "div",
-            {"className": "card bg-light mb-3"},
+            {"className": "card bg-light border-warning mb-3"},
             this.cardBody()
         );
     }

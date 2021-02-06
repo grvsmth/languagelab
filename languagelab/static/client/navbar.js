@@ -5,10 +5,14 @@ export default class Home extends React.Component {
     }
 
     navbarBrand() {
+        var brandText = "LanguageLab";
+        if (this.props.version) {
+            brandText += " v. " + this.props.version;
+        }
         return React.createElement(
             "a",
             {"className": "navbar-brand", "href": "#"},
-            "LanguageLab"
+            brandText
         );
     }
 

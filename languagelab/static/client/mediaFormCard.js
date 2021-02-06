@@ -6,10 +6,6 @@ import commonElements from "./commonElements.js";
 export default class MediaFormCard extends React.Component {
     constructor(props) {
         super(props);
-
-        this.cancelClick = this.cancelClick.bind(this);
-        this.loadedMetadata = this.loadedMetadata.bind(this);
-        this.saveClick = this.saveClick.bind(this);
     }
 
     inputChange(event) {
@@ -55,7 +51,7 @@ export default class MediaFormCard extends React.Component {
             "audio",
             {
                 "id": "audio1",
-                "onLoadedMetadata": this.loadedMetadata
+                "onLoadedMetadata": this.loadedMetadata.bind(this)
             },
             null
         );
@@ -292,7 +288,7 @@ export default class MediaFormCard extends React.Component {
             {
                 "type": "button",
                 "className": "btn btn-success btn-sm m-1",
-                "onClick": this.saveClick
+                "onClick": this.saveClick.bind(this)
             },
             "Save"
         );
@@ -304,7 +300,7 @@ export default class MediaFormCard extends React.Component {
             {
                 "type": "button",
                 "className": "btn btn-danger btn-sm m-1",
-                "onClick": this.cancelClick
+                "onClick": this.cancelClick.bind(this)
             },
             "Cancel"
         );

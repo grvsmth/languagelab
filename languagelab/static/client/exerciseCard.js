@@ -44,14 +44,14 @@ export default class ExerciseCard extends React.Component {
                 "activity": this.props.activity,
                 "checkClick": this.props.checkClick,
                 "deleteClick": this.props.deleteClick,
-                "editItem": this.props.editItem,
                 "exercise": this.props.exercise,
+                "itemUser": this.props.itemUser,
                 "languages": this.props.languages,
                 "mediaItem": this.props.mediaItem,
                 "queueClick": this.props.queueClick,
                 "selectedType": this.props.selectedType,
-                "startExercise": this.props.startExercise,
-                "itemUser": this.props.itemUser
+                "selectItem": this.props.selectItem,
+                "startExercise": this.props.startExercise
             },
             null
         );
@@ -66,11 +66,11 @@ export default class ExerciseCard extends React.Component {
             QueueFooter,
             {
                 "exerciseId": this.props.exercise.id,
+                "exerciseLessons": this.props.exercise.queueItems,
+                "lessons": this.props.lessons,
                 "maxRank": this.props.maxRank,
                 "queueItem": this.props.queueItem,
-                "queueClick": this.props.queueClick,
-                "lessons": this.props.lessons,
-                "exerciseLessons": this.props.exercise.queueItems
+                "queueClick": this.props.queueClick
             },
             null
         );

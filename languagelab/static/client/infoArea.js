@@ -97,9 +97,33 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    iso639a() {
+        return React.createElement(
+            "a",
+            {
+                "href": this.props.iso639.url,
+                "target": "_blank"
+            },
+            "list of ISO-639-3 language names and codes"
+        );
+    }
+
+    languageInfo() {
+        return React.createElement(
+            "div",
+            {"className": "sticky-top mb-3"},
+            "You may find this ",
+            this.iso639a(),
+            " useful."
+        );
+    }
+
     render() {
         if (this.props.alerts.length || this.props.activity === "editQueue") {
             return this.body();
+        }
+        if (this.props.selectedType === "languages") {
+            return this.languageInfo();
         }
         return null;
     }

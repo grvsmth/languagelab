@@ -5,6 +5,7 @@
 */
 import CardList from "./cardList.js";
 import InfoArea from "./infoArea.js";
+import LoadingModal from "./loadingModal.js";
 import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
 
@@ -25,7 +26,6 @@ export default class Lab extends React.Component {
 
         this.checkClick = this.checkClick.bind(this);
         this.handleFetchError = this.handleFetchError.bind(this);
-        this.navClick = this.navClick.bind(this);
 
         this.queueOperation = {
             "add": this.addToQueue.bind(this),
@@ -36,7 +36,7 @@ export default class Lab extends React.Component {
 
         this.queueNav = {
             "previous": this.previous.bind(this),
-            "exit": this.exitDo.bind(this),
+            "exit": this.readMode.bind(this),
             "next": this.next.bind(this)
         };
 
@@ -57,9 +57,13 @@ export default class Lab extends React.Component {
             "media": [],
             "mimicCount": {},
             "nowPlaying": "",
-            "selectedItem": null,
-            "selectedLesson": null,
-            "selectedType": "lessons",
+            "selected": {
+                "exercises": null,
+                "languages": null,
+                "lessons": null,
+                "media": null,
+                "itemType": "lessons"
+            },
             "status": "ready",
             "statusText": "Ready",
             "users": [],
@@ -104,7 +108,7 @@ export default class Lab extends React.Component {
             "clickedAction": null,
             "mimicCount": {
                 ...prevState.mimicCount,
-                [prevState.selectedItem]: prevMimicCount + 1
+                [prevState.selected.exercises]: prevMimicCount + 1
             }
         }));
     }
@@ -141,13 +145,14 @@ export default class Lab extends React.Component {
         ].join("/");
 
         this.apiClient.fetchData(apiUrl).then((res) => {
-            this.setState(
-                {
-                    [dataType]: res,
-                    "lastUpdated": loadTime.format(),
-                    "loading": {[dataType]: false}
+            this.setState(prevState => ({
+                [dataType]: res,
+                "lastUpdated": loadTime.format(),
+                "loading": {
+                    ...prevState.loading,
+                    [dataType]: false
                 }
-            );
+            }));
         }, this.handleFetchError);
     }
 
@@ -205,8 +210,11 @@ export default class Lab extends React.Component {
             targetState.activity = activity;
         }
         if (resetSelected) {
-            targetState.selectedItem = null;
-            targetState.selectedLesson = null;
+            targetState.selected = {
+                ...this.state.selected,
+                "exercises": null,
+                "lessons": null
+            };
         }
 
         this.setState(targetState);
@@ -332,30 +340,21 @@ export default class Lab extends React.Component {
 
     /*
 
-        Select an item and put the interface into edit mode
+        Select an item.  Used when playing media in mediaCard.js, and when
+        starting the edit activity
 
     */
-    editItem(itemId) {
+    selectItem(itemId, activity=null) {
         const targetState = {
-            "activity": "edit"
+            "selected": {
+                ...this.state.selected,
+                [this.state.selected.itemType]: itemId
+            }
         };
-
-        if (this.state.selectedType === "lessons") {
-            targetState.selectedLesson = itemId;
-        } else {
-            targetState.selectedItem = itemId;
+        if (activity) {
+            targetState.activity = activity;
         }
-
         this.setState(targetState);
-    }
-
-    /*
-
-        Select an item.  Used when playing media in mediaCard.js
-
-    */
-    selectItem(itemId) {
-        this.setState({"selectedItem": itemId});
     }
 
     firstExerciseId(lessonId) {
@@ -369,12 +368,9 @@ export default class Lab extends React.Component {
     }
 
     toggleLesson(lessonId) {
-        if (this.state.activity === "do" && this.state.selectedItem == lessonId) {
-            this.setState({
-                "activity": "read",
-                "selectedItem": null,
-                "selectedLesson": null
-            });
+        if (this.state.activity === "do"
+            && this.state.selected.lessons == lessonId) {
+            this.readMode();
             return;
         }
         this.startExercise(this.firstExerciseId(lessonId), lessonId);
@@ -404,22 +400,27 @@ export default class Lab extends React.Component {
             "activity": "do",
             "mediaStatus": "loading",
             "nowPlaying": mediaItem.mediaUrl,
-            "selectedItem": exerciseId
+            "selected": {
+                ...this.state.selected,
+                "exercises": exerciseId
+            }
         };
 
         if (lessonId) {
-            targetState.selectedLesson = lessonId;
+            targetState.selected.lessons = lessonId;
         }
         this.setState(targetState);
     }
 
-    setActivity(activity, itemId=null, lessonId=null) {
-        const targetState = {
+    setActivity(activity, exerciseId=null, lessonId=null) {
+        this.setState((prevState) => ({
             "activity": activity,
-            "selectedItem": itemId,
-            "selectedLesson": lessonId
-        };
-        this.setState(targetState);
+            "selected": {
+                ...prevState.selected,
+                "exercises": exerciseId,
+                "lessons": lessonId
+            }
+        }));
     }
 
     deleteClick(itemType, itemId) {
@@ -469,12 +470,12 @@ export default class Lab extends React.Component {
     }
 
     maxRank() {
-        if (!this.state.selectedLesson) {
+        if (!this.state.selected.lessons) {
             return 0;
         }
 
         const lesson = util.findItem(
-            this.state.lessons, this.state.selectedLesson
+            this.state.lessons, this.state.selected.lessons
         );
 
         if (lesson.queueItems.length < 1) {
@@ -487,7 +488,7 @@ export default class Lab extends React.Component {
 
     selectByRank(rank) {
         const lesson = util.findItem(
-            this.state.lessons, this.state.selectedLesson
+            this.state.lessons, this.state.selected.lessons
         );
 
         const queueItem = lesson.queueItems.find(
@@ -505,11 +506,14 @@ export default class Lab extends React.Component {
             return;
         }
 
-        this.setState({
+        this.setState((prevState) => ({
             "activity": "loadExercise",
             "nowPlaying": mediaItem.mediaUrl,
-            "selectedItem": queueItem.exercise
-        });
+            "selected": {
+                ...prevState.selected,
+                "exercises": queueItem.exercise
+            }
+        }));
     }
 
     previous(rank) {
@@ -517,12 +521,6 @@ export default class Lab extends React.Component {
             return;
         }
         this.selectByRank(rank - 1);
-    }
-
-    exitDo() {
-        this.setState(
-            {"activity": "read", "selectedItem": null, "selectedLesson": null}
-        );
     }
 
     next(rank) {
@@ -543,7 +541,7 @@ export default class Lab extends React.Component {
     playModel(increment) {
         const exercise = util.findItem(
             this.state.exercises,
-            this.state.selectedItem
+            this.state.selected.exercises
         );
 
         const mediaItem = util.findItem(this.state.media, exercise.media);
@@ -581,6 +579,11 @@ export default class Lab extends React.Component {
                 null
             );
         }
+
+        if (this.state.loading[this.state.selected.itemType]) {
+            return null;
+        }
+
         return React.createElement(
             CardList,
             {
@@ -588,8 +591,7 @@ export default class Lab extends React.Component {
                 "checkClick": this.checkClick,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
-                "editItem": this.editItem.bind(this),
-                "exitDo": this.exitDo.bind(this),
+                "readMode": this.readMode.bind(this),
                 "maxRank": this.maxRank.bind(this),
                 "onMediaLoaded": this.onMediaLoaded.bind(this),
                 "playMimic": this.playMimic.bind(this),
@@ -610,27 +612,33 @@ export default class Lab extends React.Component {
         );
     }
 
-    navClick(itemType) {
-        this.setState(
-            {
-                "activity": "read",
-                "selectedItem": null,
-                "selectedLesson": null,
-                "selectedType": itemType
-            }
-        );
+    readMode(itemType="lessons") {
+        this.setState((prevState) => ({
+            "activity": "read",
+            "clickedAction": null,
+            "nowPlaying": null,
+            "selected": {
+                ...prevState.selected,
+                "exercises": null,
+                "itemType": itemType,
+                "lessons": null
+            },
+            "status": "ready",
+            "statusText": ""
+        }));
     }
 
     nav() {
         return React.createElement(
             Navbar,
             {
-                "selectedType": this.state.selectedType,
                 "currentUser": this.state.currentUser,
-                "models": config.api.models,
                 "logout": this.logout.bind(this),
-                "navClick": this.navClick,
-                "navUrl": config.navUrl
+                "models": config.api.models,
+                "navClick": this.readMode.bind(this),
+                "navUrl": config.navUrl,
+                "selectedType": this.state.selected.itemType,
+                "version": config.version
             },
             null
         );
@@ -646,7 +654,7 @@ export default class Lab extends React.Component {
 
     infoArea() {
         const lesson = util.findItem(
-            this.state.lessons, this.state.selectedLesson
+            this.state.lessons, this.state.selected.lessons
         );
 
         return React.createElement(
@@ -655,24 +663,35 @@ export default class Lab extends React.Component {
                 "activity": this.state.activity,
                 "alerts": this.state.alerts,
                 "dismissAlert": this.dismissAlert.bind(this),
+                "iso639": config.iso639,
                 "lesson": lesson,
-                "selectedType": this.state.selectedType,
+                "selectedType": this.state.selected.itemType,
                 "setActivity": this.setActivity.bind(this)
             },
             null
         )
     }
 
+    loadingModal() {
+        return React.createElement(
+            LoadingModal,
+            {
+                "itemType": this.state.selected.itemType,
+                "loading": this.state.loading
+            }
+        );
+    }
+
     render() {
         return React.createElement(
             "div",
             {
-                "className": "container",
-                "onKeyUp": this.keyHandler.bind(this)
+                "className": "container"
             },
             this.nav(),
             this.infoArea(),
-            this.body()
+            this.body(),
+            this.loadingModal()
         );
     }
 }
