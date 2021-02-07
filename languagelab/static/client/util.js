@@ -5,14 +5,15 @@ exports.findItem = function(items, id) {
 };
 
 exports.formatDuration = function(durationMoment, fixed=6) {
-    var seconds = durationMoment.seconds()
+    const seconds = durationMoment.seconds()
         + durationMoment.milliseconds() / 1000;
 
-    return [
+    const durationString = [
         durationMoment.hours().toString().padStart(2, "0"),
         durationMoment.minutes().toString().padStart(2, "0"),
         seconds.toFixed(fixed).padStart(2, "0")
         ].join(":");
+    return durationString;
 };
 
 exports.timeRange = function(startTime, endTime, timeFormat) {

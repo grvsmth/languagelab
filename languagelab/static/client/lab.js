@@ -213,7 +213,9 @@ export default class Lab extends React.Component {
             targetState.selected = {
                 ...this.state.selected,
                 "exercises": null,
-                "lessons": null
+                "languages": null,
+                "lessons": null,
+                "media": null
             };
         }
 

@@ -6,11 +6,12 @@ import commonElements from "./commonElements.js";
 export default class MediaFormCard extends React.Component {
     constructor(props) {
         super(props);
+
+        this.audio = React.createRef();
     }
 
     inputChange(event) {
-        const audio1 = document.querySelector("#audio1");
-        audio1.src = event.target.value;
+        this.audio.current.src = event.target.value;
     }
 
     cancelClick() {
@@ -51,7 +52,8 @@ export default class MediaFormCard extends React.Component {
             "audio",
             {
                 "id": "audio1",
-                "onLoadedMetadata": this.loadedMetadata.bind(this)
+                "onLoadedMetadata": this.loadedMetadata.bind(this),
+                "ref": this.audio
             },
             null
         );
@@ -72,7 +74,6 @@ export default class MediaFormCard extends React.Component {
                 return object;
             }, {});
 
-        const audio1 = document.querySelector("#audio1");
         var itemId = null;
         if (typeof this.props.mediaItem.id === "number") {
             itemId = this.props.mediaItem.id;
@@ -267,7 +268,7 @@ export default class MediaFormCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "form-row mt-3"},
-            this.textInputDiv("mediaUrl", this.inputChange),
+            this.textInputDiv("mediaUrl", this.inputChange.bind(this)),
             this.fileInputDiv("mediaFile"),
             this.textInputDiv("duration", null, "00:00:00"),
             this.audioElement()
