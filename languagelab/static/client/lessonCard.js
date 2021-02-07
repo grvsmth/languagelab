@@ -62,7 +62,7 @@ export default class LessonCard extends React.Component {
     }
 
     deleteClick(event) {
-        this.props.deleteClick("lesson", this.props.lesson.id);
+        this.props.deleteClick("lessons", this.props.lesson.id);
     }
 
     editLink() {
