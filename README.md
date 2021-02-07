@@ -9,6 +9,22 @@ There are two parts to the application: the backend *Library*, written in Python
 to work with Django, and the frontend *Client*, written in Javascript to work
 with React.
 
+## License
+
+Copyright 2021 Angus B. Grieve-Smith
+
+Permission to use, copy, modify, and/or distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright notice
+and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+THIS SOFTWARE.
+
 ## Requirements
 
 The full list of Library requirements is at [requirements.txt], but the main
@@ -26,8 +42,7 @@ Client requirements are as follows:
 * Create a virtual environment for your application
 * Activate the virtual environment
 * Install Python dependencies: `pip install -r requirements.txt`
-* Download the Javascript and CSS dependencies and copy them to the `lib`
-    directory (this will be done automatically in the future)
+* Install the Javascript and CSS dependencies: `npm install`
 * Copy `languagelab/django_environ_empty.py` to `languagelab/django_environ.py`
 * Edit `languagelab/django_environ.py` and fill in the details of your installation
 * Copy `languagelab/static/client/environment_empty.js` to `languagelab/static/client/environment.js`
