@@ -165,7 +165,7 @@ export default class Home extends React.Component {
     render() {
         const className = [
             "navbar",
-            "navbar-expand-xl",
+            "navbar-expand-md",
             "navbar-light",
             "bg-light",
             "sticky-top"
