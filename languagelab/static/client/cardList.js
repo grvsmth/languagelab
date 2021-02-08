@@ -30,6 +30,7 @@ const typeInfo = {
     "lessons": {
         "addable": true,
         "card": LessonCard,
+        "cardLayout": "",
         "doable": false,
         "formCard": LessonFormCard,
         "singular": "lesson",
