@@ -688,7 +688,7 @@ export default class Lab extends React.Component {
         return React.createElement(
             "div",
             {
-                "className": "container"
+                "className": "container-fluid"
             },
             this.nav(),
             this.infoArea(),

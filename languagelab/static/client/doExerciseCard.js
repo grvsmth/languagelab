@@ -364,13 +364,15 @@ export default class DoExerciseCard extends React.Component {
         if (this.props.state.selected.itemType !== "lessons") {
             return null;
         }
+
+        const colorClass = this.props.doButton[direction].color;
         const disabled = this.navDisabled(direction);
         return React.createElement(
             "button",
             {
                 "type": "button",
                 "onClick": () => this.queueNav(direction),
-                "className": "btn btn-" + this.props.doButton[direction].color,
+                "className": "btn col btn-" + colorClass,
                 "disabled": disabled
             },
             this.navButtonElements(direction)
@@ -433,7 +435,7 @@ export default class DoExerciseCard extends React.Component {
                 colorClass = "success";
             }
         }
-        const className = "btn btn-" + colorClass;
+        const className = "btn col-2 btn-" + colorClass;
         return React.createElement(
             "button",
             {
@@ -445,20 +447,6 @@ export default class DoExerciseCard extends React.Component {
             },
             "Mimic ",
             this.mimicCountSpan()
-        );
-    }
-
-    downloadButton() {
-        const disabled = this.props.state.userAudioUrl.length < 11;
-        return React.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": "btn btn-info",
-                "disabled": disabled,
-                "href": this.props.state.userAudioUrl
-            },
-            "Download"
         );
     }
 
@@ -475,7 +463,7 @@ export default class DoExerciseCard extends React.Component {
             "button",
             {
                 "type": "button",
-                "className": "btn btn-info",
+                "className": "btn col-1 btn-info",
                 "onClick": this.exitClick.bind(this)
             },
             commonElements.iconSpan("oi-circle-x")
@@ -504,7 +492,7 @@ export default class DoExerciseCard extends React.Component {
         return React.createElement(
             "div",
             {
-                "className": "btn-group btn-group"
+                "className": "btn-group w-100"
             },
             this.navButton("previous"),
             this.makeMimicButton(),
