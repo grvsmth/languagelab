@@ -115,8 +115,7 @@ export default class LessonCard extends React.Component {
             {},
             this.editLink(),
             " ",
-            this.deleteLink(),
-            this.queueSpan()
+            this.deleteLink()
         );
     }
 
@@ -165,10 +164,10 @@ export default class LessonCard extends React.Component {
         );
     }
 
-    queueSpan() {
+    queueDiv() {
         return React.createElement(
-            "span",
-            {"className": "ml-2"},
+            "div",
+            {},
             util.howManyExercises(this.props.lesson.queueItems),
             this.editQueueButton(),
             this.doQueueButton()
@@ -197,7 +196,8 @@ export default class LessonCard extends React.Component {
                 this.props.lesson.id,
                 this.checkboxClick
                 ),
-            this.linkDiv()
+            this.linkDiv(),
+            this.queueDiv()
         );
     }
 

@@ -22,9 +22,9 @@ export default class Home extends React.Component {
         }
 
         return React.createElement(
-            "div",
-            {"className": "navbar-text"},
-            " v. " + this.props.version
+            "li",
+            {"className": "navbar-text mr-2"},
+            "v. " + this.props.version
         );
     }
 
@@ -93,6 +93,8 @@ export default class Home extends React.Component {
         return React.createElement(
             "ul",
             {"className": "navbar-nav mr-auto"},
+            this.versionText(),
+            this.welcomeItem(),
             this.props.models.map(this.navItem.bind(this))
         );
     }
@@ -103,9 +105,9 @@ export default class Home extends React.Component {
         }
 
         return React.createElement(
-            "div",
+            "li",
             {
-                "className": "navbar-text text-success ml-2"
+                "className": "navbar-text text-success"
             },
             `Welcome ${this.props.currentUser.username}!`
         )
@@ -177,8 +179,6 @@ export default class Home extends React.Component {
                 "className": className
             },
             this.navbarBrand(),
-            this.versionText(),
-            this.welcomeItem(),
             this.toggler(),
             this.navContent()
         );

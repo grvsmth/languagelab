@@ -435,7 +435,7 @@ export default class DoExerciseCard extends React.Component {
                 colorClass = "success";
             }
         }
-        const className = "btn col-2 btn-" + colorClass;
+        const className = "btn col-3 btn-" + colorClass;
         return React.createElement(
             "button",
             {
@@ -463,7 +463,7 @@ export default class DoExerciseCard extends React.Component {
             "button",
             {
                 "type": "button",
-                "className": "btn col-1 btn-info",
+                "className": "btn col-2 btn-info",
                 "onClick": this.exitClick.bind(this)
             },
             commonElements.iconSpan("oi-circle-x")
