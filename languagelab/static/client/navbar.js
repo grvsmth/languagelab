@@ -6,13 +6,25 @@ export default class Home extends React.Component {
 
     navbarBrand() {
         var brandText = "LanguageLab";
-        if (this.props.version) {
-            brandText += " v. " + this.props.version;
-        }
         return React.createElement(
             "a",
-            {"className": "navbar-brand", "href": "#"},
+            {
+                "className": "navbar-brand",
+                "href": "#"
+            },
             brandText
+        );
+    }
+
+    versionText() {
+        if (!this.props.version) {
+            return null;
+        }
+
+        return React.createElement(
+            "li",
+            {"className": "navbar-text mr-2"},
+            "v. " + this.props.version
         );
     }
 
@@ -59,7 +71,7 @@ export default class Home extends React.Component {
 
     navItem(model) {
         var className = "nav-item";
-        if (this.props.activeItem === model.endpoint) {
+        if (this.props.selectedType === model.endpoint) {
             className = "nav-item active";
         }
 
@@ -81,6 +93,8 @@ export default class Home extends React.Component {
         return React.createElement(
             "ul",
             {"className": "navbar-nav mr-auto"},
+            this.versionText(),
+            this.welcomeItem(),
             this.props.models.map(this.navItem.bind(this))
         );
     }
@@ -91,9 +105,9 @@ export default class Home extends React.Component {
         }
 
         return React.createElement(
-            "span",
+            "li",
             {
-                "className": "nav-item"
+                "className": "navbar-text text-success"
             },
             `Welcome ${this.props.currentUser.username}!`
         )
@@ -107,7 +121,7 @@ export default class Home extends React.Component {
         return React.createElement(
             "button",
             {
-                "className": "btn btn-secondary ml-1",
+                "className": "btn btn-secondary",
                 "onClick": this.props.logout
             },
             "Logout"
@@ -122,7 +136,6 @@ export default class Home extends React.Component {
                 "id": "navContent"
             },
             this.navUl(),
-            this.welcomeItem(),
             this.logoutButton()
         );
     }
@@ -152,10 +165,18 @@ export default class Home extends React.Component {
     }
 
     render() {
+        const className = [
+            "navbar",
+            "navbar-expand-md",
+            "navbar-light",
+            "bg-light",
+            "sticky-top"
+        ].join(" ");
+
         return React.createElement(
             "nav",
             {
-                "className": "navbar navbar-expand-sm navbar-light bg-light sticky-top"
+                "className": className
             },
             this.navbarBrand(),
             this.toggler(),

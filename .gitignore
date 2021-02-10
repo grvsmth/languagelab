@@ -2,6 +2,7 @@
 admin/
 django_environ.py
 media/
+node_modules
 lib/*/
 data/
 *.log

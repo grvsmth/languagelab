@@ -30,6 +30,7 @@ const typeInfo = {
     "lessons": {
         "addable": true,
         "card": LessonCard,
+        "cardLayout": "",
         "doable": false,
         "formCard": LessonFormCard,
         "singular": "lesson",
@@ -226,7 +227,7 @@ export default class CardList extends React.Component {
         var languages = this.props.state.languages;
 
         if (this.props.state.activity === "edit"
-            && this.props.state.selected.mediaItem === mediaItem.id) {
+            && this.props.state.selected.media === mediaItem.id) {
             cardComponent = MediaFormCard;
         }
 
@@ -247,7 +248,7 @@ export default class CardList extends React.Component {
                 "mediaItem": mediaItem,
                 "saveItem": this.props.saveItem,
                 "selectItem": this.props.selectItem,
-                "selectedItem": this.props.state.selected.mediaItem,
+                "selectedItem": this.props.state.selected.media,
                 "setActivity": this.props.setActivity,
                 "itemUser": this.itemUser(mediaItem)
             },

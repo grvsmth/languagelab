@@ -1,31 +1,34 @@
 <!DOCTYPE html>
 <html>
     <head>
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/open-iconic/font/css/open-iconic-bootstrap.css">
-    <link rel="shortcut icon" href="/static/client/favicon.ico">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/static/node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/node_modules/open-iconic/font/css/open-iconic-bootstrap.css">
+        <link rel="shortcut icon" href="/static/client/favicon.ico">
     </head>
     <body>
         <div id="resultsDiv">Welcome!</div>
+        <script src="/static/node_modules/jquery/dist/jquery.slim.min.js"></script>
+        <script src="/static/node_modules/react/umd/react.development.js">
+        </script>
+        <script src="/static/node_modules/react-dom/umd/react-dom.development.js">
+        </script>
+        <script src="/static/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="/static/node_modules/moment/min/moment.min.js"></script>
+        <script type="module">
+            import Lab from "/static/client/lab.js";
+
+            const init = function() {
+                const navAnchors = document.body.querySelectorAll("#navContent a");
+                const loadingDiv = document.body.querySelectorAll("loadingDiv");
+                const resultsDiv = document.body.querySelector("#resultsDiv");
+
+                ReactDOM.render(
+                    React.createElement(Lab), resultsDiv
+                );
+            }
+
+            window.addEventListener("DOMContentLoaded", init);
+        </script>
     </body>
-    <script src="/static/js/jquery-3.4.1.min.js"></script>
-    <script src="/static/js/react.development.js"></script>
-    <script src="/static/js/react-dom.development.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-    <script src="/static/js/moment.min.js"></script>
-    <script type="module">
-        import Lab from "/static/client/lab.js";
-
-        const init = function() {
-            const navAnchors = document.body.querySelectorAll("#navContent a");
-            const loadingDiv = document.body.querySelectorAll("loadingDiv");
-            const resultsDiv = document.body.querySelector("#resultsDiv");
-
-            ReactDOM.render(
-                React.createElement(Lab), resultsDiv
-            );
-        }
-
-        window.addEventListener("DOMContentLoaded", init);
-    </script>
 </html>
