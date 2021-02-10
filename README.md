@@ -27,7 +27,7 @@ THIS SOFTWARE.
 
 ## Requirements
 
-The full list of Library requirements is at [requirements.txt], but the main
+The full list of Library requirements is at (requirements.txt), but the main
 requirements are Django, the Django Rest Framework and Django-taggit.  The
 Client requirements are in [static/package.json] and include React, React-DOM,
 Moment.js, Bootstrap (requires jQuery) and the Open Iconic icon library.
@@ -54,4 +54,4 @@ Moment.js, Bootstrap (requires jQuery) and the Open Iconic icon library.
 * Log in to `/admin`, create your domain and delete `example.com` so that the links in the activation emails will work
 * Change the `DJANGO_SITE_ID` value in your `django_environ.py` to the ID of the site you just created (probably 2)
 
-## [roadmap.md](Roadmap)
+## [Roadmap](roadmap.md)
