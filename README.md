@@ -27,10 +27,11 @@ THIS SOFTWARE.
 
 ## Requirements
 
-The full list of Library requirements is at (requirements.txt), but the main
-requirements are Django, the Django Rest Framework and Django-taggit.  The
-Client requirements are in [static/package.json] and include React, React-DOM,
-Moment.js, Bootstrap (requires jQuery) and the Open Iconic icon library.
+The full list of Library requirements is in [requirements.txt](requirements.txt),
+but the main requirements are Django, the Django Rest Framework and
+Django-taggit.  The Client requirements are in [static/package.json](static/package.json)
+and include React, React-DOM, Moment.js, Bootstrap (requires jQuery) and the
+Open Iconic icon library.
 
 ## Installation
 

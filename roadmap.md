@@ -26,8 +26,7 @@
 
 ## Version 1.0
 
-* Select exercise times using a graphical drag interface like [HTML Range input]
-(https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/range)
+* Select exercise times using a graphical drag interface like [HTML Range input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/range)
 * Support for video mimicry, enabling signed language and gesture exercises
 * Authorize edit and view access to exercises and lessons based on creator/group
 
