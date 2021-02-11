@@ -40,19 +40,26 @@ Open Iconic icon library.
 * Create a virtual environment for your application
 * Activate the virtual environment
 * Install Python dependencies: `pip install -r requirements.txt`
-* Install the Javascript and CSS dependencies: `npm install`
+* Install the Javascript and CSS dependencies:
+  `npm install --prefix=languagelab/static`
 * Copy `languagelab/django_environ_empty.py` to `languagelab/django_environ.py`
-* Edit `languagelab/django_environ.py` and fill in the details of your installation
-* Copy `languagelab/static/client/environment_empty.js` to `languagelab/static/client/environment.js`
+* Edit `languagelab/django_environ.py` and fill in the details of your
+  installation
+* Copy `languagelab/static/client/environment_empty.js` to
+  `languagelab/static/client/environment.js`
 * Edit `languagelab/static/client/environment.js` and fill in the API hostname
-* Copy the static files including admin site styling: `python manage.py collectstatic`
+* Copy the static files including admin site styling:
+  `python manage.py collectstatic`
 * Run `python manage.py makemigrations languagelab`
 * Run `python manage.py migrate`
 * Run `python manage.py loaddata languagelab/api/fixtures/languages.json`
 * If you want languages that aren't on the language list, download them
-* Create a superuser: `python manage.py createsuperuser --username=joe --email=joe@example.com`
+* Create a superuser:
+  `python manage.py createsuperuser --username=joe --email=joe@example.com`
 * Restart your web server
-* Log in to `/admin`, create your domain and delete `example.com` so that the links in the activation emails will work
-* Change the `DJANGO_SITE_ID` value in your `django_environ.py` to the ID of the site you just created (probably 2)
+* Log in to `/admin`, create your domain and delete `example.com` so that the
+  links in the activation emails will work
+* Change the `DJANGO_SITE_ID` value in your `django_environ.py` to the ID of the
+  site you just created (probably 2)
 
 ## [Roadmap](roadmap.md)
