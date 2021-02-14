@@ -35,6 +35,13 @@ export default class LanguageLabClient {
 
     /*
 
+    */
+    hasToken() {
+        return this.token.length > 0;
+    }
+
+    /*
+
         Set the refresh threshold
 
     */

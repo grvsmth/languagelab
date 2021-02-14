@@ -10,6 +10,7 @@ import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
 
 import LanguageLabClient from "./apiClient.js";
+import storageClient from "./storageClient.js";
 import util from "./util.js";
 
 import config from "./config.js";
@@ -26,6 +27,7 @@ export default class Lab extends React.Component {
 
         this.checkClick = this.checkClick.bind(this);
         this.handleFetchError = this.handleFetchError.bind(this);
+        this.handleToken = this.handleToken.bind(this);
 
         this.queueOperation = {
             "add": this.addToQueue.bind(this),
@@ -40,17 +42,25 @@ export default class Lab extends React.Component {
             "next": this.next.bind(this)
         };
 
+        const storageData = storageClient.storedData();
+
         this.apiClient = new LanguageLabClient();
         this.apiClient.setBaseUrl(environment.api.baseUrl);
         this.apiClient.setHandleToken(this.handleToken.bind(this));
         if (config.api.refreshThreshold) {
             this.apiClient.setRefreshThreshold(config.api.refreshThreshold)
         }
+        if (storageData.token) {
+            this.apiClient.setToken(
+                storageData.token, storageData.tokenTime, storageData.tokenLife
+            );
+        }
 
         this.state = {
-            "activity": "read",
+            "activity": "login",
             "alerts": [],
             "clickedAction": "",
+            "currentUser": storageData.currentUser,
             "exercises": [],
             "languages": [],
             "lastUpdated": "",
@@ -70,8 +80,6 @@ export default class Lab extends React.Component {
             "status": "ready",
             "statusText": "Ready",
             "users": [],
-            "token": "",
-            "tokenExpired": false,
             "userAudioUrl": ""
         };
     }
@@ -82,7 +90,7 @@ export default class Lab extends React.Component {
 
     */
     componentDidMount() {
-        if (!this.state.lastUpdated && this.state.token) {
+        if (!this.state.lastUpdated && this.apiClient.hasToken()) {
             this.fetchAll();
         }
     }
@@ -169,14 +177,22 @@ export default class Lab extends React.Component {
         this.updateStateItem(alert, "alerts");
     }
 
+    findAlert(title) {
+        return this.state.alerts.find((alert) => alert.title === title);
+    }
+
     /*
 
         Handle 401 Unauthorized errors
 
     */
     handleUnauthorized() {
+        const titleText = "Unauthorized on server";
         const errorMessage = "Please try logging in again";
-        this.addAlert("Unauthorized on server", errorMessage);
+        this.setState({"loading": {}});
+        if (!this.findAlert(titleText) && this.state.activity != "login") {
+            this.addAlert(titleText, errorMessage);
+        }
     }
 
     /*
@@ -255,6 +271,10 @@ export default class Lab extends React.Component {
             throw new Error("No token in response!");
         }
 
+        storageClient.setToken(
+            res.response.token, loadTime.format(), res.response.expiresIn
+        );
+
         this.apiClient.setToken(
             res.response.token, loadTime.format(), res.response.expiresIn
         );
@@ -284,8 +304,10 @@ export default class Lab extends React.Component {
             "password": document.getElementById("password").value
         };
 
-        this.apiClient.login(options).then(
-            this.handleToken.bind(this),
+        this.apiClient.login(options).then((res) => {
+                this.setState({"currentUser": username});
+                this.handleToken(res);
+            },
             this.handleTokenError.bind(this)
         );
     }
@@ -297,7 +319,11 @@ export default class Lab extends React.Component {
     */
     logout() {
         if (this.state.currentUser) {
-            this.setState({"currentUser": null, "activity": "login"});
+            storageClient.logout();
+            this.setState({
+                "activity": "login",
+                "currentUser": null
+            });
             return;
         }
     }
