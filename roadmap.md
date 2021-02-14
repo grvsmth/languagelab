@@ -2,7 +2,7 @@
 
 ## Version 0.2 beta
 
-* Crashes on Delete exercise
+* ~~Crashes on Delete exercise~~
 * ~~Roadmap~~
 * Better handling of expired tokens
 * Navigation aids if user has no media, exercises or lessons

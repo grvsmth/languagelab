@@ -214,7 +214,10 @@ LOGGING = {
 }
 
 
-JWT_EXPIRATION_SECONDS = environ.get('JWT_EXPIRATION_SECONDS', '3600')
+JWT_EXPIRATION = environ.get('JWT_EXPIRATION', '1')
+JWT_EXPIRATION_UNITS = environ.get('JWT_EXPIRATION_UNITS', 'hours')
+
+JWT_EXPIRATION_DELTA = timedelta(**{JWT_EXPIRATION_UNITS: int(JWT_EXPIRATION)})
 
 def jwt_response_payload_handler(token, user=None, request=None):
     """
@@ -224,12 +227,12 @@ def jwt_response_payload_handler(token, user=None, request=None):
     """
     return {
         'token': token,
-        'expiresIn': JWT_EXPIRATION_SECONDS
+        'expiresIn': JWT_EXPIRATION_DELTA.total_seconds()
     }
 
 
 JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True,
-    'JWT_EXPIRATION_DELTA': timedelta(seconds=int(JWT_EXPIRATION_SECONDS)),
+    'JWT_EXPIRATION_DELTA': JWT_EXPIRATION_DELTA,
     'JWT_RESPONSE_PAYLOAD_HANDLER': jwt_response_payload_handler
 }

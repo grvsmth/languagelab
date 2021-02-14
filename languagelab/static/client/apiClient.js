@@ -82,7 +82,7 @@ export default class LanguageLabClient {
             throw new Error(this.expiredError);
         }
 
-        if (this.tokenLife - difference < refreshThreshold) {
+        if (this.tokenLife - difference < this.refreshThreshold) {
             this.refreshToken();
         }
     }

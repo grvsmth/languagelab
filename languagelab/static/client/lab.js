@@ -47,7 +47,7 @@ export default class Lab extends React.Component {
         this.apiClient = new LanguageLabClient();
         this.apiClient.setBaseUrl(environment.api.baseUrl);
         this.apiClient.setHandleToken(this.handleToken.bind(this));
-        if (config.api.refreshThreshold) {
+        if (config.api.hasOwnProperty("refreshThreshold")) {
             this.apiClient.setRefreshThreshold(config.api.refreshThreshold)
         }
         if (storageData.token) {
