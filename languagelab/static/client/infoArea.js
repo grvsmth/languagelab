@@ -36,6 +36,14 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    alertTitle(alert) {
+        return React.createElement(
+            "strong",
+            {"className": "mr-1"},
+            alert.title
+        );
+    }
+
     alertDiv(alert) {
         const statusClass = "alert-" + alert.status;
         return React.createElement(
@@ -46,6 +54,7 @@ export default class InfoArea extends React.Component {
                 "key": alert.id,
                 "id": "alert_" + alert.id
             },
+            this.alertTitle(alert),
             alert.message,
             this.dismissButton(alert.id)
         );

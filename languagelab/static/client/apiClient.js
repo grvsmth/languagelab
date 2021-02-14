@@ -2,7 +2,7 @@
     Client for the customized LanguageLab API
 */
 
-const refreshThreshold = 60;
+const DEFAULT_REFRESH_THRESHOLD = 60;
 
 export default class LanguageLabClient {
 
@@ -19,6 +19,7 @@ export default class LanguageLabClient {
         this.tokenLife = 0;
         this.tokenTime = null;
         this.baseUrl = "";
+        this.refreshThreshold = DEFAULT_REFRESH_THRESHOLD;
     }
 
     /*
@@ -30,6 +31,15 @@ export default class LanguageLabClient {
         this.token = token;
         this.tokenTime = new moment(tokenTime);
         this.tokenLife = tokenLife;
+    }
+
+    /*
+
+        Set the refresh threshold
+
+    */
+    setRefreshThreshold(refreshThreshold) {
+        this.refreshThreshold = refreshThreshold;
     }
 
     /*
@@ -56,7 +66,10 @@ export default class LanguageLabClient {
 
     */
     checkToken() {
-        const now = new moment().format();
+        if (this.tokenLife < this.refreshThreshold) {
+            return;
+        }
+
         const difference = new moment().diff(this.tokenTime, "seconds");
         if (this.tokenLife <= difference) {
             throw new Error(this.expiredError);
@@ -117,6 +130,7 @@ export default class LanguageLabClient {
                 res.json().then((resJson) => {
                     if (!resJson.hasOwnProperty("results")) {
                         resolve(resJson);
+                        return;
                     }
 
                     results = results.concat(resJson.results);
@@ -247,7 +261,9 @@ export default class LanguageLabClient {
 
         fetch(apiUrl, options).then((res) => {
             if (res.status < 200 || res.status > 299) {
-                throw new Error("Error refreshing token!");
+                throw new Error(
+                    "Error refreshing token: " + res.statusText
+                );
             }
 
             res.json().then((resJson) => {

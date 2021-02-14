@@ -43,6 +43,9 @@ export default class Lab extends React.Component {
         this.apiClient = new LanguageLabClient();
         this.apiClient.setBaseUrl(environment.api.baseUrl);
         this.apiClient.setHandleToken(this.handleToken.bind(this));
+        if (config.api.refreshThreshold) {
+            this.apiClient.setRefreshThreshold(config.api.refreshThreshold)
+        }
 
         this.state = {
             "activity": "read",
@@ -159,11 +162,21 @@ export default class Lab extends React.Component {
     addAlert(title, message, status="danger") {
         const alert = {
             "id": util.maxId(this.state.alerts) + 1,
-            "title": "Fetch error",
+            "title": title,
             "status": status,
             "message": message
         };
         this.updateStateItem(alert, "alerts");
+    }
+
+    /*
+
+        Handle 401 Unauthorized errors
+
+    */
+    handleUnauthorized() {
+        const errorMessage = "Please try logging in again";
+        this.addAlert("Unauthorized on server", errorMessage);
     }
 
     /*
@@ -173,6 +186,11 @@ export default class Lab extends React.Component {
 
     */
     handleFetchError(err) {
+        if (err.status === 401) {
+            this.handleUnauthorized();
+            return;
+        }
+
         if (err.statusText) {
             console.log("err.statusText", err.statusText);
             this.addAlert("Fetch error", err.statusText);
@@ -267,7 +285,8 @@ export default class Lab extends React.Component {
         };
 
         this.apiClient.login(options).then(
-            this.handleToken.bind(this), this.handleTokenError.bind(this)
+            this.handleToken.bind(this),
+            this.handleTokenError.bind(this)
         );
     }
 
