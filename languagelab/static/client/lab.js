@@ -173,9 +173,9 @@ export default class Lab extends React.Component {
 
     */
     handleFetchError(err) {
-        if (err.hasOwnProperty("statusText")) {
+        if (err.statusText) {
             console.log("err.statusText", err.statusText);
-            this.addAlert("Fetch error", statusText);
+            this.addAlert("Fetch error", err.statusText);
             return;
         }
 
