@@ -27,7 +27,7 @@ from languagelab.api.views import(
     ExerciseViewSet,
     LessonViewSet,
     QueueItemViewSet,
-    current_user
+    current_user,
     )
 from languagelab.settings import API_VERSION, STATIC_ROOT, STATIC_URL
 
@@ -39,6 +39,7 @@ router.register(r'media', MediaItemViewSet)
 router.register(r'exercises', ExerciseViewSet)
 router.register(r'lessons', LessonViewSet)
 router.register(r'queueItems', QueueItemViewSet)
+# router.register(r'all', AllView)
 
 urlpatterns = [
     path('api/{}/'.format(API_VERSION), include(router.urls)),

@@ -29,7 +29,14 @@ const config = {
             {
                 "endpoint": "users",
                 "menu": "Users",
-                "item": "user"
+                "item": "user",
+                "hideNav": true,
+            },
+            {
+                "endpoint": "controls",
+                "menu": "Controls",
+                "item": "control",
+                "local": true
             }
         ]
     },
@@ -66,9 +73,6 @@ const config = {
             "icon": "oi-caret-right",
             "color": "info"
         }
-    },
-    "navUrl": {
-        "users": "/admin/"
     },
     "message": {
         "lessonQueue": "If you add lessons, you can add this exercise to a lesson"

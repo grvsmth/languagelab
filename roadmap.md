@@ -5,6 +5,7 @@
 * ~~Crashes on Delete exercise~~
 * ~~Roadmap~~
 * ~~Better handling of expired tokens~~
+* Control panel
 * Export/import to JSON
 * Navigation aids if user has no media, exercises or lessons
 * Prune the state variables passed to cards
@@ -37,7 +38,6 @@
 * Dialogue exercises
 * Separate web client into a different repo
 * Auto-register with email
-* Admin control panel
 * Internationalization
 * Control doExercise with keyboard and headset buttons (May require browser
 upgrades)

@@ -9,6 +9,7 @@ import LoadingModal from "./loadingModal.js";
 import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
 
+import controls from "./controls.js";
 import LanguageLabClient from "./apiClient.js";
 import storageClient from "./storageClient.js";
 import util from "./util.js";
@@ -60,6 +61,7 @@ export default class Lab extends React.Component {
             "activity": "login",
             "alerts": [],
             "clickedAction": "",
+            "controls": controls,
             "currentUser": storageData.currentUser,
             "exercises": [],
             "languages": [],
@@ -132,7 +134,9 @@ export default class Lab extends React.Component {
     fetchAll() {
         const loading = {};
 
-        const thingsToLoad = config.api.models.map(model => model.endpoint)
+        const thingsToLoad = config.api.models
+            .filter(model => !model.local)
+            .map(model => model.endpoint)
             .concat(["currentUser"]);
 
         thingsToLoad.forEach((endpoint) => {
@@ -577,6 +581,20 @@ export default class Lab extends React.Component {
         this.selectByRank(rank + 1);
     }
 
+    handleExportData(res) {
+        console.log("handleExportData", res);
+    }
+
+    exportData(endpoint) {
+        const apiUrl = [
+            environment.api.baseUrl, endpoint
+        ].join("/");
+
+        this.apiClient.fetchData(apiUrl).then(
+            this.handleExportData.bind(this), this.handleFetchError.bind(this)
+        );
+    }
+
     playMimic() {
         this.setState({
             "nowPlaying": this.state.userAudioUrl,
@@ -638,6 +656,7 @@ export default class Lab extends React.Component {
                 "checkClick": this.checkClick,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
+                "exportData": this.exportData.bind(this),
                 "readMode": this.readMode.bind(this),
                 "maxRank": this.maxRank.bind(this),
                 "onMediaLoaded": this.onMediaLoaded.bind(this),
@@ -683,7 +702,6 @@ export default class Lab extends React.Component {
                 "logout": this.logout.bind(this),
                 "models": config.api.models,
                 "navClick": this.readMode.bind(this),
-                "navUrl": config.navUrl,
                 "selectedType": this.state.selected.itemType,
                 "version": config.version
             },
