@@ -4,7 +4,8 @@
 
 * ~~Crashes on Delete exercise~~
 * ~~Roadmap~~
-* Better handling of expired tokens
+* ~~Better handling of expired tokens~~
+* Export/import to JSON
 * Navigation aids if user has no media, exercises or lessons
 * Prune the state variables passed to cards
 * Organize the functions passed to cards
@@ -15,12 +16,11 @@
 ## Version 0.3
 
 * Filter by media, tag, title substring, availability, duration
-* Export/import to JSON
+* Help documentation
 
 ## Version 0.4
 
 * Keyboard shortcuts
-* Help documentation
 * Confirmation dialog on delete
 * Migrate from moment.js to something else
 
