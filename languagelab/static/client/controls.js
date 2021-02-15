@@ -9,7 +9,7 @@ const exports = [
     {
         "name": "export",
         "description": "Export language lab data to a JSON file",
-        "endpoint": "media",
+        "endpoint": "all",
         "mimeType": "application/json",
         "title": "Export data"
     },

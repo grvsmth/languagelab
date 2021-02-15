@@ -5,8 +5,9 @@
 * ~~Crashes on Delete exercise~~
 * ~~Roadmap~~
 * ~~Better handling of expired tokens~~
-* Control panel
-* Export/import to JSON
+* ~~Control panel~~
+* ~~Export to JSON~~
+* Import JSON
 * Navigation aids if user has no media, exercises or lessons
 * Prune the state variables passed to cards
 * Organize the functions passed to cards

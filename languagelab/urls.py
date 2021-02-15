@@ -28,6 +28,7 @@ from languagelab.api.views import(
     LessonViewSet,
     QueueItemViewSet,
     current_user,
+    all
     )
 from languagelab.settings import API_VERSION, STATIC_ROOT, STATIC_URL
 
@@ -39,7 +40,6 @@ router.register(r'media', MediaItemViewSet)
 router.register(r'exercises', ExerciseViewSet)
 router.register(r'lessons', LessonViewSet)
 router.register(r'queueItems', QueueItemViewSet)
-# router.register(r'all', AllView)
 
 urlpatterns = [
     path('api/{}/'.format(API_VERSION), include(router.urls)),
@@ -48,6 +48,7 @@ urlpatterns = [
         'api-auth/',
         include('rest_framework.urls', namespace='rest_framework')
         ),
+    path('api/{}/all/'.format(API_VERSION), all),
     path('api/{}/currentUser/'.format(API_VERSION), current_user),
     path('api/{}/token-auth/'.format(API_VERSION), obtain_jwt_token),
     path('api/{}/token-refresh/'.format(API_VERSION), refresh_jwt_token)

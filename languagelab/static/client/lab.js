@@ -190,8 +190,7 @@ export default class Lab extends React.Component {
         Handle 401 Unauthorized errors
 
     */
-    handleUnauthorized() {
-        const titleText = "Unauthorized on server";
+    handleUnauthorized(titleText) {
         const errorMessage = "Please try logging in again";
         this.setState({"loading": {}});
         if (!this.findAlert(titleText) && this.state.activity != "login") {
@@ -207,7 +206,7 @@ export default class Lab extends React.Component {
     */
     handleFetchError(err) {
         if (err.status === 401) {
-            this.handleUnauthorized();
+            this.handleUnauthorized("Unauthorized on server");
             return;
         }
 
@@ -218,6 +217,11 @@ export default class Lab extends React.Component {
         }
 
         if (err.hasOwnProperty("message")) {
+            if (err.message === "Expired token!") {
+                this.handleUnauthorized(err.message);
+                return;
+            }
+
             console.log("err.message", err.message);
             this.addAlert("Fetch error", err.message);
             return;
