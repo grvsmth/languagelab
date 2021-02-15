@@ -581,18 +581,20 @@ export default class Lab extends React.Component {
         this.selectByRank(rank + 1);
     }
 
-    handleExportData(res) {
-        console.log("handleExportData", res);
+    handleExportData(res, mimeType) {
+        const blob = new Blob([JSON.stringify(res)], {"type": mimeType});
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl);
     }
 
-    exportData(endpoint) {
+    exportData(control) {
         const apiUrl = [
-            environment.api.baseUrl, endpoint
+            environment.api.baseUrl, control.endpoint
         ].join("/");
 
-        this.apiClient.fetchData(apiUrl).then(
-            this.handleExportData.bind(this), this.handleFetchError.bind(this)
-        );
+        this.apiClient.fetchData(apiUrl).then((res) => {
+                this.handleExportData(res, control.mimeType);
+        }, this.handleFetchError.bind(this));
     }
 
     playMimic() {
