@@ -51,6 +51,9 @@ def current_user(request):
 
 def load_data(type):
     """
+    Given a dict with the model and serializer classes, retrieve the data
+
+    https://stackoverflow.com/a/45415165
     """
     queryset = type["model_class"].objects.all()
     serializer = type["serializer_class"](queryset, many=True)
@@ -64,8 +67,6 @@ def load_data(type):
 def all(request):
     """
     Retrieve and set all the data types except users
-
-    https://stackoverflow.com/a/45415165
     """
 
     item_types = [
@@ -164,9 +165,11 @@ class ExerciseViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
 
-    def destroy(self, request):
+    def destroy(self, request, pk=None):
+        exercise_id = self.get_object().id
         self.perform_destroy(self.get_object())
-        QueueItem.objects.renumber(user=self.request.user)
+
+        QueueItem.objects.delete_by_exercise(exercise_id)
         return Response(status=HTTP_204_NO_CONTENT)
 
 

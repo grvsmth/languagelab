@@ -481,7 +481,7 @@ export default class Lab extends React.Component {
     deleteClick(itemType, itemId) {
         this.apiClient.delete(environment.api.baseUrl, itemType, itemId)
             .then((res) => {
-                this.fetchData(itemType);
+                this.fetchAll();
             }, this.handleFetchError
         );
     }

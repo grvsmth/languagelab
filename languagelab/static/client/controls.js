@@ -12,11 +12,6 @@ const exports = [
         "endpoint": "all",
         "mimeType": "application/json",
         "title": "Export data"
-    },
-    {
-        "name": "import",
-        "title": "Import data",
-        "description": "Import language lab data from a JSON file"
     }
 ];
 

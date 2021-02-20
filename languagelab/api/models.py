@@ -155,6 +155,18 @@ class QueueManager (Manager):
                 queue_item.save()
                 i += 1
 
+    def delete_by_exercise(self, exercise_id):
+        """
+        Delete all queueItems with a given exercise and renumber the queue
+        """
+
+        queue_items = super().get_queryset().filter(exercise=exercise_id)
+
+        for queue_item in queue_items:
+            lesson_id = queue_item.lesson
+            queue_item.delete()
+            self.renumber(lesson_id)
+
     @staticmethod
     def is_unmovable(queue, old_rank, direction):
         if direction == "up":
