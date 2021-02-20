@@ -1,15 +1,15 @@
 import util from "./util.js";
 
-import ControlCard from "./controlCard.js";
-import DoExerciseCard from "./doExerciseCard.js";
-import ExerciseCard from "./exerciseCard.js";
-import ExerciseFormCard from "./exerciseFormCard.js";
-import LanguageCard from "./languageCard.js";
-import LanguageFormCard from "./languageFormCard.js";
-import LessonCard from "./lessonCard.js";
-import LessonFormCard from "./lessonFormCard.js";
-import MediaCard from "./mediaCard.js";
-import MediaFormCard from "./mediaFormCard.js";
+import ControlCard from "./cards/controlCard.js";
+import DoExerciseCard from "./cards/doExerciseCard.js";
+import ExerciseCard from "./cards/exerciseCard.js";
+import ExerciseFormCard from "./cards/exerciseFormCard.js";
+import LanguageCard from "./cards/languageCard.js";
+import LanguageFormCard from "./cards/languageFormCard.js";
+import LessonCard from "./cards/lessonCard.js";
+import LessonFormCard from "./cards/lessonFormCard.js";
+import MediaCard from "./cards/mediaCard.js";
+import MediaFormCard from "./cards/mediaFormCard.js";
 
 const typeInfo = {
     "media": {

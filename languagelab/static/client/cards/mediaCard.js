@@ -16,9 +16,8 @@ export default class MediaCard extends React.Component {
         var languageText = "";
         if (this.props.mediaItem.language && this.props.languages
             && this.props.languages.length > this.props.mediaItem.language) {
-            const language = util.findItem(
-                this.props.languages,
-                this.props.mediaItem.language
+            const language = this.props.languages.find(
+                (language) => language.id === this.props.mediaItem.language.id
             );
             languageText = language.name + ", ";
         }

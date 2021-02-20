@@ -1,4 +1,4 @@
-import commonElements from "./commonElements.js";
+import commonElements from "./cards/commonElements.js";
 
 export default class InfoArea extends React.Component {
 
