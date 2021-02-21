@@ -1,4 +1,8 @@
-import config from "./config.js";
+/*
+
+    global moment, React, PropTypes
+
+*/
 import commonElements from "./commonElements.js";
 import util from "./util.js";
 
@@ -83,15 +87,15 @@ export default class ExerciseCardBody extends React.Component {
         )
     }
 
-    editClick(event) {
+    editClick() {
         this.props.selectItem(this.props.exercise.id, "edit");
     }
 
-    deleteClick(event) {
+    deleteClick() {
         this.props.deleteClick("exercises", this.props.exercise.id);
     }
 
-    startClick(event) {
+    startClick() {
         this.props.startExercise(this.props.exercise.id);
     }
 
@@ -190,3 +194,17 @@ export default class ExerciseCardBody extends React.Component {
         );
     }
 }
+
+ExerciseCardBody.propTypes = {
+    "activity": PropTypes.string.isRequired,
+    "checkClick": PropTypes.func.isRequired,
+    "deleteClick": PropTypes.func.isRequired,
+    "exercise": PropTypes.object.isRequired,
+    "itemUser": PropTypes.object.isRequired,
+    "languages": PropTypes.array.isRequired,
+    "mediaItem": PropTypes.object.isRequired,
+    "saveItem": PropTypes.func.isRequired,
+    "selectItem": PropTypes.func.isRequired,
+    "selectedType": PropTypes.string.isRequired,
+    "startExercise": PropTypes.func.isRequired
+};

@@ -3,17 +3,12 @@
     global React, PropTypes
 
 */
-import config from "./config.js";
-
 import util from "./util.js";
 import commonElements from "./commonElements.js";
 
 export default class ExerciseFormCard extends React.Component {
     constructor(props) {
         super(props);
-    }
-
-    inputChange(event) {
     }
 
     cancelClick() {
@@ -71,7 +66,10 @@ export default class ExerciseFormCard extends React.Component {
         if (defaultVal) {
             defaultValue = defaultVal;
         }
-        if (this.props.exercise.hasOwnProperty(fieldName)) {
+        if (Object.prototype.hasOwnProperty.call(
+            this.props.exercise.hasOwnProperty, "fieldName"
+            )
+        ) {
             defaultValue = this.props.exercise[fieldName];
         }
 
@@ -203,5 +201,12 @@ export default class ExerciseFormCard extends React.Component {
             this.cardBody()
         );
     }
-
 }
+
+ExerciseFormCard.propTypes = {
+    "exercise": PropTypes.object.isRequired,
+    "media": PropTypes.array.isRequired,
+    "saveItem": PropTypes.func.isRequired,
+    "selectedType": PropTypes.string.isRequired,
+    "setActivity": PropTypes.func.isRequired
+};
