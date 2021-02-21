@@ -1,4 +1,9 @@
-export default class Home extends React.Component {
+/*
+
+    global React, PropTypes
+
+*/
+export default class Navbar extends React.Component {
     constructor(props) {
         super(props);
         this.navClick = this.navClick.bind(this);
@@ -97,7 +102,7 @@ export default class Home extends React.Component {
         );
     }
 
-    welcomeItem(username) {
+    welcomeItem() {
         if (!this.props.currentUser) {
             return null;
         }
@@ -182,3 +187,12 @@ export default class Home extends React.Component {
         );
     }
 }
+
+Navbar.propTypes = {
+    "currentUser": PropTypes.object.isRequired,
+    "logout": PropTypes.func.isRequired,
+    "models": PropTypes.object.isRequired,
+    "navClick": PropTypes.func.isRequired,
+    "selectedType": PropTypes.string.isRequired,
+    "version": PropTypes.string.isRequired
+};

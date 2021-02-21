@@ -536,3 +536,7 @@ export default class CardList extends React.Component {
         );
     }
 }
+
+CardList.propTypes = {
+    "state": PropTypes.object.isRequired
+};

@@ -1,7 +1,6 @@
 const environment = {
     "api": {
-        "baseUrl": "https://example.com/api/0.2",
-        }
+        "baseUrl": "https://example.com/api/0.2"
     }
 };
 

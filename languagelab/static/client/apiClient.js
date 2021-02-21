@@ -2,6 +2,11 @@
     Client for the customized LanguageLab API
 */
 
+/*
+
+    global moment, PropTypes
+
+*/
 const DEFAULT_REFRESH_THRESHOLD = 60;
 
 export default class LanguageLabClient {
@@ -119,7 +124,7 @@ export default class LanguageLabClient {
                 reject("No token in API client object!");
             }
 
-            if (!options.hasOwnProperty("headers")) {
+            if (!Object.prototype.hasOwnProperty.call(options, "headers")) {
                 options.headers = {};
             }
             options.headers.Authorization = "JWT " + this.token;
@@ -135,7 +140,11 @@ export default class LanguageLabClient {
                 }
 
                 res.json().then((resJson) => {
-                    if (!resJson.hasOwnProperty("results")) {
+                    if (!Object.prototype.hasOwnProperty.call(
+                        resJson,
+                        "results"
+                        )
+                    ) {
                         resolve(resJson);
                         return;
                     }
@@ -278,7 +287,7 @@ export default class LanguageLabClient {
                     {"type": "token-auth", "response": resJson}
                 );
             }, (err) => {
-                console.log(res);
+                console.log(err);
                 throw new Error("Error reading token JSON!");
             });
         });
