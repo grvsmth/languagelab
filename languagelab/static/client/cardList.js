@@ -1,20 +1,28 @@
+/*
+
+    global React, PropTypes
+
+*/
 import util from "./util.js";
 
-import ControlCard from "./controlCard.js";
-import DoExerciseCard from "./doExerciseCard.js";
-import ExerciseCard from "./exerciseCard.js";
-import ExerciseFormCard from "./exerciseFormCard.js";
-import LanguageCard from "./languageCard.js";
-import LanguageFormCard from "./languageFormCard.js";
-import LessonCard from "./lessonCard.js";
-import LessonFormCard from "./lessonFormCard.js";
-import MediaCard from "./mediaCard.js";
-import MediaFormCard from "./mediaFormCard.js";
+import ControlCard from "./cards/controlCard.js";
+import DoExerciseCard from "./cards/doExerciseCard.js";
+import ExerciseCard from "./cards/exerciseCard.js";
+import ExerciseFormCard from "./cards/exerciseFormCard.js";
+import help from "./help.js";
+import HelpCard from "./cards/helpCard.js";
+import LanguageCard from "./cards/languageCard.js";
+import LanguageFormCard from "./cards/languageFormCard.js";
+import LessonCard from "./cards/lessonCard.js";
+import LessonFormCard from "./cards/lessonFormCard.js";
+import MediaCard from "./cards/mediaCard.js";
+import MediaFormCard from "./cards/mediaFormCard.js";
 
 const typeInfo = {
     "media": {
         "addable": true,
         "card": MediaCard,
+        "cardLayout": "",
         "doable": false,
         "formCard": MediaFormCard,
         "singular": "media item",
@@ -23,6 +31,7 @@ const typeInfo = {
     "exercises": {
         "addable": true,
         "card": ExerciseCard,
+        "cardLayout": "",
         "doable": true,
         "formCard": ExerciseFormCard,
         "singular": "exercise",
@@ -52,6 +61,14 @@ const typeInfo = {
         "doable": false,
         "singular": "control",
         "userField": ""
+    },
+    "help": {
+        "addable": false,
+        "card": HelpCard,
+        "cardLayout": "card-columns",
+        "doable": false,
+        "singular": "help items",
+        "userField": ""
     }
 };
 
@@ -64,6 +81,7 @@ export default class CardList extends React.Component {
         this.itemCard = {
             "controls": this.controlCard.bind(this),
             "exercises": this.exerciseCard.bind(this),
+            "help": this.helpCard.bind(this),
             "languages": this.languageCard.bind(this),
             "lessons": this.lessonCard.bind(this),
             "media": this.mediaCard.bind(this)
@@ -200,6 +218,17 @@ export default class CardList extends React.Component {
         );
     }
 
+    helpCard(helpItem) {
+        return React.createElement(
+            HelpCard,
+            {
+                "key": helpItem.title,
+                "helpItem": helpItem
+            },
+            null
+        )
+    }
+
     doCard(key, exercise) {
         const lesson = util.findItem(
             this.props.state.lessons, this.props.state.selected.lessons
@@ -213,28 +242,20 @@ export default class CardList extends React.Component {
         const maxRank = this.props.maxRank();
 
         const options = {
-            "afterMimic": this.props.afterMimic,
             "currentUser": this.props.currentUser,
             "doButton": this.props.doButton,
+            "doFunction": this.props.doFunction,
             "key": key,
             "exercise": exercise,
-            "readMode": this.props.readMode,
             "exerciseUser": this.itemUser(exercise, "exercises"),
             "languages": this.findLanguage(exercise),
             "lesson": lesson,
             "maxRank": maxRank,
             "mediaItem": mediaItem,
-            "onMediaLoaded": this.props.onMediaLoaded,
-            "queueNav": this.props.queueNav,
             "queueInfo": this.queueInfo(lesson, rank, maxRank),
-            "playMimic": this.props.playMimic,
-            "playModel": this.props.playModel,
             "rank": rank,
             "setActivity": this.props.setActivity,
-            "setStatus": this.props.setStatus,
-            "setUserAudioUrl": this.props.setUserAudioUrl,
-            "state": this.props.state,
-            "toggleOnlyExercise": this.props.toggleOnlyExercise
+            "state": this.props.state
         };
 
         return React.createElement(
@@ -432,6 +453,10 @@ export default class CardList extends React.Component {
     }
 
     addCard(addable, cardId="form") {
+        if (!addable) {
+            return null;
+        }
+
         const selectedState = this.props.state.selected;
         if (cardId === "initial"
             && !this.props.state[selectedState.itemType].length) {
@@ -446,13 +471,14 @@ export default class CardList extends React.Component {
             );
         }
 
-        if (addable) {
-            return this.addButtonCard(cardId);
-        }
-        return null;
+        return this.addButtonCard(cardId);
     }
 
     makeItemList(itemType) {
+        if (itemType === "help") {
+            return Object.values(help);
+        }
+
         if (this.props.state.activity !== "editQueue") {
             return this.props.state[itemType];
         }
@@ -464,8 +490,19 @@ export default class CardList extends React.Component {
     }
 
     makeElements(itemType) {
-        if (!this.props.state[itemType].length
-            || !typeInfo[itemType].hasOwnProperty("card")) {
+        const items = itemType === "help" ?
+            Object.values(help) : this.props.state[itemType];
+
+        if (!items.length || !Object.prototype.hasOwnProperty.call(
+            typeInfo[itemType],
+            "card"
+            )
+        ) {
+
+            if (Object.prototype.hasOwnProperty.call(help, itemType)) {
+                return this.helpCard(help[itemType]);
+            }
+
             return React.createElement(
                 "div",
                 {"className": "card"},
@@ -493,3 +530,20 @@ export default class CardList extends React.Component {
         );
     }
 }
+
+CardList.propTypes = {
+    "checkClick": PropTypes.func.isRequired,
+    "currentUser": PropTypes.object.isRequired,
+    "deleteClick": PropTypes.func.isRequired,
+    "doButton": PropTypes.object.isRequired,
+    "doFunction": PropTypes.object.isRequired,
+    "exportData": PropTypes.func.isRequired,
+    "maxRank": PropTypes.number.isRequired,
+    "queueClick": PropTypes.object.isRequired,
+    "saveItem": PropTypes.func.isRequired,
+    "selectItem": PropTypes.func.isRequired,
+    "setActivity": PropTypes.func.isRequired,
+    "startExercise": PropTypes.func.isRequired,
+    "state": PropTypes.object.isRequired,
+    "toggleLesson": PropTypes.func.isRequired
+};

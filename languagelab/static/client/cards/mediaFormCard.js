@@ -1,12 +1,22 @@
+/*
+
+    global React, moment, PropTypes
+
+*/
 import config from "./config.js";
 
 import util from "./util.js";
 import commonElements from "./commonElements.js";
 
-export default class LessonFormCard extends React.Component {
+export default class MediaFormCard extends React.Component {
     constructor(props) {
         super(props);
 
+        this.audio = React.createRef();
+    }
+
+    inputChange(event) {
+        this.audio.current.src = event.target.value;
     }
 
     cancelClick() {
@@ -24,7 +34,35 @@ export default class LessonFormCard extends React.Component {
             const tags = node.value.split(config.tagSplitRE);
             return tags;
         }
+        if (node.name === "language") {
+            return parseInt(node.value);
+        }
         return node.value;
+    }
+
+    loadedMetadata(event) {
+        const durationMoment = moment.duration(event.target.duration * 1000);
+
+        const durationInputSelector = [
+            "#duration",
+            this.props.mediaItem.id
+            ].join("_");
+
+        const durationInput = document.querySelector(durationInputSelector);
+        durationInput.value = util.formatDuration(durationMoment);
+    }
+
+    audioElement() {
+        const audio = React.createElement(
+            "audio",
+            {
+                "id": "audio1",
+                "onLoadedMetadata": this.loadedMetadata.bind(this),
+                "ref": this.audio
+            },
+            null
+        );
+        return audio;
     }
 
     saveClick(event) {
@@ -33,7 +71,7 @@ export default class LessonFormCard extends React.Component {
         )
         const formData = Array.from(formInputs.values())
             .reduce((object, item) => {
-                if (item.name === "lessonFile") {
+                if (item.name === "mediaFile") {
                     // TODO handle later
                     return object;
                 }
@@ -41,12 +79,11 @@ export default class LessonFormCard extends React.Component {
                 return object;
             }, {});
 
-        const audio1 = document.querySelector("#audio1");
         var itemId = null;
-        if (typeof this.props.lesson.id === "number") {
-            itemId = this.props.lesson.id;
+        if (typeof this.props.mediaItem.id === "number") {
+            itemId = this.props.mediaItem.id;
         }
-        this.props.saveItem(formData, "lessons", itemId);
+        this.props.saveItem(formData, "media", itemId);
     }
 
     textInput(fieldName, inputId, onChange, defaultValue) {
@@ -74,11 +111,15 @@ export default class LessonFormCard extends React.Component {
         if (defaultVal) {
             defaultValue = defaultVal;
         }
-        if (this.props.lesson.hasOwnProperty(fieldName)) {
-            defaultValue = this.props.lesson[fieldName];
+        if (Object.prototype.hasOwnProperty.call(
+            this.props.mediaItem,
+            fieldName
+            )
+        ) {
+            defaultValue = this.props.mediaItem[fieldName];
         }
 
-        const inputId = [fieldName, this.props.lesson.id].join("_");
+        const inputId = [fieldName, this.props.mediaItem.id].join("_");
         return React.createElement(
             "div",
             {"className": "col-sm"},
@@ -89,8 +130,8 @@ export default class LessonFormCard extends React.Component {
 
     tagsInput(inputId) {
         var defaultValue = "";
-        if (this.props.lesson.tags) {
-            defaultValue = this.props.lesson.tags.join(", ");
+        if (this.props.mediaItem.tags) {
+            defaultValue = this.props.mediaItem.tags.join(", ");
         }
         return React.createElement(
             "input",
@@ -106,7 +147,7 @@ export default class LessonFormCard extends React.Component {
     }
 
     tagsInputDiv() {
-        const inputId = "tags_" + this.props.lesson.id;
+        const inputId = "tags_" + this.props.mediaItem.id;
 
         return React.createElement(
             "div",
@@ -114,6 +155,72 @@ export default class LessonFormCard extends React.Component {
             commonElements.itemLabel("tags", inputId),
             this.tagsInput(inputId)
         )
+    }
+
+    fileInput(fieldName, inputId) {
+        return React.createElement(
+            "input",
+            {
+                "type": "file",
+                "className": "form-control-file",
+                "id": inputId,
+                "name": fieldName
+            },
+            null
+        );
+    }
+
+    fileInfo() {
+        if (!this.props.mediaItem.mediaFile) {
+            return null;
+        }
+
+        const fileUrlParts = this.props.mediaItem.mediaFile.split("/");
+        const fileNameSpan = React.createElement(
+            "span",
+            {"className": "text-success"},
+            fileUrlParts[fileUrlParts.length-1]
+        );
+
+        return React.createElement(
+            "span",
+            {"className": "badge"},
+            "uploaded media file is ",
+            fileNameSpan
+        );
+
+    }
+
+    fileLabel(fieldName, inputId) {
+        if (!this.props.mediaItem[fieldName]) {
+            return commonElements.itemLabel("or upload a file", inputId);
+        }
+
+        const fileUrlParts = this.props.mediaItem[fieldName].split("/");
+        const fileNameSpan = React.createElement(
+            "span",
+            {"className": "text-success"},
+            fileUrlParts[fileUrlParts.length-1]
+        );
+
+        return React.createElement(
+            "label",
+            {"htmlFor": inputId},
+            "or upload a file to replace ",
+            fileNameSpan
+        );
+
+    }
+
+    fileInputDiv(fieldName) {
+        const inputId = [fieldName, this.props.mediaItem.id].join("_");
+        return React.createElement(
+            "div",
+            {"className": "col-sm"},
+            commonElements.itemLabel("or upload a file", inputId),
+            this.fileInput(fieldName, inputId),
+            this.fileInfo()
+        );
     }
 
     itemOption(optionKey, optionValue) {
@@ -131,7 +238,7 @@ export default class LessonFormCard extends React.Component {
                 "className": "form-control",
                 "id": inputId,
                 "name": fieldName,
-                "defaultValue": this.props.lesson[fieldName]
+                "defaultValue": this.props.mediaItem[fieldName]
             },
             ...Object.keys(options).map((optionKey) => {
                 return this.itemOption(
@@ -147,7 +254,7 @@ export default class LessonFormCard extends React.Component {
             return null;
         }
 
-        const inputId = [fieldName, this.props.lesson.id].join("_");
+        const inputId = [fieldName, this.props.mediaItem.id].join("_");
         return React.createElement(
             "div",
             {"className": "form-group mx-1"},
@@ -157,32 +264,32 @@ export default class LessonFormCard extends React.Component {
     }
 
     nameRow() {
-        /*
-
-            The "isAvailable" and "isPublic" checkboxes are currently not
-            implemented, but this is what would display them
-
-
-
-        */
         return React.createElement(
             "div",
             {"className": "form-row mt-3"},
             this.textInputDiv("name"),
-            this.textInputDiv("description"),
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.lesson.isAvailable,
-                "available",
-                this.props.lesson.id
-            ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.lesson.isPublic,
-                "public",
-                this.props.lesson.id
-            )
+            this.textInputDiv("creator"),
+            this.textInputDiv("rights")
         );
+    }
+
+    fileRow() {
+        return React.createElement(
+            "div",
+            {"className": "form-row mt-3"},
+            this.textInputDiv("mediaUrl", this.inputChange.bind(this)),
+            this.fileInputDiv("mediaFile"),
+            this.textInputDiv("duration", null, "00:00:00"),
+            this.audioElement()
+        );
+    }
+
+    languageObject() {
+        const languageObject = this.props.languages.reduce((object, item) => {
+            object[item.id] = item.name;
+            return object;
+        }, {});
+        return languageObject;
     }
 
     saveButton() {
@@ -222,9 +329,21 @@ export default class LessonFormCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "form-row mt-3"},
-            this.textInputDiv("notes"),
             this.tagsInputDiv(),
-            this.textInputDiv("level", null, "0")
+            this.selectDiv("format", config.formatName),
+            this.selectDiv("language", this.languageObject()),
+            commonElements.checkboxDiv(
+                "isAvailable",
+                this.props.mediaItem.isAvailable,
+                "available",
+                this.props.mediaItem.id
+            ),
+            commonElements.checkboxDiv(
+                "isPublic",
+                this.props.mediaItem.isPublic,
+                "public",
+                this.props.mediaItem.id
+            )
         );
     }
 
@@ -241,9 +360,10 @@ export default class LessonFormCard extends React.Component {
             "form",
             {
                 "className": "card-body",
-                "id": "form_" + this.props.lesson.id
+                "id": "form_" + this.props.mediaItem.id
             },
             this.nameRow(),
+            this.fileRow(),
             this.optionsRow(),
             this.submitRow()
         );
@@ -256,5 +376,11 @@ export default class LessonFormCard extends React.Component {
             this.cardBody()
         );
     }
-
 }
+
+MediaFormCard.propTypes = {
+    "languages": PropTypes.array.isRequired,
+    "mediaItem": PropTypes.object.isRequired,
+    "setActivity": PropTypes.func.isRequired,
+    "saveItem": PropTypes.func.isRequired
+};

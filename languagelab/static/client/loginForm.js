@@ -1,7 +1,8 @@
 /*
 
-*/
+    global React, PropTypes
 
+*/
 export default class LoginForm extends React.Component {
     constructor(props) {
         super(props);
@@ -84,3 +85,7 @@ export default class LoginForm extends React.Component {
         )
     }
 }
+
+LoginForm.propTypes = {
+    "loginClick": PropTypes.func.isRequired
+};

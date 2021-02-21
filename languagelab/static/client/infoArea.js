@@ -1,4 +1,9 @@
-import commonElements from "./commonElements.js";
+/*
+
+    global React, PropTypes
+
+*/
+import commonElements from "./cards/commonElements.js";
 
 export default class InfoArea extends React.Component {
 
@@ -136,5 +141,14 @@ export default class InfoArea extends React.Component {
         }
         return null;
     }
+}
 
+InfoArea.propTypes = {
+    "activity": PropTypes.string.isRequired,
+    "alerts": PropTypes.array.isRequired,
+    "dismissAlert": PropTypes.func.isRequired,
+    "iso639": PropTypes.object.isRequired,
+    "lesson": PropTypes.object,
+    "selectedType": PropTypes.string.isRequired,
+    "setActivity": PropTypes.func.isRequired
 };

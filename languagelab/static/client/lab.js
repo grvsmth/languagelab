@@ -3,6 +3,12 @@
     Main page for Language Lab, with state handling
 
 */
+
+/*
+
+    global moment, React
+
+*/
 import CardList from "./cardList.js";
 import InfoArea from "./infoArea.js";
 import LoadingModal from "./loadingModal.js";
@@ -48,7 +54,9 @@ export default class Lab extends React.Component {
         this.apiClient = new LanguageLabClient();
         this.apiClient.setBaseUrl(environment.api.baseUrl);
         this.apiClient.setHandleToken(this.handleToken.bind(this));
-        if (config.api.hasOwnProperty("refreshThreshold")) {
+        if (Object.prototype.hasOwnProperty.call(
+            config.api, "refreshThreshold")
+        ) {
             this.apiClient.setRefreshThreshold(config.api.refreshThreshold)
         }
         if (storageData.token) {
@@ -216,7 +224,7 @@ export default class Lab extends React.Component {
             return;
         }
 
-        if (err.hasOwnProperty("message")) {
+        if (Object.prototype.hasOwnProperty.call(err, "message")) {
             if (err.message === "Expired token!") {
                 this.handleUnauthorized(err.message);
                 return;
@@ -272,10 +280,10 @@ export default class Lab extends React.Component {
     */
     handleToken(res) {
         const loadTime = new moment();
-        if (!res.hasOwnProperty("response")) {
-            throw new Error("No response property!");
+        if (!Object.prototype.hasOwnProperty.call(res, "response")) {
+            throw new Error("No token response!");
         }
-        if (!res.response.hasOwnProperty("token")) {
+        if (!Object.prototype.hasOwnProperty.call(res.response, "token")) {
             throw new Error("No token in response!");
         }
 
@@ -313,7 +321,6 @@ export default class Lab extends React.Component {
         };
 
         this.apiClient.login(options).then((res) => {
-                this.setState({"currentUser": username});
                 this.handleToken(res);
             },
             this.handleTokenError.bind(this)
@@ -344,9 +351,7 @@ export default class Lab extends React.Component {
     removeFromQueue(queueItemId) {
         this.apiClient.delete(
             environment.api.baseUrl, "queueItems", queueItemId
-        ).then((res) => {
-                this.fetchData("lessons");
-            }, this.handleFetchError
+        ).then(() => {this.fetchData("lessons");}, this.handleFetchError
         );
     }
 
@@ -432,7 +437,6 @@ export default class Lab extends React.Component {
     }
 
     toggleOnlyExercise() {
-        const prevOnlyExercise = this.state.onlyExercise;
         this.setState(prevState => ({"onlyExercise": !prevState.onlyExercise}));
     }
 
@@ -446,7 +450,7 @@ export default class Lab extends React.Component {
         const exercise = util.findItem(this.state.exercises, exerciseId);
         const mediaItem = util.findItem(this.state.media, exercise.media);
 
-        if (!mediaItem.hasOwnProperty("mediaUrl")) {
+        if (!Object.prototype.hasOwnProperty.call(mediaItem, "mediaUrl")) {
             this.addAlert("Media error", "Unable to find media for exercise!");
             return;
         }
@@ -480,10 +484,7 @@ export default class Lab extends React.Component {
 
     deleteClick(itemType, itemId) {
         this.apiClient.delete(environment.api.baseUrl, itemType, itemId)
-            .then((res) => {
-                this.fetchAll();
-            }, this.handleFetchError
-        );
+            .then(this.fetchAll, this.handleFetchError);
     }
 
     saveItem(item, itemType, itemId) {
@@ -509,18 +510,16 @@ export default class Lab extends React.Component {
     up(itemId) {
         this.apiClient.patch(
             environment.api.baseUrl, "queueItems", {"item": itemId}, "up"
-        ).then(res => {
-            this.fetchData("lessons");
-        }, this.handleFetchError
+        ).then(
+            () => {this.fetchData("lessons");}, this.handleFetchError
         );
     }
 
     down(itemId) {
         this.apiClient.patch(
             environment.api.baseUrl, "queueItems", {"item": itemId}, "down"
-        ).then(res => {
-            this.fetchData("lessons");
-        }, this.handleFetchError
+        ).then(
+            () => {this.fetchData("lessons");}, this.handleFetchError
         );
     }
 
@@ -556,7 +555,7 @@ export default class Lab extends React.Component {
         );
 
         const mediaItem = util.findItem(this.state.media, exercise.media);
-        if (!mediaItem.hasOwnProperty("mediaUrl")) {
+        if (!Object.prototype.hasOwnProperty.call(mediaItem, "mediaUrl")) {
             this.addAlert("Media error", "Unable to find media for exercise!");
             return;
         }
@@ -616,7 +615,7 @@ export default class Lab extends React.Component {
         );
 
         const mediaItem = util.findItem(this.state.media, exercise.media);
-        if (!mediaItem.hasOwnProperty("mediaUrl")) {
+        if (!Object.prototype.hasOwnProperty.call(mediaItem, "mediaUrl")) {
             this.addAlert("Media error", "Unable to find media for exercise!");
             return;
         }
@@ -658,27 +657,29 @@ export default class Lab extends React.Component {
         return React.createElement(
             CardList,
             {
-                "afterMimic": this.afterMimic.bind(this),
                 "checkClick": this.checkClick,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
+                "doFunction": {
+                    "afterMimic": this.afterMimic.bind(this),
+                    "onMediaLoaded": this.onMediaLoaded.bind(this),
+                    "playMimic": this.playMimic.bind(this),
+                    "playModel": this.playModel.bind(this),
+                    "queueNav": this.queueNav,
+                    "readMode": this.readMode.bind(this),
+                    "setStatus": this.setStatus.bind(this),
+                    "setUserAudioUrl": this.setUserAudioUrl.bind(this),
+                    "toggleOnlyExercise": this.toggleOnlyExercise.bind(this)
+                },
                 "exportData": this.exportData.bind(this),
-                "readMode": this.readMode.bind(this),
                 "maxRank": this.maxRank.bind(this),
-                "onMediaLoaded": this.onMediaLoaded.bind(this),
-                "playMimic": this.playMimic.bind(this),
-                "playModel": this.playModel.bind(this),
                 "queueClick": this.queueClick.bind(this),
-                "queueNav": this.queueNav,
                 "saveItem": this.saveItem.bind(this),
                 "state": this.state,
                 "setActivity": this.setActivity.bind(this),
-                "toggleOnlyExercise": this.toggleOnlyExercise.bind(this),
                 "toggleLesson": this.toggleLesson.bind(this),
                 "startExercise": this.startExercise.bind(this),
-                "selectItem": this.selectItem.bind(this),
-                "setStatus": this.setStatus.bind(this),
-                "setUserAudioUrl": this.setUserAudioUrl.bind(this)
+                "selectItem": this.selectItem.bind(this)
             },
             null
         );

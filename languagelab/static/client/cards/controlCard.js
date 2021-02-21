@@ -1,3 +1,8 @@
+/*
+
+    global React, PropTypes
+
+*/
 export default class ControlCard extends React.Component {
 
     cardTitle() {
@@ -58,7 +63,6 @@ export default class ControlCard extends React.Component {
     }
 
     render() {
-        console.log(this.props);
         return React.createElement(
             "div",
             {
@@ -68,3 +72,8 @@ export default class ControlCard extends React.Component {
         );
     }
 }
+
+ControlCard.propTypes = {
+    "control": PropTypes.object.isRequired,
+    "exportData": PropTypes.func.isRequired
+};

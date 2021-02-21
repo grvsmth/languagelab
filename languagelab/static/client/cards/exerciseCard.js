@@ -1,28 +1,14 @@
-import config from "./config.js";
-import commonElements from "./commonElements.js";
+/*
 
+    global React, PropTypes
+
+*/
 import ExerciseCardBody from "./exerciseCardBody.js";
 import QueueFooter from "./queueFooter.js";
-import util from "./util.js";
-
-const timeFormat = "HH:mm:ss.S";
 
 export default class ExerciseCard extends React.Component {
     constructor(props) {
         super(props);
-    }
-
-    queueBody(item) {
-        if (!this.props.exercise.hasOwnProperty("name")) {
-            return null;
-        }
-
-        return React.createElement(
-            "div",
-            {"className": "card-body"},
-            `Loading exercise ${item.exercise}`
-        );
-
     }
 
     cardHeader() {
@@ -34,10 +20,6 @@ export default class ExerciseCard extends React.Component {
     }
 
     cardBody() {
-        if (!this.props.exercise.hasOwnProperty("name")) {
-            return this.queueBody(this.props.exercise);
-        }
-
         return React.createElement(
             ExerciseCardBody,
             {
@@ -58,10 +40,6 @@ export default class ExerciseCard extends React.Component {
     }
 
     cardFooter() {
-        if (!this.props.exercise.hasOwnProperty("name")) {
-            return null;
-        }
-
         return React.createElement(
             QueueFooter,
             {
@@ -80,7 +58,7 @@ export default class ExerciseCard extends React.Component {
         var className = "card bg-light";
         if (this.props.activity !== "editQueue") {
             className += " mb-3";
-        };
+        }
 
         return React.createElement(
             "div",
@@ -91,3 +69,20 @@ export default class ExerciseCard extends React.Component {
         );
     }
 }
+
+ExerciseCard.propTypes = {
+    "activity": PropTypes.string.isRequired,
+    "checkClick": PropTypes.func.isRequired,
+    "deleteClick": PropTypes.func.isRequired,
+    "exercise": PropTypes.object.isRequired,
+    "itemUser": PropTypes.object.isRequired,
+    "languages": PropTypes.array.isRequired,
+    "lessons": PropTypes.array.isRequired,
+    "maxRank": PropTypes.func.isRequired,
+    "mediaItem": PropTypes.object.isRequired,
+    "queueClick": PropTypes.func.isRequired,
+    "queueItem": PropTypes.object.isRequired,
+    "selectItem": PropTypes.func.isRequired,
+    "selectedType": PropTypes.string.isRequired,
+    "startExercise": PropTypes.func.isRequired
+};

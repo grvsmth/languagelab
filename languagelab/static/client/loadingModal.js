@@ -1,3 +1,8 @@
+/*
+
+    global React, PropTypes
+
+*/
 export default class LoadingModal extends React.Component {
     constructor(props) {
         super(props);
@@ -74,5 +79,9 @@ export default class LoadingModal extends React.Component {
             this.dialog()
         );
     }
-
 }
+
+LoadingModal.propTypes = {
+    "itemType": PropTypes.string.isRequired,
+    "loading": PropTypes.object.isRequired
+};

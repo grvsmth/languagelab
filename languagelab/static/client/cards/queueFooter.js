@@ -1,8 +1,11 @@
+/*
+
+    global React, PropTypes
+
+*/
 import config from "./config.js";
 import commonElements from "./commonElements.js";
 import util from "./util.js";
-
-const timeFormat = "HH:mm:ss.S";
 
 
 export default class QueueFooter extends React.Component {
@@ -20,7 +23,7 @@ export default class QueueFooter extends React.Component {
         );
     }
 
-    addClick(event) {
+    addClick() {
         const inputSelector = ["#lesson", this.props.exerciseId].join("_");
         const lessonId = parseInt(document.querySelector(inputSelector).value);
 
@@ -173,3 +176,13 @@ export default class QueueFooter extends React.Component {
         );
     }
 }
+
+QueueFooter.propTypes = {
+    "exerciseClick": PropTypes.func.isRequired,
+    "exerciseId": PropTypes.string.isRequired,
+    "exerciseLessons": PropTypes.array.isRequired,
+    "lessons": PropTypes.array.isRequired,
+    "maxRank": PropTypes.func.isRequired,
+    "queueClick": PropTypes.func.isRequired,
+    "queueItem": PropTypes.object.isRequired
+};

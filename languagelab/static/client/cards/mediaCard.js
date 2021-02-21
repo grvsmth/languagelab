@@ -1,3 +1,8 @@
+/*
+
+    global React, moment, PropTypes
+
+*/
 import config from "./config.js";
 import commonElements from "./commonElements.js";
 import util from "./util.js";
@@ -16,9 +21,8 @@ export default class MediaCard extends React.Component {
         var languageText = "";
         if (this.props.mediaItem.language && this.props.languages
             && this.props.languages.length > this.props.mediaItem.language) {
-            const language = util.findItem(
-                this.props.languages,
-                this.props.mediaItem.language
+            const language = this.props.languages.find(
+                (language) => language.id === this.props.mediaItem.language
             );
             languageText = language.name + ", ";
         }
@@ -76,11 +80,11 @@ export default class MediaCard extends React.Component {
         )
     }
 
-    editClick(event) {
+    editClick() {
         this.props.selectItem(this.props.mediaItem.id, "edit");
     }
 
-    deleteClick(event) {
+    deleteClick() {
         this.props.deleteClick("media", this.props.mediaItem.id);
     }
 
@@ -222,5 +226,16 @@ export default class MediaCard extends React.Component {
             this.cardBody()
         );
     }
-
 }
+
+MediaCard.propTypes = {
+    "activity": PropTypes.string.isRequired,
+    "checkClick": PropTypes.func.isRequired,
+    "deleteClick": PropTypes.func.isRequired,
+    "id": PropTypes.string.isRequired,
+    "itemUser": PropTypes.object.isRequired,
+    "languages": PropTypes.array.isRequired,
+    "mediaItem": PropTypes.object.isRequired,
+    "selectItem": PropTypes.func.isRequired,
+    "selectedItem": PropTypes.string.isRequired
+};
