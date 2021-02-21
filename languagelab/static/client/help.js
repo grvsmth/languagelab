@@ -1,9 +1,9 @@
 const exports = {
-    "lessons": {
-        "title": "Lessons",
-        "description": `A lesson contains a queue of exercises and some
-        descriptive metadata.  Once you've created a lesson, you can go to the
-        Exercises tab and add your exercises to that lesson.`
+    "media": {
+        "title": "Media",
+        "description": `A media item is based on a URL for an externally hosted
+        media file, along with metadata (language, type, description, tags).
+        Once you've added a media item, you can create exercises based on it.`
     },
     "exercises": {
         "title": "Exercises",
@@ -11,11 +11,11 @@ const exports = {
         you've added a media item, you can come here and create exercises based
         on that media item and add them to a lesson.`
     },
-    "media": {
-        "title": "Media",
-        "description": `A media item is based on a URL for an externally hosted
-        media file, along with metadata (language, type, description, tags).
-        Once you've added a media item, you can create exercises based on it.`
+    "lessons": {
+        "title": "Lessons",
+        "description": `A lesson contains a queue of exercises and some
+        descriptive metadata.  Once you've created a lesson, you can go to the
+        Exercises tab and add your exercises to that lesson.`
     },
     "languages": {
         "title": "Languages",

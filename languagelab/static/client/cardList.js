@@ -1,5 +1,6 @@
-import React from "react";
+/*
 
+*/
 import util from "./util.js";
 
 import ControlCard from "./cards/controlCard.js";
@@ -19,6 +20,7 @@ const typeInfo = {
     "media": {
         "addable": true,
         "card": MediaCard,
+        "cardLayout": "",
         "doable": false,
         "formCard": MediaFormCard,
         "singular": "media item",
@@ -27,6 +29,7 @@ const typeInfo = {
     "exercises": {
         "addable": true,
         "card": ExerciseCard,
+        "cardLayout": "",
         "doable": true,
         "formCard": ExerciseFormCard,
         "singular": "exercise",

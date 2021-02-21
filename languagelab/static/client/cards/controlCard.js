@@ -1,5 +1,6 @@
-import React from "react";
+/*
 
+*/
 export default class ControlCard extends React.Component {
 
     cardTitle() {
