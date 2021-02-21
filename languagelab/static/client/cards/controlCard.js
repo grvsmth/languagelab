@@ -72,3 +72,8 @@ export default class ControlCard extends React.Component {
         );
     }
 }
+
+ControlCard.propTypes = {
+    "control": PropTypes.object.isRequired,
+    "exportData": PropTypes.func.isRequired
+};

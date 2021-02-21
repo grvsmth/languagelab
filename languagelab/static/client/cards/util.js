@@ -1,3 +1,8 @@
+/*
+
+    global moment
+
+*/
 const exports = {};
 
 exports.formatDuration = function(durationMoment, fixed=6) {

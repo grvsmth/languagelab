@@ -46,3 +46,9 @@ export default class HelpCard extends React.Component {
         );
     }
 }
+
+HelpCard.propTypes = {
+    "helpItem": PropTypes.object.isRequired,
+    "helpItem.title": PropTypes.string.isRequired,
+    "helpItem.description": PropTypes.string.isRequired
+};
