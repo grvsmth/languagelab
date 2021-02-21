@@ -1,3 +1,8 @@
+/*
+
+    global React, PropTypes
+
+*/
 export default class LanguageCard extends React.Component {
     constructor(props) {
         super(props);
@@ -62,3 +67,8 @@ export default class LanguageCard extends React.Component {
     }
 
 }
+
+LanguageCard.propTypes = {
+    "language": PropTypes.object.isRequired,
+    "selectItem": PropTypes.func.isRequired
+};

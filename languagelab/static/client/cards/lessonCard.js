@@ -1,6 +1,10 @@
+/*
+
+    global React, moment, PropTypes
+
+*/
 import config from "./config.js";
 import commonElements from "./commonElements.js";
-import DoExerciseCard from "./doExerciseCard.js";
 import util from "./util.js";
 
 export default class LessonCard extends React.Component {
@@ -57,11 +61,11 @@ export default class LessonCard extends React.Component {
         )
     }
 
-    editClick(event) {
+    editClick() {
         this.props.selectItem(this.props.lesson.id, "edit");
     }
 
-    deleteClick(event) {
+    deleteClick() {
         this.props.deleteClick("lessons", this.props.lesson.id);
     }
 
@@ -208,5 +212,16 @@ export default class LessonCard extends React.Component {
             this.cardBody()
         );
     }
-
 }
+
+LessonCard.propTypes = {
+    "activity": PropTypes.string.isRequired,
+    "checkClick": PropTypes.func.isRequired,
+    "deleteClick": PropTypes.func.isRequired,
+    "itemUser": PropTypes.object.isRequired,
+    "lesson": PropTypes.object.isRequired,
+    "selected": PropTypes.boolean.isRequired,
+    "selectItem": PropTypes.func.isRequired,
+    "setActivity": PropTypes.func.isRequired,
+    "toggleLesson": PropTypes.func.isRequired
+};

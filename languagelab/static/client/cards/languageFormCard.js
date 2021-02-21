@@ -1,6 +1,8 @@
-import config from "./config.js";
+/*
 
-import util from "./util.js";
+    global React, PropTypes
+
+*/
 import commonElements from "./commonElements.js";
 
 export default class LanguageFormCard extends React.Component {
@@ -61,7 +63,11 @@ export default class LanguageFormCard extends React.Component {
         if (defaultVal) {
             defaultValue = defaultVal;
         }
-        if (this.props.language.hasOwnProperty(fieldName)) {
+        if (Object.prototype.hasOwnProperty.call(
+            this.props.language.hasOwnProperty,
+            "fieldName"
+            )
+        ) {
             defaultValue = this.props.language[fieldName];
         }
 
@@ -185,5 +191,10 @@ export default class LanguageFormCard extends React.Component {
             this.cardBody()
         );
     }
-
 }
+
+LanguageFormCard.propTypes = {
+    "language": PropTypes.object.isRequired,
+    "saveItem": PropTypes.func.isRequired,
+    "setActivity": PropTypes.func.isrequired
+};

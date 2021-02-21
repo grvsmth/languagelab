@@ -1,6 +1,10 @@
+/*
+
+    global React, PropTypes
+
+*/
 import config from "./config.js";
 
-import util from "./util.js";
 import commonElements from "./commonElements.js";
 
 export default class LessonFormCard extends React.Component {
@@ -41,7 +45,6 @@ export default class LessonFormCard extends React.Component {
                 return object;
             }, {});
 
-        const audio1 = document.querySelector("#audio1");
         var itemId = null;
         if (typeof this.props.lesson.id === "number") {
             itemId = this.props.lesson.id;
@@ -74,7 +77,11 @@ export default class LessonFormCard extends React.Component {
         if (defaultVal) {
             defaultValue = defaultVal;
         }
-        if (this.props.lesson.hasOwnProperty(fieldName)) {
+        if (Object.prototype.hasOwnProperty.call(
+                this.props.lesson,
+                "fieldName"
+            )
+        ) {
             defaultValue = this.props.lesson[fieldName];
         }
 
@@ -256,5 +263,10 @@ export default class LessonFormCard extends React.Component {
             this.cardBody()
         );
     }
-
 }
+
+LessonFormCard.propTypes = {
+    "lesson": PropTypes.object.isRequired,
+    "setActivity": PropTypes.func.isRequired,
+    "saveItem": PropTypes.func.isRequired
+};

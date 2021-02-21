@@ -1,6 +1,6 @@
 /*
 
-    global React, PropTypes
+    global React, moment, PropTypes
 
 */
 import config from "./config.js";
@@ -111,7 +111,11 @@ export default class MediaFormCard extends React.Component {
         if (defaultVal) {
             defaultValue = defaultVal;
         }
-        if (this.props.mediaItem.hasOwnProperty(fieldName)) {
+        if (Object.prototype.hasOwnProperty.call(
+            this.props.mediaItem.hasOwnProperty,
+            "fieldName"
+            )
+        ) {
             defaultValue = this.props.mediaItem[fieldName];
         }
 
@@ -372,5 +376,11 @@ export default class MediaFormCard extends React.Component {
             this.cardBody()
         );
     }
-
 }
+
+MediaFormCard.propTypes = {
+    "languages": PropTypes.array.isRequired,
+    "mediaItem": PropTypes.object.isRequired,
+    "setActivity": PropTypes.func.isRequired,
+    "saveItem": PropTypes.func.isRequired
+};

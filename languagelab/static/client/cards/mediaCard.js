@@ -1,6 +1,6 @@
 /*
 
-    global React, PropTypes
+    global React, moment, PropTypes
 
 */
 import config from "./config.js";
@@ -80,11 +80,11 @@ export default class MediaCard extends React.Component {
         )
     }
 
-    editClick(event) {
+    editClick() {
         this.props.selectItem(this.props.mediaItem.id, "edit");
     }
 
-    deleteClick(event) {
+    deleteClick() {
         this.props.deleteClick("media", this.props.mediaItem.id);
     }
 
@@ -226,5 +226,16 @@ export default class MediaCard extends React.Component {
             this.cardBody()
         );
     }
-
 }
+
+MediaCard.propTypes = {
+    "activity": PropTypes.string.isRequired,
+    "checkClick": PropTypes.func.isRequired,
+    "deleteClick": PropTypes.func.isRequired,
+    "id": PropTypes.string.isRequired,
+    "itemUser": PropTypes.object.isRequired,
+    "languages": PropTypes.array.isRequired,
+    "mediaItem": PropTypes.object.isRequired,
+    "selectItem": PropTypes.func.isRequired,
+    "selectedItem": PropTypes.string.isRequired
+};
