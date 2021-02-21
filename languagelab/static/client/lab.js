@@ -657,27 +657,29 @@ export default class Lab extends React.Component {
         return React.createElement(
             CardList,
             {
-                "afterMimic": this.afterMimic.bind(this),
                 "checkClick": this.checkClick,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
+                "doFunction": {
+                    "afterMimic": this.afterMimic.bind(this),
+                    "onMediaLoaded": this.onMediaLoaded.bind(this),
+                    "playMimic": this.playMimic.bind(this),
+                    "playModel": this.playModel.bind(this),
+                    "queueNav": this.queueNav,
+                    "readMode": this.readMode.bind(this),
+                    "setStatus": this.setStatus.bind(this),
+                    "setUserAudioUrl": this.setUserAudioUrl.bind(this),
+                    "toggleOnlyExercise": this.toggleOnlyExercise.bind(this)
+                },
                 "exportData": this.exportData.bind(this),
-                "readMode": this.readMode.bind(this),
                 "maxRank": this.maxRank.bind(this),
-                "onMediaLoaded": this.onMediaLoaded.bind(this),
-                "playMimic": this.playMimic.bind(this),
-                "playModel": this.playModel.bind(this),
                 "queueClick": this.queueClick.bind(this),
-                "queueNav": this.queueNav,
                 "saveItem": this.saveItem.bind(this),
                 "state": this.state,
                 "setActivity": this.setActivity.bind(this),
-                "toggleOnlyExercise": this.toggleOnlyExercise.bind(this),
                 "toggleLesson": this.toggleLesson.bind(this),
                 "startExercise": this.startExercise.bind(this),
-                "selectItem": this.selectItem.bind(this),
-                "setStatus": this.setStatus.bind(this),
-                "setUserAudioUrl": this.setUserAudioUrl.bind(this)
+                "selectItem": this.selectItem.bind(this)
             },
             null
         );

@@ -4,7 +4,7 @@
 
 /*
 
-    global moment, PropTypes
+    global moment
 
 */
 const DEFAULT_REFRESH_THRESHOLD = 60;

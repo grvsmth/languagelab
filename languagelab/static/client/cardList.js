@@ -242,28 +242,20 @@ export default class CardList extends React.Component {
         const maxRank = this.props.maxRank();
 
         const options = {
-            "afterMimic": this.props.afterMimic,
             "currentUser": this.props.currentUser,
             "doButton": this.props.doButton,
+            "doFunction": this.props.doFunction,
             "key": key,
             "exercise": exercise,
-            "readMode": this.props.readMode,
             "exerciseUser": this.itemUser(exercise, "exercises"),
             "languages": this.findLanguage(exercise),
             "lesson": lesson,
             "maxRank": maxRank,
             "mediaItem": mediaItem,
-            "onMediaLoaded": this.props.onMediaLoaded,
-            "queueNav": this.props.queueNav,
             "queueInfo": this.queueInfo(lesson, rank, maxRank),
-            "playMimic": this.props.playMimic,
-            "playModel": this.props.playModel,
             "rank": rank,
             "setActivity": this.props.setActivity,
-            "setStatus": this.props.setStatus,
-            "setUserAudioUrl": this.props.setUserAudioUrl,
-            "state": this.props.state,
-            "toggleOnlyExercise": this.props.toggleOnlyExercise
+            "state": this.props.state
         };
 
         return React.createElement(
@@ -501,11 +493,13 @@ export default class CardList extends React.Component {
         const items = itemType === "help" ?
             Object.values(help) : this.props.state[itemType];
 
-        if (!items.length
-            || !typeInfo[itemType].hasOwnProperty("card")
+        if (!items.length || !Object.prototype.hasOwnProperty.call(
+            typeInfo[itemType],
+            "card"
+            )
         ) {
 
-            if (help.hasOwnProperty(itemType)) {
+            if (Object.prototype.hasOwnProperty.call(help, itemType)) {
                 return this.helpCard(help[itemType]);
             }
 
@@ -538,5 +532,18 @@ export default class CardList extends React.Component {
 }
 
 CardList.propTypes = {
-    "state": PropTypes.object.isRequired
+    "checkClick": PropTypes.func.isRequired,
+    "currentUser": PropTypes.object.isRequired,
+    "deleteClick": PropTypes.func.isRequired,
+    "doButton": PropTypes.object.isRequired,
+    "doFunction": PropTypes.object.isRequired,
+    "exportData": PropTypes.func.isRequired,
+    "maxRank": PropTypes.number.isRequired,
+    "queueClick": PropTypes.object.isRequired,
+    "saveItem": PropTypes.func.isRequired,
+    "selectItem": PropTypes.func.isRequired,
+    "setActivity": PropTypes.func.isRequired,
+    "startExercise": PropTypes.func.isRequired,
+    "state": PropTypes.object.isRequired,
+    "toggleLesson": PropTypes.func.isRequired
 };
