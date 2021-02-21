@@ -11,6 +11,7 @@
 * ~~Navigation aids if user has no media, exercises or lessons~~
 * Prune the state variables passed to cards
 * Organize the functions passed to cards
+* PEP8 compliance
 * Update README
 * Bug reporting system
 * Feature request system
@@ -20,12 +21,14 @@
 * Import JSON
 * Filter by media, tag, title substring, availability, duration
 * Help tooltips
+* Full unit test coverage
 
 ## Version 0.4
 
 * Keyboard shortcuts
 * Confirmation dialog on delete
 * Migrate from moment.js to something else
+* Integration tests
 
 ## Version 1.0
 
