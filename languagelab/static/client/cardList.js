@@ -1,7 +1,8 @@
 import util from "./util.js";
 
-import ExerciseCard from "./exerciseCard.js";
+import ControlCard from "./controlCard.js";
 import DoExerciseCard from "./doExerciseCard.js";
+import ExerciseCard from "./exerciseCard.js";
 import ExerciseFormCard from "./exerciseFormCard.js";
 import LanguageCard from "./languageCard.js";
 import LanguageFormCard from "./languageFormCard.js";
@@ -43,6 +44,14 @@ const typeInfo = {
         "doable": false,
         "singular": "language",
         "userField": ""
+    },
+    "controls": {
+        "addable": false,
+        "card": ControlCard,
+        "cardLayout": "card-columns",
+        "doable": false,
+        "singular": "control",
+        "userField": ""
     }
 };
 
@@ -53,6 +62,7 @@ export default class CardList extends React.Component {
         super(props);
 
         this.itemCard = {
+            "controls": this.controlCard.bind(this),
             "exercises": this.exerciseCard.bind(this),
             "languages": this.languageCard.bind(this),
             "lessons": this.lessonCard.bind(this),
@@ -176,6 +186,18 @@ export default class CardList extends React.Component {
         }
 
         return queueInfo;
+    }
+
+    controlCard(control) {
+        return React.createElement(
+            ControlCard,
+            {
+                "key": control.name,
+                "control": control,
+                "exportData": this.props.exportData
+            },
+            null
+        );
     }
 
     doCard(key, exercise) {

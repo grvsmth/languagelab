@@ -9,7 +9,9 @@ import LoadingModal from "./loadingModal.js";
 import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
 
+import controls from "./controls.js";
 import LanguageLabClient from "./apiClient.js";
+import storageClient from "./storageClient.js";
 import util from "./util.js";
 
 import config from "./config.js";
@@ -26,6 +28,7 @@ export default class Lab extends React.Component {
 
         this.checkClick = this.checkClick.bind(this);
         this.handleFetchError = this.handleFetchError.bind(this);
+        this.handleToken = this.handleToken.bind(this);
 
         this.queueOperation = {
             "add": this.addToQueue.bind(this),
@@ -40,14 +43,26 @@ export default class Lab extends React.Component {
             "next": this.next.bind(this)
         };
 
+        const storageData = storageClient.storedData();
+
         this.apiClient = new LanguageLabClient();
         this.apiClient.setBaseUrl(environment.api.baseUrl);
         this.apiClient.setHandleToken(this.handleToken.bind(this));
+        if (config.api.hasOwnProperty("refreshThreshold")) {
+            this.apiClient.setRefreshThreshold(config.api.refreshThreshold)
+        }
+        if (storageData.token) {
+            this.apiClient.setToken(
+                storageData.token, storageData.tokenTime, storageData.tokenLife
+            );
+        }
 
         this.state = {
-            "activity": "read",
+            "activity": "login",
             "alerts": [],
             "clickedAction": "",
+            "controls": controls,
+            "currentUser": storageData.currentUser,
             "exercises": [],
             "languages": [],
             "lastUpdated": "",
@@ -67,8 +82,6 @@ export default class Lab extends React.Component {
             "status": "ready",
             "statusText": "Ready",
             "users": [],
-            "token": "",
-            "tokenExpired": false,
             "userAudioUrl": ""
         };
     }
@@ -79,7 +92,7 @@ export default class Lab extends React.Component {
 
     */
     componentDidMount() {
-        if (!this.state.lastUpdated && this.state.token) {
+        if (!this.state.lastUpdated && this.apiClient.hasToken()) {
             this.fetchAll();
         }
     }
@@ -121,7 +134,9 @@ export default class Lab extends React.Component {
     fetchAll() {
         const loading = {};
 
-        const thingsToLoad = config.api.models.map(model => model.endpoint)
+        const thingsToLoad = config.api.models
+            .filter(model => !model.local)
+            .map(model => model.endpoint)
             .concat(["currentUser"]);
 
         thingsToLoad.forEach((endpoint) => {
@@ -159,11 +174,28 @@ export default class Lab extends React.Component {
     addAlert(title, message, status="danger") {
         const alert = {
             "id": util.maxId(this.state.alerts) + 1,
-            "title": "Fetch error",
+            "title": title,
             "status": status,
             "message": message
         };
         this.updateStateItem(alert, "alerts");
+    }
+
+    findAlert(title) {
+        return this.state.alerts.find((alert) => alert.title === title);
+    }
+
+    /*
+
+        Handle 401 Unauthorized errors
+
+    */
+    handleUnauthorized(titleText) {
+        const errorMessage = "Please try logging in again";
+        this.setState({"loading": {}});
+        if (!this.findAlert(titleText) && this.state.activity != "login") {
+            this.addAlert(titleText, errorMessage);
+        }
     }
 
     /*
@@ -173,13 +205,23 @@ export default class Lab extends React.Component {
 
     */
     handleFetchError(err) {
-        if (err.hasOwnProperty("statusText")) {
+        if (err.status === 401) {
+            this.handleUnauthorized("Unauthorized on server");
+            return;
+        }
+
+        if (err.statusText) {
             console.log("err.statusText", err.statusText);
-            this.addAlert("Fetch error", statusText);
+            this.addAlert("Fetch error", err.statusText);
             return;
         }
 
         if (err.hasOwnProperty("message")) {
+            if (err.message === "Expired token!") {
+                this.handleUnauthorized(err.message);
+                return;
+            }
+
             console.log("err.message", err.message);
             this.addAlert("Fetch error", err.message);
             return;
@@ -237,6 +279,10 @@ export default class Lab extends React.Component {
             throw new Error("No token in response!");
         }
 
+        storageClient.setToken(
+            res.response.token, loadTime.format(), res.response.expiresIn
+        );
+
         this.apiClient.setToken(
             res.response.token, loadTime.format(), res.response.expiresIn
         );
@@ -266,8 +312,11 @@ export default class Lab extends React.Component {
             "password": document.getElementById("password").value
         };
 
-        this.apiClient.login(options).then(
-            this.handleToken.bind(this), this.handleTokenError.bind(this)
+        this.apiClient.login(options).then((res) => {
+                this.setState({"currentUser": username});
+                this.handleToken(res);
+            },
+            this.handleTokenError.bind(this)
         );
     }
 
@@ -278,7 +327,11 @@ export default class Lab extends React.Component {
     */
     logout() {
         if (this.state.currentUser) {
-            this.setState({"currentUser": null, "activity": "login"});
+            storageClient.logout();
+            this.setState({
+                "activity": "login",
+                "currentUser": null
+            });
             return;
         }
     }
@@ -428,7 +481,7 @@ export default class Lab extends React.Component {
     deleteClick(itemType, itemId) {
         this.apiClient.delete(environment.api.baseUrl, itemType, itemId)
             .then((res) => {
-                this.fetchData(itemType);
+                this.fetchAll();
             }, this.handleFetchError
         );
     }
@@ -532,6 +585,22 @@ export default class Lab extends React.Component {
         this.selectByRank(rank + 1);
     }
 
+    handleExportData(res, mimeType) {
+        const blob = new Blob([JSON.stringify(res)], {"type": mimeType});
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl);
+    }
+
+    exportData(control) {
+        const apiUrl = [
+            environment.api.baseUrl, control.endpoint
+        ].join("/");
+
+        this.apiClient.fetchData(apiUrl).then((res) => {
+                this.handleExportData(res, control.mimeType);
+        }, this.handleFetchError.bind(this));
+    }
+
     playMimic() {
         this.setState({
             "nowPlaying": this.state.userAudioUrl,
@@ -593,6 +662,7 @@ export default class Lab extends React.Component {
                 "checkClick": this.checkClick,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
+                "exportData": this.exportData.bind(this),
                 "readMode": this.readMode.bind(this),
                 "maxRank": this.maxRank.bind(this),
                 "onMediaLoaded": this.onMediaLoaded.bind(this),
@@ -638,7 +708,6 @@ export default class Lab extends React.Component {
                 "logout": this.logout.bind(this),
                 "models": config.api.models,
                 "navClick": this.readMode.bind(this),
-                "navUrl": config.navUrl,
                 "selectedType": this.state.selected.itemType,
                 "version": config.version
             },

@@ -4,14 +4,12 @@ Views for the Language Lab REST API
 
 """
 from logging import basicConfig, getLogger
-from json import dumps
 
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.db.models import Max
 from django.http import JsonResponse
 
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework.serializers import (
@@ -20,6 +18,7 @@ from rest_framework.serializers import (
     PrimaryKeyRelatedField
     )
 from rest_framework.status import HTTP_204_NO_CONTENT
+from rest_framework.viewsets import ModelViewSet
 
 from languagelab.api.iso639client import get_iso639, make_language
 from languagelab.api.models import (
@@ -49,6 +48,52 @@ def current_user(request):
 
     serializer = UserSerializer(request.user, context={'request': request})
     return Response(serializer.data)
+
+def load_data(type):
+    """
+    Given a dict with the model and serializer classes, retrieve the data
+
+    https://stackoverflow.com/a/45415165
+    """
+    queryset = type["model_class"].objects.all()
+    serializer = type["serializer_class"](queryset, many=True)
+
+    return {
+        "type": type["type"],
+        "data": serializer.data
+    }
+
+@api_view(['GET'])
+def all(request):
+    """
+    Retrieve and set all the data types except users
+    """
+
+    item_types = [
+        {
+            "type": "exercises",
+            "model_class": Exercise,
+            "serializer_class": ExerciseSerializer
+        },
+        {
+            "type": "languages",
+            "model_class": Language,
+            "serializer_class": LanguageSerializer
+        },
+        {
+            "type": "lessons",
+            "model_class": Lesson,
+            "serializer_class": LessonSerializer
+        },
+        {
+            "type": "media",
+            "model_class": MediaItem,
+            "serializer_class": MediaItemSerializer
+        }
+    ]
+
+    return Response(map(load_data, item_types))
+
 
 class UserViewSet(ModelViewSet):
     """
@@ -120,9 +165,11 @@ class ExerciseViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
 
-    def destroy(self, request):
+    def destroy(self, request, pk=None):
+        exercise_id = self.get_object().id
         self.perform_destroy(self.get_object())
-        QueueItem.objects.renumber(user=self.request.user)
+
+        QueueItem.objects.delete_by_exercise(exercise_id)
         return Response(status=HTTP_204_NO_CONTENT)
 
 

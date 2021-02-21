@@ -32,5 +32,6 @@ def set_environ():
         'DJANGO_STATICFILES_DIR': '',
         'DJANGO_ALLOWED_HOSTS': '[]',
         'DJANGO_TIMEZONE': '',
-        'JWT_EXPIRATION_SECONDS': '3600'
+        'JWT_EXPIRATION': '1',
+        'JWT_EXPIRATION_UNITS': 'hours'
         })

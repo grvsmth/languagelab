@@ -2,9 +2,11 @@
 
 ## Version 0.2 beta
 
-* Crashes on Delete exercise
-* Roadmap
-* Better handling of expired tokens
+* ~~Crashes on Delete exercise~~
+* ~~Roadmap~~
+* ~~Better handling of expired tokens~~
+* ~~Control panel~~
+* ~~Export to JSON~~
 * Navigation aids if user has no media, exercises or lessons
 * Prune the state variables passed to cards
 * Organize the functions passed to cards
@@ -14,13 +16,14 @@
 
 ## Version 0.3
 
+* Import JSON
 * Filter by media, tag, title substring, availability, duration
-* Export/import to JSON
+* Help documentation
+* Help tooltips
 
 ## Version 0.4
 
 * Keyboard shortcuts
-* Help documentation
 * Confirmation dialog on delete
 * Migrate from moment.js to something else
 
@@ -37,7 +40,6 @@
 * Dialogue exercises
 * Separate web client into a different repo
 * Auto-register with email
-* Admin control panel
 * Internationalization
 * Control doExercise with keyboard and headset buttons (May require browser
 upgrades)

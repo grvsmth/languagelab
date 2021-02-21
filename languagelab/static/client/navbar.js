@@ -49,12 +49,6 @@ export default class Home extends React.Component {
         var target = "_self";
         var onClick = this.navClick;
 
-        if (this.props.navUrl.hasOwnProperty(model.endpoint)) {
-            href = this.props.navUrl[model.endpoint];
-            target = "_blank";
-            onClick = null;
-        }
-
         return React.createElement(
             "a",
             {
@@ -70,6 +64,10 @@ export default class Home extends React.Component {
     }
 
     navItem(model) {
+        if (model.hideNav) {
+            return null;
+        }
+
         var className = "nav-item";
         if (this.props.selectedType === model.endpoint) {
             className = "nav-item active";
