@@ -1,5 +1,7 @@
 /*
 
+    global React, PropTypes
+
 */
 export default class LoginForm extends React.Component {
     constructor(props) {

@@ -1,5 +1,7 @@
 /*
 
+    global React, PropTypes
+
 */
 export default class HelpCard extends React.Component {
 

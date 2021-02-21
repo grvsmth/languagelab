@@ -1,5 +1,7 @@
 /*
 
+    global React, PropTypes
+
 */
 import util from "./util.js";
 

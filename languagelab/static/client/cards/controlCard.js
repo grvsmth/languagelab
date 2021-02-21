@@ -1,5 +1,7 @@
 /*
 
+    global React, PropTypes
+
 */
 export default class ControlCard extends React.Component {
 
