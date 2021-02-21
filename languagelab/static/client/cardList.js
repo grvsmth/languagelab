@@ -4,6 +4,8 @@ import ControlCard from "./cards/controlCard.js";
 import DoExerciseCard from "./cards/doExerciseCard.js";
 import ExerciseCard from "./cards/exerciseCard.js";
 import ExerciseFormCard from "./cards/exerciseFormCard.js";
+import help from "./help.js";
+import HelpCard from "./cards/helpCard.js";
 import LanguageCard from "./cards/languageCard.js";
 import LanguageFormCard from "./cards/languageFormCard.js";
 import LessonCard from "./cards/lessonCard.js";
@@ -52,6 +54,14 @@ const typeInfo = {
         "doable": false,
         "singular": "control",
         "userField": ""
+    },
+    "help": {
+        "addable": false,
+        "card": HelpCard,
+        "cardLayout": "card-columns",
+        "doable": false,
+        "singular": "help items",
+        "userField": ""
     }
 };
 
@@ -64,6 +74,7 @@ export default class CardList extends React.Component {
         this.itemCard = {
             "controls": this.controlCard.bind(this),
             "exercises": this.exerciseCard.bind(this),
+            "help": this.helpCard.bind(this),
             "languages": this.languageCard.bind(this),
             "lessons": this.lessonCard.bind(this),
             "media": this.mediaCard.bind(this)
@@ -198,6 +209,17 @@ export default class CardList extends React.Component {
             },
             null
         );
+    }
+
+    helpCard(helpItem) {
+        return React.createElement(
+            HelpCard,
+            {
+                "key": helpItem.title,
+                "helpItem": helpItem
+            },
+            null
+        )
     }
 
     doCard(key, exercise) {
@@ -432,6 +454,10 @@ export default class CardList extends React.Component {
     }
 
     addCard(addable, cardId="form") {
+        if (!addable) {
+            return null;
+        }
+
         const selectedState = this.props.state.selected;
         if (cardId === "initial"
             && !this.props.state[selectedState.itemType].length) {
@@ -446,13 +472,14 @@ export default class CardList extends React.Component {
             );
         }
 
-        if (addable) {
-            return this.addButtonCard(cardId);
-        }
-        return null;
+        return this.addButtonCard(cardId);
     }
 
     makeItemList(itemType) {
+        if (itemType === "help") {
+            return Object.values(help);
+        }
+
         if (this.props.state.activity !== "editQueue") {
             return this.props.state[itemType];
         }
@@ -464,8 +491,17 @@ export default class CardList extends React.Component {
     }
 
     makeElements(itemType) {
-        if (!this.props.state[itemType].length
-            || !typeInfo[itemType].hasOwnProperty("card")) {
+        const items = itemType === "help" ?
+            Object.values(help) : this.props.state[itemType];
+
+        if (!items.length
+            || !typeInfo[itemType].hasOwnProperty("card")
+        ) {
+
+            if (help.hasOwnProperty(itemType)) {
+                return this.helpCard(help[itemType]);
+            }
+
             return React.createElement(
                 "div",
                 {"className": "card"},

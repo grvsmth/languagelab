@@ -34,6 +34,12 @@ const config = {
                 "menu": "Controls",
                 "item": "control",
                 "local": true
+            },
+            {
+                "endpoint": "help",
+                "menu": "Help",
+                "item": "help",
+                "local": true
             }
         ]
     },

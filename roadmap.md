@@ -7,7 +7,8 @@
 * ~~Better handling of expired tokens~~
 * ~~Control panel~~
 * ~~Export to JSON~~
-* Navigation aids if user has no media, exercises or lessons
+* ~~Help documentation~~
+* ~~Navigation aids if user has no media, exercises or lessons~~
 * Prune the state variables passed to cards
 * Organize the functions passed to cards
 * Update README
@@ -18,7 +19,6 @@
 
 * Import JSON
 * Filter by media, tag, title substring, availability, duration
-* Help documentation
 * Help tooltips
 
 ## Version 0.4

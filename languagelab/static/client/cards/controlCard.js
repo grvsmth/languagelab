@@ -58,7 +58,6 @@ export default class ControlCard extends React.Component {
     }
 
     render() {
-        console.log(this.props);
         return React.createElement(
             "div",
             {
