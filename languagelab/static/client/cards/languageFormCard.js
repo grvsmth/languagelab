@@ -64,8 +64,8 @@ export default class LanguageFormCard extends React.Component {
             defaultValue = defaultVal;
         }
         if (Object.prototype.hasOwnProperty.call(
-            this.props.language.hasOwnProperty,
-            "fieldName"
+            this.props.language,
+            fieldName
             )
         ) {
             defaultValue = this.props.language[fieldName];

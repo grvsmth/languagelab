@@ -1,56 +1,72 @@
 /*
 
-    global React, PropTypes
+    global React
 
 */
 import config from "./config.js";
 import util from "./util.js";
 
-const exports = {};
+const exports = {
+    "iconSpan": function(iconClass) {
+        return React.createElement(
+            "i",
+            {"className": "oi " + iconClass},
+            null
+        );
+    },
+    "itemLabel": function(fieldName, inputId) {
+        return React.createElement(
+            "label",
+            {"htmlFor": inputId},
+            fieldName
+        );
+    },
+    "checkboxInput": function(key, checked, inputId, callback) {
+        var options = {
+            "className": "form-check-input",
+            "type": "checkbox",
+            "id": inputId,
+            "name": key
+        }
+        if (callback) {
+            options.onChange = callback;
+            options.checked = checked;
+        } else {
+            options.defaultChecked = checked;
+        }
 
-exports.iconSpan = function(iconClass) {
-    return React.createElement(
-        "i",
-        {"className": "oi " + iconClass},
-        null
-    );
-};
+        return React.createElement(
+            "input",
+            options,
+            null
+        );
+    },
+    "displayCheckbox": function(key) {
+        if (["isAvailable", "isPublic"].includes(key)) {
+            return config.hideIsAvailablePublic ? " d-none" : null;
+        }
 
-exports.itemLabel = function(fieldName, inputId) {
-    return React.createElement(
-        "label",
-        {"htmlFor": inputId},
-        fieldName
-    );
-};
+        return null;
+    },
+    "itemOption": function(optionKey, optionValue) {
+        return React.createElement(
+            "option",
+            {"value": optionKey},
+            optionValue
+        );
+    },
+    "lessonSubtitle": function(lesson) {
+        const howManyExercises = util.howManyExercises(
+            lesson.queueItems
+        );
 
-exports.checkboxInput = function(key, checked, inputId, callback) {
-    var options = {
-        "className": "form-check-input",
-        "type": "checkbox",
-        "id": inputId,
-        "name": key
+        return React.createElement(
+            "h6",
+            {"className": "card-subtitle text-dark"},
+            lesson.description,
+            ` (${howManyExercises}, level ${lesson.level})`
+        );
     }
-    if (callback) {
-        options.onChange = callback;
-        options.checked = checked;
-    } else {
-        options.defaultChecked = checked;
-    }
-
-    return React.createElement(
-        "input",
-        options,
-        null
-    );
-};
-
-exports.displayCheckbox = function(key) {
-    if (["isAvailable", "isPublic"].includes(key)) {
-        return config.hideIsAvailablePublic ? " d-none" : null;
-    }
-
-    return null;
 };
 
 exports.checkboxDiv = function(key, checked, labelText, itemId, callback=null) {
@@ -67,14 +83,6 @@ exports.checkboxDiv = function(key, checked, labelText, itemId, callback=null) {
             callback
         ),
         exports.itemLabel(labelText, inputId)
-    );
-};
-
-exports.itemOption = function(optionKey, optionValue) {
-    return React.createElement(
-        "option",
-        {"value": optionKey},
-        optionValue
     );
 };
 
@@ -111,22 +119,5 @@ exports.selectDiv = function(fieldName, optionList, parent) {
         )
     );
 };
-
-exports.lessonSubtitle = function(lesson) {
-    const createdText = new moment(lesson.created)
-        .format(config.dateTimeFormat);
-
-    const howManyExercises = util.howManyExercises(
-        lesson.queueItems
-    );
-
-    return React.createElement(
-        "h6",
-        {"className": "card-subtitle text-dark"},
-        lesson.description,
-        ` (${howManyExercises}, level ${lesson.level})`
-    );
-};
-
 
 export default exports;

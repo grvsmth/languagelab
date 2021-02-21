@@ -112,8 +112,8 @@ export default class MediaFormCard extends React.Component {
             defaultValue = defaultVal;
         }
         if (Object.prototype.hasOwnProperty.call(
-            this.props.mediaItem.hasOwnProperty,
-            "fieldName"
+            this.props.mediaItem,
+            fieldName
             )
         ) {
             defaultValue = this.props.mediaItem[fieldName];

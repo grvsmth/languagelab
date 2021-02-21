@@ -78,8 +78,8 @@ export default class LessonFormCard extends React.Component {
             defaultValue = defaultVal;
         }
         if (Object.prototype.hasOwnProperty.call(
-                this.props.lesson,
-                "fieldName"
+            this.props.lesson,
+            fieldName
             )
         ) {
             defaultValue = this.props.lesson[fieldName];

@@ -67,7 +67,8 @@ export default class ExerciseFormCard extends React.Component {
             defaultValue = defaultVal;
         }
         if (Object.prototype.hasOwnProperty.call(
-            this.props.exercise.hasOwnProperty, "fieldName"
+            this.props.exercise,
+            fieldName
             )
         ) {
             defaultValue = this.props.exercise[fieldName];
