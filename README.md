@@ -53,12 +53,10 @@ Open Iconic icon library.
   `python manage.py collectstatic`
 * Run `python manage.py makemigrations languagelab`
 * Run `python manage.py migrate`
-* Run `python manage.py loaddata languagelab/api/fixtures/languages.json`
-* If you want languages that aren't on the language list, download them
+* Run `python manage.py loaddata languagelab/api/fixtures/languages.json` to get
+  the most common languages
 * Create a superuser:
   `python manage.py createsuperuser --username=joe --email=joe@example.com`
 * Restart your web server
-* Change the `DJANGO_SITE_ID` value in your `django_environ.py` to the ID of the
-  site you just created (probably 2)
 
 ## [Roadmap](roadmap.md)
