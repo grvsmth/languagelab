@@ -58,8 +58,6 @@ Open Iconic icon library.
 * Create a superuser:
   `python manage.py createsuperuser --username=joe --email=joe@example.com`
 * Restart your web server
-* Log in to `/admin`, create your domain and delete `example.com` so that the
-  links in the activation emails will work
 * Change the `DJANGO_SITE_ID` value in your `django_environ.py` to the ID of the
   site you just created (probably 2)
 

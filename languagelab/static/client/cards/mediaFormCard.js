@@ -157,72 +157,6 @@ export default class MediaFormCard extends React.Component {
         )
     }
 
-    fileInput(fieldName, inputId) {
-        return React.createElement(
-            "input",
-            {
-                "type": "file",
-                "className": "form-control-file",
-                "id": inputId,
-                "name": fieldName
-            },
-            null
-        );
-    }
-
-    fileInfo() {
-        if (!this.props.mediaItem.mediaFile) {
-            return null;
-        }
-
-        const fileUrlParts = this.props.mediaItem.mediaFile.split("/");
-        const fileNameSpan = React.createElement(
-            "span",
-            {"className": "text-success"},
-            fileUrlParts[fileUrlParts.length-1]
-        );
-
-        return React.createElement(
-            "span",
-            {"className": "badge"},
-            "uploaded media file is ",
-            fileNameSpan
-        );
-
-    }
-
-    fileLabel(fieldName, inputId) {
-        if (!this.props.mediaItem[fieldName]) {
-            return commonElements.itemLabel("or upload a file", inputId);
-        }
-
-        const fileUrlParts = this.props.mediaItem[fieldName].split("/");
-        const fileNameSpan = React.createElement(
-            "span",
-            {"className": "text-success"},
-            fileUrlParts[fileUrlParts.length-1]
-        );
-
-        return React.createElement(
-            "label",
-            {"htmlFor": inputId},
-            "or upload a file to replace ",
-            fileNameSpan
-        );
-
-    }
-
-    fileInputDiv(fieldName) {
-        const inputId = [fieldName, this.props.mediaItem.id].join("_");
-        return React.createElement(
-            "div",
-            {"className": "col-sm"},
-            commonElements.itemLabel("or upload a file", inputId),
-            this.fileInput(fieldName, inputId),
-            this.fileInfo()
-        );
-    }
-
     itemOption(optionKey, optionValue) {
         return React.createElement(
             "option",
@@ -278,7 +212,6 @@ export default class MediaFormCard extends React.Component {
             "div",
             {"className": "form-row mt-3"},
             this.textInputDiv("mediaUrl", this.inputChange.bind(this)),
-            this.fileInputDiv("mediaFile"),
             this.textInputDiv("duration", null, "00:00:00"),
             this.audioElement()
         );
