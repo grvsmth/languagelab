@@ -24,6 +24,7 @@ import util from "./util.js";
 import config from "./config.js";
 import environment from "./environment.js";
 
+/** The main lab class. @extends React.Component */
 export default class Lab extends React.Component {
     /**
      * Bind methods, instantiate API client and set sefault state
@@ -94,22 +95,20 @@ export default class Lab extends React.Component {
         };
     }
 
-    /*
-
-        If we haven't fetched anything yet, fetch it all
-
-    */
+    /**
+     * If we haven't fetched anything yet, fetch it all
+     */
     componentDidMount() {
         if (!this.state.lastUpdated && this.apiClient.hasToken()) {
             this.fetchAll();
         }
     }
 
-    keyHandler(event) {
-        console.log("keyHandler", event.key);
-        this.addAlert("Key pressed", event.key, "success");
-    }
-
+    /**
+     * Set the status code and display text for the DoExerciseCard
+     *
+     * @param {object} input - An object containing the new status and text
+     */
     setStatus(input) {
         this.setState({
             "status": input.status,
@@ -117,11 +116,22 @@ export default class Lab extends React.Component {
         })
     }
 
+    /**
+     * Set the userAudioUrl in state
+     *
+     * @param {string} url - the target userAudioUrl
+     *
+     */
     setUserAudioUrl(url) {
         this.setState({"userAudioUrl": url});
     }
 
-
+    /**
+     * Update the state after a successful mimic round.  Return the status to
+     * "ready," remove the clickedAction and increment the mimicCount
+     *
+     * @param {number} prevMimicCount - The previous mimicCount for this exercise
+     */
     afterMimic(prevMimicCount) {
         this.setState(prevState => ({
             "status": "ready",
@@ -134,11 +144,10 @@ export default class Lab extends React.Component {
         }));
     }
 
-    /*
-
-        Pull the list of things to load from the config, and fetch them all
-
-    */
+    /**
+     * Pull the list of things to load from the config, and fetch them all
+     *
+     */
     fetchAll() {
         const loading = {};
 
@@ -154,13 +163,13 @@ export default class Lab extends React.Component {
         this.setState({"loading": loading});
     }
 
-    /*
-
-        Get a timestamp, compose an API url from the datatype and config, and
-        call fetchData in the API client.  Once the data is received, save it to
-        state.
-
-    */
+    /**
+     * Get a timestamp, compose an API url from the datatype and config, and
+     * call fetchData in the API client.  Once the data is received, save it to
+     * state.
+     *
+     * @param {string} dataType - the type of data to fetch from the API
+     */
     fetchData(dataType) {
         const loadTime = new moment();
         const apiUrl = [
@@ -179,6 +188,13 @@ export default class Lab extends React.Component {
         }, this.handleFetchError);
     }
 
+    /**
+     * Add an alert to the state
+     *
+     * @param {string} title - the title to display in bold
+     * @param {string} message - the message to display
+     * @param {string} status - the Bootstrap class to determine the color
+     */
     addAlert(title, message, status="danger") {
         const alert = {
             "id": util.maxId(this.state.alerts) + 1,
@@ -189,16 +205,22 @@ export default class Lab extends React.Component {
         this.updateStateItem(alert, "alerts");
     }
 
+    /**
+     * Check for alerts with a given title to avoid duplication
+     *
+     * @param {string} title - the title to search for in the alert array
+     */
     findAlert(title) {
         return this.state.alerts.find((alert) => alert.title === title);
     }
 
-    /*
-
-        Handle 401 Unauthorized errors
-
-    */
-    handleUnauthorized(titleText) {
+    /**
+     * Handle 401 Unauthorized errors.  Remove loading status from state and
+     * send an alert if we haven't already
+     *
+     */
+    handleUnauthorized() {
+        const titleText = "Unauthorized on server";
         const errorMessage = "Please try logging in again";
         this.setState({"loading": {}});
         if (!this.findAlert(titleText) && this.state.activity != "login") {
@@ -206,15 +228,19 @@ export default class Lab extends React.Component {
         }
     }
 
-    /*
-
-        Handle fetch errors.  If the token is expired, then make the user log
-        in again.
-
-    */
+    /**
+     * Handle fetch errors.  If the token is expired, then make the user log
+     * in again.
+     *
+     * TODO There's some confusion about the format of various errors that get passed
+     * to this function.  Until we have it sorted out, let's keep the log
+     * statements.
+     *
+     * @param {object} err - The error object
+     */
     handleFetchError(err) {
         if (err.status === 401) {
-            this.handleUnauthorized("Unauthorized on server");
+            this.handleUnauthorized();
             return;
         }
 
@@ -240,11 +266,19 @@ export default class Lab extends React.Component {
     }
 
 
-    /*
-
-        Update specific state items when received from the API
-
-    */
+    /**
+     * Update specific state items under three circumstances:
+     *
+     * * for adding alerts
+     * * when received from the API after a checkbox click
+     * * when received from the API after saveItem()
+     *
+     * @param {object} res - the item to be added to the array
+     * @param {string} itemType - the key where the item is stored in state
+     * @param {string} activity - set the activity to "read" to exit edit mode
+     * @param {boolean} resetSelected - reset all the selections
+     *
+     */
     updateStateItem(res, itemType, activity=null, resetSelected=false) {
         const items = [...this.state[itemType]];
         const index = items.findIndex((item) => item.id === res.id);
@@ -272,12 +306,14 @@ export default class Lab extends React.Component {
         this.setState(targetState);
     }
 
-    /*
-
-        If the token is well-formed, save it to state, along with the received
-        time and the expected token life
-
-    */
+    /**
+     * If the token is well-formed, save it to state, along with the received
+     * time and the expected token life
+     *
+     * TODO We probably don't need the extra layer of "response"
+     *
+     * @param {object} res - the server response including the token
+     */
     handleToken(res) {
         const loadTime = new moment();
         if (!Object.prototype.hasOwnProperty.call(res, "response")) {
@@ -383,11 +419,10 @@ export default class Lab extends React.Component {
         this.queueOperation[operationName](id, lessonId);
     }
 
-    /*
-
-        Handle a click on a checkbox: update the API and save state
-
-    */
+    /**
+     * Handle a click on a checkbox: update the API and save state
+     *
+     */
     checkClick(itemType, itemId, itemKey, itemChecked) {
         event.preventDefault();
         const payload = {[itemKey]: itemChecked};
