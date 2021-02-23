@@ -25,6 +25,24 @@ export default class HelpCard extends React.Component {
         );
     }
 
+    cardLink() {
+        if (!Object.hasOwnProperty.call(this.props.helpItem, "a")) {
+            return null;
+        }
+
+        const options = {
+            "className": "card-link",
+            "href": this.props.helpItem.a.href,
+            "target": this.props.helpItem.a.target
+        };
+
+        return React.createElement(
+            "a",
+            options,
+            this.props.helpItem.a.html
+        );
+    }
+
     cardBody() {
         return React.createElement(
             "div",
@@ -32,7 +50,8 @@ export default class HelpCard extends React.Component {
                 "className": "card-body"
             },
             this.cardTitle(),
-            this.cardText()
+            this.cardText(),
+            this.cardLink()
         );
     }
 
