@@ -11,7 +11,6 @@ def set_environ():
     Update the environment variables
     """
     environ.update({
-        'DJANGO_SITE_ID': '1',
         'DJANGO_SECRET_KEY': '',
         'DJANGO_HOST': '',
         'DJANGO_DB': '',

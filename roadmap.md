@@ -1,20 +1,5 @@
 # Development roadmap for LanguageLab
 
-## Version 0.2 beta
-
-* ~~Crashes on Delete exercise~~
-* ~~Roadmap~~
-* ~~Better handling of expired tokens~~
-* ~~Control panel~~
-* ~~Export to JSON~~
-* ~~Help documentation~~
-* ~~Navigation aids if user has no media, exercises or lessons~~
-* ~~Organize the functions passed to cards~~
-* ~~PEP8 compliance~~
-* Update README
-* Bug reporting system
-* Feature request system
-
 ## Version 0.3
 
 * Import JSON

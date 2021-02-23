@@ -1,6 +1,6 @@
 {
   "name": "languagelab",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "LanguageLab Client",
   "main": "lab.js",
   "directories": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://grvsmth@bitbucket.org/grvsmth/languagelab-library-drf.git"
+    "url": "git+https://github.com/grvsmth/languagelab.git"
   },
   "keywords": [
     "languagelab",
@@ -22,7 +22,7 @@
   ],
   "author": "Angus B. Grieve-Smith",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/grvsmth/languagelab-library-drf#readme",
+  "homepage": "https://github.com/grvsmth/languagelab",
   "dependencies": {
     "bootstrap": "^4.6.0",
     "jquery": "^3.5.1",

@@ -17,7 +17,7 @@ const exports = {
         "description": `LanguageLab is free and open source.  See the README for
         information on how to set up your own server and web client.`,
         "a": {
-            "href": "https://bitbucket.org/grvsmth/languagelab-library-drf",
+            "href": "https://github.com/grvsmth/languagelab",
             "target": "_blank",
             "html": "Get the source"
         }

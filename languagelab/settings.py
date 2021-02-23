@@ -23,7 +23,7 @@ APP_DIR = path.dirname((path.abspath(__file__)))
 
 set_environ()
 
-VERSION = "0.2.0"
+VERSION = "0.2.3"
 API_VERSION = "0.2"
 
 # SECURITY WARNING: keep the secret key used in production secret!

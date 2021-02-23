@@ -1,8 +1,9 @@
-/*
-
-    Main page for Language Lab, with state handling
-
-*/
+/**
+ * Main page for Language Lab, with state handling
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
 
 /*
 
@@ -24,11 +25,10 @@ import config from "./config.js";
 import environment from "./environment.js";
 
 export default class Lab extends React.Component {
-    /*
-
-        Bind methods, instantiate API client and set sefault state
-
-    */
+    /**
+     * Bind methods, instantiate API client and set sefault state
+     *
+     */
     constructor(props) {
         super(props);
 
