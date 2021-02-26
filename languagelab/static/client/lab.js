@@ -26,10 +26,8 @@ import environment from "./environment.js";
 
 /** The main lab class. @extends React.Component */
 export default class Lab extends React.Component {
-    /**
-     * Bind methods, instantiate API client and set sefault state
-     *
-     */
+
+    /** Bind methods, instantiate API client and set sefault state */
     constructor(props) {
         super(props);
 

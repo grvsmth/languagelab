@@ -1,6 +1,8 @@
-/*
-    Client for the customized LanguageLab API
-*/
+/**
+ * Client for the customized LanguageLab API
+ *
+ * Angus B. Grieve-Smith, 2021
+ */
 
 /*
 
@@ -9,13 +11,10 @@
 */
 const DEFAULT_REFRESH_THRESHOLD = 60;
 
+/** Client class for the Language Lab API */
 export default class LanguageLabClient {
 
-    /*
-
-        Define the class attributes
-
-    */
+    /** Define the class attributes */
     constructor() {
         this.handleToken;
         this.expiredError = "Expired token!";
@@ -27,29 +26,29 @@ export default class LanguageLabClient {
         this.refreshThreshold = DEFAULT_REFRESH_THRESHOLD;
     }
 
-    /*
-
-        Set the token, the time when the token was refreshed, and the token life
-
-    */
+    /**
+     * Set the token, the time when the token was refreshed, and the token life
+     *
+     * @param {string} token - the token string
+     * @param {string} tokenTime - the time when the token was issued
+     * @param {string} tokenLife - the total life of the token in seconds
+     */
     setToken(token, tokenTime, tokenLife=this.tokenLife) {
         this.token = token;
         this.tokenTime = new moment(tokenTime);
         this.tokenLife = tokenLife;
     }
 
-    /*
-
-    */
+    /** Indicate whether we have a token string */
     hasToken() {
         return this.token.length > 0;
     }
 
-    /*
-
-        Set the refresh threshold
-
-    */
+    /**
+     * Set the refresh threshold
+     *
+     * @param {number} refreshThreshold
+     */
     setRefreshThreshold(refreshThreshold) {
         this.refreshThreshold = refreshThreshold;
     }
