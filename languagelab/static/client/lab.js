@@ -232,8 +232,8 @@ export default class Lab extends React.Component {
      * Handle fetch errors.  If the token is expired, then make the user log
      * in again.
      *
-     * TODO There's some confusion about the format of various errors that get passed
-     * to this function.  Until we have it sorted out, let's keep the log
+     * TODO There's some confusion about the format of various errors that get
+     * passed to this function.  Until we have it sorted out, let's keep the log
      * statements.
      *
      * @param {object} err - The error object
@@ -333,22 +333,22 @@ export default class Lab extends React.Component {
         this.fetchAll();
     }
 
-    /*
-
-        If we have an error getting the token, handle that.
-
-    */
+    /**
+     * If we have an error getting the token, handle that.
+     *
+     * @param {object} err - the error returned by the token method
+     */
     handleTokenError(err) {
         console.error(err);
         this.addAlert("Token error", err);
     }
 
-    /*
-
-        Retrieve the username and password from the form, and then pass it to
-        the API login function
-
-    */
+    /**
+     * Retrieve the username and password from the form, and then pass it to
+     * the API login function
+     *
+     * @param {object} event - the click event passed by the browser
+     */
     loginClick(event) {
         event.preventDefault();
         const options = {
@@ -363,11 +363,10 @@ export default class Lab extends React.Component {
         );
     }
 
-    /*
-
-        Clear the user ID from state and set the activity to login
-
-    */
+    /**
+     * Clear the user ID from state and set the activity to login
+     *
+     */
     logout() {
         if (this.state.currentUser) {
             storageClient.logout();
@@ -379,11 +378,11 @@ export default class Lab extends React.Component {
         }
     }
 
-    /*
-
-        Remove an item from the queue
-
-    */
+    /**
+     * Remove an item from the queue
+     *
+     * @param {number} queueItemId - the index of the queue item to remove
+     */
     removeFromQueue(queueItemId) {
         this.apiClient.delete(
             environment.api.baseUrl, "queueItems", queueItemId
@@ -391,11 +390,12 @@ export default class Lab extends React.Component {
         );
     }
 
-    /*
-
-        Add an exercise to the queue
-
-    */
+    /**
+     * Add an exercise to the queue
+     *
+     * @param {number} exerciseId - the index of the exercise to add
+     * @param {number} lessonId - the index of the lesson to add the exercise to
+     */
     addToQueue(exerciseId, lessonId) {
         const queueItem = {
             "exercise": exerciseId,
@@ -409,12 +409,13 @@ export default class Lab extends React.Component {
         );
     }
 
-    /*
-
-        Handle various queue operations: add, remove, up, down.  These are
-        specified in an Object.
-
-    */
+    /**
+     * Handle various queue operations.
+     *
+     * @param {string} operationName - queue operation (add, remove, up, down)
+     * @param {number} id - the exercise to add, remove or move
+     * @param {number} lessonId - the lesson with the queue
+     */
     queueClick(operationName, id, lessonId=null) {
         this.queueOperation[operationName](id, lessonId);
     }
@@ -422,6 +423,10 @@ export default class Lab extends React.Component {
     /**
      * Handle a click on a checkbox: update the API and save state
      *
+     * @param {string} itemType - the type of item clicked on (lesson, etc.)
+     * @param {number} itemId - the item to modify
+     * @param {string} itemKey - the variable to modify on that item
+     * @param {boolean} itemChecked - the checkbox status submitted by the user
      */
     checkClick(itemType, itemId, itemKey, itemChecked) {
         event.preventDefault();
@@ -433,12 +438,13 @@ export default class Lab extends React.Component {
         );
     }
 
-    /*
-
-        Select an item.  Used when playing media in mediaCard.js, and when
-        starting the edit activity
-
-    */
+    /**
+     * Select an item.  Used when playing media in mediaCard.js, and when
+     * starting the edit activity
+     *
+     * @param {number} itemId - the item selected
+     * @param {string} activity - an optional activity to set in the state
+     */
     selectItem(itemId, activity=null) {
         const targetState = {
             "selected": {
@@ -452,6 +458,11 @@ export default class Lab extends React.Component {
         this.setState(targetState);
     }
 
+    /**
+     * Return the ID of the first exercise in a lesson queue
+     *
+     * @param {number} lessonId - the ID of the lesson
+     */
     firstExerciseId(lessonId) {
         const lesson = util.findItem(this.state.lessons, lessonId);
 
@@ -462,6 +473,12 @@ export default class Lab extends React.Component {
         return lesson.queueItems[0].exercise;
     }
 
+    /**
+     * If there is no active exercise, start the first exercise in the lesson.
+     * If there is an active exercise, return to read mode
+     *
+     * @param {number} lessonId - the ID of the lesson
+     */
     toggleLesson(lessonId) {
         if (this.state.activity === "do"
             && this.state.selected.lessons == lessonId) {
@@ -471,16 +488,27 @@ export default class Lab extends React.Component {
         this.startExercise(this.firstExerciseId(lessonId), lessonId);
     }
 
+    /**
+     * Set the state to indicate whether to restrict media playback to the start
+     * and end times
+     */
     toggleOnlyExercise() {
         this.setState(prevState => ({"onlyExercise": !prevState.onlyExercise}));
     }
 
+    /**
+     * Handle the mediaLoaded event by setting mediaStatus to ready in state
+     */
     onMediaLoaded() {
-        this.setState({
-            "mediaStatus": "ready"
-        });
+        this.setState({"mediaStatus": "ready"});
     }
 
+    /**
+     * Start a new exercise in a given lesson
+     *
+     * @param {number} exerciseId - the ID of the selected exercise
+     * @param {number} lessonId - the ID of the lesson
+     */
     startExercise(exerciseId, lessonId=null) {
         const exercise = util.findItem(this.state.exercises, exerciseId);
         const mediaItem = util.findItem(this.state.media, exercise.media);
@@ -506,6 +534,13 @@ export default class Lab extends React.Component {
         this.setState(targetState);
     }
 
+    /**
+     * Set an activity, and optionally select an exercise and lesson
+     *
+     * @param {string} activity - the selected activity
+     * @param {number} exerciseId - the selected exercise (optional)
+     * @param {number} lessonId - the selected lesson (optional)
+     */
     setActivity(activity, exerciseId=null, lessonId=null) {
         this.setState((prevState) => ({
             "activity": activity,
@@ -517,11 +552,25 @@ export default class Lab extends React.Component {
         }));
     }
 
+    /**
+     * Call the delete method in the API client to delete an item
+     *
+     * @param {string} itemType - the type of item to delete
+     * @param {number} itemId - the ID of the item to delete
+     */
     deleteClick(itemType, itemId) {
         this.apiClient.delete(environment.api.baseUrl, itemType, itemId)
             .then(this.fetchAll, this.handleFetchError);
     }
 
+    /**
+     * Submit a new item via POST, or an updated item via PATCH, to the API
+     * client
+     *
+     * @param {object} item - the item to send to the API
+     * @param {string} itemType - the type of the item to send
+     * @param {number} itemId - if we are updating an item via PATCH, the ID
+     */
     saveItem(item, itemType, itemId) {
         if (itemId) {
             this.apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
@@ -542,6 +591,11 @@ export default class Lab extends React.Component {
         }
     }
 
+    /**
+     * Move a queue item up in a queue
+     *
+     * @param {number} itemId - The ID of the queue item to move up
+     */
     up(itemId) {
         this.apiClient.patch(
             environment.api.baseUrl, "queueItems", {"item": itemId}, "up"
@@ -550,6 +604,11 @@ export default class Lab extends React.Component {
         );
     }
 
+    /**
+     * Move a queue item down in a queue
+     *
+     * @param {number} itemId - The ID of the queue item to move down
+     */
     down(itemId) {
         this.apiClient.patch(
             environment.api.baseUrl, "queueItems", {"item": itemId}, "down"
@@ -558,6 +617,11 @@ export default class Lab extends React.Component {
         );
     }
 
+    /**
+     * Find the highest rank in the selected lesson
+     *
+     * @return {number}
+     */
     maxRank() {
         if (!this.state.selected.lessons) {
             return 0;
@@ -575,6 +639,16 @@ export default class Lab extends React.Component {
         return last.rank;
     }
 
+    /**
+     * Given a rank, find the queue item in the selected lesson with that rank,
+     * the exercise in that queue item, the media item in that exercise, and the
+     * URL for that media item.
+     *
+     * Set the exercise as selected in state, and set the media URL to
+     * nowPlaying
+     *
+     * @param {number} rank - the rank to select
+     */
     selectByRank(rank) {
         const lesson = util.findItem(
             this.state.lessons, this.state.selected.lessons
@@ -590,6 +664,7 @@ export default class Lab extends React.Component {
         );
 
         const mediaItem = util.findItem(this.state.media, exercise.media);
+
         if (!Object.prototype.hasOwnProperty.call(mediaItem, "mediaUrl")) {
             this.addAlert("Media error", "Unable to find media for exercise!");
             return;
@@ -605,6 +680,11 @@ export default class Lab extends React.Component {
         }));
     }
 
+    /**
+     * If there is a rank below the current rank, select that
+     *
+     * @param {number} rank - the current rank
+     */
     previous(rank) {
         if (rank <= 1) {
             return;
@@ -612,6 +692,11 @@ export default class Lab extends React.Component {
         this.selectByRank(rank - 1);
     }
 
+    /**
+     * If there is a rank in the queue above the current rank, select that
+     *
+     * @param {number} rank - the current rank
+     */
     next(rank) {
         if (rank >= this.maxRank()) {
             return;
@@ -619,12 +704,23 @@ export default class Lab extends React.Component {
         this.selectByRank(rank + 1);
     }
 
+    /**
+     * On receiving export data from the API, open that data in a new window
+     *
+     * @param {object} res - the export data returned by the API client
+     * @param {string} mimeType - the data format to return to the browser
+     */
     handleExportData(res, mimeType) {
         const blob = new Blob([JSON.stringify(res)], {"type": mimeType});
         const blobUrl = URL.createObjectURL(blob);
         window.open(blobUrl);
     }
 
+    /**
+     * Send an export data request to the API client
+     *
+     * @param {object} control - an object containing the endpoint and mimeType
+     */
     exportData(control) {
         const apiUrl = [
             environment.api.baseUrl, control.endpoint
@@ -635,6 +731,7 @@ export default class Lab extends React.Component {
         }, this.handleFetchError.bind(this));
     }
 
+    /** Set the state to play the mimic recording */
     playMimic() {
         this.setState({
             "nowPlaying": this.state.userAudioUrl,
@@ -643,6 +740,12 @@ export default class Lab extends React.Component {
         });
     }
 
+    /**
+     * Given the increment stage of the repetition, play the mediaItem for the
+     * exercise
+     *
+     * @param {string} increment - "first" or "second" increment of playback
+     */
     playModel(increment) {
         const exercise = util.findItem(
             this.state.exercises,
@@ -671,9 +774,13 @@ export default class Lab extends React.Component {
         }
 
         this.setState(targetState);
-
     }
 
+    /**
+     * If the user isn't logged in, display the login form.  If we're still
+     * loading the selected item, display nothing.  Otherwise, display the
+     * CardList
+     */
     body() {
         if (!this.state.currentUser) {
             return React.createElement(
@@ -720,22 +827,30 @@ export default class Lab extends React.Component {
         );
     }
 
+    /**
+     * Set the activity to read mode, selecting an itemType to display and
+     * clearing the selected exercises and lessons
+     *
+     * @param {string} itemType - the type of item to select
+     */
     readMode(itemType="lessons") {
         this.setState((prevState) => ({
             "activity": "read",
             "clickedAction": null,
             "nowPlaying": null,
             "selected": {
-                ...prevState.selected,
                 "exercises": null,
                 "itemType": itemType,
-                "lessons": null
+                "languages": null,
+                "lessons": null,
+                "media": null
             },
             "status": "ready",
             "statusText": ""
         }));
     }
 
+    /** Display the navbar */
     nav() {
         return React.createElement(
             Navbar,
@@ -751,6 +866,12 @@ export default class Lab extends React.Component {
         );
     }
 
+    /**
+     * Retrieve the list of alerts from state and remove the alert with a given
+     * ID
+     *
+     * @param {number} id - the ID of the alert to remove
+     */
     dismissAlert(id) {
         const alerts = [...this.state.alerts];
         const alertIndex = alerts.findIndex((alert) => alert.id == id);
@@ -759,6 +880,7 @@ export default class Lab extends React.Component {
         this.setState({"alerts": alerts});
     }
 
+    /** Display the infoArea, passing the selected lesson */
     infoArea() {
         const lesson = util.findItem(
             this.state.lessons, this.state.selected.lessons
@@ -779,6 +901,7 @@ export default class Lab extends React.Component {
         )
     }
 
+    /** Display the loadingModal */
     loadingModal() {
         return React.createElement(
             LoadingModal,
@@ -789,6 +912,7 @@ export default class Lab extends React.Component {
         );
     }
 
+    /** The React render function, displaying the root element */
     render() {
         return React.createElement(
             "div",
