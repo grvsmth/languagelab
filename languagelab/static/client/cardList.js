@@ -117,6 +117,8 @@ export default class CardList extends React.Component {
      * Generate an add button
      *
      * @param {string} cardId - the name of the button (initial or final)
+     *
+     * @return {object}
      */
     addButtonElement(cardId) {
         return React.createElement(
@@ -136,6 +138,8 @@ export default class CardList extends React.Component {
      * cards
      *
      * @param {string} cardId - special IDs ("initial"/"final") for add buttons
+     *
+     * @return {object}
      */
     addButtonCardBody(cardId) {
         return React.createElement(
@@ -150,6 +154,8 @@ export default class CardList extends React.Component {
      * the cards
      *
      * @param {string} cardId - special IDs ("initial"/"final") for add buttons
+     *
+     * @return {object}
      */
     addButtonCard(cardId) {
         return React.createElement(
@@ -169,6 +175,8 @@ export default class CardList extends React.Component {
      * return an empty array.
      *
      * @param {object} item - An item with a "language" property holding an ID
+     *
+     * @return {object}
      */
     findLanguage(item) {
         if (!this.props.state.languages) {
@@ -189,6 +197,8 @@ export default class CardList extends React.Component {
      * exercise parameter, return null.
      *
      * @param {object} selection - A queueItem with an exercise holding an ID
+     *
+     * @return {object}
      */
     queueExercise(selection) {
         if (!selection.exercise) {
@@ -202,6 +212,8 @@ export default class CardList extends React.Component {
      *
      * @param {number} lesson - the ID of the selected lesson
      * @param {number} exercise - the ID of the selected exercise
+     *
+     * @return {object}
      */
     queueItem(lesson, exercise) {
         if (!lesson) {
@@ -218,6 +230,8 @@ export default class CardList extends React.Component {
      *
      * @param {number} lesson - the ID of the selected lesson
      * @param {number} exercise - the ID of the selected exercise
+     *
+     * @return {number}
      */
     exerciseRank(lesson, exercise) {
         if (!lesson) {
@@ -239,6 +253,8 @@ export default class CardList extends React.Component {
      * @param {number} lesson - the ID of the selected lesson
      * @param {number} rank - the rank of the current exercise
      * @param {number} maxRank - the rank of the last exercise in the queue
+     *
+     * @return {object}
      */
     queueInfo(lesson, rank, maxRank) {
         const queueInfo = {};
@@ -278,6 +294,8 @@ export default class CardList extends React.Component {
      * Method to generate a ControlCard, including the exportData method
      *
      * @param {object} control - the text, links, etc. to display in the card
+     *
+     * @return {object}
      */
     controlCard(control) {
         return React.createElement(
@@ -295,6 +313,8 @@ export default class CardList extends React.Component {
      * Method to generate a HelpCard
      *
      * @param {object} helpItem - the text, links, etc. to display in the card
+     *
+     * @return {object}
      */
     helpCard(helpItem) {
         return React.createElement(
@@ -312,6 +332,8 @@ export default class CardList extends React.Component {
      *
      * @param {number} key - the React key for the card
      * @param {object} exercise - the exercise to be performed in the card
+     *
+     * @return {object}
      */
     doCard(key, exercise) {
         const lesson = util.findItem(
@@ -349,9 +371,16 @@ export default class CardList extends React.Component {
         );
     }
 
+    /**
+     * If we are adding or editing, return a MediaFormCard, otherwise return a
+     * MediaCard
+     *
+     * @param {object} mediaItem - the media item to be displayed or edited
+     *
+     * @return {object}
+     */
     mediaCard(mediaItem) {
         var cardComponent = MediaCard;
-        var languages = this.props.state.languages;
 
         if (this.props.state.activity === "edit"
             && this.props.state.selected.media === mediaItem.id) {
@@ -371,7 +400,7 @@ export default class CardList extends React.Component {
                 "deleteClick": this.props.deleteClick,
                 "id": mediaItem.id,
                 "key": mediaItem.id,
-                "languages": languages,
+                "languages": this.props.state.languages,
                 "mediaItem": mediaItem,
                 "saveItem": this.props.saveItem,
                 "selectItem": this.props.selectItem,
@@ -383,6 +412,14 @@ export default class CardList extends React.Component {
         );
     }
 
+    /**
+     * If we are adding or editing, return a LanguageFormCard, otherwise return a
+     * LanguageCard
+     *
+     * @param {object} language - the language to be displayed or edited
+     *
+     * @return {object}
+     */
     languageCard(language) {
         var cardComponent = LanguageCard;
 
@@ -400,11 +437,8 @@ export default class CardList extends React.Component {
         return React.createElement(
             cardComponent,
             {
-                "checkClick": this.props.checkClick,
-                "deleteClick": this.props.deleteClick,
                 "key": language.id,
                 "language": language,
-                "languages": this.props.state.languages,
                 "saveItem": this.props.saveItem,
                 "selectItem": this.props.selectItem,
                 "setActivity": this.props.setActivity
@@ -413,6 +447,15 @@ export default class CardList extends React.Component {
         );
     }
 
+    /**
+     * If we are adding or editing, return a LessonFormCard.  If we are doing
+     * an exercise within a lesson (playModel, playMimic) return a
+     * DoExerciseCard.  Otherwise return a LessonCard.
+     *
+     * @param {object} lesson - the lesson to be displayed or edited
+     *
+     * @return {object}
+     */
     lessonCard(lesson) {
         var cardComponent = LessonCard;
 
@@ -433,7 +476,9 @@ export default class CardList extends React.Component {
             cardComponent = LessonFormCard;
         }
 
-        if (this.props.state.activity === "add" && typeof lesson.id !== "number") {
+        if (this.props.state.activity === "add"
+            && typeof lesson.id !== "number"
+        ) {
             cardComponent = LessonFormCard;
         }
 
@@ -457,6 +502,13 @@ export default class CardList extends React.Component {
         );
     }
 
+    /**
+     * Return an ExerciseFormCard
+     *
+     * @param {object} exercise - the exercise to be edited
+     *
+     * @return {object}
+     */
     exerciseFormCard(exercise) {
         var options = {
             "key": exercise.id,
@@ -475,6 +527,15 @@ export default class CardList extends React.Component {
         );
     }
 
+    /**
+     * If we're editing or adding, return an ExerciseFormCard.  If we're doing
+     * the exercise (play or record), return a DoExerciseCard.  Otherwise,
+     * return an ExerciseCard.
+     *
+     * @param {object} exercise - the exercise to be displayed, done or edited
+     *
+     * @return {object}
+     */
     exerciseCard(exercise) {
         const mediaItem = util.findItem(this.props.state.media, exercise.media);
         const lesson = util.findItem(
@@ -516,11 +577,14 @@ export default class CardList extends React.Component {
         );
     }
 
-    /*
-
-        Find the user associated with the item
-
-    */
+    /**
+     * Find the user associated with an item, with an optional type
+     *
+     * @param item {object} the item to be investigated
+     * @param type {string} the type of item it is
+     *
+     * @return {object}
+     */
     itemUser(item, type=this.props.state.selected.itemType) {
         if (!this.props.state.users) {
             return null;
@@ -532,6 +596,10 @@ export default class CardList extends React.Component {
         return user;
     }
 
+    /**
+     *
+     * @return {object}
+     */
     makeElement(item) {
         return this.itemCard[this.props.state.selected.itemType](item);
     }
