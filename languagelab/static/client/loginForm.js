@@ -12,11 +12,10 @@
 import help from "./help.js";
 import HelpCard from "./cards/helpCard.js";
 
+/** The login form class. @extends React.Component */
 export default class LoginForm extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
+    /** Display the title for the login card */
     cardTitle() {
         return React.createElement(
             "h3",
@@ -27,6 +26,11 @@ export default class LoginForm extends React.Component {
         );
     }
 
+    /**
+     * Generate an automatic HTML label for the field
+     *
+     * @param {string} fieldName - the name of the field
+     */
     formLabel(fieldName) {
         return React.createElement(
             "label",
@@ -35,6 +39,12 @@ export default class LoginForm extends React.Component {
         );
     }
 
+    /**
+     * An input element, with optional autofocus
+     *
+     * @param {string} fieldName - the name of the field
+     * @param {boolean} autofocus - whether or not to set autofocus here
+     */
     formInput(fieldName, autofocus=false) {
         return React.createElement(
             "input",
@@ -49,6 +59,7 @@ export default class LoginForm extends React.Component {
         );
     }
 
+    /** A form group for the login username */
     usernameGroup() {
         return React.createElement(
             "div",
@@ -58,6 +69,7 @@ export default class LoginForm extends React.Component {
         );
     }
 
+    /** A password input element */
     passwordInput() {
         return React.createElement(
             "input",
@@ -71,6 +83,7 @@ export default class LoginForm extends React.Component {
         );
     }
 
+    /** A form group for the login username */
     passwordGroup() {
         return React.createElement(
             "div",
@@ -80,6 +93,7 @@ export default class LoginForm extends React.Component {
         )
     }
 
+    /** The login submit button */
     submitButton() {
         return React.createElement(
             "button",
@@ -91,6 +105,7 @@ export default class LoginForm extends React.Component {
         );
     }
 
+    /** The main login form */
     loginForm() {
         return React.createElement(
             "form",
@@ -104,6 +119,7 @@ export default class LoginForm extends React.Component {
         )
     }
 
+    /** A card-body div for the login form and title */
     cardBody() {
         return React.createElement(
             "div",
@@ -115,6 +131,7 @@ export default class LoginForm extends React.Component {
         );
     }
 
+    /** Wrap the login form in a card element to fit with the info cards */
     loginCard() {
         return React.createElement(
             "div",
@@ -125,8 +142,8 @@ export default class LoginForm extends React.Component {
         );
     }
 
+    /** Generate a help card based on a given item in help.js */
     helpCard(key) {
-        console.log(`helpCard(${key})`, help[key]);
         return React.createElement(
             HelpCard,
             {
@@ -137,6 +154,7 @@ export default class LoginForm extends React.Component {
         );
     }
 
+    /** The React render method */
     render() {
         return React.createElement(
             "div",

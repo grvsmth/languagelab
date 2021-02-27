@@ -55,6 +55,7 @@ export default class HelpCard extends React.Component {
         );
     }
 
+    /** The React render method */
     render() {
         return React.createElement(
             "div",
