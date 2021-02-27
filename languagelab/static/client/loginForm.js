@@ -1,11 +1,30 @@
+/**
+ * Generate a login form for the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ */
+
 /*
 
     global React, PropTypes
 
 */
+import help from "./help.js";
+import HelpCard from "./cards/helpCard.js";
+
 export default class LoginForm extends React.Component {
     constructor(props) {
         super(props);
+    }
+
+    cardTitle() {
+        return React.createElement(
+            "h3",
+            {
+                "className": "card-title"
+            },
+            "Login"
+        );
     }
 
     formLabel(fieldName) {
@@ -72,7 +91,7 @@ export default class LoginForm extends React.Component {
         );
     }
 
-    render() {
+    loginForm() {
         return React.createElement(
             "form",
             {
@@ -83,6 +102,49 @@ export default class LoginForm extends React.Component {
             this.passwordGroup(),
             this.submitButton()
         )
+    }
+
+    cardBody() {
+        return React.createElement(
+            "div",
+            {
+                "className": "card-body"
+            },
+            this.cardTitle(),
+            this.loginForm()
+        );
+    }
+
+    loginCard() {
+        return React.createElement(
+            "div",
+            {
+                "className": "card"
+            },
+            this.cardBody()
+        );
+    }
+
+    helpCard(key) {
+        console.log(`helpCard(${key})`, help[key]);
+        return React.createElement(
+            HelpCard,
+            {
+                "key": key,
+                "helpItem": help[key]
+            },
+            null
+        );
+    }
+
+    render() {
+        return React.createElement(
+            "div",
+            {"className": "card-columns"},
+            this.loginCard(),
+            this.helpCard("about"),
+            this.helpCard("source"),
+        );
     }
 }
 
