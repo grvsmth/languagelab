@@ -597,13 +597,24 @@ export default class CardList extends React.Component {
     }
 
     /**
+     * Call the appropriate itemCard for the given item and selecte item type
      *
+     * @param {object} item - An item from the list for the selected type
      * @return {object}
      */
     makeElement(item) {
         return this.itemCard[this.props.state.selected.itemType](item);
     }
 
+    /**
+     * Return the appropriate add card for the given card ID and selected item
+     * type.
+     *
+     * @param {boolean} addable - whether this type allows the user to add items
+     * @param {string} cardId - Initial or final, to track the card's place
+     *
+     * @return {object}
+     */
     addCard(addable, cardId="form") {
         if (!addable) {
             return null;
@@ -626,6 +637,13 @@ export default class CardList extends React.Component {
         return this.addButtonCard(cardId);
     }
 
+    /**
+     * Return an array of items as the basis of cards for display to the user
+     *
+     * @param {string} itemType - the type of item selected by the user
+     *
+     * @return {array}
+     */
     makeItemList(itemType) {
         if (itemType === "help") {
             return Object.values(help);
@@ -641,6 +659,13 @@ export default class CardList extends React.Component {
         return lesson.queueItems.map(this.queueExercise.bind(this));
     }
 
+    /**
+     * Return an array of cards for display to the user
+     *
+     * @param {string} itemType - the type of item selected by the user
+     *
+     * @return {array}
+     */
     makeElements(itemType) {
         const items = itemType === "help" ?
             Object.values(help) : this.props.state[itemType];
@@ -667,6 +692,11 @@ export default class CardList extends React.Component {
         return itemList.map(this.makeElement, this);
     }
 
+    /**
+     * The React render() method
+     *
+     * @return {object}
+     */
     render() {
         console.log(this.props);
         const itemType = this.props.state.selected.itemType;
