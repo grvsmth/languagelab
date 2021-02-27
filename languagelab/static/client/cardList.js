@@ -1,3 +1,9 @@
+/**
+ * Generate a list of Bootstrap cards for the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ */
+
 /*
 
     global React, PropTypes

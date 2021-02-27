@@ -299,14 +299,8 @@ export default class LanguageLabClient {
                     return;
                 }
 
-                res.json().then((resJson) => {
-                    resolve({"type": "token-auth", "response": resJson});
-                }, (err) => {
-                    reject("Error getting token: " + err);
-                });
-            }, (err) => {
-                reject("Error getting token: " + err);
-            });
+                res.json().then(resolve, reject);
+            }, reject);
         });
     }
 }

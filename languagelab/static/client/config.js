@@ -1,3 +1,8 @@
+/**
+ * Configuration for LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ */
 const config = {
     "version": "0.2beta",
     "api": {

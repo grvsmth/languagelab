@@ -1,3 +1,8 @@
+/**
+ * Configuration and documentation for links to control pages
+ *
+ * Angus B. Grieve-Smith, 2021
+ */
 const exports = [
     {
         "name": "admin",

@@ -2,6 +2,7 @@
 
 ## Version 0.3
 
+* Fix API web interface authorization
 * Import JSON
 * Filter by media, tag, title substring, availability, duration
 * Help tooltips

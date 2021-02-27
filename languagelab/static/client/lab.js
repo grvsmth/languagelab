@@ -33,7 +33,6 @@ export default class Lab extends React.Component {
 
         this.checkClick = this.checkClick.bind(this);
         this.handleFetchError = this.handleFetchError.bind(this);
-        this.handleToken = this.handleToken.bind(this);
 
         this.queueOperation = {
             "add": this.addToQueue.bind(this),
@@ -314,19 +313,16 @@ export default class Lab extends React.Component {
      */
     handleToken(res) {
         const loadTime = new moment();
-        if (!Object.prototype.hasOwnProperty.call(res, "response")) {
-            throw new Error("No token response!");
-        }
-        if (!Object.prototype.hasOwnProperty.call(res.response, "token")) {
+        if (!Object.prototype.hasOwnProperty.call(res, "token")) {
             throw new Error("No token in response!");
         }
 
         storageClient.setToken(
-            res.response.token, loadTime.format(), res.response.expiresIn
+            res.token, loadTime.format(), res.expiresIn
         );
 
         this.apiClient.setToken(
-            res.response.token, loadTime.format(), res.response.expiresIn
+            res.token, loadTime.format(), res.expiresIn
         );
         this.fetchAll();
     }
@@ -338,7 +334,29 @@ export default class Lab extends React.Component {
      */
     handleTokenError(err) {
         console.error(err);
-        this.addAlert("Token error", err);
+        if (err.status === 400) {
+
+        }
+        this.addAlert("Token error", err.statusText);
+    }
+
+    /**
+     * If we have an error logging in, handle that.
+     *
+     * @param {object} err - the error returned by the login method
+     */
+    handleLoginError(err) {
+        var alertText = "There was an error logging you in.";
+
+        if (Object.prototype.hasOwnProperty.call(err.statusText)) {
+            alertText = err.statusText;
+        }
+
+        if (err.status === 400) {
+            alertText = "Invalid username or password."
+        }
+
+        this.addAlert("Unable to log in", alertText);
     }
 
     /**
@@ -354,10 +372,9 @@ export default class Lab extends React.Component {
             "password": document.getElementById("password").value
         };
 
-        this.apiClient.login(options).then((res) => {
-                this.handleToken(res);
-            },
-            this.handleTokenError.bind(this)
+        this.apiClient.login(options).then(
+            this.handleToken.bind(this),
+            this.handleLoginError.bind(this)
         );
     }
 
