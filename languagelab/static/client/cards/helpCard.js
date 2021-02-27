@@ -1,3 +1,10 @@
+/**
+ * Bootstrap card for help documentation for the LanguageLab app
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global React, PropTypes

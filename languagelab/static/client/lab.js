@@ -334,9 +334,6 @@ export default class Lab extends React.Component {
      */
     handleTokenError(err) {
         console.error(err);
-        if (err.status === 400) {
-
-        }
         this.addAlert("Token error", err.statusText);
     }
 
@@ -849,7 +846,7 @@ export default class Lab extends React.Component {
      * @param {string} itemType - the type of item to select
      */
     readMode(itemType="lessons") {
-        this.setState((prevState) => ({
+        this.setState({
             "activity": "read",
             "clickedAction": null,
             "nowPlaying": null,
@@ -862,7 +859,7 @@ export default class Lab extends React.Component {
             },
             "status": "ready",
             "statusText": ""
-        }));
+        });
     }
 
     /** Display the navbar */

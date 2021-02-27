@@ -1,3 +1,10 @@
+/**
+ * Help documentation for Language Lab, to be passed to cards/helpCard.js
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 const exports = {
     "about": {
         "title": "About",

@@ -81,6 +81,14 @@ const typeInfo = {
 const doActivities = ["do", "loadExercise"];
 
 export default class CardList extends React.Component {
+
+    /**
+     * Extend the constructor method with an itemCard property mapping item
+     * keys to card generator methods.  Also bind the findLanguage method to
+     * the object.
+     *
+     * @param {object} props - the React props passed from the calling script
+     */
     constructor(props) {
         super(props);
 
@@ -96,10 +104,20 @@ export default class CardList extends React.Component {
         this.findLanguage = this.findLanguage.bind(this);
     }
 
+    /**
+     * Handle a click on the "add" button, passing the button ID to selectItem()
+     *
+     * @param {object} event - the click event passed by the browser
+     */
     addClick(event) {
         this.props.selectItem(event.target.id, "add");
     }
 
+    /**
+     * Generate an add button
+     *
+     * @param {string} cardId - the name of the button (initial or final)
+     */
     addButtonElement(cardId) {
         return React.createElement(
             "button",
@@ -113,6 +131,12 @@ export default class CardList extends React.Component {
         );
     }
 
+    /**
+     * A card body to wrap around the add button and fit with the rest of the
+     * cards
+     *
+     * @param {string} cardId - special IDs ("initial"/"final") for add buttons
+     */
     addButtonCardBody(cardId) {
         return React.createElement(
             "div",
@@ -121,6 +145,12 @@ export default class CardList extends React.Component {
         );
     }
 
+    /**
+     * A card to wrap around the add button card body and fit with the rest of
+     * the cards
+     *
+     * @param {string} cardId - special IDs ("initial"/"final") for add buttons
+     */
     addButtonCard(cardId) {
         return React.createElement(
             "div",
@@ -133,6 +163,13 @@ export default class CardList extends React.Component {
         );
     }
 
+    /**
+     * Find a language object with the ID given in the item language property.
+     * If we haven't loaded any languages, or the item has no language,
+     * return an empty array.
+     *
+     * @param {object} item - An item with a "language" property holding an ID
+     */
     findLanguage(item) {
         if (!this.props.state.languages) {
             return [];
@@ -147,6 +184,12 @@ export default class CardList extends React.Component {
         return [util.findItem(this.props.state.languages, item.language)];
     }
 
+    /**
+     * Find the exercise specified in a queue item.  If the queue item has no
+     * exercise parameter, return null.
+     *
+     * @param {object} selection - A queueItem with an exercise holding an ID
+     */
     queueExercise(selection) {
         if (!selection.exercise) {
             return null;
@@ -154,6 +197,12 @@ export default class CardList extends React.Component {
         return util.findItem(this.props.state.exercises, selection.exercise);
     }
 
+    /**
+     * Find a queueItem with a given lesson and exercise
+     *
+     * @param {number} lesson - the ID of the selected lesson
+     * @param {number} exercise - the ID of the selected exercise
+     */
     queueItem(lesson, exercise) {
         if (!lesson) {
             return null;
@@ -164,6 +213,12 @@ export default class CardList extends React.Component {
         );
     }
 
+    /**
+     * Find the rank of a given exercise in the queue of a given lesson
+     *
+     * @param {number} lesson - the ID of the selected lesson
+     * @param {number} exercise - the ID of the selected exercise
+     */
     exerciseRank(lesson, exercise) {
         if (!lesson) {
             return null;
@@ -178,6 +233,13 @@ export default class CardList extends React.Component {
         return queueItem.rank;
     }
 
+    /**
+     * Assemble the queue information needed in a DoExerciseCard
+     *
+     * @param {number} lesson - the ID of the selected lesson
+     * @param {number} rank - the rank of the current exercise
+     * @param {number} maxRank - the rank of the last exercise in the queue
+     */
     queueInfo(lesson, rank, maxRank) {
         const queueInfo = {};
 
@@ -212,6 +274,11 @@ export default class CardList extends React.Component {
         return queueInfo;
     }
 
+    /**
+     * Method to generate a ControlCard, including the exportData method
+     *
+     * @param {object} control - the text, links, etc. to display in the card
+     */
     controlCard(control) {
         return React.createElement(
             ControlCard,
@@ -224,6 +291,11 @@ export default class CardList extends React.Component {
         );
     }
 
+    /**
+     * Method to generate a HelpCard
+     *
+     * @param {object} helpItem - the text, links, etc. to display in the card
+     */
     helpCard(helpItem) {
         return React.createElement(
             HelpCard,
@@ -235,6 +307,12 @@ export default class CardList extends React.Component {
         )
     }
 
+    /**
+     * Generate a DoExerciseCard
+     *
+     * @param {number} key - the React key for the card
+     * @param {object} exercise - the exercise to be performed in the card
+     */
     doCard(key, exercise) {
         const lesson = util.findItem(
             this.props.state.lessons, this.props.state.selected.lessons

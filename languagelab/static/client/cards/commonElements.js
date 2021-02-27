@@ -1,3 +1,10 @@
+/**
+ * Common React elements used in multiple cards in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global React
