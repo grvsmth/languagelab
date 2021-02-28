@@ -22,6 +22,13 @@ export default class LanguageFormCard extends React.Component {
         this.props.setActivity("read");
     }
 
+    /**
+     * Return the value of a form field node unless it's a checkbox, in which
+     * case we return the boolean.  Let's call it a string, since that's what
+     * it's all going to get converted to in the end...
+     *
+     * @return {string}
+     */
     processField(node) {
         if (node.type === "checkbox") {
             return node.checked;
@@ -29,6 +36,13 @@ export default class LanguageFormCard extends React.Component {
         return node.value;
     }
 
+    /**
+     * Handle a click on the save button by harvesting the form items as an
+     * array, converting them to an object, and extracting the language ID.
+     * Pass it all to this.props.saveItem().
+     *
+     * @param {object} event - the click event that this handles
+     */
     saveClick(event) {
         const formInputs = document.body.querySelectorAll(
             `#${event.target.form.id} input, select`
@@ -46,6 +60,16 @@ export default class LanguageFormCard extends React.Component {
         this.props.saveItem(formData, "languages", itemId);
     }
 
+    /**
+     * Text input element with an optional change handler
+     *
+     * @param {string} fieldName - the name of the form field
+     * @param {string} inputId - the input ID, which can be "initial" or "final"
+     * @param {func} onChange - the input change handler
+     * @param {string} defaultValue - the default value
+     *
+     * @return {object}
+     */
     textInput(fieldName, inputId, onChange, defaultValue) {
         const options = {
             "id": inputId,
@@ -65,12 +89,23 @@ export default class LanguageFormCard extends React.Component {
         );
     }
 
+    /**
+     * Text input div, pre-populated if we're editing.  Generate an input ID
+     * from the field name and the language ID
+     *
+     * @param {string} fieldName - the name of the form field
+     * @param {func} onChange - the input change handler
+     * @param {string} defaultValue - the default value
+     *
+     * @return {object}
+     */
     textInputDiv(fieldName, onChange=null, defaultVal=null) {
         var defaultValue = "";
 
         if (defaultVal) {
             defaultValue = defaultVal;
         }
+
         if (Object.prototype.hasOwnProperty.call(
             this.props.language,
             fieldName
@@ -88,6 +123,14 @@ export default class LanguageFormCard extends React.Component {
         );
     }
 
+    /**
+     * Item option element to be mapped to the parameters of the options object
+     *
+     * @param {string} optionKey
+     * @param {string} optionValue
+     *
+     * @return {object}
+     */
     itemOption(optionKey, optionValue) {
         return React.createElement(
             "option",
@@ -96,6 +139,16 @@ export default class LanguageFormCard extends React.Component {
         );
     }
 
+    /**
+     * Create a Select form element for a field with a key/value object of
+     * options
+     *
+     * @param {string} fieldName - The field name
+     * @param {object} options - The options as key/value pairs
+     * @param {string} inputId
+     *
+     * @return {object}
+     */
     itemSelect(fieldName, options, inputId) {
         return React.createElement(
             "select",
@@ -114,6 +167,15 @@ export default class LanguageFormCard extends React.Component {
         );
     }
 
+    /**
+     * Create a select div with an input ID generated
+     * from the field name and the language ID
+     *
+     * @param {string} fieldName
+     * @param {object} optionList
+     *
+     * @return {object}
+     */
     selectDiv(fieldName, optionList) {
         if (!optionList) {
             return null;
@@ -128,6 +190,11 @@ export default class LanguageFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div with textInputDivs for name, creator, rights
+     *
+     * @return {object}
+     */
     nameRow() {
         return React.createElement(
             "div",
@@ -138,6 +205,11 @@ export default class LanguageFormCard extends React.Component {
         );
     }
 
+    /**
+     * A save button handled by saveClick()
+     *
+     * @return {object}
+     */
     saveButton() {
         return React.createElement(
             "button",
@@ -150,6 +222,11 @@ export default class LanguageFormCard extends React.Component {
         );
     }
 
+    /**
+     * A cancel button handled by cancelClick()
+     *
+     * @return {object}
+     */
     cancelButton() {
         return React.createElement(
             "button",
@@ -162,6 +239,11 @@ export default class LanguageFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div for the buttons
+     *
+     * @return {object}
+     */
     buttonDiv() {
         return React.createElement(
             "div",
@@ -171,6 +253,11 @@ export default class LanguageFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div for the save and cancel buttons with form row styling
+     *
+     * @return {object}
+     */
     submitRow() {
         return React.createElement(
             "div",
