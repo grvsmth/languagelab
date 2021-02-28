@@ -1,10 +1,16 @@
+/**
+ * Form for adding and editing lessons in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global React, PropTypes
 
 */
 import config from "./config.js";
-
 import commonElements from "./commonElements.js";
 
 export default class LessonFormCard extends React.Component {
@@ -68,6 +74,11 @@ export default class LessonFormCard extends React.Component {
         )
     }
 
+    /**
+     * Div for the tags input and its label
+     *
+     * @return {object}
+     */
     tagsInputDiv() {
         const inputId = "tags_" + this.props.lesson.id;
 
@@ -156,6 +167,11 @@ export default class LessonFormCard extends React.Component {
         );
     }
 
+    /**
+     * A row with inputs for notes, tags and level
+     *
+     * @return {object}
+     */
     optionsRow() {
         return React.createElement(
             "div",

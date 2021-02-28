@@ -62,12 +62,11 @@ exports.timeRange = function(startTime, endTime, timeFormat) {
  * @return {object}
  */
 exports.listToObject = function(inputList) {
-    const outputObject = inputList.reduce((object, item) => {
+    return inputList.reduce((object, item) => {
             object[item.id] = item.name;
             return object;
         }, {}
     );
-    return outputObject;
 };
 
 /**

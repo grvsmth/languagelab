@@ -1,3 +1,10 @@
+/**
+ * Form for adding and editing exercises in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global React, PropTypes
@@ -6,6 +13,7 @@
 import util from "./util.js";
 import commonElements from "./commonElements.js";
 
+/** Form for adding and editing exercises in the LanguageLab client */
 export default class ExerciseFormCard extends React.Component {
 
     /**
@@ -83,6 +91,11 @@ export default class ExerciseFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div with textInputDivs for start and end time
+     *
+     * @return {object}
+     */
     timeRow() {
         return React.createElement(
             "div",
@@ -140,6 +153,11 @@ export default class ExerciseFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div with a media selector row
+     *
+     * @return {object}
+     */
     mediaRow() {
         return React.createElement(
             "div",

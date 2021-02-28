@@ -1,3 +1,10 @@
+/**
+ * Form for adding and editing media in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global React, moment, PropTypes
@@ -8,13 +15,25 @@ import config from "./config.js";
 import util from "./util.js";
 import commonElements from "./commonElements.js";
 
+/** Form for adding and editing media in the LanguageLab client */
 export default class MediaFormCard extends React.Component {
+
+    /**
+     * Set a ref for the audio element (only used for calculating duration)
+     *
+     * @param {object} props
+     */
     constructor(props) {
         super(props);
 
         this.audio = React.createRef();
     }
 
+    /**
+     * Handle the input of an audioUrl so that we can auto-populate the duration
+     *
+     * @param {object} event
+     */
     inputChange(event) {
         this.audio.current.src = event.target.value;
     }
@@ -26,6 +45,12 @@ export default class MediaFormCard extends React.Component {
         this.props.setActivity("read");
     }
 
+    /**
+     * Once we've loaded the metadata for the remote audio, we can get the
+     * duration
+     *
+     * @param {object} event
+     */
     loadedMetadata(event) {
         const durationMoment = moment.duration(event.target.duration * 1000);
 
@@ -38,6 +63,11 @@ export default class MediaFormCard extends React.Component {
         durationInput.value = util.formatDuration(durationMoment);
     }
 
+    /**
+     * Audio element, only used for retrieving the duration
+     *
+     * return {object}
+     */
     audioElement() {
         const audio = React.createElement(
             "audio",
@@ -103,6 +133,11 @@ export default class MediaFormCard extends React.Component {
         )
     }
 
+    /**
+     * Div for the tags input and its label
+     *
+     * @return {object}
+     */
     tagsInputDiv() {
         const inputId = "tags_" + this.props.mediaItem.id;
 
@@ -129,6 +164,12 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div with inputs for the media and duration; also holds the audio
+     * element
+     *
+     * @return {object}
+     */
     fileRow() {
         return React.createElement(
             "div",
@@ -137,14 +178,6 @@ export default class MediaFormCard extends React.Component {
             this.textInputDiv("duration", null, "00:00:00"),
             this.audioElement()
         );
-    }
-
-    languageObject() {
-        const languageObject = this.props.languages.reduce((object, item) => {
-            object[item.id] = item.name;
-            return object;
-        }, {});
-        return languageObject;
     }
 
     /**
@@ -208,7 +241,7 @@ export default class MediaFormCard extends React.Component {
             ),
             commonElements.selectDiv(
                 "language",
-                this.languageObject(),
+                util.listToObject(this.props.languages),
                 this.props.mediaItem.id,
                 this.props.mediaItem.language
             ),
