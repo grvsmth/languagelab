@@ -14,14 +14,25 @@ import util from "./util.js";
 
 const timeFormat = "HH:mm:ss.S";
 
+/** Card body for displaying info about an exercise in the LanguageLab client */
 export default class ExerciseCardBody extends React.Component {
+
+    /**
+     * Bind the start click handler
+     *
+     * @param {props}
+     */
     constructor(props) {
         super(props);
 
-        this.checkboxClick = this.checkboxClick.bind(this);
         this.startClick = this.startClick.bind(this);
     }
 
+    /**
+     * A span crediting the exercise creator
+     *
+     * @return {object}
+     */
     bySpan() {
         if (!this.props.itemUser) {
             return null;
@@ -35,6 +46,11 @@ export default class ExerciseCardBody extends React.Component {
         );
     }
 
+    /**
+     * A subtitle with the media name and time range
+     *
+     * @return {object}
+     */
     itemSubtitle() {
         const timeRange = util.timeRange(
             this.props.exercise.startTime,
@@ -56,6 +72,11 @@ export default class ExerciseCardBody extends React.Component {
         );
     }
 
+    /**
+     * A row with language, media creator and description
+     *
+     * @return {object}
+     */
     descriptionRow() {
         var languageText = "";
         if (this.props.languages && this.props.languages.length && this.props.languages[0]) {
@@ -75,15 +96,6 @@ export default class ExerciseCardBody extends React.Component {
             " – ",
             this.props.exercise.description
         );
-    }
-
-    checkboxClick(event) {
-        this.props.checkClick(
-            "media",
-            this.props.exercise.id,
-            event.currentTarget.name,
-            event.currentTarget.checked
-        )
     }
 
     /**
@@ -139,6 +151,11 @@ export default class ExerciseCardBody extends React.Component {
         );
     }
 
+    /**
+     * Edit and delete links; don't show if we're editing the queue
+     *
+     * @return {object}
+     */
     linkDiv() {
         if (this.props.activity === "add"
             || this.props.selectedType === "queueItems") {
@@ -152,34 +169,17 @@ export default class ExerciseCardBody extends React.Component {
         return React.createElement(
             "div",
             {},
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.exercise.isAvailable,
-                "available",
-                this.props.exercise.id,
-                this.checkboxClick
-                ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.exercise.isPublic,
-                "public",
-                this.props.exercise.id,
-                this.checkboxClick
-                ),
             this.editLink(),
             " ",
             this.deleteLink()
         );
     }
 
-    textDiv(fieldName, options={}) {
-        return React.createElement(
-            "div",
-            options,
-            this.props.exercise[fieldName]
-        );
-    }
-
+    /**
+     * A button to start the exercise, not displayed if we're editing the queue
+     *
+     * @return {object}
+     */
     startButton() {
         if (this.props.activity === "editQueue") {
             return null;
@@ -196,6 +196,11 @@ export default class ExerciseCardBody extends React.Component {
         );
     }
 
+    /**
+     * A div to wrap the start button
+     *
+     * @return {object}
+     */
     startDiv() {
         return React.createElement(
             "div",
@@ -204,6 +209,11 @@ export default class ExerciseCardBody extends React.Component {
         );
     }
 
+    /**
+     * A card body, with subtitle, description, links and start button
+     *
+     * @return {object}
+     */
     render() {
         return React.createElement(
             "div",
@@ -218,7 +228,6 @@ export default class ExerciseCardBody extends React.Component {
 
 ExerciseCardBody.propTypes = {
     "activity": PropTypes.string.isRequired,
-    "checkClick": PropTypes.func.isRequired,
     "deleteClick": PropTypes.func.isRequired,
     "exercise": PropTypes.object.isRequired,
     "itemUser": PropTypes.object.isRequired,

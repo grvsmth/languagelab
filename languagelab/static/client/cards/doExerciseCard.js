@@ -207,14 +207,7 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
-    textDiv(fieldName, options={}) {
-        return React.createElement(
-            "div",
-            options,
-            this.props.exercise[fieldName]
-        );
-    }
-
+    /** Set the start time on the media player, handling potential errors */
     setStartTime() {
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
 
@@ -246,6 +239,7 @@ export default class DoExerciseCard extends React.Component {
         }
     }
 
+    /** Handle metadata load; replay mimic or set the ready state in the Lab */
     loadedMetadata() {
         if (this.props.state.status !== "playMimic") {
             this.setStartTime();
@@ -256,9 +250,15 @@ export default class DoExerciseCard extends React.Component {
             this.player.current.play()
                 .catch(this.handleError, this.props.state.status);
         }
-
     }
 
+    /**
+     * Handle end of playback, depending on what we just played:
+     *
+     * * playModelFirst - start recording
+     * * playModelSecond - play back the recording
+     * * playMimic - increment exercises
+     */
     afterPlay() {
         if (this.props.state.clickedAction === "mimic"
             && this.props.state.status === "playModelFirst") {
@@ -291,6 +291,12 @@ export default class DoExerciseCard extends React.Component {
         this.props.doFunction.setStatus({"status": "ready", "statusText": ""});
     }
 
+    /**
+     * At intervals, check to see whether we've reached the endTime.  If so,
+     * and playModelOnly is checked, stop playback and call afterPlay()
+     *
+     * @param {object} event
+     */
     timeUpdateHandler(event) {
         if (this.props.state.status === "playModelOnly"
             && !this.props.state.onlyExercise) {
@@ -310,6 +316,9 @@ export default class DoExerciseCard extends React.Component {
         this.afterPlay();
     }
 
+    /**
+     * If the user is playing the model, set the proper functions in state
+     */
     playHandler() {
         if (this.props.state.status !== "ready") {
             return;
@@ -324,6 +333,11 @@ export default class DoExerciseCard extends React.Component {
         this.props.doFunction.playMimic();
     }
 
+    /**
+     * Create our player element with the proper handlers
+     *
+     * @return {object}
+     */
     makePlayer() {
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
         const endSeconds = this.timeAsSeconds(this.props.exercise.endTime);
@@ -350,6 +364,11 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * Handle clicks on the onlyExercise checkbox
+     *
+     * @param {object} event
+     */
     onlyCheck(event) {
         this.props.doFunction.toggleOnlyExercise(event.target.checked);
     }
