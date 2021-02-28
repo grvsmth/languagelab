@@ -29,19 +29,36 @@ const exports = {
         );
     },
     "itemLabel": function(fieldName, inputId) {
+        /**
+         * A label element displaying the fieldName, attached to the inputId
+         *
+         * @param {string} fieldName
+         * @param {string} inputId
+         *
+         * @return {object}
+         */
         return React.createElement(
             "label",
             {"htmlFor": inputId},
             fieldName
         );
     },
-    "checkboxInput": function(key, checked, inputId, callback) {
-        var options = {
+    "checkboxInput": function(name, checked, inputId, callback) {
+        /**
+         * A checkbox input with callback
+         *
+         * @param {string} name
+         * @param {boolean} checked
+         * @param {string} inputId
+         * @param {func} callback
+         */
+        const options = {
             "className": "form-check-input",
             "type": "checkbox",
             "id": inputId,
-            "name": key
+            "name": name
         }
+
         if (callback) {
             options.onChange = callback;
             options.checked = checked;
@@ -56,6 +73,15 @@ const exports = {
         );
     },
     "displayCheckbox": function(key) {
+        /**
+         * If we've configured the system to hide the (currently non-functional)
+         * isAvailable and isPublic checkboxes, then return the appropriate
+         * Bootstrap class
+         *
+         * @param key - the name of the key
+         *
+         * @return {string}
+         */
         if (["isAvailable", "isPublic"].includes(key)) {
             return config.hideIsAvailablePublic ? " d-none" : null;
         }
@@ -63,6 +89,14 @@ const exports = {
         return null;
     },
     "itemOption": function(optionKey, optionValue) {
+        /**
+         * Item option element to be mapped to the parameters of the options object
+         *
+         * @param {string} optionKey
+         * @param {string} optionValue
+         *
+         * @return {object}
+         */
         return React.createElement(
             "option",
             {"value": optionKey},

@@ -124,73 +124,6 @@ export default class LanguageFormCard extends React.Component {
     }
 
     /**
-     * Item option element to be mapped to the parameters of the options object
-     *
-     * @param {string} optionKey
-     * @param {string} optionValue
-     *
-     * @return {object}
-     */
-    itemOption(optionKey, optionValue) {
-        return React.createElement(
-            "option",
-            {"value": optionKey},
-            optionValue
-        );
-    }
-
-    /**
-     * Create a Select form element for a field with a key/value object of
-     * options
-     *
-     * @param {string} fieldName - The field name
-     * @param {object} options - The options as key/value pairs
-     * @param {string} inputId
-     *
-     * @return {object}
-     */
-    itemSelect(fieldName, options, inputId) {
-        return React.createElement(
-            "select",
-            {
-                "className": "form-control",
-                "id": inputId,
-                "name": fieldName,
-                "defaultValue": this.props.language[fieldName]
-            },
-            ...Object.keys(options).map((optionKey) => {
-                return this.itemOption(
-                    optionKey,
-                    options[optionKey]
-                );
-            })
-        );
-    }
-
-    /**
-     * Create a select div with an input ID generated
-     * from the field name and the language ID
-     *
-     * @param {string} fieldName
-     * @param {object} optionList
-     *
-     * @return {object}
-     */
-    selectDiv(fieldName, optionList) {
-        if (!optionList) {
-            return null;
-        }
-
-        const inputId = [fieldName, this.props.language.id].join("_");
-        return React.createElement(
-            "div",
-            {"className": "form-group mx-1"},
-            commonElements.itemLabel(fieldName, inputId),
-            this.itemSelect(fieldName, optionList, inputId)
-        );
-    }
-
-    /**
      * A div with textInputDivs for name, creator, rights
      *
      * @return {object}
@@ -301,5 +234,5 @@ export default class LanguageFormCard extends React.Component {
 LanguageFormCard.propTypes = {
     "language": PropTypes.object.isRequired,
     "saveItem": PropTypes.func.isRequired,
-    "setActivity": PropTypes.func.isrequired
+    "setActivity": PropTypes.func.isRequired
 };

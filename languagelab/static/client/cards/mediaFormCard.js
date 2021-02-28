@@ -157,14 +157,16 @@ export default class MediaFormCard extends React.Component {
         )
     }
 
-    itemOption(optionKey, optionValue) {
-        return React.createElement(
-            "option",
-            {"value": optionKey},
-            optionValue
-        );
-    }
-
+    /**
+     * Create a Select form element for a field with a key/value object of
+     * options
+     *
+     * @param {string} fieldName - The field name
+     * @param {object} options - The options as key/value pairs
+     * @param {string} inputId
+     *
+     * @return {object}
+     */
     itemSelect(fieldName, options, inputId) {
         return React.createElement(
             "select",
@@ -175,7 +177,7 @@ export default class MediaFormCard extends React.Component {
                 "defaultValue": this.props.mediaItem[fieldName]
             },
             ...Object.keys(options).map((optionKey) => {
-                return this.itemOption(
+                return commonElements.itemOption(
                     optionKey,
                     options[optionKey]
                 );

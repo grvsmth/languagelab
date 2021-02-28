@@ -123,14 +123,6 @@ export default class LessonFormCard extends React.Component {
         )
     }
 
-    itemOption(optionKey, optionValue) {
-        return React.createElement(
-            "option",
-            {"value": optionKey},
-            optionValue
-        );
-    }
-
     itemSelect(fieldName, options, inputId) {
         return React.createElement(
             "select",
@@ -141,7 +133,7 @@ export default class LessonFormCard extends React.Component {
                 "defaultValue": this.props.lesson[fieldName]
             },
             ...Object.keys(options).map((optionKey) => {
-                return this.itemOption(
+                return commonElements.itemOption(
                     optionKey,
                     options[optionKey]
                 );
