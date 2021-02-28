@@ -7,28 +7,28 @@ import util from "./util.js";
 import commonElements from "./commonElements.js";
 
 export default class ExerciseFormCard extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
+    /**
+     * Handle a click on the cancel button with a call to the setActivity() prop
+     */
     cancelClick() {
         this.props.setActivity("read");
     }
 
-    processField(node) {
-        if (node.type === "checkbox") {
-            return node.checked;
-        }
-        return node.value;
-    }
-
+    /**
+     * Handle a click on the save button by harvesting the form items as an
+     * array, converting them to an object, and extracting the exercise ID.
+     * Pass it all to this.props.saveItem().
+     *
+     * @param {object} event - the click event that this handles
+     */
     saveClick(event) {
         const formInputs = document.body.querySelectorAll(
             `#${event.target.form.id} input, select`
         )
         const formData = Array.from(formInputs.values())
             .reduce((object, item) => {
-                object[item.name] = this.processField(item);
+                object[item.name] = util.processField(item);
                 return object;
             }, {});
 
@@ -41,31 +41,18 @@ export default class ExerciseFormCard extends React.Component {
 
     }
 
-    textInput(fieldName, inputId, onChange, defaultValue) {
-        const options = {
-            "id": inputId,
-            "className": "form-control",
-            "type": "text",
-            "name": fieldName,
-            "defaultValue": defaultValue
-        };
-        if (onChange) {
-            options.onChange = onChange;
-        }
+    /**
+     * Text input div, pre-populated if we're editing.
+     *
+     * @param {string} fieldName - the name of the form field
+     * @param {func} onChange - the input change handler
+     * @param {string} defaultValue - the default value
+     *
+     * @return {object}
+     */
+    textInputDiv(fieldName, onChange=null, defaultVal="") {
+        var defaultValue = defaultVal;
 
-        return React.createElement(
-            "input",
-            options,
-            null
-        );
-    }
-
-    textInputDiv(fieldName, onChange=null, defaultVal=null) {
-        var defaultValue = "";
-
-        if (defaultVal) {
-            defaultValue = defaultVal;
-        }
         if (Object.prototype.hasOwnProperty.call(
             this.props.exercise,
             fieldName
@@ -74,15 +61,19 @@ export default class ExerciseFormCard extends React.Component {
             defaultValue = this.props.exercise[fieldName];
         }
 
-        const inputId = [fieldName, this.props.exercise.id].join("_");
-        return React.createElement(
-            "div",
-            {"className": "col-sm"},
-            commonElements.itemLabel(fieldName, inputId),
-            this.textInput(fieldName, inputId, onChange, defaultValue)
-        );
+        return commonElements.textInputDiv(
+            fieldName,
+            this.props.exercise.id,
+            onChange,
+            defaultValue
+        )
     }
 
+    /**
+     * A div with textInputDivs for name and description
+     *
+     * @return {object}
+     */
     nameRow() {
         return React.createElement(
             "div",
@@ -101,6 +92,11 @@ export default class ExerciseFormCard extends React.Component {
         );
     }
 
+    /**
+     * A save button handled by saveClick()
+     *
+     * @return {object}
+     */
     saveButton() {
         return React.createElement(
             "button",
@@ -113,6 +109,11 @@ export default class ExerciseFormCard extends React.Component {
         );
     }
 
+    /**
+     * A cancel button handled by cancelClick()
+     *
+     * @return {object}
+     */
     cancelButton() {
         return React.createElement(
             "button",
@@ -125,6 +126,11 @@ export default class ExerciseFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div for the buttons
+     *
+     * @return {object}
+     */
     buttonDiv() {
         return React.createElement(
             "div",
@@ -172,6 +178,11 @@ export default class ExerciseFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div for the save and cancel buttons with form row styling
+     *
+     * @return {object}
+     */
     submitRow() {
         return React.createElement(
             "div",
@@ -180,6 +191,11 @@ export default class ExerciseFormCard extends React.Component {
         );
     }
 
+    /**
+     * The form with inputs and buttons
+     *
+     * @return {object}
+     */
     cardBody() {
         return React.createElement(
             "form",
@@ -195,8 +211,12 @@ export default class ExerciseFormCard extends React.Component {
         );
     }
 
+    /**
+     * The React render() method
+     *
+     * @return {object}
+     */
     render() {
-
         return React.createElement(
             "div",
             {"className": "card bg-light mb-3"},

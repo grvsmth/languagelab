@@ -114,7 +114,36 @@ const exports = {
             lesson.description,
             ` (${howManyExercises}, level ${lesson.level})`
         );
+    },
+    "textInput": function(fieldName, inputId, onChange, defaultValue) {
+        /**
+         * Text input element with an optional change handler
+         *
+         * @param {string} fieldName - the name of the form field
+         * @param {string} inputId - the input ID, which can be "initial" or "final"
+         * @param {func} onChange - the input change handler
+         * @param {string} defaultValue - the default value
+         *
+         * @return {object}
+         */
+        const options = {
+            "id": inputId,
+            "className": "form-control",
+            "type": "text",
+            "name": fieldName,
+            "defaultValue": defaultValue
+        };
+        if (onChange) {
+            options.onChange = onChange;
+        }
+
+        return React.createElement(
+            "input",
+            options,
+            null
+        );
     }
+
 };
 
 exports.checkboxDiv = function(key, checked, labelText, itemId, callback=null) {
@@ -163,6 +192,16 @@ exports.itemSelect = function(fieldName, options, inputId, defaultValue) {
     );
 };
 
+/**
+ * A div with a label and an item selector
+ *
+ * @param {string} fieldName - The field name
+ * @param {object} options - The options as key/value pairs
+ * @param {string} parentId
+ * @param {string} defaultValue
+ *
+ * @return {object}
+ */
 exports.selectDiv = function(fieldName, optionList, parentId, defaultValue) {
     if (!optionList) {
         return null;
@@ -178,5 +217,27 @@ exports.selectDiv = function(fieldName, optionList, parentId, defaultValue) {
         )
     );
 };
+
+/**
+ * Text input div, pre-populated if we're editing.  Generate an input ID
+ * from the field name and the language ID
+ *
+ * @param {string} fieldName - the name of the form field
+ * @param {string} parentId
+ * @param {func} onChange - the input change handler
+ * @param {string} defaultValue - the default value
+ *
+ * @return {object}
+ */
+exports.textInputDiv = function(fieldName, parentId, onChange=null, defaultValue=null) {
+    const inputId = [fieldName, parentId].join("_");
+    return React.createElement(
+        "div",
+        {"className": "col-sm"},
+        exports.itemLabel(fieldName, inputId),
+        exports.textInput(fieldName, inputId, onChange, defaultValue)
+    );
+};
+
 
 export default exports;

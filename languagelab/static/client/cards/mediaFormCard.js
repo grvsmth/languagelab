@@ -19,25 +19,11 @@ export default class MediaFormCard extends React.Component {
         this.audio.current.src = event.target.value;
     }
 
+    /**
+     * Handle a click on the cancel button with a call to the setActivity() prop
+     */
     cancelClick() {
         this.props.setActivity("read");
-    }
-
-    processField(node) {
-        if (node.type === "checkbox") {
-            return node.checked;
-        }
-        if (node.name === "tags") {
-            if (node.value.length < 1) {
-                return [];
-            }
-            const tags = node.value.split(config.tagSplitRE);
-            return tags;
-        }
-        if (node.name === "language") {
-            return parseInt(node.value);
-        }
-        return node.value;
     }
 
     loadedMetadata(event) {
@@ -65,17 +51,20 @@ export default class MediaFormCard extends React.Component {
         return audio;
     }
 
+    /**
+     * Handle a click on the save button by harvesting the form items as an
+     * array, converting them to an object, and extracting the media ID.
+     * Pass it all to this.props.saveItem().
+     *
+     * @param {object} event - the click event that this handles
+     */
     saveClick(event) {
         const formInputs = document.body.querySelectorAll(
             `#${event.target.form.id} input, select`
         )
         const formData = Array.from(formInputs.values())
             .reduce((object, item) => {
-                if (item.name === "mediaFile") {
-                    // TODO handle later
-                    return object;
-                }
-                object[item.name] = this.processField(item);
+                object[item.name] = util.processField(item);
                 return object;
             }, {});
 
@@ -86,31 +75,18 @@ export default class MediaFormCard extends React.Component {
         this.props.saveItem(formData, "media", itemId);
     }
 
-    textInput(fieldName, inputId, onChange, defaultValue) {
-        const options = {
-            "id": inputId,
-            "className": "form-control",
-            "type": "text",
-            "name": fieldName,
-            "defaultValue": defaultValue
-        };
-        if (onChange) {
-            options.onChange = onChange;
-        }
+    /**
+     * Text input div, pre-populated if we're editing.
+     *
+     * @param {string} fieldName - the name of the form field
+     * @param {func} onChange - the input change handler
+     * @param {string} defaultValue - the default value
+     *
+     * @return {object}
+     */
+    textInputDiv(fieldName, onChange=null, defaultVal="") {
+        var defaultValue = defaultVal;
 
-        return React.createElement(
-            "input",
-            options,
-            null
-        );
-    }
-
-    textInputDiv(fieldName, onChange=null, defaultVal=null) {
-        var defaultValue = "";
-
-        if (defaultVal) {
-            defaultValue = defaultVal;
-        }
         if (Object.prototype.hasOwnProperty.call(
             this.props.mediaItem,
             fieldName
@@ -119,13 +95,12 @@ export default class MediaFormCard extends React.Component {
             defaultValue = this.props.mediaItem[fieldName];
         }
 
-        const inputId = [fieldName, this.props.mediaItem.id].join("_");
-        return React.createElement(
-            "div",
-            {"className": "col-sm"},
-            commonElements.itemLabel(fieldName, inputId),
-            this.textInput(fieldName, inputId, onChange, defaultValue)
-        );
+        return commonElements.textInputDiv(
+            fieldName,
+            this.props.mediaItem.id,
+            onChange,
+            defaultValue
+        )
     }
 
     tagsInput(inputId) {
@@ -157,6 +132,11 @@ export default class MediaFormCard extends React.Component {
         )
     }
 
+    /**
+     * A div with textInputDivs for name, creator, rights
+     *
+     * @return {object}
+     */
     nameRow() {
         return React.createElement(
             "div",
@@ -185,6 +165,11 @@ export default class MediaFormCard extends React.Component {
         return languageObject;
     }
 
+    /**
+     * A save button handled by saveClick()
+     *
+     * @return {object}
+     */
     saveButton() {
         return React.createElement(
             "button",
@@ -197,6 +182,11 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * A cancel button handled by cancelClick()
+     *
+     * @return {object}
+     */
     cancelButton() {
         return React.createElement(
             "button",
@@ -209,6 +199,11 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div for the buttons
+     *
+     * @return {object}
+     */
     buttonDiv() {
         return React.createElement(
             "div",
@@ -250,6 +245,11 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div for the save and cancel buttons with form row styling
+     *
+     * @return {object}
+     */
     submitRow() {
         return React.createElement(
             "div",
@@ -258,6 +258,11 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * The form with inputs and buttons
+     *
+     * @return {object}
+     */
     cardBody() {
         return React.createElement(
             "form",
@@ -272,6 +277,11 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * The React render() method
+     *
+     * @return {object}
+     */
     render() {
         return React.createElement(
             "div",

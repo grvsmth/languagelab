@@ -103,4 +103,37 @@ exports.truncateString = function(stringText, limit=5) {
     return stringText.substring(0, limit - 1) + "…";
 };
 
+/**
+ * Return the value of a form field node, making appropriate conversions to send
+ * a JSON to the API:
+ *
+ * * checkbox - boolean
+ * * tags - array
+ * * language - int
+ *
+ * @param {object} node
+ *
+ * @return {string}
+ */
+exports.processField = function(node) {
+    if (node.type === "checkbox") {
+        return node.checked;
+    }
+
+    if (node.name === "tags") {
+        if (node.value.length < 1) {
+            return [];
+        }
+        const tags = node.value.split(config.tagSplitRE);
+        return tags;
+    }
+
+    if (node.name === "language") {
+        return parseInt(node.value);
+    }
+
+    return node.value;
+};
+
+
 export default exports;

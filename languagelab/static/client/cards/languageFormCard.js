@@ -23,20 +23,6 @@ export default class LanguageFormCard extends React.Component {
     }
 
     /**
-     * Return the value of a form field node unless it's a checkbox, in which
-     * case we return the boolean.  Let's call it a string, since that's what
-     * it's all going to get converted to in the end...
-     *
-     * @return {string}
-     */
-    processField(node) {
-        if (node.type === "checkbox") {
-            return node.checked;
-        }
-        return node.value;
-    }
-
-    /**
      * Handle a click on the save button by harvesting the form items as an
      * array, converting them to an object, and extracting the language ID.
      * Pass it all to this.props.saveItem().
@@ -49,7 +35,7 @@ export default class LanguageFormCard extends React.Component {
         )
         const formData = Array.from(formInputs.values())
             .reduce((object, item) => {
-                object[item.name] = this.processField(item);
+                object[item.name] = util.processField(item);
                 return object;
             }, {});
 
@@ -61,37 +47,7 @@ export default class LanguageFormCard extends React.Component {
     }
 
     /**
-     * Text input element with an optional change handler
-     *
-     * @param {string} fieldName - the name of the form field
-     * @param {string} inputId - the input ID, which can be "initial" or "final"
-     * @param {func} onChange - the input change handler
-     * @param {string} defaultValue - the default value
-     *
-     * @return {object}
-     */
-    textInput(fieldName, inputId, onChange, defaultValue) {
-        const options = {
-            "id": inputId,
-            "className": "form-control",
-            "type": "text",
-            "name": fieldName,
-            "defaultValue": defaultValue
-        };
-        if (onChange) {
-            options.onChange = onChange;
-        }
-
-        return React.createElement(
-            "input",
-            options,
-            null
-        );
-    }
-
-    /**
-     * Text input div, pre-populated if we're editing.  Generate an input ID
-     * from the field name and the language ID
+     * Text input div, pre-populated if we're editing.
      *
      * @param {string} fieldName - the name of the form field
      * @param {func} onChange - the input change handler
@@ -99,12 +55,8 @@ export default class LanguageFormCard extends React.Component {
      *
      * @return {object}
      */
-    textInputDiv(fieldName, onChange=null, defaultVal=null) {
-        var defaultValue = "";
-
-        if (defaultVal) {
-            defaultValue = defaultVal;
-        }
+    textInputDiv(fieldName, onChange=null, defaultVal="") {
+        var defaultValue = defaultVal;
 
         if (Object.prototype.hasOwnProperty.call(
             this.props.language,
@@ -114,13 +66,12 @@ export default class LanguageFormCard extends React.Component {
             defaultValue = this.props.language[fieldName];
         }
 
-        const inputId = [fieldName, this.props.language.id].join("_");
-        return React.createElement(
-            "div",
-            {"className": "col-sm"},
-            commonElements.itemLabel(fieldName, inputId),
-            this.textInput(fieldName, inputId, onChange, defaultValue)
-        );
+        return commonElements.textInputDiv(
+            fieldName,
+            this.props.language.id,
+            onChange,
+            defaultValue
+        )
     }
 
     /**
