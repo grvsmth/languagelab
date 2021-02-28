@@ -103,24 +103,6 @@ export default class MediaFormCard extends React.Component {
         )
     }
 
-    tagsInput(inputId) {
-        var defaultValue = "";
-        if (this.props.mediaItem.tags) {
-            defaultValue = this.props.mediaItem.tags.join(", ");
-        }
-        return React.createElement(
-            "input",
-            {
-                "id": inputId,
-                "className": "form-control",
-                "type": "text",
-                "name": "tags",
-                "defaultValue": defaultValue
-            },
-            null
-        );
-    }
-
     tagsInputDiv() {
         const inputId = "tags_" + this.props.mediaItem.id;
 
@@ -128,7 +110,7 @@ export default class MediaFormCard extends React.Component {
             "div",
             {"className": "col-sm"},
             commonElements.itemLabel("tags", inputId),
-            this.tagsInput(inputId)
+            commonElements.tagsInput(inputId, this.props.mediaItem.tags)
         )
     }
 

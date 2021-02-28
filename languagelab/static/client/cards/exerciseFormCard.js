@@ -154,30 +154,6 @@ export default class ExerciseFormCard extends React.Component {
 
     }
 
-    /*
-
-        Not currently implemented
-
-    */
-    checkboxRow() {
-        return React.createElement(
-            "div",
-            {"className": "form-row mt-3"},
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.exercise.isAvailable,
-                "available",
-                this.props.exercise.id
-            ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.exercise.isPublic,
-                "public",
-                this.props.exercise.id
-            )
-        );
-    }
-
     /**
      * A div for the save and cancel buttons with form row styling
      *

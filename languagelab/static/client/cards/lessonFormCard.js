@@ -68,24 +68,6 @@ export default class LessonFormCard extends React.Component {
         )
     }
 
-    tagsInput(inputId) {
-        var defaultValue = "";
-        if (this.props.lesson.tags) {
-            defaultValue = this.props.lesson.tags.join(", ");
-        }
-        return React.createElement(
-            "input",
-            {
-                "id": inputId,
-                "className": "form-control",
-                "type": "text",
-                "name": "tags",
-                "defaultValue": defaultValue
-            },
-            null
-        );
-    }
-
     tagsInputDiv() {
         const inputId = "tags_" + this.props.lesson.id;
 
@@ -93,7 +75,7 @@ export default class LessonFormCard extends React.Component {
             "div",
             {"className": "col-sm"},
             commonElements.itemLabel("tags", inputId),
-            this.tagsInput(inputId)
+            commonElements.tagsInput(inputId, this.props.lesson.tags)
         )
     }
 

@@ -142,7 +142,25 @@ const exports = {
             options,
             null
         );
+    },
+    "tagsInput": function(inputId, tags) {
+        var defaultValue = "";
+        if (tags) {
+            defaultValue = tags.join(", ");
+        }
+        return React.createElement(
+            "input",
+            {
+                "id": inputId,
+                "className": "form-control",
+                "type": "text",
+                "name": "tags",
+                "defaultValue": defaultValue
+            },
+            null
+        );
     }
+
 
 };
 
