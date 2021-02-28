@@ -1,15 +1,23 @@
-/*
+/**
+ * Card for editing info about a language in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
+ /*
 
     global React, PropTypes
 
 */
 import commonElements from "./commonElements.js";
 
+/** Card for editing info about a language in the LanguageLab client */
 export default class LanguageFormCard extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
+    /**
+     * Handle a click on the cancel button with a call to the setActivity() prop
+     */
     cancelClick() {
         this.props.setActivity("read");
     }
@@ -171,6 +179,11 @@ export default class LanguageFormCard extends React.Component {
         );
     }
 
+    /**
+     * The form with inputs for name and code, and a submit button
+     *
+     * @return {object}
+     */
     cardBody() {
         return React.createElement(
             "form",
@@ -184,6 +197,11 @@ export default class LanguageFormCard extends React.Component {
         );
     }
 
+    /**
+     * The React render() method
+     *
+     * @return {object}
+     */
     render() {
         return React.createElement(
             "div",

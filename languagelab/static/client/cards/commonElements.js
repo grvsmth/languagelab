@@ -15,6 +15,13 @@ import util from "./util.js";
 
 const exports = {
     "iconSpan": function(iconClass) {
+        /**
+         * An <i> element with a Bootstrap/FontAwesome-type icon class
+         *
+         * @param {string} iconClass - the name of the desired icon class
+         *
+         * @return {object}
+         */
         return React.createElement(
             "i",
             {"className": "oi " + iconClass},
