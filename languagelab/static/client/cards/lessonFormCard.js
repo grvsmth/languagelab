@@ -123,38 +123,6 @@ export default class LessonFormCard extends React.Component {
         )
     }
 
-    itemSelect(fieldName, options, inputId) {
-        return React.createElement(
-            "select",
-            {
-                "className": "form-control",
-                "id": inputId,
-                "name": fieldName,
-                "defaultValue": this.props.lesson[fieldName]
-            },
-            ...Object.keys(options).map((optionKey) => {
-                return commonElements.itemOption(
-                    optionKey,
-                    options[optionKey]
-                );
-            })
-        );
-    }
-
-    selectDiv(fieldName, optionList) {
-        if (!optionList) {
-            return null;
-        }
-
-        const inputId = [fieldName, this.props.lesson.id].join("_");
-        return React.createElement(
-            "div",
-            {"className": "form-group mx-1"},
-            commonElements.itemLabel(fieldName, inputId),
-            this.itemSelect(fieldName, optionList, inputId)
-        );
-    }
-
     nameRow() {
         /*
 

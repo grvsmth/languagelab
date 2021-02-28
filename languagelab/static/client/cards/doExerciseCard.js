@@ -27,6 +27,12 @@ const statusColor = {
 };
 
 export default class DoExerciseCard extends React.Component {
+
+    /**
+     * Declare refs and bind handlers
+     *
+     * @param {object} props
+     */
     constructor(props) {
         super(props);
 
@@ -39,6 +45,7 @@ export default class DoExerciseCard extends React.Component {
         this.player = React.createRef();
     }
 
+    /** On mount, find an audio input device and register it */
     componentDidMount() {
         navigator.mediaDevices.getUserMedia({"audio": true}).then(
             (stream) => this.handleGetInput(stream),
@@ -46,10 +53,16 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /** On update, re-establish focus on the mimic button */
     componentDidUpdate() {
         this.mimicButton.current.focus();
     }
 
+    /** When we have recorded data available, create a URL for that and set
+     * the URL in application state
+     *
+     * @param {object} event
+     */
     onDataAvailable(event) {
         const userAudioUrl = window.URL.createObjectURL(
             event.data,
@@ -58,6 +71,12 @@ export default class DoExerciseCard extends React.Component {
         this.props.doFunction.setUserAudioUrl(userAudioUrl);
     }
 
+    /**
+     * Once we've found the audio input device, create a MediaRecorder to
+     * record from that device
+     *
+     * @param {object} stream
+     */
     handleGetInput(stream) {
         window.stream = stream;
         this.mediaRecorder = new window.MediaRecorder(
@@ -66,6 +85,11 @@ export default class DoExerciseCard extends React.Component {
         this.mediaRecorder.ondataavailable = this.onDataAvailable.bind(this);
     }
 
+    /**
+     * Handle errors in getting media, including no device found
+     *
+     * @param {object} error
+     */
     handleGetMediaError(error) {
         if (error.code === 8) {
             this.props.doFunction.setStatus({
@@ -80,10 +104,26 @@ export default class DoExerciseCard extends React.Component {
         });
     }
 
+    /**
+     * Convert a string in the default Moment format into seconds
+     *
+     * @param {string} timeString
+     *
+     * @return {number} seconds
+     */
     timeAsSeconds(timeString) {
         return moment.duration(timeString).asSeconds();
     }
 
+    /**
+     * Use moment to compute the duration between start and end and return
+     * it as a formatted string
+     *
+     * @param {string} startString
+     * @param {string} endString
+     *
+     * @return {string}
+     */
     duration(startString, endString) {
         const startMoment = new moment(startString, config.timeFormat);
         const endMoment = new moment(endString, config.timeFormat);
@@ -91,6 +131,12 @@ export default class DoExerciseCard extends React.Component {
         return util.formatDuration(durationMoment, 3);
     }
 
+    /** A title element with the name of the prop
+     *
+     * @param {object} prop
+     *
+     * @return {object}
+     */
     title(prop) {
         return React.createElement(
             "h5",
@@ -99,6 +145,11 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * A text span with the name of the item user, if any
+     *
+     * @return {object}
+     */
     bySpan() {
         if (!this.props.itemUser) {
             return null;
@@ -112,6 +163,11 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * A subtitle with the mediaItem name and the time range
+     *
+     * @return {object}
+     */
     itemSubtitle() {
         const timeRange = util.timeRange(
             this.props.exercise.startTime,
@@ -133,6 +189,11 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * A description row with the language and creator
+     *
+     * @return {object}
+     */
     descriptionRow() {
         var languageText = "";
         if (this.props.languages

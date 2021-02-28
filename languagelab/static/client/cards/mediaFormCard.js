@@ -157,48 +157,6 @@ export default class MediaFormCard extends React.Component {
         )
     }
 
-    /**
-     * Create a Select form element for a field with a key/value object of
-     * options
-     *
-     * @param {string} fieldName - The field name
-     * @param {object} options - The options as key/value pairs
-     * @param {string} inputId
-     *
-     * @return {object}
-     */
-    itemSelect(fieldName, options, inputId) {
-        return React.createElement(
-            "select",
-            {
-                "className": "form-control",
-                "id": inputId,
-                "name": fieldName,
-                "defaultValue": this.props.mediaItem[fieldName]
-            },
-            ...Object.keys(options).map((optionKey) => {
-                return commonElements.itemOption(
-                    optionKey,
-                    options[optionKey]
-                );
-            })
-        );
-    }
-
-    selectDiv(fieldName, optionList) {
-        if (!optionList) {
-            return null;
-        }
-
-        const inputId = [fieldName, this.props.mediaItem.id].join("_");
-        return React.createElement(
-            "div",
-            {"className": "form-group mx-1"},
-            commonElements.itemLabel(fieldName, inputId),
-            this.itemSelect(fieldName, optionList, inputId)
-        );
-    }
-
     nameRow() {
         return React.createElement(
             "div",
@@ -265,8 +223,18 @@ export default class MediaFormCard extends React.Component {
             "div",
             {"className": "form-row mt-3"},
             this.tagsInputDiv(),
-            this.selectDiv("format", config.formatName),
-            this.selectDiv("language", this.languageObject()),
+            commonElements.selectDiv(
+                "format",
+                config.formatName,
+                this.props.mediaItem.id,
+                this.props.mediaItem.format
+            ),
+            commonElements.selectDiv(
+                "language",
+                this.languageObject(),
+                this.props.mediaItem.id,
+                this.props.mediaItem.language
+            ),
             commonElements.checkboxDiv(
                 "isAvailable",
                 this.props.mediaItem.isAvailable,

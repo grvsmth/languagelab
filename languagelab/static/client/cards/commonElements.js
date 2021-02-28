@@ -134,6 +134,17 @@ exports.checkboxDiv = function(key, checked, labelText, itemId, callback=null) {
     );
 };
 
+/**
+ * Create a Select form element for a field with a key/value object of
+ * options
+ *
+ * @param {string} fieldName - The field name
+ * @param {object} options - The options as key/value pairs
+ * @param {string} inputId
+ * @param {string} defaultValue
+ *
+ * @return {object}
+ */
 exports.itemSelect = function(fieldName, options, inputId, defaultValue) {
     return React.createElement(
         "select",
@@ -152,18 +163,18 @@ exports.itemSelect = function(fieldName, options, inputId, defaultValue) {
     );
 };
 
-exports.selectDiv = function(fieldName, optionList, parent) {
+exports.selectDiv = function(fieldName, optionList, parentId, defaultValue) {
     if (!optionList) {
         return null;
     }
 
-    const inputId = [fieldName, parent.id].join("_");
+    const inputId = [fieldName, parentId].join("_");
     return React.createElement(
         "div",
         {},
         exports.itemLabel(fieldName, inputId),
         exports.itemSelect(
-            fieldName, optionList, inputId, parent[fieldName]
+            fieldName, optionList, inputId, defaultValue
         )
     );
 };

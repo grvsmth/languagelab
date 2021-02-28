@@ -141,7 +141,8 @@ export default class ExerciseFormCard extends React.Component {
             commonElements.selectDiv(
                 "media",
                 util.listToObject(this.props.media),
-                this.props.exercise
+                this.props.exercise.id,
+                this.props.exercise.media
             )
         )
 
