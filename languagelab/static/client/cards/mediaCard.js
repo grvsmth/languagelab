@@ -14,14 +14,25 @@ import config from "./config.js";
 import commonElements from "./commonElements.js";
 import util from "./util.js";
 
+/**  Card for displaying info about a media item in the LanguageLab client */
 export default class MediaCard extends React.Component {
+
+    /**
+     * Create a ref for the player
+     *
+     * @param {object} props
+     */
     constructor(props) {
         super(props);
 
-        this.checkboxClick = this.checkboxClick.bind(this);
         this.player = React.createRef();
     }
 
+    /**
+     * A card title, with name, format, language and duration
+     *
+     * @return {object}
+     */
     itemTitle() {
         const formatText = config.formatName[this.props.mediaItem.format];
 
@@ -44,6 +55,11 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    /**
+     * A span crediting the uploader of the media item
+     *
+     * @return {object}
+     */
     bySpan() {
         if (!this.props.itemUser) {
             return null;
@@ -57,6 +73,11 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    /**
+     * Subtitle, crediting the creator and uploader
+     *
+     * @return {object}
+     */
     itemSubtitle() {
         const uploadedText = new moment(this.props.mediaItem.uploaded)
             .format(config.dateTimeFormat);
@@ -70,21 +91,17 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    /**
+     * The rights declared over the media item
+     *
+     * @return {object}
+     */
     rightsSpan() {
         return React.createElement(
             "span",
             {"className": "card-text mr-2"},
             this.props.mediaItem.rights
         );
-    }
-
-    checkboxClick(event) {
-        this.props.checkClick(
-            "media",
-            this.props.mediaItem.id,
-            event.target.name,
-            event.target.checked
-        )
     }
 
     /**
@@ -132,14 +149,22 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    /** Select this item in state if the user has pressed play */
     playHandler() {
         this.props.selectItem(this.props.id);
     }
 
+    /** Release this item in state after playback stops */
     afterPlay() {
         this.props.selectItem(null);
     }
 
+    /**
+     * if we're playing a different item, stop playing this item and hide the
+     * controls
+     *
+     * @return {boolean}
+     */
     showControls() {
         if (this.props.selectedItem
             && this.props.id !== this.props.selectedItem) {
@@ -149,13 +174,14 @@ export default class MediaCard extends React.Component {
         return true;
     }
 
+    /**
+     * A player to allow the user to preview the media item
+     *
+     * When we re-implement file upload, we will need to pick the proper URL
+     *
+     * @return {object}
+     */
     makePlayer() {
-        /*
-
-            When we re-implement file upload, we will need to pick the proper
-            URL
-
-        */
         return React.createElement(
             "audio",
             {
@@ -174,6 +200,11 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    /**
+     * A row to wrap the player in
+     *
+     * @return {object}
+     */
     playerDiv() {
         return React.createElement(
             "div",
@@ -182,6 +213,11 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    /**
+     * The edit and delete links
+     *
+     * @return {object}
+     */
     linkDiv() {
         if (this.props.activity === "add") {
             return null;
@@ -195,6 +231,11 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    /**
+     * The card body, containing title, subtitle, player, tags, rights and links
+     *
+     * @return {object}
+     */
     cardBody() {
         return React.createElement(
             "div",
@@ -208,6 +249,11 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    /**
+     * The main card
+     *
+     * @return {object}
+     */
     render() {
         return React.createElement(
             "div",
@@ -219,7 +265,6 @@ export default class MediaCard extends React.Component {
 
 MediaCard.propTypes = {
     "activity": PropTypes.string.isRequired,
-    "checkClick": PropTypes.func.isRequired,
     "deleteClick": PropTypes.func.isRequired,
     "id": PropTypes.string.isRequired,
     "itemUser": PropTypes.object.isRequired,

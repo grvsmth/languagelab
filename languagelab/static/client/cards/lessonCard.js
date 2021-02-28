@@ -115,6 +115,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * The edit and delete links
+     *
+     * @return {object}
+     */
     linkDiv() {
         if (this.props.activity === "add") {
             return null;
@@ -128,6 +133,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * A div for lesson notes
+     *
+     * @return {object}
+     */
     notesDiv() {
         return React.createElement(
             "div",
@@ -136,6 +146,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * A button to toggle doing the lesson
+     *
+     * @return {object}
+     */
     doQueueButton() {
         if (this.props.lesson.queueItems.length < 1) {
             return null;
@@ -154,10 +169,16 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /** Set the editQueue activity in lab state */
     editQueue() {
         this.props.setActivity("editQueue", null, this.props.lesson.id);
     }
 
+    /**
+     * A button allowing the user to edit the queue
+     *
+     * @return {object}
+     */
     editQueueButton() {
         if (!this.props.lesson.queueItems.length) {
             return null;
@@ -173,6 +194,12 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * A div with the number of exercises and the buttons to edit and start
+     * the lesson queue
+     *
+     * @return {object}
+     */
     queueDiv() {
         return React.createElement(
             "div",
@@ -183,6 +210,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * The cardBody, with title, subtitle, notes, tags, links and queue buttons
+     *
+     * @return {object}
+     */
     cardBody() {
         return React.createElement(
             "div",
@@ -196,6 +228,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * The render function, with a card
+     *
+     * @return {object}
+     */
     render() {
         return React.createElement(
             "div",
