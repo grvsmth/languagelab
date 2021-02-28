@@ -15,6 +15,17 @@ const playableActivities = playActivities + ["ready"];
 
 const activeStatuses = playActivities + ["recording"];
 
+const statusColor = {
+    "error": "danger",
+    "warning": "warning",
+    "playMimic": "success",
+    "playModelOnly": "info",
+    "playModelFirst": "success",
+    "playModelSecond": "success",
+    "ready": "info",
+    "recording": "danger"
+};
+
 export default class DoExerciseCard extends React.Component {
     constructor(props) {
         super(props);
@@ -22,20 +33,10 @@ export default class DoExerciseCard extends React.Component {
         this.afterPlay = this.afterPlay.bind(this);
         this.handleGetInput = this.handleGetInput.bind(this);
         this.handleError = this.handleError.bind(this);
+
         this.mediaRecorder = null;
         this.mimicButton = React.createRef();
         this.player = React.createRef();
-        this.statusColor = {
-            "error": "danger",
-            "warning": "warning",
-            "playMimic": "success",
-            "playModelOnly": "info",
-            "playModelFirst": "success",
-            "playModelSecond": "success",
-            "ready": "info",
-            "recording": "danger"
-        };
-
     }
 
     componentDidMount() {
@@ -487,7 +488,7 @@ export default class DoExerciseCard extends React.Component {
     statusRow() {
         return React.createElement(
             "div",
-            {"className": "text-" + this.statusColor[this.props.state.status]},
+            {"className": "text-" + statusColor[this.props.state.status]},
             this.props.state.statusText
         );
     }
