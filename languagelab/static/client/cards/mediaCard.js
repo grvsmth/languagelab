@@ -1,3 +1,10 @@
+/**
+ * Card for displaying info about a media item in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global React, moment, PropTypes
@@ -80,14 +87,27 @@ export default class MediaCard extends React.Component {
         )
     }
 
+    /**
+     * Handle clicks on the edit button by calling the selectItem() function
+     * from the props with the item ID
+     */
     editClick() {
         this.props.selectItem(this.props.mediaItem.id, "edit");
     }
 
+    /**
+     * Handle clicks on the delete button by calling the deleteClick() function
+     * from the props with the item ID
+     */
     deleteClick() {
         this.props.deleteClick("media", this.props.mediaItem.id);
     }
 
+    /**
+     * An edit link
+     *
+     * @return {object}
+     */
     editLink() {
         return React.createElement(
             "a",
@@ -96,6 +116,11 @@ export default class MediaCard extends React.Component {
         );
     }
 
+    /**
+     * A delete link
+     *
+     * @return {object}
+     */
     deleteLink() {
         return React.createElement(
             "a",
@@ -157,28 +182,6 @@ export default class MediaCard extends React.Component {
         );
     }
 
-    tagBadge(tagText) {
-        return React.createElement(
-            "span",
-            {"className": "badge badge-pill badge-info mr-1"},
-            tagText
-        );
-    }
-
-    tagsSpan() {
-        if (this.props.mediaItem.tags.length < 1) {
-            return null;
-        }
-
-        return React.createElement(
-            "span",
-            {},
-            ...this.props.mediaItem.tags.map((tag) => {
-                return this.tagBadge(tag);
-            })
-        );
-    }
-
     linkDiv() {
         if (this.props.activity === "add") {
             return null;
@@ -199,22 +202,8 @@ export default class MediaCard extends React.Component {
             this.itemTitle(),
             this.itemSubtitle(),
             this.playerDiv(),
-            this.tagsSpan(),
+            commonElements.tagsElement(this.props.mediaItem.tags, "span"),
             this.rightsSpan(),
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.mediaItem.isAvailable,
-                "available",
-                this.props.mediaItem.id,
-                this.checkboxClick
-                ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.mediaItem.isPublic,
-                "public",
-                this.props.mediaItem.id,
-                this.checkboxClick
-                ),
             this.linkDiv()
         );
     }

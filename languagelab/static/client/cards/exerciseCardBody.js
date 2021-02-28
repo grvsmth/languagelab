@@ -1,3 +1,9 @@
+/**
+ * Card body for displaying info about an exercise in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
 /*
 
     global moment, React, PropTypes
@@ -14,13 +20,6 @@ export default class ExerciseCardBody extends React.Component {
 
         this.checkboxClick = this.checkboxClick.bind(this);
         this.startClick = this.startClick.bind(this);
-    }
-
-    duration(start, end) {
-        const startMoment = new moment(start, timeFormat);
-        const endMoment = new moment(end, timeFormat);
-        const durationMoment = moment.duration(endMoment.diff(startMoment));
-        return util.formatDuration(durationMoment, 3);
     }
 
     bySpan() {
@@ -87,18 +86,35 @@ export default class ExerciseCardBody extends React.Component {
         )
     }
 
+    /**
+     * Handle clicks on the edit button by calling the selectItem() function
+     * from the props with the item ID
+     */
     editClick() {
         this.props.selectItem(this.props.exercise.id, "edit");
     }
 
+    /**
+     * Handle clicks on the delete button by calling the deleteClick() function
+     * from the props with the item ID
+     */
     deleteClick() {
         this.props.deleteClick("exercises", this.props.exercise.id);
     }
 
+    /**
+     * Handle clicks on the start button by calling the startClick() function
+     * from the props with the item ID
+     */
     startClick() {
         this.props.startExercise(this.props.exercise.id);
     }
 
+    /**
+     * An edit link
+     *
+     * @return {object}
+     */
     editLink() {
         return React.createElement(
             "a",
@@ -107,6 +123,11 @@ export default class ExerciseCardBody extends React.Component {
         );
     }
 
+    /**
+     * A delete link
+     *
+     * @return {object}
+     */
     deleteLink() {
         return React.createElement(
             "a",

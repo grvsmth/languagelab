@@ -1,3 +1,10 @@
+/**
+ * Card for displaying info about a lesson in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global React, moment, PropTypes
@@ -8,16 +15,17 @@ import commonElements from "./commonElements.js";
 import util from "./util.js";
 
 export default class LessonCard extends React.Component {
-    constructor(props) {
-        super(props);
 
-        this.checkboxClick = this.checkboxClick.bind(this);
-    }
-
+    /** Call toggleLesson in the lab element, passing the lesson id */
     toggleLesson() {
         this.props.toggleLesson(this.props.lesson.id);
     }
 
+    /**
+     * A title element, with the name
+     *
+     * @return {object}
+     */
     itemTitle() {
         return React.createElement(
             "h5",
@@ -26,6 +34,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * A span crediting the creator of the item, if we have one
+     *
+     * @return {object}
+     */
     bySpan() {
         if (!this.props.itemUser) {
             return null;
@@ -38,6 +51,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * A subtitle with the lesson description, level and created time and credit
+     *
+     * @return {object}
+     */
     itemSubtitle() {
         const createdText = new moment(this.props.lesson.created)
             .format(config.dateTimeFormat);
@@ -52,23 +70,27 @@ export default class LessonCard extends React.Component {
         );
     }
 
-    checkboxClick(event) {
-        this.props.checkClick(
-            "lesson",
-            this.props.lesson.id,
-            event.target.name,
-            event.target.checked
-        )
-    }
-
+    /**
+     * Handle clicks on the edit button by calling the selectItem() function
+     * from the props with the ID of the lesson
+     */
     editClick() {
         this.props.selectItem(this.props.lesson.id, "edit");
     }
 
+    /**
+     * Handle clicks on the delete button by calling the deleteClick() function
+     * from the props with the item ID
+     */
     deleteClick() {
         this.props.deleteClick("lessons", this.props.lesson.id);
     }
 
+    /**
+     * An edit link
+     *
+     * @return {object}
+     */
     editLink() {
         return React.createElement(
             "a",
@@ -77,6 +99,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * A delete link
+     *
+     * @return {object}
+     */
     deleteLink() {
         return React.createElement(
             "a",
@@ -85,28 +112,6 @@ export default class LessonCard extends React.Component {
                 "onClick": this.deleteClick.bind(this)
             },
             "delete"
-        );
-    }
-
-    tagBadge(tagText) {
-        return React.createElement(
-            "span",
-            {"className": "badge badge-pill badge-info mr-1"},
-            tagText
-        );
-    }
-
-    tagsDiv() {
-        if (this.props.lesson.tags.length < 1) {
-            return null;
-        }
-
-        return React.createElement(
-            "div",
-            {"className": "my-2"},
-            ...this.props.lesson.tags.map((tag) => {
-                return this.tagBadge(tag);
-            })
         );
     }
 
@@ -185,21 +190,7 @@ export default class LessonCard extends React.Component {
             this.itemTitle(),
             this.itemSubtitle(),
             this.notesDiv(),
-            this.tagsDiv(),
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.lesson.isAvailable,
-                "available",
-                this.props.lesson.id,
-                this.checkboxClick
-                ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.lesson.isPublic,
-                "public",
-                this.props.lesson.id,
-                this.checkboxClick
-                ),
+            commonElements.tagsElement(this.props.lesson.tags, "div"),
             this.linkDiv(),
             this.queueDiv()
         );

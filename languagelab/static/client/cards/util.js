@@ -134,5 +134,4 @@ exports.processField = function(node) {
     return node.value;
 };
 
-
 export default exports;

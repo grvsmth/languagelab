@@ -1,3 +1,10 @@
+/**
+ * Card for performing exercises in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global moment, React, PropTypes
@@ -12,7 +19,6 @@ const playActivities = [
 ];
 
 const playableActivities = playActivities + ["ready"];
-
 const activeStatuses = playActivities + ["recording"];
 
 const statusColor = {
@@ -26,6 +32,7 @@ const statusColor = {
     "recording": "danger"
 };
 
+/** Card for performing exercises in the LanguageLab client */
 export default class DoExerciseCard extends React.Component {
 
     /**
@@ -113,22 +120,6 @@ export default class DoExerciseCard extends React.Component {
      */
     timeAsSeconds(timeString) {
         return moment.duration(timeString).asSeconds();
-    }
-
-    /**
-     * Use moment to compute the duration between start and end and return
-     * it as a formatted string
-     *
-     * @param {string} startString
-     * @param {string} endString
-     *
-     * @return {string}
-     */
-    duration(startString, endString) {
-        const startMoment = new moment(startString, config.timeFormat);
-        const endMoment = new moment(endString, config.timeFormat);
-        const durationMoment = moment.duration(endMoment.diff(startMoment));
-        return util.formatDuration(durationMoment, 3);
     }
 
     /** A title element with the name of the prop

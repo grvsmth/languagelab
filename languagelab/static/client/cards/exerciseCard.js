@@ -1,3 +1,10 @@
+/**
+ * Card for displaying info about an exercise in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global React, PropTypes
@@ -6,11 +13,14 @@
 import ExerciseCardBody from "./exerciseCardBody.js";
 import QueueFooter from "./queueFooter.js";
 
+/** Card for displaying info about an exercise in the LanguageLab client */
 export default class ExerciseCard extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
+    /**
+     * A card header with the exercise name
+     *
+     * @return {object}
+     */
     cardHeader() {
         return React.createElement(
             "h5",
@@ -19,6 +29,11 @@ export default class ExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * Pass some of the props to cardBody
+     *
+     * @return {object}
+     */
     cardBody() {
         return React.createElement(
             ExerciseCardBody,
@@ -39,6 +54,11 @@ export default class ExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * Pass some of the props to QueueFooter
+     *
+     * @return {object}
+     */
     cardFooter() {
         return React.createElement(
             QueueFooter,
@@ -54,6 +74,12 @@ export default class ExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * Slightly different formatting to distinguish an exercise card in an
+     * editQueue from one in the main list
+     *
+     * @return {object}
+     */
     render() {
         var className = "card bg-light";
         if (this.props.activity !== "editQueue") {

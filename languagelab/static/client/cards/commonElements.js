@@ -257,5 +257,36 @@ exports.textInputDiv = function(fieldName, parentId, onChange=null, defaultValue
     );
 };
 
+/**
+ * A badge to highlight each tag
+ *
+ * @return {object}
+ */
+exports.tagBadge = function(tagText) {
+    return React.createElement(
+        "span",
+        {"className": "badge badge-pill badge-info mr-1"},
+        tagText
+    );
+}
+
+/**
+ * A span with all the tags
+ *
+ * @return {object}
+ */
+exports.tagsElement = function(tags, elementType="div") {
+    if (tags.length < 1) {
+        return null;
+    }
+
+    return React.createElement(
+        elementType,
+        {},
+        ...tags.map((tag) => {
+            return exports.tagBadge(tag);
+        })
+    );
+}
 
 export default exports;

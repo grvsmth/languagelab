@@ -228,6 +228,11 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * Div with format, language and potentially isAvailable and isPublic
+     *
+     * @return {object}
+     */
     optionsRow() {
         return React.createElement(
             "div",
