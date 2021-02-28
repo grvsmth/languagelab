@@ -1,3 +1,10 @@
+/**
+ * Utilities used by cards and their elements
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global moment
@@ -5,6 +12,14 @@
 */
 const exports = {};
 
+/**
+ * Format a time curation as 00:00:00.0000
+ *
+ * @param {moment} durationMoment - the duration as a Moment object
+ * @param {number} fixed - the number of total figures for seconds
+ *
+ * @return {string}
+ */
 exports.formatDuration = function(durationMoment, fixed=6) {
     const seconds = durationMoment.seconds()
         + durationMoment.milliseconds() / 1000;
@@ -17,6 +32,15 @@ exports.formatDuration = function(durationMoment, fixed=6) {
     return durationString;
 };
 
+/**
+ * Format the start and end times and combine them into a string
+ *
+ * @param {string} startTime
+ * @param {string} endTime
+ * @param {string} timeFormat - for parsing the start and end times
+ *
+ * @return {string}
+ */
 exports.timeRange = function(startTime, endTime, timeFormat) {
     const startTimeString = exports.formatDuration(
         new moment(startTime, timeFormat),
@@ -29,6 +53,14 @@ exports.timeRange = function(startTime, endTime, timeFormat) {
     return `${startTimeString} - ${endTimeString}`;
 };
 
+/**
+ * Reduce an array of items to an object where each item is a property
+ * identified by that item's "id" property
+ *
+ * @param {array} inputList
+ *
+ * @return {object}
+ */
 exports.listToObject = function(inputList) {
     const outputObject = inputList.reduce((object, item) => {
             object[item.id] = item.name;
@@ -38,6 +70,14 @@ exports.listToObject = function(inputList) {
     return outputObject;
 };
 
+/**
+ * Format the number of exercises as a string with the appropriately inflected
+ * noun
+ *
+ * @param {array} queueItems
+ *
+ * @return {string}
+ */
 exports.howManyExercises = function(queueItems) {
     if (queueItems.length == 1) {
         return "1 exercise";
@@ -46,6 +86,15 @@ exports.howManyExercises = function(queueItems) {
     return queueItems.length + " exercises";
 };
 
+/**
+ * If a string is longer than the limit, truncate it so that it can fit within
+ * the limit, with the ellipsis "…" character
+ *
+ * @param {string} stringText
+ * @param {number} limit
+ *
+ * @return {string}
+ */
 exports.truncateString = function(stringText, limit=5) {
     if (stringText.length < limit) {
         return stringText;
