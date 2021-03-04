@@ -134,4 +134,18 @@ exports.processField = function(node) {
     return node.value;
 };
 
+/**
+ * Trim whitespace from each tag and join it into a comma/space delimited string
+ *
+ * @param {array} tags
+ *
+ * @return {string}
+ */
+exports.joinTags = function(tags) {
+    if (tags) {
+        return tags.map(tag => tag.trim()).join(", ");
+    }
+    return "";
+}
+
 export default exports;

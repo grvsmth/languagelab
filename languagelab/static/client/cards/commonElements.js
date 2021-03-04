@@ -104,6 +104,13 @@ const exports = {
         );
     },
     "lessonSubtitle": function(lesson) {
+        /**
+         * A subtitle showing lesson description, number of exercises and level
+         *
+         * @param {object} lesson
+         *
+         * @return {object}
+         */
         const howManyExercises = util.howManyExercises(
             lesson.queueItems
         );
@@ -144,10 +151,15 @@ const exports = {
         );
     },
     "tagsInput": function(inputId, tags) {
-        var defaultValue = "";
-        if (tags) {
-            defaultValue = tags.join(", ");
-        }
+        /**
+         * A text input to display the tags as a comma-separated list, for
+         * editing
+         *
+         * @param {number} inputId - the ID of the parent object
+         * @param {array} tags - the tags in the parent object
+         *
+         * @return {object}
+         */
         return React.createElement(
             "input",
             {
@@ -155,15 +167,24 @@ const exports = {
                 "className": "form-control",
                 "type": "text",
                 "name": "tags",
-                "defaultValue": defaultValue
+                "defaultValue": util.joinTags(tags)
             },
             null
         );
     }
-
-
 };
 
+/**
+ * An element containing a checkbox with its label to the right
+ *
+ * @param {string} key - the React key in case it's part of a list
+ * @param {string} checked - The HTML "checked" parameter
+ * @param {string} labelText
+ * @param {string} itemId
+ * @param {func} callback - to call when item changed
+ *
+ * @return {object}
+ */
 exports.checkboxDiv = function(key, checked, labelText, itemId, callback=null) {
     const inputId = [key, itemId].join("_");
     const displayClass = exports.displayCheckbox(key);
