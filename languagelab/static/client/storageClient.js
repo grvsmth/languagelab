@@ -1,8 +1,8 @@
-/*
-
-    Client for persistent Language Lab data storage
-
-*/
+/**
+ * Client for persistent Language Lab data storage
+ *
+ * Angus B. Grieve-Smith, 2021
+ */
 
 const launchFields = [
     "currentUser",
