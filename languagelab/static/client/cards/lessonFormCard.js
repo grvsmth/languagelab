@@ -10,8 +10,8 @@
     global React, PropTypes
 
 */
-import config from "./config.js";
 import commonElements from "./commonElements.js";
+import util from "./util.js";
 
 export default class LessonFormCard extends React.Component {
 

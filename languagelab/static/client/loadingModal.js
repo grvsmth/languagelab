@@ -139,5 +139,6 @@ export default class LoadingModal extends React.Component {
 
 LoadingModal.propTypes = {
     "itemType": PropTypes.string.isRequired,
-    "loading": PropTypes.object.isRequired
+    "loading": PropTypes.object.isRequired,
+    "localTypes": PropTypes.array.isRequired
 };

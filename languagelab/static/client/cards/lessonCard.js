@@ -253,6 +253,7 @@ LessonCard.propTypes = {
     "activity": PropTypes.string.isRequired,
     "checkClick": PropTypes.func.isRequired,
     "deleteClick": PropTypes.func.isRequired,
+    "exercisesLoading": PropTypes.bool.isRequired,
     "itemUser": PropTypes.object.isRequired,
     "lesson": PropTypes.object.isRequired,
     "selected": PropTypes.bool.isRequired,

@@ -56,9 +56,6 @@ class MediaItem(Model):
     uploaded = DateTimeField("Uploaded", default=now)
     duration = DurationField("Duration", default=timedelta())
 
-    isAvailable = BooleanField("Available", db_index=True)
-    isPublic = BooleanField("Public", db_index=True)
-
     tags = TaggableManager()
     mediaFile = FileField(
         "File", upload_to='uploads/', null=True, blank=True
@@ -98,8 +95,6 @@ class Exercise (Model):
 
     dialogue = BooleanField("Dialogue", db_index=True, default=False)
     description = CharField("Instructions", max_length=1000, blank=True)
-    isAvailable = BooleanField("Available", db_index=True)
-    isPublic = BooleanField("Public", db_index=True)
     audioOnly = BooleanField("Audio only", db_index=True, default=True)
     startTime = DurationField("Start time", default=timedelta())
     endTime = DurationField("End time", default=timedelta())
@@ -118,8 +113,6 @@ class Lesson (Model):
         on_delete=CASCADE
     )
     level = IntegerField("Level", db_index=True, default=0)
-    isAvailable = BooleanField("Available", db_index=True)
-    isPublic = BooleanField("Public", db_index=True)
     description = TextField("Instructions", blank=True)
     notes = TextField("Notes", null=True, blank=True)
     tags = TaggableManager()

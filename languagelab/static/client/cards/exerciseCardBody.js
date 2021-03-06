@@ -6,10 +6,9 @@
  */
 /*
 
-    global moment, React, PropTypes
+    global React, PropTypes
 
 */
-import commonElements from "./commonElements.js";
 import util from "./util.js";
 
 const timeFormat = "HH:mm:ss.S";

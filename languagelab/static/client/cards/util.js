@@ -10,6 +10,9 @@
     global moment
 
 */
+
+import config from "./config.js";
+
 const exports = {};
 
 /**
