@@ -201,10 +201,8 @@ class QueueItemViewSet(ModelViewSet):
 
     def next_rank(self, lesson=None):
         """
-
         If we want to add an item to the end of the queue, what rank would it
         have?
-
         """
         if (lesson is None):
             lesson = self.request.data['lessson']
@@ -220,17 +218,13 @@ class QueueItemViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         """
-
         Override default perform_create with next_rank()
-
         """
         serializer.save(rank=self.next_rank(self.request.data['lesson']))
 
     def destroy(self, request, pk=None):
         """
-
         Override default destroy method, renumbering the queue items
-
         """
         queue_item = self.get_object()
         lesson_id = queue_item.lesson
@@ -241,9 +235,7 @@ class QueueItemViewSet(ModelViewSet):
     @action(detail=False, methods=['patch'])
     def up(self, request):
         """
-
-        Move the item up in the rank list by calling the .up() method
-
+        Move the item up in the rank list by calling the .move() method
         """
         QueueItem.objects.move(
             item_id=self.request.data['item'],
@@ -255,9 +247,7 @@ class QueueItemViewSet(ModelViewSet):
     @action(detail=False, methods=['patch'])
     def down(self, request):
         """
-
-        Move the item down in the rank list by calling the .down() method
-
+        Move the item down in the rank list by calling the .move() method
         """
         QueueItem.objects.move(
             item_id=self.request.data['item'],

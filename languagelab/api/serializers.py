@@ -74,6 +74,9 @@ class UserSerializerWithToken(ModelSerializer):
         return instance
 
     class Meta:
+        """
+        A meta class to specify our model, fields and ordering
+        """
         model = get_user_model()
         fields = (
             'id', 'email', 'groups', 'token', 'url', 'username', 'password'
@@ -143,6 +146,9 @@ class QueueItemSerializer(ModelSerializer):
     rank = IntegerField(read_only=True, min_value=1)
 
     class Meta:
+        """
+        A meta class to specify our model, fields and ordering
+        """
         model = QueueItem
         fields = [
             'id',
@@ -168,6 +174,9 @@ class ExerciseSerializer(ModelSerializer):
     queueItems = QueueItemSerializer(many=True, read_only=True)
 
     class Meta:
+        """
+        A meta class to specify our model, fields and ordering
+        """
         model = Exercise
         fields = [
             'id',
@@ -202,6 +211,9 @@ class LessonSerializer(TaggitSerializer, ModelSerializer):
     )
 
     class Meta:
+        """
+        A meta class to specify our model, fields and ordering
+        """
         model = Lesson
         fields = [
             'id',
@@ -217,5 +229,8 @@ class LessonSerializer(TaggitSerializer, ModelSerializer):
         ordering = ['-id']
 
     def get_queueItems(self, instance):
+        """
+        Override get_() to order by rank
+        """
         queueItems = instance.queueItems.all().order_by('rank')
         return QueueItemSerializer(queueItems, many=True).data
