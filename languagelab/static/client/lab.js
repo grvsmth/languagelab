@@ -47,7 +47,7 @@ export default class Lab extends React.Component {
             "next": this.next.bind(this)
         };
 
-        const storageData = storageClient.storedData();
+        const storageData = storageClient.launchData();
 
         this.apiClient = new LanguageLabClient();
         this.apiClient.setBaseUrl(environment.api.baseUrl);
@@ -386,7 +386,7 @@ export default class Lab extends React.Component {
      */
     logout() {
         if (this.state.currentUser) {
-            storageClient.logout();
+            storageClient.clearAll();
             this.setState({
                 "activity": "login",
                 "currentUser": null

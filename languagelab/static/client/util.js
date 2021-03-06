@@ -1,3 +1,9 @@
+/**
+ * Utility functions for Language Lab classes
+ *
+ * Angus B. Grieve-Smith, 2021
+ */
+
 const exports = {};
 
 exports.findItem = function(items, id) {
