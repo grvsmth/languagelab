@@ -1,4 +1,3 @@
--f /usr/share/pip-wheels
 django-cors-headers==3.7.0
 django-filter==2.4.0
 django-taggit==1.1.0

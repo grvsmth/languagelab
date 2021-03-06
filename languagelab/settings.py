@@ -134,18 +134,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = environ.get("DJANGO_TIMEZONE", 'UTC')
 
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
+# The location where we will serve the static files (CSS, JavaScript, Images)
 STATIC_ROOT = environ.get(
     'DJANGO_STATIC_ROOT', path.join(BASE_DIR, 'static')
 )
@@ -170,7 +166,7 @@ if environ.get('DJANGO_STATICFILES_DIR'):
 # various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # 'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
