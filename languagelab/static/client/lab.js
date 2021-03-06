@@ -162,7 +162,10 @@ export default class Lab extends React.Component {
             loading[endpoint] = true;
             this.fetchData(endpoint);
         });
-        this.setState({"loading": loading});
+        this.setState({
+            "activity": "read",
+            "loading": loading
+        });
     }
 
     /**
@@ -224,7 +227,10 @@ export default class Lab extends React.Component {
     handleUnauthorized() {
         const titleText = "Unauthorized on server";
         const errorMessage = "Please try logging in again";
-        this.setState({"loading": {}});
+        this.setState({
+            "activity": "login",
+            "loading": {}
+        });
         if (!this.findAlert(titleText) && this.state.activity != "login") {
             this.addAlert(titleText, errorMessage);
         }
@@ -931,6 +937,7 @@ export default class Lab extends React.Component {
         return React.createElement(
             LoadingModal,
             {
+                "activity": this.state.activity,
                 "itemType": this.state.selected.itemType,
                 "loading": this.state.loading,
                 "localTypes": localTypes

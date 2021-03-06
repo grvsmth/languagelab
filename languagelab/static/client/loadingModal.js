@@ -16,13 +16,16 @@ export default class LoadingModal extends React.Component {
     /**
      * Are we still loading this item type?  Return true even if undefined.
      * Also return true if lessons are loaded but exercises are not.  Return
-     * false if the type is local.
+     * false if the user hasn't logged in, or if the type is local.
      *
      * @return {boolean}
      */
     loading() {
+        if (this.props.activity === "login") {
+            return false;
+        }
+
         if (this.props.localTypes.includes(this.props.itemType)) {
-            console.log("it's local!");
             return false;
         }
 
