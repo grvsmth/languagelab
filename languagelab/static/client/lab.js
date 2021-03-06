@@ -924,11 +924,16 @@ export default class Lab extends React.Component {
      * @return {object}
      */
     loadingModal() {
+        const localTypes = config.api.models
+            .filter(model => model.local)
+            .map(model => model.endpoint);
+
         return React.createElement(
             LoadingModal,
             {
                 "itemType": this.state.selected.itemType,
-                "loading": this.state.loading
+                "loading": this.state.loading,
+                "localTypes": localTypes
             }
         );
     }
