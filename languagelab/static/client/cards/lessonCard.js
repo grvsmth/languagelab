@@ -151,18 +151,23 @@ export default class LessonCard extends React.Component {
      *
      * @return {object}
      */
-    doQueueButton() {
-        if (this.props.lesson.queueItems.length < 1) {
-            return null;
-        }
-
-        const btnClass = this.props.selected ? "btn-secondary" : "btn-info";
+    doQueueButton(disabled=false) {
         const actionInfo = this.props.selected ? "End lesson": "Start lesson";
+        const colorClass = this.props.selected ? "btn-secondary" : "btn-info";
+
+        const classList = [
+            "btn",
+            "btn-sm",
+            "ml-2",
+            colorClass
+        ];
+
         return React.createElement(
             "button",
             {
                 "type": "button",
-                "className": "btn " + btnClass + " btn-sm ml-2",
+                "className": classList.join(" "),
+                "disabled": disabled,
                 "onClick": this.toggleLesson.bind(this)
             },
             actionInfo
@@ -179,16 +184,14 @@ export default class LessonCard extends React.Component {
      *
      * @return {object}
      */
-    editQueueButton() {
-        if (!this.props.lesson.queueItems.length) {
-            return null;
-        }
-
+    editQueueButton(disabled=false) {
         return React.createElement(
-            "div",
+            "button",
             {
                 "className": "btn btn-sm btn-primary ml-2",
-                "onClick": this.editQueue.bind(this)
+                "onClick": this.editQueue.bind(this),
+                "disabled": disabled,
+                "type": "button"
             },
             "Edit queue"
         );
@@ -196,17 +199,21 @@ export default class LessonCard extends React.Component {
 
     /**
      * A div with the number of exercises and the buttons to edit and start
-     * the lesson queue
+     * the lesson queue.  If we don't have queueItems or exercises, disable
+     * these buttons.
      *
      * @return {object}
      */
     queueDiv() {
+        const disabled = this.props.lesson.queueItems.length < 1
+            || this.props.exercisesLoading;
+
         return React.createElement(
             "div",
             {},
             util.howManyExercises(this.props.lesson.queueItems),
-            this.editQueueButton(),
-            this.doQueueButton()
+            this.editQueueButton(disabled),
+            this.doQueueButton(disabled)
         );
     }
 

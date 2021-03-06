@@ -73,7 +73,12 @@ export default class Lab extends React.Component {
             "languages": [],
             "lastUpdated": "",
             "lessons": [],
-            "loading": {},
+            "loading": {
+                "exercises": true,
+                "languages": true,
+                "lessons": true,
+                "media": true
+            },
             "onlyExercise": true,
             "media": [],
             "mimicCount": {},

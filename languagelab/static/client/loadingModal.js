@@ -15,10 +15,17 @@ export default class LoadingModal extends React.Component {
 
     /**
      * Are we still loading this item type?  Return true even if undefined.
+     * Also return true if lessons are loaded but exercises are not.
      *
      * @return {boolean}
      */
     loading() {
+        if (this.props.itemType === "lessons"
+            && this.props.loading["exercises"]
+        ) {
+            return true;
+        }
+
         const loading = this.props.loading[this.props.itemType];
         return loading !== false;
     }
