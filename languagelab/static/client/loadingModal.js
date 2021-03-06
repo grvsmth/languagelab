@@ -9,37 +9,61 @@
     global React, PropTypes
 
 */
+
+/** Modal with spinner while data is loading in the LanguageLab client */
 export default class LoadingModal extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
-    componentDidMount() {
-    }
-
+    /**
+     * Are we still loading this item type?  Return true even if undefined.
+     *
+     * @return {boolean}
+     */
     loading() {
-        return this.props.loading[this.props.itemType];
+        const loading = this.props.loading[this.props.itemType];
+        return loading !== false;
     }
 
+    /**
+     * A text span for screen readers
+     *
+     * @return {object}
+     */
     spinnerSr() {
         return React.createElement(
             "span",
-            {"className": "sr-only"},
+            {
+                "className": "sr-only",
+                "id": "loadingLabel"
+            },
             "Loading..."
         );
     }
 
+    /**
+     * A border div to enclose the spinner
+     *
+     * @return {object}
+     */
     spinner() {
         return React.createElement(
             "div",
             {
                 "className": "spinner-border text-success",
-                "role": "status"
+                "role": "status",
+                "style": {
+                    "height": "10rem",
+                    "width": "10rem"
+                }
             },
             this.spinnerSr()
         );
     }
 
+    /**
+     * A modal body to enclose the spinner border
+     *
+     * @return {object}
+     */
     body() {
         return React.createElement(
             "div",
@@ -48,6 +72,11 @@ export default class LoadingModal extends React.Component {
         );
     }
 
+    /**
+     * A modal content div to enclose the modal body
+     *
+     * @return {object}
+     */
     content() {
         return React.createElement(
             "div",
@@ -56,6 +85,11 @@ export default class LoadingModal extends React.Component {
         );
     }
 
+    /**
+     * A modal dialog div to enclose the modal content
+     *
+     * @return {object}
+     */
     dialog() {
         return React.createElement(
             "div",
@@ -64,10 +98,11 @@ export default class LoadingModal extends React.Component {
         );
     }
 
-    doNothing(event) {
-        event.preventDefault();
-    }
-
+    /**
+     * The static backdrop containing the modal dialog
+     *
+     * @return {object}
+     */
     render() {
         if (!this.loading()) {
             return null;
@@ -76,11 +111,13 @@ export default class LoadingModal extends React.Component {
         return React.createElement(
             "div",
             {
-                "aria-hidden": false,
+                "aria-hidden": true,
+                "aria-labelledby": "loadingLabel",
                 "className": "modal",
+                "data-keyboard": "false",
+                "id": "loadingModal",
                 "style": {"display": "block"},
-                "tabIndex": "-1",
-                "onClick": this.doNothing
+                "tabIndex": "-1"
             },
             this.dialog()
         );

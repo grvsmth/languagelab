@@ -913,7 +913,11 @@ export default class Lab extends React.Component {
         )
     }
 
-    /** Display the loadingModal */
+    /**
+     * Display the loadingModal
+     *
+     * @return {object}
+     */
     loadingModal() {
         return React.createElement(
             LoadingModal,

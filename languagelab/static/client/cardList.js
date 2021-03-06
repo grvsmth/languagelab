@@ -460,6 +460,10 @@ export default class CardList extends React.Component {
         var cardComponent = LessonCard;
 
         if (this.props.state.activity === "editQueue") {
+            /**
+             * This is actually an exercise retrieved by queueExercise(), not
+             * a lesson!
+             */
             return this.exerciseCard(lesson);
         }
 
@@ -688,7 +692,6 @@ export default class CardList extends React.Component {
         }
 
         const itemList = this.makeItemList(itemType);
-
         return itemList.map(this.makeElement, this);
     }
 
@@ -700,7 +703,7 @@ export default class CardList extends React.Component {
     render() {
         console.log(this.props);
         const itemType = this.props.state.selected.itemType;
-        const addable = this.props.state.activity != "editQueue"
+        const addable = this.props.state.activity !== "editQueue"
             && typeInfo[itemType].addable;
 
         return React.createElement(

@@ -139,6 +139,11 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    /**
+     * A lesson queue header card
+     *
+     * @return {object}
+     */
     lessonQueueHeader() {
         if (this.props.selectedType === "lessons"
             && this.props.activity === "editQueue"
@@ -154,6 +159,11 @@ export default class InfoArea extends React.Component {
         return null;
     }
 
+    /**
+     * The info area body
+     *
+     * @return {object}
+     */
     body() {
         return React.createElement(
             "div",
@@ -163,6 +173,11 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    /**
+     * A link to the list of ISO 639 language names
+     *
+     * @return {object}
+     */
     iso639a() {
         return React.createElement(
             "a",
@@ -174,6 +189,11 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    /**
+     * A sticky top div with the ISO 639 link
+     *
+     * @return {object}
+     */
     languageInfo() {
         return React.createElement(
             "div",
@@ -184,6 +204,12 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    /**
+     * Return the main info area, if we've got alerts or if we're editing the
+     * lesson queue.  If we're editing a language entry, show the ISO 639 div
+     *
+     * @return {object}
+     */
     render() {
         if (this.props.alerts.length || this.props.activity === "editQueue") {
             return this.body();
