@@ -25,6 +25,10 @@ OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 
+## Hosting media
+
+## Serving the client in production
+
 ## Requirements
 
 The full list of Library requirements is in [requirements.txt](requirements.txt),
