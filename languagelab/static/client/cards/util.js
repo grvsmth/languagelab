@@ -16,21 +16,24 @@ import config from "./config.js";
 const exports = {};
 
 /**
- * Format a time curation as 00:00:00.0000
+ * Format a time curation as 00:00:00.000.  The target string length for
+ * padStart for seconds has to include the decimal point and following digits.
  *
  * @param {moment} durationMoment - the duration as a Moment object
  * @param {number} fixed - the number of total figures for seconds
  *
  * @return {string}
  */
-exports.formatDuration = function(durationMoment, fixed=6) {
+exports.formatDuration = function(durationMoment, fixed=5) {
     const seconds = durationMoment.seconds()
         + durationMoment.milliseconds() / 1000;
+
+    const secondsStringLength = fixed + 3;
 
     const durationString = [
         durationMoment.hours().toString().padStart(2, "0"),
         durationMoment.minutes().toString().padStart(2, "0"),
-        seconds.toFixed(fixed).padStart(2, "0")
+        seconds.toFixed(fixed).padStart(secondsStringLength, "0")
         ].join(":");
     return durationString;
 };
