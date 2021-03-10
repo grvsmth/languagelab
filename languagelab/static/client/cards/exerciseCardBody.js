@@ -77,11 +77,6 @@ export default class ExerciseCardBody extends React.Component {
      * @return {object}
      */
     descriptionRow() {
-        var languageText = "";
-        if (this.props.languages && this.props.languages.length && this.props.languages[0]) {
-            languageText = this.props.languages[0].name + ", ";
-        }
-
         var mediaCreator = "";
         if (this.props.mediaItem) {
             mediaCreator = this.props.mediaItem.creator;
@@ -90,7 +85,6 @@ export default class ExerciseCardBody extends React.Component {
         return React.createElement(
             "div",
             {},
-            languageText,
             mediaCreator,
             " – ",
             this.props.exercise.description
@@ -230,7 +224,6 @@ ExerciseCardBody.propTypes = {
     "deleteClick": PropTypes.func.isRequired,
     "exercise": PropTypes.object.isRequired,
     "itemUser": PropTypes.object.isRequired,
-    "languages": PropTypes.array.isRequired,
     "mediaItem": PropTypes.object.isRequired,
     "saveItem": PropTypes.func.isRequired,
     "selectItem": PropTypes.func.isRequired,

@@ -186,12 +186,6 @@ export default class DoExerciseCard extends React.Component {
      * @return {object}
      */
     descriptionRow() {
-        var languageText = "";
-        if (this.props.languages
-            && this.props.languages.length && this.props.languages[0]) {
-            languageText = this.props.languages[0].name + ", ";
-        }
-
         var mediaCreator = "";
         if (this.props.mediaItem) {
             mediaCreator = this.props.mediaItem.creator;
@@ -200,7 +194,6 @@ export default class DoExerciseCard extends React.Component {
         return React.createElement(
             "div",
             {},
-            languageText,
             mediaCreator,
             " – ",
             this.props.exercise.description
@@ -745,7 +738,6 @@ DoExerciseCard.propTypes = {
     "doFunction": PropTypes.object.isRequired,
     "exercise": PropTypes.object.isRequired,
     "itemUser": PropTypes.object.isRequired,
-    "languages": PropTypes.array.isRequired,
     "lesson": PropTypes.object.isRequired,
     "maxRank": PropTypes.number.isRequired,
     "mediaItem": PropTypes.object.isRequired,

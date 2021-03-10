@@ -84,8 +84,7 @@ export default class CardList extends React.Component {
 
     /**
      * Extend the constructor method with an itemCard property mapping item
-     * keys to card generator methods.  Also bind the findLanguage method to
-     * the object.
+     * keys to card generator methods.
      *
      * @param {object} props - the React props passed from the calling script
      */
@@ -100,8 +99,6 @@ export default class CardList extends React.Component {
             "lessons": this.lessonCard.bind(this),
             "media": this.mediaCard.bind(this)
         }
-
-        this.findLanguage = this.findLanguage.bind(this);
     }
 
     /**
@@ -167,29 +164,6 @@ export default class CardList extends React.Component {
             },
             this.addButtonCardBody(cardId)
         );
-    }
-
-    /**
-     * Find a language object with the ID given in the item language property.
-     * If we haven't loaded any languages, or the item has no language,
-     * return an empty array.
-     *
-     * @param {object} item - An item with a "language" property holding an ID
-     *
-     * @return {object}
-     */
-    findLanguage(item) {
-        if (!this.props.state.languages) {
-            return [];
-        }
-
-        if (!item.language) {
-            return [];
-        }
-        if (typeof item.language === "undefined") {
-            return [];
-        }
-        return [util.findItem(this.props.state.languages, item.language)];
     }
 
     /**
@@ -348,13 +322,10 @@ export default class CardList extends React.Component {
         const maxRank = this.props.maxRank();
 
         const options = {
-            "currentUser": this.props.currentUser,
             "doButton": this.props.doButton,
             "doFunction": this.props.doFunction,
             "key": key,
             "exercise": exercise,
-            "exerciseUser": this.itemUser(exercise, "exercises"),
-            "languages": this.findLanguage(exercise),
             "lesson": lesson,
             "maxRank": maxRank,
             "mediaItem": mediaItem,
@@ -564,7 +535,6 @@ export default class CardList extends React.Component {
             "exercise": exercise,
             "key": exercise.id,
             "itemUser": this.itemUser(exercise),
-            "languages": this.findLanguage(exercise),
             "lessons": this.props.state.lessons,
             "mediaItem": mediaItem,
             "maxRank": this.props.maxRank(),
@@ -719,7 +689,6 @@ export default class CardList extends React.Component {
 
 CardList.propTypes = {
     "checkClick": PropTypes.func.isRequired,
-    "currentUser": PropTypes.object.isRequired,
     "deleteClick": PropTypes.func.isRequired,
     "doButton": PropTypes.object.isRequired,
     "doFunction": PropTypes.object.isRequired,
