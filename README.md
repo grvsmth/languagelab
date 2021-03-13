@@ -40,7 +40,10 @@ Open Iconic icon library.
 
 ## Installation
 
-* Set up an email account for registration, if necessary
+These steps work for PythonAnywhere.  They should also work for other hosts,
+with minor modifications.
+
+* Create a database and a database user with rights to that database
 * Clone this repository to your server
 * Create a virtual environment for your application
 * Activate the virtual environment
@@ -49,7 +52,7 @@ Open Iconic icon library.
   `npm install --prefix=languagelab/static`
 * Copy `languagelab/django_environ_empty.py` to `languagelab/django_environ.py`
 * Edit `languagelab/django_environ.py` and fill in the details of your
-  installation
+  installation, including the database
 * Copy `languagelab/static/client/environment_empty.js` to
   `languagelab/static/client/environment.js`
 * Edit `languagelab/static/client/environment.js` and fill in the API hostname

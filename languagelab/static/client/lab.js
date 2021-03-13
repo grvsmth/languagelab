@@ -247,12 +247,12 @@ export default class Lab extends React.Component {
      * @param {object} err - The error object
      */
     handleFetchError(err) {
-        if (err.status === 401) {
+        if (Object.hasOwnProperty.call(err, "status") && err.status === 401) {
             this.handleUnauthorized();
             return;
         }
 
-        if (err.statusText) {
+        if (Object.hasOwnProperty.call(err, "statusText")) {
             console.log("err.statusText", err.statusText);
             this.addAlert("Fetch error", err.statusText);
             return;
@@ -345,7 +345,10 @@ export default class Lab extends React.Component {
      */
     handleTokenError(err) {
         console.error(err);
-        this.addAlert("Token error", err.statusText);
+        const alertText = Object.hasOwnProperty.call(err, "statusText")
+            ? err.statusText : "Please see the Javascript console";
+
+        this.addAlert("Token error", errorText);
     }
 
     /**
