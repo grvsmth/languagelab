@@ -344,7 +344,7 @@ export default class Lab extends React.Component {
      * @param {object} err - the error returned by the token method
      */
     handleTokenError(err) {
-        console.error(err);
+        console.log(err);
 
         let alertText = "Please see the Javascript console";
 
