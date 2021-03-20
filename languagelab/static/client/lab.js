@@ -247,18 +247,18 @@ export default class Lab extends React.Component {
      * @param {object} err - The error object
      */
     handleFetchError(err) {
-        if (Object.hasOwnProperty.call(err, "status") && err.status === 401) {
+        if ("status" in err) && err.status === 401) {
             this.handleUnauthorized();
             return;
         }
 
-        if (Object.hasOwnProperty.call(err, "statusText")) {
+        if ("statusText" in err) {
             console.log("err.statusText", err.statusText);
             this.addAlert("Fetch error", err.statusText);
             return;
         }
 
-        if (Object.prototype.hasOwnProperty.call(err, "message")) {
+        if ("message" in err)) {
             if (err.message === "Expired token!") {
                 this.handleUnauthorized(err.message);
                 return;
