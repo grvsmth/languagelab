@@ -172,12 +172,10 @@ export default class LanguageLabClient {
      * @param {number} id - the ID of the item to be updated
      */
     patch(baseUrl, endpoint, data, id=null) {
-        const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [baseUrl, endpoint, id, ""].join("/");
         const options = {
             "method": "PATCH",
             "headers": {
-                "X-CSRFToken": csrftoken,
                 'Content-Type': 'application/json'
             },
             "body": JSON.stringify(data)
@@ -199,12 +197,10 @@ export default class LanguageLabClient {
      * @param {number} id - the ID of the item to be updated
      */
     delete(baseUrl, endpoint, id) {
-        const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [baseUrl, endpoint, id].join("/");
         const options = {
             "method": "DELETE",
             "headers": {
-                "X-CSRFToken": csrftoken,
                 'Content-Type': 'application/json'
             }
         };
@@ -225,12 +221,10 @@ export default class LanguageLabClient {
      * @param {object} data - the data to send to the API
      */
     post(baseUrl, endpoint, data) {
-        const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [baseUrl, endpoint, ""].join("/");
         const options = {
             "method": "POST",
             "headers": {
-                "X-CSRFToken": csrftoken,
                 'Content-Type': 'application/json'
             },
             "body": JSON.stringify(data)
@@ -246,12 +240,10 @@ export default class LanguageLabClient {
     /** Request a new refresh token */
     refreshToken() {
         const endpoint = "token-refresh";
-        const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [this.baseUrl, endpoint, ""].join("/");
         const options = {
             "method": "POST",
             "headers": {
-                "X-CSRFToken": csrftoken,
                 'Content-Type': 'application/json'
             },
             "body": JSON.stringify({"token": this.token})
@@ -281,12 +273,10 @@ export default class LanguageLabClient {
      * @param {object} data - the login data
      */
     login(data) {
-        const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [this.baseUrl, "token-auth", ""].join("/");
         const options = {
             "method": "POST",
             "headers": {
-                "X-CSRFToken": csrftoken,
                 'Content-Type': 'application/json'
             },
             "body": JSON.stringify(data)

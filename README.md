@@ -43,6 +43,8 @@ Open Iconic icon library.
 These steps work for PythonAnywhere.  They should also work for other hosts,
 with minor modifications.
 
+* Set up a web server.  If you are using Apache with mod_wsgi, you should add
+  `WSGIPassAuthorization On` to your httpd configuration
 * Create a database and a database user with rights to that database
 * Clone this repository to your server
 * Create a virtual environment for your application
