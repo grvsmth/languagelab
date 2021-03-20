@@ -345,10 +345,18 @@ export default class Lab extends React.Component {
      */
     handleTokenError(err) {
         console.error(err);
-        const alertText = Object.hasOwnProperty.call(err, "statusText")
-            ? err.statusText : "Please see the Javascript console";
 
-        this.addAlert("Token error", errorText);
+        let alertText = "Please see the Javascript console";
+
+        if (Object.hasOwnProperty.call(err, "statusText")) {
+            alertText = err.statusText;
+        }
+
+        if (err.status === 400) {
+            alertText = "Invalid username or password."
+        }
+
+        this.addAlert("Token error", alertText);
     }
 
     /**
