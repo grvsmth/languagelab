@@ -258,7 +258,7 @@ export default class Lab extends React.Component {
             return;
         }
 
-        if ("message" in err    )) {
+        if ("message" in err) {
             if (err.message === "Expired token!") {
                 this.handleUnauthorized(err.message);
                 return;
