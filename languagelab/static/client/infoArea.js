@@ -1,3 +1,9 @@
+/**
+ * Sticky top div for information about the status of the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ */
+
 /*
 
     global React, PropTypes
@@ -5,12 +11,14 @@
 */
 import commonElements from "./cards/commonElements.js";
 
+/** Sticky top div for information about the status of the LanguageLab client */
 export default class InfoArea extends React.Component {
 
-    componentDidMount() {
-
-    }
-
+    /**
+     * Handle a click on the close button for an alert OR the lesson queue
+     *
+     * @param {string} id - the ID of the alert or queue
+     */
     dismissHandler(id) {
         if (id === "queue") {
             this.props.setActivity("read");
@@ -18,11 +26,18 @@ export default class InfoArea extends React.Component {
         this.props.dismissAlert(id);
     }
 
-    hiddenX(id, text=null) {
+    /**
+     * A span to make the Bootstrap dismiss icon look nice
+     *
+     * @param {string} id - the ID of the alert (or "queue") for the handler
+     * @param {string} text - text to display with the button
+     *
+     * @return {object}
+     */
+    dismissSpan(id, text=null) {
         return React.createElement(
             "span",
             {
-                "aria-hidden": "true",
                 "onClick": this.dismissHandler.bind(this, id)
             },
             "×",
@@ -30,6 +45,14 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    /**
+     * A dismiss button for the alert or queue
+     *
+     * @param {string} id - the ID of the alert (or "queue") for the handler
+     * @param {string} text - text to display with the button
+     *
+     * @return {object}
+     */
     dismissButton(id, text=null) {
         return React.createElement(
             "button",
@@ -37,10 +60,17 @@ export default class InfoArea extends React.Component {
                 "className": "close",
                 "type": "button",
             },
-            this.hiddenX(id, text)
+            this.dismissSpan(id, text)
         );
     }
 
+    /**
+     * The title of the alert
+     *
+     * @param {object} alert
+     *
+     * @return {object}
+     */
     alertTitle(alert) {
         return React.createElement(
             "strong",
@@ -49,6 +79,13 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    /**
+     * An alert div with title, message and dismiss button
+     *
+     * @param {object} alert
+     *
+     * @return {object}
+     */
     alertDiv(alert) {
         const statusClass = "alert-" + alert.status;
         return React.createElement(
@@ -65,10 +102,20 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    /**
+     * Generate a React element for each alert in the props
+     *
+     * @return {array}
+     */
     alertSeries() {
         return this.props.alerts.map(this.alertDiv.bind(this));
     }
 
+    /**
+     * If we're editing a lesson queue, show a title with the lesson name
+     *
+     * @return {object}
+     */
     itemTitle() {
         return React.createElement(
             "h5",
@@ -77,6 +124,11 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    /**
+     * Information about the lesson, along with a close button
+     *
+     * @return {object}
+     */
     lessonQueueBody() {
         return React.createElement(
             "div",
@@ -87,6 +139,11 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    /**
+     * A lesson queue header card
+     *
+     * @return {object}
+     */
     lessonQueueHeader() {
         if (this.props.selectedType === "lessons"
             && this.props.activity === "editQueue"
@@ -102,6 +159,11 @@ export default class InfoArea extends React.Component {
         return null;
     }
 
+    /**
+     * The info area body
+     *
+     * @return {object}
+     */
     body() {
         return React.createElement(
             "div",
@@ -111,6 +173,11 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    /**
+     * A link to the list of ISO 639 language names
+     *
+     * @return {object}
+     */
     iso639a() {
         return React.createElement(
             "a",
@@ -122,6 +189,11 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    /**
+     * A sticky top div with the ISO 639 link
+     *
+     * @return {object}
+     */
     languageInfo() {
         return React.createElement(
             "div",
@@ -132,6 +204,12 @@ export default class InfoArea extends React.Component {
         );
     }
 
+    /**
+     * Return the main info area, if we've got alerts or if we're editing the
+     * lesson queue.  If we're editing a language entry, show the ISO 639 div
+     *
+     * @return {object}
+     */
     render() {
         if (this.props.alerts.length || this.props.activity === "editQueue") {
             return this.body();

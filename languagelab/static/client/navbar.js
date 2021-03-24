@@ -1,14 +1,23 @@
+/**
+ * Navigation bar for the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ */
+
 /*
 
     global React, PropTypes
 
 */
-export default class Navbar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.navClick = this.navClick.bind(this);
-    }
 
+/** Navigation bar for the LanguageLab client */
+export default class Navbar extends React.Component {
+
+    /**
+     * A link with the navbar brand (i.e. the name)
+     *
+     * @return {object}
+     */
     navbarBrand() {
         var brandText = "LanguageLab";
         return React.createElement(
@@ -21,6 +30,11 @@ export default class Navbar extends React.Component {
         );
     }
 
+    /**
+     * Display the version from the config file
+     *
+     * @return {object}
+     */
     versionText() {
         if (!this.props.version) {
             return null;
@@ -33,13 +47,29 @@ export default class Navbar extends React.Component {
         );
     }
 
+    /**
+     * Click handler for the nav buttons
+     *
+     * @param {object} event
+     *
+     * @return {object}
+     */
     navClick(event) {
         event.preventDefault();
         this.props.navClick(event.target.id);
     }
 
-    srOnlySpan(model) {
-        if (this.props.selectedType !== model.endpoint) {
+    /**
+     * Tell screen readers which button corresponds to the current view, since
+     * otherwise it's only visible via whatever formatting Bootstrap puts on its
+     * active class
+     *
+     * @param {string} model
+     *
+     * @return {object}
+     */
+    srOnlySpan(endpoint) {
+        if (this.props.selectedType !== endpoint) {
             return null;
         }
         return React.createElement(
@@ -49,59 +79,59 @@ export default class Navbar extends React.Component {
         );
     }
 
+    /**
+     * Create a link for the model, with ID, screenreader only span and click
+     * handler
+     *
+     * @param {object} model
+     *
+     * @return {object}
+     */
     navLink(model) {
-        var href = "#";
-        var target = "_self";
-        var onClick = this.navClick;
-
         return React.createElement(
             "a",
             {
                 "className": "nav-link",
-                "href": href,
-                "target": target,
+                "href": "#",
+                "target": "_self",
                 "id": model.endpoint,
-                "onClick": onClick
+                "onClick": this.navClick.bind(this)
             },
             model.menu,
-            this.srOnlySpan(model)
+            this.srOnlySpan(model.endpoint)
         );
     }
 
+    /**
+     * Nav item with active class if this is the selected type
+     *
+     * @param {object} model
+     *
+     * @return {object}
+     */
     navItem(model) {
         if (model.hideNav) {
             return null;
         }
 
-        var className = "nav-item";
-        if (this.props.selectedType === model.endpoint) {
-            className = "nav-item active";
-        }
+        const activeClass = this.props.selectedType === model.endpoint
+            ? " active": "";
 
         return React.createElement(
             "li",
             {
-                "className": className,
+                "className": "nav-item" + activeClass,
                 "key": model.endpoint
             },
             this.navLink(model)
         )
     }
 
-    navUl() {
-        if (!this.props.currentUser) {
-            return null;
-        }
-
-        return React.createElement(
-            "ul",
-            {"className": "navbar-nav mr-auto"},
-            this.versionText(),
-            this.welcomeItem(),
-            this.props.models.map(this.navItem.bind(this))
-        );
-    }
-
+    /**
+     * A navbar text item welcoming the user
+     *
+     * @return {object}
+     */
     welcomeItem() {
         if (!this.props.currentUser) {
             return null;
@@ -116,6 +146,30 @@ export default class Navbar extends React.Component {
         )
     }
 
+    /**
+     * Navbar nav with version text, welcome item and a nav-item for each model
+     *
+     * @return {object}
+     */
+    navUl() {
+        if (!this.props.currentUser) {
+            return null;
+        }
+
+        return React.createElement(
+            "ul",
+            {"className": "navbar-nav mr-auto"},
+            this.versionText(),
+            this.welcomeItem(),
+            this.props.models.map(this.navItem.bind(this))
+        );
+    }
+
+    /**
+     * Logout button!
+     *
+     * @return {object}
+     */
     logoutButton() {
         if (!this.props.currentUser) {
             return null;
@@ -131,6 +185,11 @@ export default class Navbar extends React.Component {
         )
     }
 
+    /**
+     * Nav content, including the UL and the logout button
+     *
+     * @return {object}
+     */
     navContent() {
         return React.createElement(
             "div",
@@ -143,6 +202,11 @@ export default class Navbar extends React.Component {
         );
     }
 
+    /**
+     * An icon for the toggler button
+     *
+     * @return {object}
+     */
     togglerIcon() {
         return React.createElement(
             "span",
@@ -151,6 +215,11 @@ export default class Navbar extends React.Component {
         );
     }
 
+    /**
+     * A button to open the menu when we're at narrow widths
+     *
+     * @return {object}
+     */
     toggler() {
         return React.createElement(
             "button",
@@ -167,6 +236,11 @@ export default class Navbar extends React.Component {
         )
     }
 
+    /**
+     * The main nav, with brand, toggler and content
+     *
+     * @return {object}
+     */
     render() {
         const className = [
             "navbar",

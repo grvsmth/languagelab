@@ -1,6 +1,8 @@
-/*
-    Client for the customized LanguageLab API
-*/
+/**
+ * Client for the customized LanguageLab API
+ *
+ * Angus B. Grieve-Smith, 2021
+ */
 
 /*
 
@@ -9,13 +11,10 @@
 */
 const DEFAULT_REFRESH_THRESHOLD = 60;
 
+/** Client class for the Language Lab API */
 export default class LanguageLabClient {
 
-    /*
-
-        Define the class attributes
-
-    */
+    /** Define the class attributes */
     constructor() {
         this.handleToken;
         this.expiredError = "Expired token!";
@@ -27,56 +26,55 @@ export default class LanguageLabClient {
         this.refreshThreshold = DEFAULT_REFRESH_THRESHOLD;
     }
 
-    /*
-
-        Set the token, the time when the token was refreshed, and the token life
-
-    */
+    /**
+     * Set the token, the time when the token was refreshed, and the token life
+     *
+     * @param {string} token - the token string
+     * @param {string} tokenTime - the time when the token was issued
+     * @param {string} tokenLife - the total life of the token in seconds
+     */
     setToken(token, tokenTime, tokenLife=this.tokenLife) {
         this.token = token;
         this.tokenTime = new moment(tokenTime);
         this.tokenLife = tokenLife;
     }
 
-    /*
-
-    */
+    /** Indicate whether we have a token string */
     hasToken() {
         return this.token.length > 0;
     }
 
-    /*
-
-        Set the refresh threshold
-
-    */
+    /**
+     * Set the refresh threshold
+     *
+     * @param {number} refreshThreshold
+     */
     setRefreshThreshold(refreshThreshold) {
         this.refreshThreshold = refreshThreshold;
     }
 
-    /*
-
-        Set the method to handle a new token
-
-    */
+    /**
+     * Set the method to handle a new token
+     *
+     * @param {function} handler - the token handler of the calling script
+     */
     setHandleToken(handler) {
         this.handleToken = handler;
     }
 
-    /*
-
-        Set the base URL for connecting to the API
-
-    */
+    /**
+     * Set the base URL for connecting to the API
+     *
+     * @param {string} baseUrl
+     */
     setBaseUrl(baseUrl) {
         this.baseUrl = baseUrl;
     }
 
-    /*
-
-        Throw an error if we've passed the time when the token was due to expire
-
-    */
+    /**
+     * Throw an error if we've passed the time when the token was due to expire,
+     * or send a refresh request if we've passed the refresh threshold
+     */
     checkToken() {
         if (this.tokenLife < this.refreshThreshold) {
             return;
@@ -92,12 +90,12 @@ export default class LanguageLabClient {
         }
     }
 
-    /*
-
-        Given a web cookie, parse it and extract the value specified by the
-        cookieKey parameter
-
-    */
+    /**
+     * Given a web cookie, parse it and extract the value specified by the
+     * cookieKey parameter
+     *
+     * @param {string} cookieKey - the key of the value we're interested in
+     */
     extractCookie(cookieKey) {
         var cookieValue;
         if (!document.cookie || document.cookie == '') {
@@ -112,12 +110,14 @@ export default class LanguageLabClient {
         return cookieValue;
     }
 
-    /*
-
-        Fetch data from the API, passing in options and handling pagination
-        and expired tokens
-
-    */
+    /**
+     * Fetch data from the API, passing in options and handling pagination
+     * and expired tokens
+     *
+     * @param {string} url - the url to fetch
+     * @param {object} options - options to pass to the fetch API
+     * @param {array} results - array to append a new page of results to
+     */
     fetchData(url, options={}, results=[]) {
         return new Promise((resolve, reject) => {
             if (!this.token) {
@@ -162,40 +162,20 @@ export default class LanguageLabClient {
         });
     }
 
-    /*
-
-        Retrieve the list of languages (not finished)
-
-    */
-    updateLanguages(baseUrl) {
-        const csrftoken = this.extractCookie("csrftoken");
-        const apiUrl = [baseUrl, "languages", "update_all", ""].join("/");
-        const options = {
-            "method": "POST",
-            "mode": "cors",
-            "headers": {"X-CSRFToken": csrftoken}
-        };
-
-        this.fetchData(apiUrl, options).then((res) => {
-            console.log(res);
-        }, (err) => {
-            console.error(err);
-        });
-    }
-
-    /*
-
-        Convert the data to a JSON and assemble the headers and options for a
-        PATCH request
-
-    */
+    /**
+     * Convert the data to a JSON and assemble the headers and options for a
+     * PATCH request
+     *
+     * @param {string} baseUrl - the base URL of the API
+     * @param {string} endpoint - the specific endpoint to access
+     * @param {object} data - the data to send to the API
+     * @param {number} id - the ID of the item to be updated
+     */
     patch(baseUrl, endpoint, data, id=null) {
-        const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [baseUrl, endpoint, id, ""].join("/");
         const options = {
             "method": "PATCH",
             "headers": {
-                "X-CSRFToken": csrftoken,
                 'Content-Type': 'application/json'
             },
             "body": JSON.stringify(data)
@@ -208,19 +188,19 @@ export default class LanguageLabClient {
         });
     }
 
-    /*
-
-        Assemble the headers and options for a DELETE request with a given
-        endpoint and ID
-
-    */
+    /**
+     * Assemble the headers and options for a DELETE request with a given
+     * endpoint and ID
+     *
+     * @param {string} baseUrl - the base URL of the API
+     * @param {string} endpoint - the specific endpoint to access
+     * @param {number} id - the ID of the item to be updated
+     */
     delete(baseUrl, endpoint, id) {
-        const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [baseUrl, endpoint, id].join("/");
         const options = {
             "method": "DELETE",
             "headers": {
-                "X-CSRFToken": csrftoken,
                 'Content-Type': 'application/json'
             }
         };
@@ -232,19 +212,19 @@ export default class LanguageLabClient {
         });
     }
 
-    /*
-
-        Convert the data to a JSON and assemble the headers and options for a
-        POST request
-
-    */
+    /**
+     * Convert the data to a JSON and assemble the headers and options for a
+     * POST request
+     *
+     * @param {string} baseUrl - the base URL of the API
+     * @param {string} endpoint - the specific endpoint to access
+     * @param {object} data - the data to send to the API
+     */
     post(baseUrl, endpoint, data) {
-        const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [baseUrl, endpoint, ""].join("/");
         const options = {
             "method": "POST",
             "headers": {
-                "X-CSRFToken": csrftoken,
                 'Content-Type': 'application/json'
             },
             "body": JSON.stringify(data)
@@ -257,19 +237,13 @@ export default class LanguageLabClient {
         });
     }
 
-    /*
-
-        Request a new refresh token
-
-    */
+    /** Request a new refresh token */
     refreshToken() {
         const endpoint = "token-refresh";
-        const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [this.baseUrl, endpoint, ""].join("/");
         const options = {
             "method": "POST",
             "headers": {
-                "X-CSRFToken": csrftoken,
                 'Content-Type': 'application/json'
             },
             "body": JSON.stringify({"token": this.token})
@@ -293,18 +267,16 @@ export default class LanguageLabClient {
         });
     }
 
-    /*
-
-        Assemble and send a login request to the API
-
-    */
+    /**
+     * Assemble and send a login request to the API
+     *
+     * @param {object} data - the login data
+     */
     login(data) {
-        const csrftoken = this.extractCookie("csrftoken");
         const apiUrl = [this.baseUrl, "token-auth", ""].join("/");
         const options = {
             "method": "POST",
             "headers": {
-                "X-CSRFToken": csrftoken,
                 'Content-Type': 'application/json'
             },
             "body": JSON.stringify(data)
@@ -317,14 +289,8 @@ export default class LanguageLabClient {
                     return;
                 }
 
-                res.json().then((resJson) => {
-                    resolve({"type": "token-auth", "response": resJson});
-                }, (err) => {
-                    reject("Error getting token: " + err);
-                });
-            }, (err) => {
-                reject("Error getting token: " + err);
-            });
+                res.json().then(resolve, reject);
+            }, reject);
         });
     }
 }

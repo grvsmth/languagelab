@@ -1,3 +1,10 @@
+/**
+ * Card for displaying info about a lesson in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global React, moment, PropTypes
@@ -8,16 +15,17 @@ import commonElements from "./commonElements.js";
 import util from "./util.js";
 
 export default class LessonCard extends React.Component {
-    constructor(props) {
-        super(props);
 
-        this.checkboxClick = this.checkboxClick.bind(this);
-    }
-
+    /** Call toggleLesson in the lab element, passing the lesson id */
     toggleLesson() {
         this.props.toggleLesson(this.props.lesson.id);
     }
 
+    /**
+     * A title element, with the name
+     *
+     * @return {object}
+     */
     itemTitle() {
         return React.createElement(
             "h5",
@@ -26,6 +34,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * A span crediting the creator of the item, if we have one
+     *
+     * @return {object}
+     */
     bySpan() {
         if (!this.props.itemUser) {
             return null;
@@ -38,6 +51,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * A subtitle with the lesson description, level and created time and credit
+     *
+     * @return {object}
+     */
     itemSubtitle() {
         const createdText = new moment(this.props.lesson.created)
             .format(config.dateTimeFormat);
@@ -52,23 +70,27 @@ export default class LessonCard extends React.Component {
         );
     }
 
-    checkboxClick(event) {
-        this.props.checkClick(
-            "lesson",
-            this.props.lesson.id,
-            event.target.name,
-            event.target.checked
-        )
-    }
-
+    /**
+     * Handle clicks on the edit button by calling the selectItem() function
+     * from the props with the ID of the lesson
+     */
     editClick() {
         this.props.selectItem(this.props.lesson.id, "edit");
     }
 
+    /**
+     * Handle clicks on the delete button by calling the deleteClick() function
+     * from the props with the item ID
+     */
     deleteClick() {
         this.props.deleteClick("lessons", this.props.lesson.id);
     }
 
+    /**
+     * An edit link
+     *
+     * @return {object}
+     */
     editLink() {
         return React.createElement(
             "a",
@@ -77,6 +99,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * A delete link
+     *
+     * @return {object}
+     */
     deleteLink() {
         return React.createElement(
             "a",
@@ -88,28 +115,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
-    tagBadge(tagText) {
-        return React.createElement(
-            "span",
-            {"className": "badge badge-pill badge-info mr-1"},
-            tagText
-        );
-    }
-
-    tagsDiv() {
-        if (this.props.lesson.tags.length < 1) {
-            return null;
-        }
-
-        return React.createElement(
-            "div",
-            {"className": "my-2"},
-            ...this.props.lesson.tags.map((tag) => {
-                return this.tagBadge(tag);
-            })
-        );
-    }
-
+    /**
+     * The edit and delete links
+     *
+     * @return {object}
+     */
     linkDiv() {
         if (this.props.activity === "add") {
             return null;
@@ -123,6 +133,11 @@ export default class LessonCard extends React.Component {
         );
     }
 
+    /**
+     * A div for lesson notes
+     *
+     * @return {object}
+     */
     notesDiv() {
         return React.createElement(
             "div",
@@ -131,53 +146,82 @@ export default class LessonCard extends React.Component {
         );
     }
 
-    doQueueButton() {
-        if (this.props.lesson.queueItems.length < 1) {
-            return null;
-        }
-
-        const btnClass = this.props.selected ? "btn-secondary" : "btn-info";
+    /**
+     * A button to toggle doing the lesson
+     *
+     * @return {object}
+     */
+    doQueueButton(disabled=false) {
         const actionInfo = this.props.selected ? "End lesson": "Start lesson";
+        const colorClass = this.props.selected ? "btn-secondary" : "btn-info";
+
+        const classList = [
+            "btn",
+            "btn-sm",
+            "ml-2",
+            colorClass
+        ];
+
         return React.createElement(
             "button",
             {
                 "type": "button",
-                "className": "btn " + btnClass + " btn-sm ml-2",
+                "className": classList.join(" "),
+                "disabled": disabled,
                 "onClick": this.toggleLesson.bind(this)
             },
             actionInfo
         );
     }
 
+    /** Set the editQueue activity in lab state */
     editQueue() {
         this.props.setActivity("editQueue", null, this.props.lesson.id);
     }
 
-    editQueueButton() {
-        if (!this.props.lesson.queueItems.length) {
-            return null;
-        }
-
+    /**
+     * A button allowing the user to edit the queue
+     *
+     * @return {object}
+     */
+    editQueueButton(disabled=false) {
         return React.createElement(
-            "div",
+            "button",
             {
                 "className": "btn btn-sm btn-primary ml-2",
-                "onClick": this.editQueue.bind(this)
+                "onClick": this.editQueue.bind(this),
+                "disabled": disabled,
+                "type": "button"
             },
             "Edit queue"
         );
     }
 
+    /**
+     * A div with the number of exercises and the buttons to edit and start
+     * the lesson queue.  If we don't have queueItems or exercises, disable
+     * these buttons.
+     *
+     * @return {object}
+     */
     queueDiv() {
+        const disabled = this.props.lesson.queueItems.length < 1
+            || this.props.exercisesLoading;
+
         return React.createElement(
             "div",
             {},
             util.howManyExercises(this.props.lesson.queueItems),
-            this.editQueueButton(),
-            this.doQueueButton()
+            this.editQueueButton(disabled),
+            this.doQueueButton(disabled)
         );
     }
 
+    /**
+     * The cardBody, with title, subtitle, notes, tags, links and queue buttons
+     *
+     * @return {object}
+     */
     cardBody() {
         return React.createElement(
             "div",
@@ -185,26 +229,17 @@ export default class LessonCard extends React.Component {
             this.itemTitle(),
             this.itemSubtitle(),
             this.notesDiv(),
-            this.tagsDiv(),
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.lesson.isAvailable,
-                "available",
-                this.props.lesson.id,
-                this.checkboxClick
-                ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.lesson.isPublic,
-                "public",
-                this.props.lesson.id,
-                this.checkboxClick
-                ),
+            commonElements.tagsElement(this.props.lesson.tags, "div"),
             this.linkDiv(),
             this.queueDiv()
         );
     }
 
+    /**
+     * The render function, with a card
+     *
+     * @return {object}
+     */
     render() {
         return React.createElement(
             "div",
@@ -218,6 +253,7 @@ LessonCard.propTypes = {
     "activity": PropTypes.string.isRequired,
     "checkClick": PropTypes.func.isRequired,
     "deleteClick": PropTypes.func.isRequired,
+    "exercisesLoading": PropTypes.bool.isRequired,
     "itemUser": PropTypes.object.isRequired,
     "lesson": PropTypes.object.isRequired,
     "selected": PropTypes.bool.isRequired,

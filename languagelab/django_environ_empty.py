@@ -11,7 +11,6 @@ def set_environ():
     Update the environment variables
     """
     environ.update({
-        'DJANGO_SITE_ID': '1',
         'DJANGO_SECRET_KEY': '',
         'DJANGO_HOST': '',
         'DJANGO_DB': '',
@@ -29,7 +28,6 @@ def set_environ():
         'DJANGO_EMAIL_HOST_PASSWORD': '',
         'DJANGO_MEDIA_ROOT': '',
         'DJANGO_TEMPLATES_DIR': '',
-        'DJANGO_STATICFILES_DIR': '',
         'DJANGO_ALLOWED_HOSTS': '[]',
         'DJANGO_TIMEZONE': '',
         'JWT_EXPIRATION': '1',

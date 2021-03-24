@@ -1,5 +1,10 @@
+/**
+ * Configuration for LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ */
 const config = {
-    "version": "0.2alpha",
+    "version": "0.2beta",
     "api": {
         "baseUrl": "https://languagelab.grieve-smith.com/api/0.2",
         "models": [

@@ -1,3 +1,10 @@
+/**
+ * Card for performing exercises in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global moment, React, PropTypes
@@ -12,32 +19,40 @@ const playActivities = [
 ];
 
 const playableActivities = playActivities + ["ready"];
-
 const activeStatuses = playActivities + ["recording"];
 
+const statusColor = {
+    "error": "danger",
+    "warning": "warning",
+    "playMimic": "success",
+    "playModelOnly": "info",
+    "playModelFirst": "success",
+    "playModelSecond": "success",
+    "ready": "info",
+    "recording": "danger"
+};
+
+/** Card for performing exercises in the LanguageLab client */
 export default class DoExerciseCard extends React.Component {
+
+    /**
+     * Declare refs and bind handlers
+     *
+     * @param {object} props
+     */
     constructor(props) {
         super(props);
 
         this.afterPlay = this.afterPlay.bind(this);
         this.handleGetInput = this.handleGetInput.bind(this);
         this.handleError = this.handleError.bind(this);
+
         this.mediaRecorder = null;
         this.mimicButton = React.createRef();
         this.player = React.createRef();
-        this.statusColor = {
-            "error": "danger",
-            "warning": "warning",
-            "playMimic": "success",
-            "playModelOnly": "info",
-            "playModelFirst": "success",
-            "playModelSecond": "success",
-            "ready": "info",
-            "recording": "danger"
-        };
-
     }
 
+    /** On mount, find an audio input device and register it */
     componentDidMount() {
         navigator.mediaDevices.getUserMedia({"audio": true}).then(
             (stream) => this.handleGetInput(stream),
@@ -45,10 +60,16 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /** On update, re-establish focus on the mimic button */
     componentDidUpdate() {
         this.mimicButton.current.focus();
     }
 
+    /** When we have recorded data available, create a URL for that and set
+     * the URL in application state
+     *
+     * @param {object} event
+     */
     onDataAvailable(event) {
         const userAudioUrl = window.URL.createObjectURL(
             event.data,
@@ -57,6 +78,12 @@ export default class DoExerciseCard extends React.Component {
         this.props.doFunction.setUserAudioUrl(userAudioUrl);
     }
 
+    /**
+     * Once we've found the audio input device, create a MediaRecorder to
+     * record from that device
+     *
+     * @param {object} stream
+     */
     handleGetInput(stream) {
         window.stream = stream;
         this.mediaRecorder = new window.MediaRecorder(
@@ -65,6 +92,11 @@ export default class DoExerciseCard extends React.Component {
         this.mediaRecorder.ondataavailable = this.onDataAvailable.bind(this);
     }
 
+    /**
+     * Handle errors in getting media, including no device found
+     *
+     * @param {object} error
+     */
     handleGetMediaError(error) {
         if (error.code === 8) {
             this.props.doFunction.setStatus({
@@ -79,17 +111,23 @@ export default class DoExerciseCard extends React.Component {
         });
     }
 
+    /**
+     * Convert a string in the default Moment format into seconds
+     *
+     * @param {string} timeString
+     *
+     * @return {number} seconds
+     */
     timeAsSeconds(timeString) {
         return moment.duration(timeString).asSeconds();
     }
 
-    duration(startString, endString) {
-        const startMoment = new moment(startString, config.timeFormat);
-        const endMoment = new moment(endString, config.timeFormat);
-        const durationMoment = moment.duration(endMoment.diff(startMoment));
-        return util.formatDuration(durationMoment, 3);
-    }
-
+    /** A title element with the name of the prop
+     *
+     * @param {object} prop
+     *
+     * @return {object}
+     */
     title(prop) {
         return React.createElement(
             "h5",
@@ -98,6 +136,11 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * A text span with the name of the item user, if any
+     *
+     * @return {object}
+     */
     bySpan() {
         if (!this.props.itemUser) {
             return null;
@@ -111,6 +154,11 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * A subtitle with the mediaItem name and the time range
+     *
+     * @return {object}
+     */
     itemSubtitle() {
         const timeRange = util.timeRange(
             this.props.exercise.startTime,
@@ -132,13 +180,12 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * A description row with the language and creator
+     *
+     * @return {object}
+     */
     descriptionRow() {
-        var languageText = "";
-        if (this.props.languages
-            && this.props.languages.length && this.props.languages[0]) {
-            languageText = this.props.languages[0].name + ", ";
-        }
-
         var mediaCreator = "";
         if (this.props.mediaItem) {
             mediaCreator = this.props.mediaItem.creator;
@@ -147,21 +194,13 @@ export default class DoExerciseCard extends React.Component {
         return React.createElement(
             "div",
             {},
-            languageText,
             mediaCreator,
             " – ",
             this.props.exercise.description
         );
     }
 
-    textDiv(fieldName, options={}) {
-        return React.createElement(
-            "div",
-            options,
-            this.props.exercise[fieldName]
-        );
-    }
-
+    /** Set the start time on the media player, handling potential errors */
     setStartTime() {
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
 
@@ -193,6 +232,7 @@ export default class DoExerciseCard extends React.Component {
         }
     }
 
+    /** Handle metadata load; replay mimic or set the ready state in the Lab */
     loadedMetadata() {
         if (this.props.state.status !== "playMimic") {
             this.setStartTime();
@@ -203,9 +243,15 @@ export default class DoExerciseCard extends React.Component {
             this.player.current.play()
                 .catch(this.handleError, this.props.state.status);
         }
-
     }
 
+    /**
+     * Handle end of playback, depending on what we just played:
+     *
+     * * playModelFirst - start recording
+     * * playModelSecond - play back the recording
+     * * playMimic - increment exercises
+     */
     afterPlay() {
         if (this.props.state.clickedAction === "mimic"
             && this.props.state.status === "playModelFirst") {
@@ -238,6 +284,12 @@ export default class DoExerciseCard extends React.Component {
         this.props.doFunction.setStatus({"status": "ready", "statusText": ""});
     }
 
+    /**
+     * At intervals, check to see whether we've reached the endTime.  If so,
+     * and playModelOnly is checked, stop playback and call afterPlay()
+     *
+     * @param {object} event
+     */
     timeUpdateHandler(event) {
         if (this.props.state.status === "playModelOnly"
             && !this.props.state.onlyExercise) {
@@ -257,6 +309,9 @@ export default class DoExerciseCard extends React.Component {
         this.afterPlay();
     }
 
+    /**
+     * If the user is playing the model, set the proper functions in state
+     */
     playHandler() {
         if (this.props.state.status !== "ready") {
             return;
@@ -271,6 +326,11 @@ export default class DoExerciseCard extends React.Component {
         this.props.doFunction.playMimic();
     }
 
+    /**
+     * Create our player element with the proper handlers
+     *
+     * @return {object}
+     */
     makePlayer() {
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
         const endSeconds = this.timeAsSeconds(this.props.exercise.endTime);
@@ -297,10 +357,20 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * Handle clicks on the onlyExercise checkbox
+     *
+     * @param {object} event
+     */
     onlyCheck(event) {
         this.props.doFunction.toggleOnlyExercise(event.target.checked);
     }
 
+    /**
+     * A div containing the player and the onlyExercise checkbox
+     *
+     * @return {object}
+     */
     playerDiv() {
         return React.createElement(
             "div",
@@ -316,10 +386,27 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * Determine the appropriate function for the direction chosen, and pass
+     * the current rank into it
+     *
+     * @param {string} direction - the direction (forward or back) of the button
+     */
     queueNav(direction) {
         this.props.doFunction.queueNav[direction](this.props.rank);
     }
 
+    /**
+     * If we're at the beginning of the queue, disable the back button.  If
+     * we're at the end, disable the forward button.  If we're playing or
+     * recording, or we can't get the rank, disable both buttons.
+     *
+     * Returns a string for use in the React component props.
+     *
+     * @param {string) direction - the direction (forward or back) of the button
+     *
+     * @return {string}
+     */
     navDisabled(direction) {
         if (activeStatuses.includes(this.props.state.status)) {
             return "disabled";
@@ -338,6 +425,14 @@ export default class DoExerciseCard extends React.Component {
         return null;
     }
 
+    /**
+     * If we have the queueInfo prop we can include the names of the previous
+     * and next exercises on the buttons, with appropriate spaces.
+     *
+     * @param {string} direction - the direction (forward or back) of the button
+     *
+     * @return {object}
+     */
     navButtonElements(direction) {
         if (!Object.prototype.hasOwnProperty.call(
                 this.props.queueInfo,
@@ -369,6 +464,14 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * Queue navigation buttons (forward and back), with appropriate icons and
+     * text, disabled as need be.
+     *
+     * @param {string} direction - the direction (forward or back) of the button
+     *
+     * @return {object}
+     */
     navButton(direction) {
         if (this.props.state.selected.itemType !== "lessons") {
             return null;
@@ -388,9 +491,14 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * A count of how many times the exercise has been performed this session,
+     * retrieved from props.
+     *
+     * @return {number}
+     */
     exerciseCount() {
-        if (
-            Object.prototype.hasOwnProperty.call(
+        if (Object.prototype.hasOwnProperty.call(
                 this.props.state.mimicCount,
                 this.props.exercise.id
                 )
@@ -401,6 +509,11 @@ export default class DoExerciseCard extends React.Component {
         return 0;
     }
 
+    /**
+     * A badge containing the exercise performance count for this session.
+     *
+     * @return {object}
+     */
     mimicCountSpan() {
         return React.createElement(
             "span",
@@ -409,6 +522,12 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * Handle errors with playback by displaying them in the statusText area.
+     *
+     * @param {object} error - the error returned by the player
+     * @param {string} action - the action being attempted
+     */
     handleError(error, action="unknown") {
         console.error(error);
         this.props.doFunction.setStatus({
@@ -417,6 +536,13 @@ export default class DoExerciseCard extends React.Component {
         });
     }
 
+    /**
+     * Handle clicks on the "Mimic" button:
+     *
+     * * If we're recording, stop recording.
+     * * If we're not in a state where we could start playing, do nothing
+     * * Otherwise, initiate the mimic sequence with PlayModelFirst
+     */
     mimicClick() {
         if (this.props.state.status === "recording") {
             this.mediaRecorder.stop();
@@ -434,22 +560,41 @@ export default class DoExerciseCard extends React.Component {
         this.props.doFunction.playModel("First");
     }
 
+    /**
+     * Determine the appropriate Bootstrap color class for the Mimic button:
+     *
+     * * "Danger" if we're recording
+     * * "Success" if we're playing back
+     * * "Info" otherwise
+     */
+     mimicButtonColor() {
+        if (this.props.state.clickedAction !== "mimic") {
+            return "info";
+        }
+
+        if (this.props.state.status === "recording") {
+            return "danger";
+        }
+
+        if (playActivities.includes(this.props.state.status)) {
+            return "success";
+        }
+
+        return "info";
+    }
+
+    /**
+     * Create the Mimic button element with the appropriate color.  Disable if
+     * we're in the middle of playing something.
+     *
+     * @return {object}
+     */
     makeMimicButton() {
         const mimicDisabled = playActivities.includes(
             this.props.state.status
         );
 
-        var colorClass = "info";
-        if (this.props.state.clickedAction === "mimic") {
-            if (this.props.state.status === "recording") {
-                colorClass = "danger";
-            } else if (playActivities.includes(
-                this.props.state.status
-            )) {
-                colorClass = "success";
-            }
-        }
-        const className = "btn col-3 btn-" + colorClass;
+        const className = "btn col-3 btn-" + this.mimicButtonColor();
         return React.createElement(
             "button",
             {
@@ -464,6 +609,10 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * If the user clicks the exit button, stop any recording tracks to release
+     * the microphone to other apps, and go back to read mode.
+     */
     exitClick() {
         window.stream.getTracks().forEach(
             (track) => track.stop()
@@ -472,6 +621,11 @@ export default class DoExerciseCard extends React.Component {
         this.props.doFunction.readMode(this.props.state.selected.itemType);
     }
 
+    /**
+     * The button to exit "do" mode.
+     *
+     * @return {object}
+     */
     exitButton() {
         return React.createElement(
             "button",
@@ -484,14 +638,25 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * A div with the statusText from props
+     *
+     * @return {object}
+     */
     statusRow() {
         return React.createElement(
             "div",
-            {"className": "text-" + this.statusColor[this.props.state.status]},
+            {"className": "text-" + statusColor[this.props.state.status]},
             this.props.state.statusText
         );
     }
 
+    /**
+     * Buttons to control the exercise: navigation, mimic, exit.  This is also a
+     * place in the render function to start playing if the media is ready.
+     *
+     * @return {object}
+     */
     controls() {
         if (this.player.current) {
             if (this.player.current.paused
@@ -515,6 +680,11 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * A card header, with title and subtitle based on the lesson (if any)
+     *
+     * @return {object}
+     */
     cardHeader() {
         if (!this.props.lesson) {
             return null;
@@ -528,6 +698,12 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * The body of the doExerciseCard: exercise title, subtitle, description,
+     * player, status and controls
+     *
+     * @return {object}
+     */
     cardBody() {
         return React.createElement(
             "div",
@@ -541,6 +717,11 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 
+    /**
+     * The render function: header and body
+     *
+     * @return {object}
+     */
     render() {
         console.log(this.props);
         return React.createElement(
@@ -557,7 +738,6 @@ DoExerciseCard.propTypes = {
     "doFunction": PropTypes.object.isRequired,
     "exercise": PropTypes.object.isRequired,
     "itemUser": PropTypes.object.isRequired,
-    "languages": PropTypes.array.isRequired,
     "lesson": PropTypes.object.isRequired,
     "maxRank": PropTypes.number.isRequired,
     "mediaItem": PropTypes.object.isRequired,

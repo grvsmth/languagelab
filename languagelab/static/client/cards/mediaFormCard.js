@@ -1,3 +1,10 @@
+/**
+ * Form for adding and editing media in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global React, moment, PropTypes
@@ -8,38 +15,42 @@ import config from "./config.js";
 import util from "./util.js";
 import commonElements from "./commonElements.js";
 
+/** Form for adding and editing media in the LanguageLab client */
 export default class MediaFormCard extends React.Component {
+
+    /**
+     * Set a ref for the audio element (only used for calculating duration)
+     *
+     * @param {object} props
+     */
     constructor(props) {
         super(props);
 
         this.audio = React.createRef();
     }
 
+    /**
+     * Handle the input of an audioUrl so that we can auto-populate the duration
+     *
+     * @param {object} event
+     */
     inputChange(event) {
         this.audio.current.src = event.target.value;
     }
 
+    /**
+     * Handle a click on the cancel button with a call to the setActivity() prop
+     */
     cancelClick() {
         this.props.setActivity("read");
     }
 
-    processField(node) {
-        if (node.type === "checkbox") {
-            return node.checked;
-        }
-        if (node.name === "tags") {
-            if (node.value.length < 1) {
-                return [];
-            }
-            const tags = node.value.split(config.tagSplitRE);
-            return tags;
-        }
-        if (node.name === "language") {
-            return parseInt(node.value);
-        }
-        return node.value;
-    }
-
+    /**
+     * Once we've loaded the metadata for the remote audio, we can get the
+     * duration
+     *
+     * @param {object} event
+     */
     loadedMetadata(event) {
         const durationMoment = moment.duration(event.target.duration * 1000);
 
@@ -52,6 +63,11 @@ export default class MediaFormCard extends React.Component {
         durationInput.value = util.formatDuration(durationMoment);
     }
 
+    /**
+     * Audio element, only used for retrieving the duration
+     *
+     * return {object}
+     */
     audioElement() {
         const audio = React.createElement(
             "audio",
@@ -65,17 +81,20 @@ export default class MediaFormCard extends React.Component {
         return audio;
     }
 
+    /**
+     * Handle a click on the save button by harvesting the form items as an
+     * array, converting them to an object, and extracting the media ID.
+     * Pass it all to this.props.saveItem().
+     *
+     * @param {object} event - the click event that this handles
+     */
     saveClick(event) {
         const formInputs = document.body.querySelectorAll(
             `#${event.target.form.id} input, select`
         )
         const formData = Array.from(formInputs.values())
             .reduce((object, item) => {
-                if (item.name === "mediaFile") {
-                    // TODO handle later
-                    return object;
-                }
-                object[item.name] = this.processField(item);
+                object[item.name] = util.processField(item);
                 return object;
             }, {});
 
@@ -86,31 +105,18 @@ export default class MediaFormCard extends React.Component {
         this.props.saveItem(formData, "media", itemId);
     }
 
-    textInput(fieldName, inputId, onChange, defaultValue) {
-        const options = {
-            "id": inputId,
-            "className": "form-control",
-            "type": "text",
-            "name": fieldName,
-            "defaultValue": defaultValue
-        };
-        if (onChange) {
-            options.onChange = onChange;
-        }
+    /**
+     * Text input div, pre-populated if we're editing.
+     *
+     * @param {string} fieldName - the name of the form field
+     * @param {func} onChange - the input change handler
+     * @param {string} defaultValue - the default value
+     *
+     * @return {object}
+     */
+    textInputDiv(fieldName, onChange=null, defaultVal="") {
+        var defaultValue = defaultVal;
 
-        return React.createElement(
-            "input",
-            options,
-            null
-        );
-    }
-
-    textInputDiv(fieldName, onChange=null, defaultVal=null) {
-        var defaultValue = "";
-
-        if (defaultVal) {
-            defaultValue = defaultVal;
-        }
         if (Object.prototype.hasOwnProperty.call(
             this.props.mediaItem,
             fieldName
@@ -119,33 +125,19 @@ export default class MediaFormCard extends React.Component {
             defaultValue = this.props.mediaItem[fieldName];
         }
 
-        const inputId = [fieldName, this.props.mediaItem.id].join("_");
-        return React.createElement(
-            "div",
-            {"className": "col-sm"},
-            commonElements.itemLabel(fieldName, inputId),
-            this.textInput(fieldName, inputId, onChange, defaultValue)
-        );
+        return commonElements.textInputDiv(
+            fieldName,
+            this.props.mediaItem.id,
+            onChange,
+            defaultValue
+        )
     }
 
-    tagsInput(inputId) {
-        var defaultValue = "";
-        if (this.props.mediaItem.tags) {
-            defaultValue = this.props.mediaItem.tags.join(", ");
-        }
-        return React.createElement(
-            "input",
-            {
-                "id": inputId,
-                "className": "form-control",
-                "type": "text",
-                "name": "tags",
-                "defaultValue": defaultValue
-            },
-            null
-        );
-    }
-
+    /**
+     * Div for the tags input and its label
+     *
+     * @return {object}
+     */
     tagsInputDiv() {
         const inputId = "tags_" + this.props.mediaItem.id;
 
@@ -153,116 +145,15 @@ export default class MediaFormCard extends React.Component {
             "div",
             {"className": "col-sm"},
             commonElements.itemLabel("tags", inputId),
-            this.tagsInput(inputId)
+            commonElements.tagsInput(inputId, this.props.mediaItem.tags)
         )
     }
 
-    fileInput(fieldName, inputId) {
-        return React.createElement(
-            "input",
-            {
-                "type": "file",
-                "className": "form-control-file",
-                "id": inputId,
-                "name": fieldName
-            },
-            null
-        );
-    }
-
-    fileInfo() {
-        if (!this.props.mediaItem.mediaFile) {
-            return null;
-        }
-
-        const fileUrlParts = this.props.mediaItem.mediaFile.split("/");
-        const fileNameSpan = React.createElement(
-            "span",
-            {"className": "text-success"},
-            fileUrlParts[fileUrlParts.length-1]
-        );
-
-        return React.createElement(
-            "span",
-            {"className": "badge"},
-            "uploaded media file is ",
-            fileNameSpan
-        );
-
-    }
-
-    fileLabel(fieldName, inputId) {
-        if (!this.props.mediaItem[fieldName]) {
-            return commonElements.itemLabel("or upload a file", inputId);
-        }
-
-        const fileUrlParts = this.props.mediaItem[fieldName].split("/");
-        const fileNameSpan = React.createElement(
-            "span",
-            {"className": "text-success"},
-            fileUrlParts[fileUrlParts.length-1]
-        );
-
-        return React.createElement(
-            "label",
-            {"htmlFor": inputId},
-            "or upload a file to replace ",
-            fileNameSpan
-        );
-
-    }
-
-    fileInputDiv(fieldName) {
-        const inputId = [fieldName, this.props.mediaItem.id].join("_");
-        return React.createElement(
-            "div",
-            {"className": "col-sm"},
-            commonElements.itemLabel("or upload a file", inputId),
-            this.fileInput(fieldName, inputId),
-            this.fileInfo()
-        );
-    }
-
-    itemOption(optionKey, optionValue) {
-        return React.createElement(
-            "option",
-            {"value": optionKey},
-            optionValue
-        );
-    }
-
-    itemSelect(fieldName, options, inputId) {
-        return React.createElement(
-            "select",
-            {
-                "className": "form-control",
-                "id": inputId,
-                "name": fieldName,
-                "defaultValue": this.props.mediaItem[fieldName]
-            },
-            ...Object.keys(options).map((optionKey) => {
-                return this.itemOption(
-                    optionKey,
-                    options[optionKey]
-                );
-            })
-        );
-    }
-
-    selectDiv(fieldName, optionList) {
-        if (!optionList) {
-            return null;
-        }
-
-        const inputId = [fieldName, this.props.mediaItem.id].join("_");
-        return React.createElement(
-            "div",
-            {"className": "form-group mx-1"},
-            commonElements.itemLabel(fieldName, inputId),
-            this.itemSelect(fieldName, optionList, inputId)
-        );
-    }
-
+    /**
+     * A div with textInputDivs for name, creator, rights
+     *
+     * @return {object}
+     */
     nameRow() {
         return React.createElement(
             "div",
@@ -273,25 +164,27 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div with inputs for the media and duration; also holds the audio
+     * element
+     *
+     * @return {object}
+     */
     fileRow() {
         return React.createElement(
             "div",
             {"className": "form-row mt-3"},
             this.textInputDiv("mediaUrl", this.inputChange.bind(this)),
-            this.fileInputDiv("mediaFile"),
             this.textInputDiv("duration", null, "00:00:00"),
             this.audioElement()
         );
     }
 
-    languageObject() {
-        const languageObject = this.props.languages.reduce((object, item) => {
-            object[item.id] = item.name;
-            return object;
-        }, {});
-        return languageObject;
-    }
-
+    /**
+     * A save button handled by saveClick()
+     *
+     * @return {object}
+     */
     saveButton() {
         return React.createElement(
             "button",
@@ -304,6 +197,11 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * A cancel button handled by cancelClick()
+     *
+     * @return {object}
+     */
     cancelButton() {
         return React.createElement(
             "button",
@@ -316,6 +214,11 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div for the buttons
+     *
+     * @return {object}
+     */
     buttonDiv() {
         return React.createElement(
             "div",
@@ -325,13 +228,28 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * Div with format, language and potentially isAvailable and isPublic
+     *
+     * @return {object}
+     */
     optionsRow() {
         return React.createElement(
             "div",
             {"className": "form-row mt-3"},
             this.tagsInputDiv(),
-            this.selectDiv("format", config.formatName),
-            this.selectDiv("language", this.languageObject()),
+            commonElements.selectDiv(
+                "format",
+                config.formatName,
+                this.props.mediaItem.id,
+                this.props.mediaItem.format
+            ),
+            commonElements.selectDiv(
+                "language",
+                util.listToObject(this.props.languages),
+                this.props.mediaItem.id,
+                this.props.mediaItem.language
+            ),
             commonElements.checkboxDiv(
                 "isAvailable",
                 this.props.mediaItem.isAvailable,
@@ -347,6 +265,11 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * A div for the save and cancel buttons with form row styling
+     *
+     * @return {object}
+     */
     submitRow() {
         return React.createElement(
             "div",
@@ -355,6 +278,11 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * The form with inputs and buttons
+     *
+     * @return {object}
+     */
     cardBody() {
         return React.createElement(
             "form",
@@ -369,6 +297,11 @@ export default class MediaFormCard extends React.Component {
         );
     }
 
+    /**
+     * The React render() method
+     *
+     * @return {object}
+     */
     render() {
         return React.createElement(
             "div",

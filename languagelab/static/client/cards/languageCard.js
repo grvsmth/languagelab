@@ -1,13 +1,24 @@
+/**
+ * Card for displaying info about a language in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global React, PropTypes
 
 */
-export default class LanguageCard extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
+/** Card for displaying info about a language in the LanguageLab client */
+export default class LanguageCard extends React.Component {
+
+    /**
+     * A title element with the language name from the props
+     *
+     * @return {object}
+     */
     cardTitle() {
         return React.createElement(
             "h5",
@@ -16,6 +27,11 @@ export default class LanguageCard extends React.Component {
         );
     }
 
+    /**
+     * A text element with the language code from the props
+     *
+     * @return {object}
+     */
     cardText() {
         return React.createElement(
             "span",
@@ -24,10 +40,19 @@ export default class LanguageCard extends React.Component {
         );
     }
 
+    /**
+     * Handle clicks on the edit button by calling the selectItem() function
+     * from the props with the ID of the language
+     */
     editClick() {
         this.props.selectItem(this.props.language.id, "edit");
     }
 
+    /**
+     * An edit button
+     *
+     * @return {object}
+     */
     editButton() {
         return React.createElement(
             "button",
@@ -40,6 +65,11 @@ export default class LanguageCard extends React.Component {
         );
     }
 
+    /**
+     * A paragraph with the text and the edit button
+     *
+     * @return {object}
+     */
     textRow() {
         return React.createElement(
             "p",
@@ -49,6 +79,11 @@ export default class LanguageCard extends React.Component {
         );
     }
 
+    /**
+     * The card body with the title and text row
+     *
+     * @return {object}
+     */
     cardBody() {
         return React.createElement(
             "div",
@@ -58,6 +93,11 @@ export default class LanguageCard extends React.Component {
         );
     }
 
+    /**
+     * The React render() method
+     *
+     * @return {object}
+     */
     render() {
         return React.createElement(
             "div",

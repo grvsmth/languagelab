@@ -1,3 +1,11 @@
+/**
+ * Card footer component for adding or ranking an exercise in a lesson queue,
+ * in the LanguageLab client
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 /*
 
     global React, PropTypes
@@ -7,14 +15,14 @@ import config from "./config.js";
 import commonElements from "./commonElements.js";
 import util from "./util.js";
 
-
+/** Card footer component for adding or ranking an exercise in a lesson queue */
 export default class QueueFooter extends React.Component {
-    constructor(props) {
-        super(props);
 
-        this.queueClick = this.queueClick.bind(this);
-    }
-
+    /**
+     * A badge to indicate the rank of an item in the queue
+     *
+     * @return {object}
+     */
     rankBadge() {
         return React.createElement(
             "span",
@@ -23,6 +31,10 @@ export default class QueueFooter extends React.Component {
         );
     }
 
+    /**
+     * Determine the input selector ID, retrieve the selected lesson and send it
+     * to this.props.queueClick()
+     */
     addClick() {
         const inputSelector = ["#lesson", this.props.exerciseId].join("_");
         const lessonId = parseInt(document.querySelector(inputSelector).value);
@@ -30,6 +42,12 @@ export default class QueueFooter extends React.Component {
         this.props.queueClick("add", this.props.exerciseId, lessonId);
     }
 
+    /**
+     * Retrieve the desired action from the button ID and pass that to
+     * this.props.queueClick()
+     *
+     * @param {object} event
+     */
     queueClick(event) {
         const idParts = event.currentTarget.id.split("_");
         if (!idParts) {
@@ -39,6 +57,14 @@ export default class QueueFooter extends React.Component {
         this.props.queueClick(idParts[0], this.props.queueItem.id);
     }
 
+    /**
+     * Disable the up and down ranking buttons if we can't move the exercise
+     * any further up or down
+     *
+     * @param {string} buttonContent - the action specified by the button
+     *
+     * @return {boolean}
+     */
     isRankButtonDisabled(buttonContent) {
         if (buttonContent === "up" && this.props.queueItem.rank <= 1) {
             return true;
@@ -52,6 +78,13 @@ export default class QueueFooter extends React.Component {
         return false;
     }
 
+    /**
+     * A button element for reranking exercises in a lesson queue
+     *
+     * @param {string} buttonContent - the action specified by the button
+     *
+     * @return {object}
+     */
     rankButton(buttonContent) {
         const disabled = this.isRankButtonDisabled(buttonContent);
 
@@ -66,13 +99,18 @@ export default class QueueFooter extends React.Component {
                 "disabled": disabled,
                 "id": buttonId,
                 "key": "rank-button-" + buttonContent,
-                "onClick": this.queueClick,
+                "onClick": this.queueClick.bind(this),
                 "type": "button"
             },
             commonElements.iconSpan(iconClass)
         );
     }
 
+    /**
+     * A span to wrap the rank badge
+     *
+     * @return {object}
+     */
     badgeSpan() {
         return React.createElement(
             "span",
@@ -82,6 +120,11 @@ export default class QueueFooter extends React.Component {
         );
     }
 
+    /**
+     * A button to add the exercise to the selected lesson
+     *
+     * @return {object}
+     */
     addButton() {
         return React.createElement(
             "button",
@@ -95,6 +138,11 @@ export default class QueueFooter extends React.Component {
         );
     }
 
+    /**
+     * Determine the ID of the first lesson in the list
+     *
+     * @return {number}
+     */
     firstLesson() {
         if (!this.props.exerciseLessons || !this.props.exerciseLessons.length) {
             return null;
@@ -103,6 +151,11 @@ export default class QueueFooter extends React.Component {
         return this.props.exerciseLessons[0].lesson;
     }
 
+    /**
+     * A span containing the lesson selector
+     *
+     * @return {object}
+     */
     lessonSpan() {
         const inputId = ["lesson", this.props.exerciseId].join("_");
 
@@ -118,6 +171,11 @@ export default class QueueFooter extends React.Component {
         );
     }
 
+    /**
+     * A footer containing the message that there are no lessons available
+     *
+     * @return {object}
+     */
     lessonMessage() {
         return React.createElement(
             "div",
@@ -126,6 +184,11 @@ export default class QueueFooter extends React.Component {
         )
     }
 
+    /**
+     * A span telling the user how many lessons an exercise is already in
+     *
+     * @return {object}
+     */
     exerciseLessons() {
         if (!this.props.exerciseLessons) {
             return null;
@@ -138,6 +201,11 @@ export default class QueueFooter extends React.Component {
         );
     }
 
+    /**
+     * A footer allowing the user to add the exercise to lessons
+     *
+     * @return {object}
+     */
     addFooter() {
         if (!this.props.lessons || !this.props.lessons.length) {
             return this.lessonMessage();
@@ -152,6 +220,11 @@ export default class QueueFooter extends React.Component {
         );
     }
 
+    /**
+     * A button group with the queue buttons (up, down, remove)
+     *
+     * @return {object}
+     */
     rankButtonGroup() {
         return React.createElement(
             "div",
@@ -163,6 +236,12 @@ export default class QueueFooter extends React.Component {
         );
     }
 
+    /**
+     * If we're editing the queue order, return the ranking footer; otherwise
+     * the add footer
+     *
+     * @return {object}
+     */
     render() {
         if (!this.props.queueItem) {
             return this.addFooter();

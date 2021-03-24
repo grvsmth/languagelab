@@ -2,8 +2,8 @@
 admin/
 django_environ.py
 media/
-node_modules
-lib/*/
+node_modules/
+out/
 data/
 *.log
 venv

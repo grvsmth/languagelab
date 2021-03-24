@@ -1,4 +1,34 @@
+/**
+ * Help documentation for Language Lab, to be passed to cards/helpCard.js
+ *
+ * Angus B. Grieve-Smith, 2021
+ *
+ */
+
 const exports = {
+    "about": {
+        "title": "About",
+        "description": `LanguageLab is a server and web client for learning
+        languages, including singing and transgender speech practice.  It
+        allows you to replicate the repetition exercises used in language
+        labs around the world.  It has been developed by Angus "Andrea"
+        Grieve-Smith since 2015.`,
+        "a": {
+            "href": "https://grieve-smith.com/blog/2021/02/a-free-open-source-language-lab-app/",
+            "target": "_blank",
+            "html": "More info"
+        }
+    },
+    "source": {
+        "title": "Source",
+        "description": `LanguageLab is free and open source.  See the README for
+        information on how to set up your own server and web client.`,
+        "a": {
+            "href": "https://github.com/grvsmth/languagelab",
+            "target": "_blank",
+            "html": "Get the source"
+        }
+    },
     "media": {
         "title": "Media",
         "description": `A media item is based on a URL for an externally hosted
