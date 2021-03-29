@@ -246,6 +246,7 @@ export default class DoExerciseCard extends React.Component {
                         "statusText": `Unable to play ${this.props.state.userAudioUrl}`,
                         "status": "error"
                     });
+                    return;
                 }
                 playPromise.catch(this.handleError, this.props.state.status);
         }
@@ -678,6 +679,7 @@ export default class DoExerciseCard extends React.Component {
                         "statusText": `Unable to play ${this.props.state.userAudioUrl}`,
                         "status": "error"
                     });
+                    return;
                 }
                 playPromise.catch(this.handleError, this.props.state.status);
             }
