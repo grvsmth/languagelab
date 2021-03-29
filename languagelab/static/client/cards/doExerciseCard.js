@@ -673,9 +673,11 @@ export default class DoExerciseCard extends React.Component {
                 const playPromise = this.player.current.play();
                 if (playPromise === undefined) {
                     console.log("Promise undefined!", this.player.current);
-                    return;
+                } else {
+                    playPromise.catch(
+                        this.handleError, this.props.state.status
+                    );
                 }
-                playPromise.catch(this.handleError, this.props.state.status);
             }
         }
 
