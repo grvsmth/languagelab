@@ -969,7 +969,7 @@ export default class Lab extends React.Component {
                 this.body(),
                 this.loadingModal()
             );
-        } catch (Error err) {
+        } catch (err) {
             this.addAlert("Error displaying lab", err.getMessage());
         }
     }
