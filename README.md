@@ -43,7 +43,6 @@ Open Iconic icon library.
 These steps work for PythonAnywhere.  They should also work for other hosts,
 with minor modifications.
 
-* Create a database and a database user with rights to that database
 * Clone this repository to your server
 * Create a virtual environment for your application
 * Activate the virtual environment
@@ -54,6 +53,7 @@ with minor modifications.
 * Install Python dependencies: `pip install -r requirements.txt`
 * Install the Javascript and CSS dependencies:
   `npm install --prefix=languagelab/static`
+* Create a database and a database user with rights to that database
 * Copy `languagelab/django_environ_empty.py` to `languagelab/django_environ.py`
 * Edit `languagelab/django_environ.py` and fill in the details of your
   installation, including the database

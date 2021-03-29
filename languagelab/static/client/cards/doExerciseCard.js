@@ -240,8 +240,10 @@ export default class DoExerciseCard extends React.Component {
         }
 
         if (playActivities.includes(this.props.state.status)) {
-            this.player.current.play()
-                .catch(this.handleError, this.props.state.status);
+            const playPromise = this.player.current.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(this.handleError, this.props.state.status);
+            }
         }
     }
 
@@ -666,8 +668,10 @@ export default class DoExerciseCard extends React.Component {
                 && this.props.state.mediaStatus === "ready"
                 && playActivities.includes(this.props.state.status)
             ) {
-                this.player.current.play()
-                    .catch(this.handleError, this.props.state.status);
+                const playPromise = this.player.current.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(this.handleError, this.props.state.status);
+                }
             }
         }
 
