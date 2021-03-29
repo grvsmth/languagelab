@@ -614,6 +614,9 @@ export default class DoExerciseCard extends React.Component {
      * the microphone to other apps, and go back to read mode.
      */
     exitClick() {
+        if (!window.stream) {
+            return;
+        }
         window.stream.getTracks().forEach(
             (track) => track.stop()
         );
