@@ -242,10 +242,7 @@ export default class DoExerciseCard extends React.Component {
         if (playActivities.includes(this.props.state.status)) {
             const playPromise = this.player.current.play();
                 if (playPromise === undefined) {
-                    this.props.doFunction.setStatus({
-                        "statusText": `Unable to play ${this.props.state.userAudioUrl}`,
-                        "status": "error"
-                    });
+                    console.log("Promise undefined!", this.player.current);
                     return;
                 }
                 playPromise.catch(this.handleError, this.props.state.status);
@@ -675,10 +672,7 @@ export default class DoExerciseCard extends React.Component {
             ) {
                 const playPromise = this.player.current.play();
                 if (playPromise === undefined) {
-                    this.props.doFunction.setStatus({
-                        "statusText": `Unable to play ${this.props.state.userAudioUrl}`,
-                        "status": "error"
-                    });
+                    console.log("Promise undefined!", this.player.current);
                     return;
                 }
                 playPromise.catch(this.handleError, this.props.state.status);
