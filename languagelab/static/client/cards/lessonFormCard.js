@@ -93,9 +93,6 @@ export default class LessonFormCard extends React.Component {
     /**
      * A div with textInputDivs for name and description
      *
-     * The "isAvailable" and "isPublic" checkboxes are currently not
-     * implemented, but this is what would display them
-     *
      * @return {object}
      */
     nameRow() {
@@ -103,19 +100,7 @@ export default class LessonFormCard extends React.Component {
             "div",
             {"className": "form-row mt-3"},
             this.textInputDiv("name"),
-            this.textInputDiv("description"),
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.lesson.isAvailable,
-                "available",
-                this.props.lesson.id
-            ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.lesson.isPublic,
-                "public",
-                this.props.lesson.id
-            )
+            this.textInputDiv("description")
         );
     }
 

@@ -229,7 +229,7 @@ export default class MediaFormCard extends React.Component {
     }
 
     /**
-     * Div with format, language and potentially isAvailable and isPublic
+     * Div with format, language
      *
      * @return {object}
      */
@@ -249,18 +249,6 @@ export default class MediaFormCard extends React.Component {
                 util.listToObject(this.props.languages),
                 this.props.mediaItem.id,
                 this.props.mediaItem.language
-            ),
-            commonElements.checkboxDiv(
-                "isAvailable",
-                this.props.mediaItem.isAvailable,
-                "available",
-                this.props.mediaItem.id
-            ),
-            commonElements.checkboxDiv(
-                "isPublic",
-                this.props.mediaItem.isPublic,
-                "public",
-                this.props.mediaItem.id
             )
         );
     }

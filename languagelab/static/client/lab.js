@@ -958,15 +958,19 @@ export default class Lab extends React.Component {
 
     /** The React render function, displaying the root element */
     render() {
-        return React.createElement(
-            "div",
-            {
-                "className": "container-fluid"
-            },
-            this.nav(),
-            this.infoArea(),
-            this.body(),
-            this.loadingModal()
-        );
+        try {
+            return React.createElement(
+                "div",
+                {
+                    "className": "container-fluid"
+                },
+                this.nav(),
+                this.infoArea(),
+                this.body(),
+                this.loadingModal()
+            );
+        } catch (err) {
+            this.addAlert("Error displaying lab", err.getMessage());
+        }
     }
 }

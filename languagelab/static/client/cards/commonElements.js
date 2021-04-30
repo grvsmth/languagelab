@@ -72,22 +72,6 @@ const exports = {
             null
         );
     },
-    "displayCheckbox": function(key) {
-        /**
-         * If we've configured the system to hide the (currently non-functional)
-         * isAvailable and isPublic checkboxes, then return the appropriate
-         * Bootstrap class
-         *
-         * @param key - the name of the key
-         *
-         * @return {string}
-         */
-        if (["isAvailable", "isPublic"].includes(key)) {
-            return config.hideIsAvailablePublic ? " d-none" : null;
-        }
-
-        return null;
-    },
     "itemOption": function(optionKey, optionValue) {
         /**
          * Item option element to be mapped to the parameters of the options object
@@ -187,11 +171,10 @@ const exports = {
  */
 exports.checkboxDiv = function(key, checked, labelText, itemId, callback=null) {
     const inputId = [key, itemId].join("_");
-    const displayClass = exports.displayCheckbox(key);
 
     return React.createElement(
         "div",
-        {"className": "form-check form-check-inline mx-1" + displayClass},
+        {"className": "form-check form-check-inline mx-1"},
         exports.checkboxInput(
             key,
             checked,
