@@ -27,7 +27,15 @@ THIS SOFTWARE.
 
 ## Hosting media
 
+LanguageLab is not a media server.  It presents exercises to the user based on
+URLs pointing to media files hosted elsewhere.  For copyright purposes, these
+media files can be protected with a .htaccess password.  It is relatively easy
+to add media server functionality if desired.
+
 ## Serving the client in production
+
+In production, the Javascript client should be served using a separate virtual
+directory, or even a separate server.
 
 ## Requirements
 
