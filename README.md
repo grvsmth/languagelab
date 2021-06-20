@@ -64,7 +64,8 @@ with minor modifications.
 * Create a database and a database user with rights to that database
 * Copy `languagelab/django_environ_empty.py` to `languagelab/django_environ.py`
 * Edit `languagelab/django_environ.py` and fill in the details of your
-  installation, including the database
+  installation, including the database. In PythonAnywhere, make sure to include
+  your username in the database name!
 * Copy `languagelab/static/client/environment_empty.js` to
   `languagelab/static/client/environment.js`
 * Edit `languagelab/static/client/environment.js` and fill in the API hostname
