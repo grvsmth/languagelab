@@ -1,6 +1,6 @@
 """
 
-Models for LangaugeLab Library
+Models for LanguageLab Library
 
 """
 from datetime import timedelta
@@ -162,6 +162,11 @@ class QueueManager (Manager):
 
     @staticmethod
     def is_unmovable(queue, old_rank, direction):
+        """
+        If moving up (by decreasing the numerical rank), is it rank 1?
+        If moving down (by increasing the numerical rank), is it the top rank?
+        Is it out of bounds?
+        """
         if direction == "up":
             return old_rank < 2 or old_rank > queue.count()
 
@@ -169,6 +174,10 @@ class QueueManager (Manager):
 
     @staticmethod
     def new_rank(old_rank, direction):
+        """
+        If moving up in the queue, DECREASE the numerical rank
+        If moving down, INCREASE the numerical rank
+        """
         if direction == "up":
             return old_rank - 1
 
@@ -176,21 +185,21 @@ class QueueManager (Manager):
 
     def move(self, item_id, direction):
         """
-
-        Move the current item up in the ranking (by lowering its rank number)
-
+        Move the current item in the ranking, if it is movable
         """
-        LOG.error("move({}, {})".format(item_id, direction))
         item = super().get_queryset().get(id=item_id)
-        LOG.error("lesson = {}".format(item.lesson.id))
         queue = self.lesson_queue(item.lesson.id)
         old_rank = item.rank
-        LOG.error("old_rank = {}".format(old_rank))
 
         if self.is_unmovable(queue, old_rank, direction):
             return queue
 
         new_rank = self.new_rank(old_rank, direction)
+
+        """
+        If the new rank was previously assigned to another item, this item
+        switches ranks with it
+        """
         queue.filter(rank=new_rank).update(rank=old_rank)
         queue.filter(id=item_id).update(rank=new_rank)
 
