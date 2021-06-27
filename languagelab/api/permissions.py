@@ -1,4 +1,13 @@
+"""
+
+Permissions for the Language Lab REST API
+
+"""
+from logging import basicConfig, getLogger
 from rest_framework.permissions import BasePermission, SAFE_METHODS
+
+LOG = getLogger()
+basicConfig(level="DEBUG")
 
 class StaffCanWrite(BasePermission):
     """

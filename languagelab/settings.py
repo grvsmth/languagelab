@@ -178,7 +178,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication'
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'languagelab.api.permissions.StaffCanWrite'
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
@@ -208,13 +208,6 @@ LOGGING = {
         }
     }
 }
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'languagelab.api.permissions.StaffCanWrite'
-    ]
-}
-
 
 JWT_EXPIRATION = environ.get('JWT_EXPIRATION', '1')
 JWT_EXPIRATION_UNITS = environ.get('JWT_EXPIRATION_UNITS', 'hours')

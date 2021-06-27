@@ -640,6 +640,7 @@ export default class Lab extends React.Component {
             this.apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
                 .then((res) => {
                     this.updateStateItem(res.response, itemType, "read", true);
+                    this.fetchData(itemType);
                 }, this.handleFetchError
             );
         } else {
@@ -650,6 +651,7 @@ export default class Lab extends React.Component {
             this.apiClient.post(environment.api.baseUrl, itemType, item).then(
                 (res) => {
                     this.updateStateItem(res.response, itemType, "read", true);
+                    this.fetchData(itemType);
                 }, this.handleFetchError
             );
         }
