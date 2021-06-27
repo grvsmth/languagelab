@@ -24,6 +24,14 @@ import util from "./util.js";
 import config from "./config.js";
 import environment from "./environment.js";
 
+const notLoading = {
+    "exercises": false,
+    "languages": false,
+    "lessons": false,
+    "media": false
+};
+
+
 /** The main lab class. @extends React.Component */
 export default class Lab extends React.Component {
 
@@ -229,8 +237,25 @@ export default class Lab extends React.Component {
         const errorMessage = "Please try logging in again";
         this.setState({
             "activity": "login",
-            "loading": {}
+            "loading": notLoading
         });
+        if (!this.findAlert(titleText) && this.state.activity != "login") {
+            this.addAlert(titleText, errorMessage);
+        }
+    }
+
+    /**
+     * Handle 403 Forbidden errors.  Remove loading status and send an alert.
+     *
+     */
+    handleForbidden() {
+        const titleText = "Action forbidden";
+        const errorMessage = "You do not have the right to do that";
+        this.setState({
+            "loading": notLoading,
+            "activity": "read"
+        });
+
         if (!this.findAlert(titleText) && this.state.activity != "login") {
             this.addAlert(titleText, errorMessage);
         }
@@ -249,6 +274,11 @@ export default class Lab extends React.Component {
     handleFetchError(err) {
         if ("status" in err && err.status === 401) {
             this.handleUnauthorized();
+            return;
+        }
+
+        if ("status" in err && err.status === 403) {
+            this.handleForbidden();
             return;
         }
 
