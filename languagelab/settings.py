@@ -209,6 +209,12 @@ LOGGING = {
     }
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'languagelab.api.permissions.StaffCanWrite'
+    ]
+}
+
 
 JWT_EXPIRATION = environ.get('JWT_EXPIRATION', '1')
 JWT_EXPIRATION_UNITS = environ.get('JWT_EXPIRATION_UNITS', 'hours')
