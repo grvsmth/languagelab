@@ -28,7 +28,8 @@ from languagelab.api.views import(
     LessonViewSet,
     QueueItemViewSet,
     current_user,
-    all
+    all,
+    config
     )
 from languagelab.settings import API_VERSION, STATIC_ROOT, STATIC_URL
 
@@ -50,6 +51,7 @@ urlpatterns = [
         ),
     path('api/{}/all/'.format(API_VERSION), all),
     path('api/{}/currentUser/'.format(API_VERSION), current_user),
+    path('api/{}/config/'.format(API_VERSION), config),
     path('api/{}/token-auth/'.format(API_VERSION), obtain_jwt_token),
     path('api/{}/token-refresh/'.format(API_VERSION), refresh_jwt_token)
 ] + static(STATIC_URL, document_root=STATIC_ROOT)
