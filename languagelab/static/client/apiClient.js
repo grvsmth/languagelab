@@ -17,7 +17,7 @@ export default class LanguageLabClient {
     /** Define the class attributes */
     constructor() {
         this.handleToken;
-        this.expiredError = "Expired token!";
+        this.expiredError = "Login expired!";
 
         this.token = "";
         this.tokenLife = 0;
@@ -76,7 +76,7 @@ export default class LanguageLabClient {
      * or send a refresh request if we've passed the refresh threshold
      */
     checkToken() {
-        if (this.tokenLife < this.refreshThreshold) {
+        if (this.tokenLife <= this.refreshThreshold) {
             return;
         }
 
@@ -257,9 +257,7 @@ export default class LanguageLabClient {
             }
 
             res.json().then((resJson) => {
-                this.handleToken(
-                    {"type": "token-auth", "response": resJson}
-                );
+                this.handleToken(resJson);
             }, (err) => {
                 console.log(err);
                 throw new Error("Error reading token JSON!");
