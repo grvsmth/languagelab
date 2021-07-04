@@ -37,13 +37,7 @@ to add media server functionality if desired.
 In production, the Javascript client should be served using a separate virtual
 directory, or even a separate server.
 
-## Permissions
-
-By default, LanguageLab uses a custom "StaffCanWrite" permission, where users
-with `staff` access can write everything, and other users can only read items.
-If you would like to give all users write access, change the
-DEFAULT_PERMISSION_CLASSES entry in settings.py to
-`rest_framework.permissions.IsAuthenticated`.
+## [Permissions](permissions.md)
 
 ## Requirements
 
