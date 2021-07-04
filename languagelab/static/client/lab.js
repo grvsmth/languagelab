@@ -294,12 +294,11 @@ export default class Lab extends React.Component {
         }
 
         if ("message" in err) {
-            if (err.message === "Expired token!") {
+            if (err.message === this.apiClient.expiredError) {
                 this.handleUnauthorized(err.message);
                 return;
             }
 
-            console.log("err.message", err.message);
             this.addAlert("Fetch error", err.message);
             return;
         }
