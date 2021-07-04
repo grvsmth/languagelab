@@ -11,40 +11,54 @@ const config = {
             {
                 "menu": "Media",
                 "endpoint": "media",
-                "item": "Media item"
+                "item": "Media item",
+                "nonStaff": false
             },
             {
                 "menu": "Exercises",
                 "endpoint": "exercises",
-                "item": "exercise"
+                "item": "exercise",
+                "nonStaff": true
             },
             {
                 "endpoint": "lessons",
                 "menu": "Lessons",
-                "item": "lesson"
+                "item": "lesson",
+                "nonStaff": true
             },
             {
                 "endpoint": "languages",
                 "menu": "Languages",
-                "item": "language"
+                "item": "language",
+                "nonStaff": false
             },
             {
                 "endpoint": "users",
                 "menu": "Users",
                 "item": "user",
-                "hideNav": true,
+                "hideNav": true
             },
             {
                 "endpoint": "controls",
                 "menu": "Controls",
                 "item": "control",
-                "local": true
+                "local": true,
+                "nonStaff": false
             },
             {
                 "endpoint": "help",
                 "menu": "Help",
                 "item": "help",
-                "local": true
+                "local": true,
+                "nonStaff": true
+            },
+            {
+                "endpoint": "config",
+                "hideNav": true
+            },
+            {
+                "endpoint": "currentUser",
+                "hideNav": true
             }
         ]
     },

@@ -74,7 +74,9 @@ export default class Lab extends React.Component {
         this.state = {
             "activity": "login",
             "alerts": [],
+            "config": {},
             "clickedAction": "",
+            "config": {},
             "controls": controls,
             "currentUser": storageData.currentUser,
             "exercises": [],
@@ -163,8 +165,7 @@ export default class Lab extends React.Component {
 
         const thingsToLoad = config.api.models
             .filter(model => !model.local)
-            .map(model => model.endpoint)
-            .concat(["currentUser"]);
+            .map(model => model.endpoint);
 
         thingsToLoad.forEach((endpoint) => {
             loading[endpoint] = true;
@@ -866,6 +867,7 @@ export default class Lab extends React.Component {
             CardList,
             {
                 "checkClick": this.checkClick,
+                "config": this.state.config,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
                 "doFunction": {
@@ -921,6 +923,7 @@ export default class Lab extends React.Component {
         return React.createElement(
             Navbar,
             {
+                "config": this.state.config,
                 "currentUser": this.state.currentUser,
                 "logout": this.logout.bind(this),
                 "models": config.api.models,

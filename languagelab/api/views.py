@@ -36,6 +36,8 @@ from languagelab.api.serializers import (
     UserSerializerWithToken
     )
 
+from languagelab.settings import REST_FRAMEWORK
+
 LOG = getLogger()
 basicConfig(level="DEBUG")
 
@@ -93,6 +95,19 @@ def all(request):
     ]
 
     return Response(map(load_data, item_types))
+
+@api_view(['GET'])
+def config(request):
+    """
+    Return configuration details
+    """
+    staff_can_write = 'languagelab.api.permissions.StaffCanWrite' in REST_FRAMEWORK['DEFAULT_PERMISSION_CLASSES']
+
+    config = {
+        "staffCanWrite": staff_can_write
+    }
+
+    return Response(config)
 
 
 class UserViewSet(ModelViewSet):

@@ -124,6 +124,11 @@ export default class LessonCard extends React.Component {
         if (this.props.activity === "add") {
             return null;
         }
+
+        if (!this.props.canWrite) {
+            return null;
+        }
+
         return React.createElement(
             "div",
             {},
@@ -185,6 +190,10 @@ export default class LessonCard extends React.Component {
      * @return {object}
      */
     editQueueButton(disabled=false) {
+        if (!this.props.canWrite) {
+            return null;
+        }
+
         return React.createElement(
             "button",
             {
@@ -210,7 +219,7 @@ export default class LessonCard extends React.Component {
 
         return React.createElement(
             "div",
-            {},
+            {"className": "pt-1"},
             util.howManyExercises(this.props.lesson.queueItems),
             this.editQueueButton(disabled),
             this.doQueueButton(disabled)

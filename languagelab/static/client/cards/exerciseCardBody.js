@@ -159,6 +159,10 @@ export default class ExerciseCardBody extends React.Component {
             return null;
         }
 
+        if (!this.props.canWrite) {
+            return null;
+        }
+
         return React.createElement(
             "div",
             {},

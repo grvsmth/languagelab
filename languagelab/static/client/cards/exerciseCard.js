@@ -39,6 +39,7 @@ export default class ExerciseCard extends React.Component {
             ExerciseCardBody,
             {
                 "activity": this.props.activity,
+                "canWrite": this.props.canWrite,
                 "checkClick": this.props.checkClick,
                 "deleteClick": this.props.deleteClick,
                 "exercise": this.props.exercise,
@@ -62,6 +63,7 @@ export default class ExerciseCard extends React.Component {
         return React.createElement(
             QueueFooter,
             {
+                "canWrite": this.props.canWrite,
                 "exerciseId": this.props.exercise.id,
                 "exerciseLessons": this.props.exercise.queueItems,
                 "lessons": this.props.lessons,
