@@ -114,10 +114,10 @@ export default class Navbar extends React.Component {
             return null;
         }
 
-        if (!model.nonStaff
-            && this.props.config.staffCanWrite
-            && !this.props.currentUser.is_staff) {
-            return null;
+        if (!model.nonStaff && this.props.config.staffCanWrite) {
+            if (!this.props.currentUser.is_staff) {
+                return null;
+            }
         }
 
         const activeClass = this.props.selectedType === model.endpoint

@@ -867,6 +867,7 @@ export default class Lab extends React.Component {
             CardList,
             {
                 "checkClick": this.checkClick,
+                "config": this.state.config,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
                 "doFunction": {

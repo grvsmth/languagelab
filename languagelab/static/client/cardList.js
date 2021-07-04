@@ -457,8 +457,15 @@ export default class CardList extends React.Component {
             cardComponent = LessonFormCard;
         }
 
+        let canWrite = true;
+        if (this.props.config.staffCanWrite
+            && !this.props.state.currentUser.is_staff) {
+                canWrite = false;
+        }
+
         const options = {
             "activity": this.props.state.activity,
+            "canWrite": canWrite,
             "deleteClick": this.props.deleteClick,
             "exercisesLoading": this.props.state.loading.exercises,
             "itemUser": this.itemUser(lesson),
@@ -528,8 +535,15 @@ export default class CardList extends React.Component {
             }
         }
 
+        let canWrite = true;
+        if (this.props.config.staffCanWrite
+            && !this.props.state.currentUser.is_staff) {
+                canWrite = false;
+        }
+
         var options = {
             "activity": this.props.state.activity,
+            "canWrite": canWrite,
             "checkClick": this.props.checkClick,
             "deleteClick": this.props.deleteClick,
             "exercise": exercise,
@@ -593,6 +607,11 @@ export default class CardList extends React.Component {
     addCard(addable, cardId="form") {
         if (!addable) {
             return null;
+        }
+
+        if (this.props.state.config.staffCanWrite
+            && !this.props.state.currentUser.is_staff) {
+                return null;
         }
 
         const selectedState = this.props.state.selected;

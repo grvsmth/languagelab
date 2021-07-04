@@ -207,6 +207,10 @@ export default class QueueFooter extends React.Component {
      * @return {object}
      */
     addFooter() {
+        if (!this.props.canWrite) {
+            return null;
+        }
+
         if (!this.props.lessons || !this.props.lessons.length) {
             return this.lessonMessage();
         }
