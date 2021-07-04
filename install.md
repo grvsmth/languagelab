@@ -20,7 +20,9 @@ with minor modifications.
   your username in the database name!
 * Copy `languagelab/static/client/environment_empty.js` to
   `languagelab/static/client/environment.js`
-* Edit `languagelab/static/client/environment.js` and fill in the API hostname
+* Edit `languagelab/static/client/environment.js` and fill in the API URL.  The
+    default is your hostname followed by "api" and the version number, e.g.
+    `https://languagelab.example.com/api/0.2`.
 * Copy the static files including admin site styling:
   `python manage.py collectstatic`
 * Run `python manage.py makemigrations languagelab`

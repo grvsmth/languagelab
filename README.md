@@ -28,22 +28,19 @@ THIS SOFTWARE.
 ## Hosting media
 
 LanguageLab is not a media server.  It presents exercises to the user based on
-URLs pointing to media files hosted elsewhere.  For copyright purposes, these
-media files can be protected with a .htaccess password.  It is relatively easy
-to add media server functionality if desired.
+URLs pointing to media files hosted elsewhere.  This separate media server will
+need to support cross-origin reads, so Google Drive and YouTube will not work,
+but an Amazon S3 bucket will.
+
+For copyright purposes, these media files can be protected with a .htaccess
+password.  It is relatively easy to add media server functionality if desired.
 
 ## Serving the client in production
 
 In production, the Javascript client should be served using a separate virtual
 directory, or even a separate server.
 
-## Permissions
-
-By default, LanguageLab uses a custom "StaffCanWrite" permission, where users
-with `staff` access can write everything, and other users can only read items.
-If you would like to give all users write access, change the
-DEFAULT_PERMISSION_CLASSES entry in settings.py to
-`rest_framework.permissions.IsAuthenticated`.
+## [Permissions](permissions.md)
 
 ## Requirements
 
