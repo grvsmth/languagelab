@@ -163,6 +163,13 @@ export default class Lab extends React.Component {
     fetchAll() {
         const loading = {};
 
+        try {
+            this.apiClient.checkToken();
+        } catch (err) {
+            this.handleFetchError(err);
+            return;
+        }
+
         const thingsToLoad = config.api.models
             .filter(model => !model.local)
             .map(model => model.endpoint);
@@ -233,16 +240,13 @@ export default class Lab extends React.Component {
      * send an alert if we haven't already
      *
      */
-    handleUnauthorized() {
-        const titleText = "Unauthorized on server";
+    handleUnauthorized(titleText="Unauthorized on server") {
         const errorMessage = "Please try logging in again";
-        this.setState({
-            "activity": "login",
-            "loading": notLoading
-        });
         if (!this.findAlert(titleText) && this.state.activity != "login") {
             this.addAlert(titleText, errorMessage);
         }
+
+        this.logout();
     }
 
     /**
@@ -349,8 +353,6 @@ export default class Lab extends React.Component {
      * If the token is well-formed, save it to state, along with the received
      * time and the expected token life
      *
-     * TODO We probably don't need the extra layer of "response"
-     *
      * @param {object} res - the server response including the token
      */
     handleToken(res) {
@@ -366,7 +368,11 @@ export default class Lab extends React.Component {
         this.apiClient.setToken(
             res.token, loadTime.format(), res.expiresIn
         );
-        this.fetchAll();
+
+        if (this.state.activity == "login") {
+            this.setActivity("read");
+            this.fetchAll();
+        }
     }
 
     /**
