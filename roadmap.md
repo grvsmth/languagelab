@@ -6,6 +6,7 @@
 * Import JSON
 * Filter by media, tag, title substring, availability, duration
 * Help tooltips
+* More robust form validation
 * Prune the state variables passed to cards
 * Full unit test coverage
 

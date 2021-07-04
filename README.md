@@ -28,9 +28,12 @@ THIS SOFTWARE.
 ## Hosting media
 
 LanguageLab is not a media server.  It presents exercises to the user based on
-URLs pointing to media files hosted elsewhere.  For copyright purposes, these
-media files can be protected with a .htaccess password.  It is relatively easy
-to add media server functionality if desired.
+URLs pointing to media files hosted elsewhere.  This separate media server will
+need to support cross-origin reads, so Google Drive and YouTube will not work,
+but an Amazon S3 bucket will.
+
+For copyright purposes, these media files can be protected with a .htaccess
+password.  It is relatively easy to add media server functionality if desired.
 
 ## Serving the client in production
 
