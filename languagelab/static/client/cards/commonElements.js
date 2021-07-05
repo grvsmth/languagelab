@@ -106,7 +106,7 @@ const exports = {
             ` (${howManyExercises}, level ${lesson.level})`
         );
     },
-    "textInput": function(fieldName, inputId, onChange, defaultValue) {
+    "textInput": function(fieldName, inputId, onChange, defaultValue, validationCheck) {
         /**
          * Text input element with an optional change handler
          *
@@ -114,6 +114,7 @@ const exports = {
          * @param {string} inputId - the input ID, which can be "initial" or "final"
          * @param {func} onChange - the input change handler
          * @param {string} defaultValue - the default value
+         * @param {func} validationCheck - a function to run if we want validation
          *
          * @return {object}
          */
@@ -124,8 +125,14 @@ const exports = {
             "name": fieldName,
             "defaultValue": defaultValue
         };
+
         if (onChange) {
             options.onChange = onChange;
+        }
+
+        if (validationCheck) {
+            options.onBlur = validationCheck;
+            options.required = true;
         }
 
         return React.createElement(
@@ -248,16 +255,17 @@ exports.selectDiv = function(fieldName, optionList, parentId, defaultValue) {
  * @param {string} parentId
  * @param {func} onChange - the input change handler
  * @param {string} defaultValue - the default value
+ * @param {func} validationCheck - a function to run if we want validation
  *
  * @return {object}
  */
-exports.textInputDiv = function(fieldName, parentId, onChange=null, defaultValue=null) {
+exports.textInputDiv = function(fieldName, parentId, onChange=null, defaultValue=null, validationCheck=null) {
     const inputId = [fieldName, parentId].join("_");
     return React.createElement(
         "div",
         {"className": "col-sm"},
         exports.itemLabel(fieldName, inputId),
-        exports.textInput(fieldName, inputId, onChange, defaultValue)
+        exports.textInput(fieldName, inputId, onChange, defaultValue, validationCheck)
     );
 };
 
