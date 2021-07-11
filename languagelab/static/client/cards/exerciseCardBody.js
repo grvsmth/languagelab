@@ -225,6 +225,7 @@ export default class ExerciseCardBody extends React.Component {
 
 ExerciseCardBody.propTypes = {
     "activity": PropTypes.string.isRequired,
+    "canWrite": PropTypes.bool.isRequired,
     "deleteClick": PropTypes.func.isRequired,
     "exercise": PropTypes.object.isRequired,
     "itemUser": PropTypes.object.isRequired,

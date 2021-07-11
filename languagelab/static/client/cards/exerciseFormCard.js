@@ -50,6 +50,15 @@ export default class ExerciseFormCard extends React.Component {
     }
 
     /**
+     * Call the .reportValidity() method on the form
+     *
+     */
+    reportValidity() {
+        document.querySelector("#form_" + this.props.exercise.id)
+            .reportValidity();
+    }
+
+    /**
      * Text input div, pre-populated if we're editing.
      *
      * @param {string} fieldName - the name of the form field
@@ -58,7 +67,7 @@ export default class ExerciseFormCard extends React.Component {
      *
      * @return {object}
      */
-    textInputDiv(fieldName, onChange=null, defaultVal="") {
+    textInputDiv(fieldName, onChange=null, defaultVal="", validationCheck=null) {
         var defaultValue = defaultVal;
 
         if (Object.prototype.hasOwnProperty.call(
@@ -73,7 +82,8 @@ export default class ExerciseFormCard extends React.Component {
             fieldName,
             this.props.exercise.id,
             onChange,
-            defaultValue
+            defaultValue,
+            validationCheck
         )
     }
 
@@ -86,7 +96,7 @@ export default class ExerciseFormCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "form-row"},
-            this.textInputDiv("name"),
+            this.textInputDiv("name", null, "", this.reportValidity.bind(this)),
             this.textInputDiv("description")
         );
     }

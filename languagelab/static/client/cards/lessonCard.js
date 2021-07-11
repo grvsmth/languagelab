@@ -260,6 +260,7 @@ export default class LessonCard extends React.Component {
 
 LessonCard.propTypes = {
     "activity": PropTypes.string.isRequired,
+    "canWrite": PropTypes.bool.isRequired,
     "checkClick": PropTypes.func.isRequired,
     "deleteClick": PropTypes.func.isRequired,
     "exercisesLoading": PropTypes.bool.isRequired,

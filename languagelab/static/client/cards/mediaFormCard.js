@@ -106,6 +106,15 @@ export default class MediaFormCard extends React.Component {
     }
 
     /**
+     * Call the .reportValidity() method on the form
+     *
+     */
+    reportValidity() {
+        document.querySelector("#form_" + this.props.mediaItem.id)
+            .reportValidity();
+    }
+
+    /**
      * Text input div, pre-populated if we're editing.
      *
      * @param {string} fieldName - the name of the form field
@@ -114,7 +123,7 @@ export default class MediaFormCard extends React.Component {
      *
      * @return {object}
      */
-    textInputDiv(fieldName, onChange=null, defaultVal="") {
+    textInputDiv(fieldName, onChange=null, defaultVal="", validationCheck=null) {
         var defaultValue = defaultVal;
 
         if (Object.prototype.hasOwnProperty.call(
@@ -129,7 +138,8 @@ export default class MediaFormCard extends React.Component {
             fieldName,
             this.props.mediaItem.id,
             onChange,
-            defaultValue
+            defaultValue,
+            validationCheck
         )
     }
 
@@ -158,7 +168,7 @@ export default class MediaFormCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "form-row mt-3"},
-            this.textInputDiv("name"),
+            this.textInputDiv("name", null, "", this.reportValidity.bind(this)),
             this.textInputDiv("creator"),
             this.textInputDiv("rights")
         );
@@ -174,7 +184,12 @@ export default class MediaFormCard extends React.Component {
         return React.createElement(
             "div",
             {"className": "form-row mt-3"},
-            this.textInputDiv("mediaUrl", this.inputChange.bind(this)),
+            this.textInputDiv(
+                "mediaUrl",
+                this.inputChange.bind(this),
+                "",
+                this.reportValidity.bind(this)
+            ),
             this.textInputDiv("duration", null, "00:00:00"),
             this.audioElement()
         );

@@ -269,6 +269,7 @@ export default class Navbar extends React.Component {
 }
 
 Navbar.propTypes = {
+    "config": PropTypes.object.isRequired,
     "currentUser": PropTypes.object.isRequired,
     "logout": PropTypes.func.isRequired,
     "models": PropTypes.object.isRequired,
