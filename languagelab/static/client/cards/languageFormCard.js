@@ -48,6 +48,15 @@ export default class LanguageFormCard extends React.Component {
     }
 
     /**
+     * Call the .reportValidity() method on the form
+     *
+     */
+    reportValidity() {
+        document.querySelector("#form_" + this.props.language.id)
+            .reportValidity();
+    }
+
+    /**
      * Text input div, pre-populated if we're editing.
      *
      * @param {string} fieldName - the name of the form field
@@ -56,7 +65,7 @@ export default class LanguageFormCard extends React.Component {
      *
      * @return {object}
      */
-    textInputDiv(fieldName, onChange=null, defaultVal="") {
+    textInputDiv(fieldName, onChange=null, defaultVal="", validationCheck=null) {
         var defaultValue = defaultVal;
 
         if (Object.prototype.hasOwnProperty.call(
@@ -71,23 +80,9 @@ export default class LanguageFormCard extends React.Component {
             fieldName,
             this.props.language.id,
             onChange,
-            defaultValue
+            defaultValue,
+            validationCheck
         )
-    }
-
-    /**
-     * A div with textInputDivs for name, creator, rights
-     *
-     * @return {object}
-     */
-    nameRow() {
-        return React.createElement(
-            "div",
-            {"className": "form-row mt-3"},
-            this.textInputDiv("name"),
-            this.textInputDiv("creator"),
-            this.textInputDiv("rights")
-        );
     }
 
     /**
@@ -163,8 +158,8 @@ export default class LanguageFormCard extends React.Component {
                 "className": "card-body",
                 "id": "form_" + this.props.language.id
             },
-            this.textInputDiv("name"),
-            this.textInputDiv("code"),
+            this.textInputDiv("name", null, "", this.reportValidity.bind(this)),
+            this.textInputDiv("code", null, "", this.reportValidity.bind(this)),
             this.submitRow()
         );
     }

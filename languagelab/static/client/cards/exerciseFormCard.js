@@ -49,6 +49,10 @@ export default class ExerciseFormCard extends React.Component {
 
     }
 
+    /**
+     * Call the .reportValidity() method on the form
+     *
+     */
     reportValidity() {
         document.querySelector("#form_" + this.props.exercise.id)
             .reportValidity();
