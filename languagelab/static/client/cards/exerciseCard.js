@@ -99,6 +99,7 @@ export default class ExerciseCard extends React.Component {
 
 ExerciseCard.propTypes = {
     "activity": PropTypes.string.isRequired,
+    "canWrite": PropTypes.bool.isRequired,
     "checkClick": PropTypes.func.isRequired,
     "deleteClick": PropTypes.func.isRequired,
     "exercise": PropTypes.object.isRequired,

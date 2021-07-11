@@ -708,6 +708,7 @@ export default class CardList extends React.Component {
 
 CardList.propTypes = {
     "checkClick": PropTypes.func.isRequired,
+    "config": PropTypes.object.isRequired,
     "deleteClick": PropTypes.func.isRequired,
     "doButton": PropTypes.object.isRequired,
     "doFunction": PropTypes.object.isRequired,

@@ -74,7 +74,6 @@ export default class Lab extends React.Component {
         this.state = {
             "activity": "login",
             "alerts": [],
-            "config": {},
             "clickedAction": "",
             "config": {},
             "controls": controls,

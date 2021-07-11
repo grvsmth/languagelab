@@ -261,6 +261,7 @@ export default class QueueFooter extends React.Component {
 }
 
 QueueFooter.propTypes = {
+    "canWrite": PropTypes.bool.isRequired,
     "exerciseClick": PropTypes.func.isRequired,
     "exerciseId": PropTypes.string.isRequired,
     "exerciseLessons": PropTypes.array.isRequired,

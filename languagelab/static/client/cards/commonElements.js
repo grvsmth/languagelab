@@ -10,7 +10,6 @@
     global React
 
 */
-import config from "./config.js";
 import util from "./util.js";
 
 const exports = {
