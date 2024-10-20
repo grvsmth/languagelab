@@ -109,7 +109,6 @@ def config(request):
 
     return Response(config)
 
-
 class UserViewSet(ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
