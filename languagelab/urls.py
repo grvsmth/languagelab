@@ -16,6 +16,8 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import TemplateView
+
 from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
@@ -54,4 +56,6 @@ urlpatterns = [
     path('api/{}/config/'.format(API_VERSION), config),
     path('api/{}/token-auth/'.format(API_VERSION), obtain_jwt_token),
     path('api/{}/token-refresh/'.format(API_VERSION), refresh_jwt_token)
-] + static(STATIC_URL, document_root=STATIC_ROOT)
+] + static(STATIC_URL, document_root=STATIC_ROOT) + [
+    path('', TemplateView.as_view(template_name='index.html')),
+]
