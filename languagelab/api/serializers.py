@@ -15,9 +15,9 @@ from rest_framework.serializers import (
     SerializerMethodField
     )
 
-from rest_framework_jwt.settings import api_settings
+from rest_framework_simplejwt.tokens import RefreshToken
 
-from taggit_serializer.serializers import (
+from taggit.serializers import (
     TagListSerializerField,
     TaggitSerializer
     )
@@ -54,9 +54,12 @@ class UserSerializerWithToken(ModelSerializer):
         Retrieve the token associated with the object
 
         """
-        payload = api_settings.JWT_PAYLOAD_HANDLER(obj)
-        token = api_settings.JWT_ENCODE_HANDLER(payload)
-        return token
+        refresh = RefreshToken.for_user(obj)
+
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
 
     def create(self, validated_data):
         """

@@ -41,7 +41,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 DEBUG = True
 
 ALLOWED_LIST = loads(environ.get('DJANGO_ALLOWED_HOSTS'))
-ALLOWED_HOSTS = ['localhost', environ.get('DJANGO_HOST')] + ALLOWED_LIST
+ALLOWED_HOSTS = ['https://' + environ.get('DJANGO_HOST')] + ALLOWED_LIST
 
 CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 
@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'taggit',
-    'taggit_serializer',
     'languagelab',
 ]
 
@@ -174,7 +173,7 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication'
     ],

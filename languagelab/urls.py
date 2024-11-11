@@ -19,7 +19,10 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from rest_framework import routers
-from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 from languagelab.api.views import(
     UserViewSet,
@@ -54,8 +57,8 @@ urlpatterns = [
     path('api/{}/all/'.format(API_VERSION), all),
     path('api/{}/currentUser/'.format(API_VERSION), current_user),
     path('api/{}/config/'.format(API_VERSION), config),
-    path('api/{}/token-auth/'.format(API_VERSION), obtain_jwt_token),
-    path('api/{}/token-refresh/'.format(API_VERSION), refresh_jwt_token)
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ] + static(STATIC_URL, document_root=STATIC_ROOT) + [
     path('', TemplateView.as_view(template_name='index.html')),
 ]
