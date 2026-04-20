@@ -17,7 +17,7 @@ from rest_framework.serializers import (
 
 from rest_framework_jwt.settings import api_settings
 
-from taggit_serializer.serializers import (
+from taggit.serializers import (
     TagListSerializerField,
     TaggitSerializer
     )
