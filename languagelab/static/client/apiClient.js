@@ -9,7 +9,7 @@
     global moment
 
 */
-const DEFAULT_REFRESH_THRESHOLD = 60;
+const DEFAULT_REFRESH_THRESHOLD = 300;
 
 /** Client class for the Language Lab API */
 export default class LanguageLabClient {
@@ -31,17 +31,17 @@ export default class LanguageLabClient {
      *
      * @param {string} token - the token string
      * @param {string} tokenTime - the time when the token was issued
-     * @param {string} tokenLife - the total life of the token in seconds
      */
-    setToken(token, tokenTime, tokenLife=this.tokenLife) {
+    setToken(token, tokenTime) {
         this.token = token;
         this.tokenTime = new moment(tokenTime);
-        this.tokenLife = tokenLife;
     }
 
     /** Indicate whether we have a token string */
     hasToken() {
-        return this.token.length > 0;
+        return (
+            typeof this.token === "object" && "access" in this.token
+            && this.token.access.length > 0);
     }
 
     /**
@@ -76,16 +76,9 @@ export default class LanguageLabClient {
      * or send a refresh request if we've passed the refresh threshold
      */
     checkToken() {
-        if (this.tokenLife <= this.refreshThreshold) {
-            return;
-        }
-
         const difference = new moment().diff(this.tokenTime, "seconds");
-        if (this.tokenLife <= difference) {
-            throw new Error(this.expiredError);
-        }
 
-        if (this.tokenLife - difference < this.refreshThreshold) {
+        if (difference >= this.refreshThreshold) {
             this.refreshToken();
         }
     }
@@ -121,15 +114,16 @@ export default class LanguageLabClient {
     fetchData(url, options={}, results=[]) {
         return new Promise((resolve, reject) => {
             if (!this.token) {
-                reject("No token in API client object!");
+                reject("No token in API client object");
             }
 
             if (!Object.prototype.hasOwnProperty.call(options, "headers")) {
                 options.headers = {};
             }
-            options.headers.Authorization = "JWT " + this.token;
 
             this.checkToken();
+            options.headers.Authorization = "Bearer " + this.token.access;
+
             fetch(url, options).then((res) => {
                 if (res.status === 204) {
                     resolve(res);
@@ -237,16 +231,20 @@ export default class LanguageLabClient {
         });
     }
 
-    /** Request a new refresh token */
+    /** Request a new token */
     refreshToken() {
-        const endpoint = "token-refresh";
+        if (typeof this.token !== "object" || !("refresh" in this.token)) {
+            throw new Error("No refresh token");
+        }
+
+        const endpoint = "token/refresh";
         const apiUrl = [this.baseUrl, endpoint, ""].join("/");
         const options = {
             "method": "POST",
             "headers": {
-                'Content-Type': 'application/json'
-            },
-            "body": JSON.stringify({"token": this.token})
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + this.token.refresh
+            }
         };
 
         fetch(apiUrl, options).then((res) => {
@@ -260,7 +258,7 @@ export default class LanguageLabClient {
                 this.handleToken(resJson);
             }, (err) => {
                 console.log(err);
-                throw new Error("Error reading token JSON!");
+                throw new Error("Error reading token JSON");
             });
         });
     }
@@ -271,7 +269,7 @@ export default class LanguageLabClient {
      * @param {object} data - the login data
      */
     login(data) {
-        const apiUrl = [this.baseUrl, "token-auth", ""].join("/");
+        const apiUrl = [this.baseUrl, "token", ""].join("/");
         const options = {
             "method": "POST",
             "headers": {

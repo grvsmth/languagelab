@@ -65,10 +65,14 @@ export default class Lab extends React.Component {
         ) {
             this.apiClient.setRefreshThreshold(config.api.refreshThreshold)
         }
-        if (storageData.token) {
-            this.apiClient.setToken(
-                storageData.token, storageData.tokenTime, storageData.tokenLife
-            );
+
+        if ("accessToken" in storageData && storageData.accessToken) {
+            const token = {
+                "access": storageData.accessToken,
+                "refresh": storageData.refreshToken
+            };
+
+            this.apiClient.setToken(token, storageData.tokenTime);
         }
 
         this.state = {
@@ -355,17 +359,13 @@ export default class Lab extends React.Component {
      */
     handleToken(res) {
         const loadTime = new moment();
-        if (!Object.prototype.hasOwnProperty.call(res, "token")) {
-            throw new Error("No token in response!");
+        if (!Object.prototype.hasOwnProperty.call(res, "access")) {
+            throw new Error("No token in response");
         }
 
-        storageClient.setToken(
-            res.token, loadTime.format(), res.expiresIn
-        );
+        storageClient.setToken(res, loadTime.format());
 
-        this.apiClient.setToken(
-            res.token, loadTime.format(), res.expiresIn
-        );
+        this.apiClient.setToken(res, loadTime.format());
 
         if (this.state.activity == "login") {
             this.setActivity("read");
@@ -652,7 +652,6 @@ export default class Lab extends React.Component {
             if (itemType === "lessons") {
                 item.level = parseInt(item.level);
             }
-            console.log(`saveItem(${itemType})`, item);
             this.apiClient.post(environment.api.baseUrl, itemType, item).then(
                 (res) => {
                     this.updateStateItem(res.response, itemType, "read", true);

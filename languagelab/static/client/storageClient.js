@@ -6,8 +6,8 @@
 
 const launchFields = [
     "currentUser",
-    "token",
-    "tokenLife",
+    "accessToken",
+    "refreshToken",
     "tokenTime"
 ];
 
@@ -33,17 +33,16 @@ const exports = {
          */
         localStorage.setItem(fieldName, itemValue);
     },
-    "setToken": function(token, tokenTime, tokenLife=this.tokenLife) {
+    "setToken": function(token, tokenTime) {
         /**
          * Set the token info in storage
          *
-         * @param {string} token
+         * @param {object} token
          * @param {string} tokenTime - the time when the token was refreshed
-         * @param {string} tokenLife
          */
-        localStorage.setItem("token", token);
+        localStorage.setItem("accessToken", token.access);
+        localStorage.setItem("refreshToken", token.refresh);
         localStorage.setItem("tokenTime", tokenTime);
-        localStorage.setItem("tokenLife", tokenLife);
     }
 };
 

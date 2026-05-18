@@ -57,8 +57,16 @@ urlpatterns = [
     path('api/{}/all/'.format(API_VERSION), all),
     path('api/{}/currentUser/'.format(API_VERSION), current_user),
     path('api/{}/config/'.format(API_VERSION), config),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path(
+        'api/{}/token/'.format(API_VERSION),
+        TokenObtainPairView.as_view(),
+        name='token_obtain_pair'
+    ),
+    path(
+        'api/{}/token/refresh/'.format(API_VERSION),
+        TokenRefreshView.as_view(),
+        name='token_refresh'
+    ),
 ] + static(STATIC_URL, document_root=STATIC_ROOT) + [
     path('', TemplateView.as_view(template_name='index.html')),
 ]
