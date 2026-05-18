@@ -23,7 +23,6 @@ import django
 django.utils.encoding.smart_text = smart_str
 django.utils.translation.ugettext = gettext
 
-
 from .django_environ import set_environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
