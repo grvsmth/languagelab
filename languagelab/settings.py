@@ -15,6 +15,14 @@ from json import loads
 from logging import basicConfig, getLogger
 from os import environ, path
 
+from django.utils.translation import gettext
+from django.utils.encoding import smart_str
+
+import django
+
+django.utils.encoding.smart_text = smart_str
+django.utils.translation.ugettext = gettext
+
 from .django_environ import set_environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
