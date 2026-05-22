@@ -280,6 +280,8 @@ export default class Lab extends React.Component {
      * @param {object} err - The error object
      */
     handleFetchError(err) {
+        console.log("handleFetchError", err);
+
         if ("status" in err && err.status === 401) {
             this.handleUnauthorized();
             return;
@@ -293,6 +295,10 @@ export default class Lab extends React.Component {
         if ("statusText" in err) {
             console.log("err.statusText", err.statusText);
             this.addAlert("Fetch error", err.statusText);
+
+            if (err.statusText === "Token has expired") {
+                this.logout();
+            }
             return;
         }
 
@@ -379,7 +385,7 @@ export default class Lab extends React.Component {
      * @param {object} err - the error returned by the token method
      */
     handleTokenError(err) {
-        console.log(err);
+        console.log("handleTokenEerror", err);
 
         let alertText = "Please see the Javascript console";
 
@@ -392,6 +398,7 @@ export default class Lab extends React.Component {
         }
 
         this.addAlert("Token error", alertText);
+        this.logout();
     }
 
     /**
@@ -437,14 +444,13 @@ export default class Lab extends React.Component {
      *
      */
     logout() {
-        if (this.state.currentUser) {
-            storageClient.clearAll();
-            this.setState({
-                "activity": "login",
-                "currentUser": null
-            });
-            return;
-        }
+        storageClient.clearAll();
+        this.setState({
+            "activity": "login",
+            "currentUser": null,
+            "loading": false
+        });
+        return;
     }
 
     /**

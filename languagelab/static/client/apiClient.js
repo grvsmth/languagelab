@@ -10,6 +10,7 @@
 
 */
 const DEFAULT_REFRESH_THRESHOLD = 300;
+const DEFAULT_REFRESH_LIFE = 86400;
 
 /** Client class for the Language Lab API */
 export default class LanguageLabClient {
@@ -24,6 +25,7 @@ export default class LanguageLabClient {
         this.tokenTime = null;
         this.baseUrl = "";
         this.refreshThreshold = DEFAULT_REFRESH_THRESHOLD;
+        this.refreshLife = DEFAULT_REFRESH_LIFE;
     }
 
     /**
@@ -77,6 +79,10 @@ export default class LanguageLabClient {
      */
     checkToken() {
         const difference = new moment().diff(this.tokenTime, "seconds");
+
+        if (difference >= this.refreshLife) {
+            throw new Error("Token has expired");
+        }
 
         if (difference >= this.refreshThreshold) {
             this.refreshToken();
@@ -242,13 +248,14 @@ export default class LanguageLabClient {
         const options = {
             "method": "POST",
             "headers": {
-                'Content-Type': 'application/json',
-                'Authorization': "Bearer " + this.token.refresh
-            }
+                'Content-Type': 'application/json'
+            },
+            "body": JSON.stringify({"refresh": this.token.refresh})
         };
 
         fetch(apiUrl, options).then((res) => {
             if (res.status < 200 || res.status > 299) {
+                console.log(res);
                 throw new Error(
                     "Error refreshing token: " + res.statusText
                 );
