@@ -51,7 +51,7 @@ DEBUG = True
 ALLOWED_LIST = loads(environ.get('DJANGO_ALLOWED_HOSTS'))
 ALLOWED_HOSTS = [environ.get('DJANGO_HOST')] + ALLOWED_LIST
 
-CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+CSRF_TRUSTED_ORIGINS = ['https://' + ALLOWED_HOSTS[0]]
 
 # Application definition
 

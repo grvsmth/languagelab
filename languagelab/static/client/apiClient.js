@@ -78,13 +78,23 @@ export default class LanguageLabClient {
      * or send a refresh request if we've passed the refresh threshold
      */
     checkToken() {
+        if (
+            !this.token
+            || typeof this.token !== "object"
+            || !("access" in this.token)
+        ) {
+            console.log("this.token", this.token);
+            throw new Error("No access token in API client object");
+        }
+
         const difference = new moment().diff(this.tokenTime, "seconds");
 
-        if (difference >= this.refreshLife) {
+        console.log("checkToken: refreshed " + difference + " seconds ago");
+        if (difference >= this.refreshThreshold) {
             throw new Error("Token has expired");
         }
 
-        if (difference >= this.refreshThreshold) {
+        if (difference >= this.refreshLife) {
             this.refreshToken();
         }
     }
@@ -117,19 +127,12 @@ export default class LanguageLabClient {
      * @param {object} options - options to pass to the fetch API
      * @param {array} results - array to append a new page of results to
      */
-    fetchData(url, options={}, results=[]) {
+    fetchData(url, options={"headers": {}}, results=[]) {
         return new Promise((resolve, reject) => {
-            if (!this.token) {
-                reject("No token in API client object");
-            }
-
-            if (!Object.prototype.hasOwnProperty.call(options, "headers")) {
-                options.headers = {};
-            }
-
             this.checkToken();
             options.headers.Authorization = "Bearer " + this.token.access;
 
+            console.log("fetchData ", options);
             fetch(url, options).then((res) => {
                 if (res.status === 204) {
                     resolve(res);
@@ -286,8 +289,10 @@ export default class LanguageLabClient {
         };
 
         return new Promise((resolve, reject) => {
+            console.log("login", options);
             fetch(apiUrl, options).then((res) => {
                 if (res.status < 200 || res.status > 299) {
+                    console.log("Error logging in: ", res);
                     reject(res);
                     return;
                 }
