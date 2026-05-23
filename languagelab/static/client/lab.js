@@ -166,12 +166,7 @@ export default class Lab extends React.Component {
     fetchAll() {
         const loading = {};
 
-        try {
-            this.apiClient.checkToken();
-        } catch (err) {
-            this.handleFetchError(err);
-            return;
-        }
+        this.apiClient.checkToken();
 
         const thingsToLoad = config.api.models
             .filter(model => !model.local)
@@ -179,7 +174,11 @@ export default class Lab extends React.Component {
 
         thingsToLoad.forEach((endpoint) => {
             loading[endpoint] = true;
-            this.fetchData(endpoint);
+            try {
+                this.fetchData(endpoint);
+            } catch (err) {
+                this.handleFetchError(err);
+            }
         });
         this.setState({
             "activity": "read",

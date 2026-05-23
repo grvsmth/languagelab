@@ -78,25 +78,33 @@ export default class LanguageLabClient {
      * or send a refresh request if we've passed the refresh threshold
      */
     checkToken() {
-        if (
-            !this.token
-            || typeof this.token !== "object"
-            || !("access" in this.token)
-        ) {
-            console.log("this.token", this.token);
-            throw new Error("No access token in API client object");
-        }
+        return new Promise(async (resolve, reject) => {
+            if (
+                !this.token
+                || typeof this.token !== "object"
+                || !("access" in this.token)
+            ) {
+                console.log("this.token", this.token);
+                reject("No access token in API client object");
+            }
 
-        const difference = new moment().diff(this.tokenTime, "seconds");
+            const difference = new moment().diff(this.tokenTime, "seconds");
 
-        console.log("checkToken: refreshed " + difference + " seconds ago");
-        if (difference >= this.refreshLife) {
-            throw new Error("Token has expired");
-        }
+            console.log("checkToken: refreshed " + difference + " seconds ago");
+            if (difference >= this.refreshLife) {
+                reject("Token has expired");
+            }
 
-        if (difference >= this.refreshThreshold) {
-            this.refreshToken().then(() => {return});
-        }
+            if (difference >= this.refreshThreshold) {
+                try {
+                    await this.refreshToken();
+                } catch (err) {
+                    reject(err);
+                }
+            }
+
+            resolve();
+        });
     }
 
     /**
@@ -120,6 +128,31 @@ export default class LanguageLabClient {
     }
 
     /**
+     * Fetch data from the API, parsing JSON
+     *
+     * @param {string} url - the url to fetch
+     * @param {object} options - options to pass to the fetch API
+     *
+     * @return {object}
+     */
+    fetchOnce(url, options={"headers": {}}) {
+        return new Promise(async (resolve, reject) => {
+            const res = await fetch(url, options);
+
+            if (res.status === 204) {
+                resolve(res);
+                return;
+            } else if (res.status < 200 || res.status > 299) {
+                reject(res);
+                return;
+            }
+
+            const resJson = await res.json();
+            resolve(resJson);
+        });
+    }
+
+    /**
      * Fetch data from the API, passing in options and handling pagination
      * and expired tokens
      *
@@ -128,40 +161,35 @@ export default class LanguageLabClient {
      * @param {array} results - array to append a new page of results to
      */
     fetchData(url, options={"headers": {}}, results=[]) {
-        return new Promise((resolve, reject) => {
-            this.checkToken();
+        return new Promise(async (resolve, reject) => {
+            try {
+                await this.checkToken();
+            } catch (err) {
+                reject(err);
+            }
+
             options.headers.Authorization = "Bearer " + this.token.access;
 
-            console.log("fetchData ", options);
-            fetch(url, options).then((res) => {
-                if (res.status === 204) {
-                    resolve(res);
-                    return;
-                } else if (res.status < 200 || res.status > 299) {
-                    reject(res);
+            console.log("fetchData", options);
+
+            let nextUrl = url;
+            while (nextUrl) {
+                const resJson = await this.fetchOnce(nextUrl, options);
+
+                if (!("results" in resJson)) {
+                    resolve(resJson);
                     return;
                 }
 
-                res.json().then((resJson) => {
-                    if (!Object.prototype.hasOwnProperty.call(
-                        resJson,
-                        "results"
-                        )
-                    ) {
-                        resolve(resJson);
-                        return;
-                    }
+                results = results.concat(resJson.results);
 
-                    results = results.concat(resJson.results);
-                    if (resJson.next) {
-                        this.fetchData(resJson.next, options, results).then(
-                            resolve, reject
-                        );
-                    } else {
-                       resolve(results);
-                    }
-                }, reject);
-            }, reject);
+                nextUrl = null;
+                if (resJson.next) {
+                    nextUrl = resJson.next;
+                }
+            }
+
+            resolve(results);
         });
     }
 
@@ -257,22 +285,18 @@ export default class LanguageLabClient {
         };
 
         console.log("refresh token", options);
-        return new Promise((resolve, reject) => {
-            fetch(apiUrl, options).then((res) => {
-                if (res.status < 200 || res.status > 299) {
-                    console.log(res);
-                    reject(
-                        "Error refreshing token: " + res.statusText
-                    );
-                }
 
-                res.json().then((resJson) => {
-                    this.handleToken(resJson);
-                }, (err) => {
-                    console.log(err);
-                    reject("Error reading token JSON");
-                });
-            });
+        return new Promise(async (resolve, reject) => {
+            const res = await fetch(apiUrl, options);
+            if (res.status < 200 || res.status > 299) {
+                console.log(res);
+                reject(res);
+                return;
+            }
+
+            const resJson = await res.json();
+            this.handleToken(resJson);
+            resolve();
         });
     }
 
