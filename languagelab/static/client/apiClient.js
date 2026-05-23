@@ -90,12 +90,12 @@ export default class LanguageLabClient {
         const difference = new moment().diff(this.tokenTime, "seconds");
 
         console.log("checkToken: refreshed " + difference + " seconds ago");
-        if (difference >= this.refreshThreshold) {
+        if (difference >= this.refreshLife) {
             throw new Error("Token has expired");
         }
 
-        if (difference >= this.refreshLife) {
-            this.refreshToken();
+        if (difference >= this.refreshThreshold) {
+            this.refreshToken().then(() => {return});
         }
     }
 
@@ -256,19 +256,22 @@ export default class LanguageLabClient {
             "body": JSON.stringify({"refresh": this.token.refresh})
         };
 
-        fetch(apiUrl, options).then((res) => {
-            if (res.status < 200 || res.status > 299) {
-                console.log(res);
-                throw new Error(
-                    "Error refreshing token: " + res.statusText
-                );
-            }
+        console.log("refresh token", options);
+        return new Promise((resolve, reject) => {
+            fetch(apiUrl, options).then((res) => {
+                if (res.status < 200 || res.status > 299) {
+                    console.log(res);
+                    reject(
+                        "Error refreshing token: " + res.statusText
+                    );
+                }
 
-            res.json().then((resJson) => {
-                this.handleToken(resJson);
-            }, (err) => {
-                console.log(err);
-                throw new Error("Error reading token JSON");
+                res.json().then((resJson) => {
+                    this.handleToken(resJson);
+                }, (err) => {
+                    console.log(err);
+                    reject("Error reading token JSON");
+                });
             });
         });
     }

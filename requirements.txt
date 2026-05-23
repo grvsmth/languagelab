@@ -1,10 +1,10 @@
-Django==4.2.30
-django-cors-headers==3.10.0
-django-filter==21.1
-django-taggit==4.0.0
+Django==6.0.5
+django-cors-headers==4.9.0
+django-filter==25.2
+django-taggit==6.1.0
 django-taggit-serializer==0.1.7
 djangorestframework==3.17.1
 djangorestframework_simplejwt==5.5.1
-Markdown==3.3.7
-mysqlclient==2.1.1
-requests==2.33.1
+Markdown==3.10.2
+mysqlclient==2.2.8
+requests==2.34.2
