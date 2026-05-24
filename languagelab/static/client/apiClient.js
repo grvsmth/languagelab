@@ -309,16 +309,16 @@ export default class LanguageLabClient {
             "body": JSON.stringify(data)
         };
 
-        return new Promise((resolve, reject) => {
-            fetch(apiUrl, options).then((res) => {
-                if (res.status < 200 || res.status > 299) {
-                    console.log("Error logging in: ", res);
-                    reject(res);
-                    return;
-                }
+        return new Promise(async (resolve, reject) => {
+            const res = await fetch(apiUrl, options);
 
-                res.json().then(resolve, reject);
-            }, reject);
+            if (res.status < 200 || res.status > 299) {
+                reject(res);
+                return;
+            }
+
+            const resJson = await res.json();
+            resolve(resJson);
         });
     }
 }

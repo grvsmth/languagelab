@@ -384,11 +384,10 @@ export default class Lab extends React.Component {
      * @param {object} err - the error returned by the token method
      */
     handleTokenError(err) {
-        console.log("handleTokenEerror", err);
-
+        console.log("handleTokenError", err);
         let alertText = "Please see the Javascript console";
 
-        if (Object.hasOwnProperty.call(err, "statusText")) {
+        if ("statusText" in err) {
             alertText = err.statusText;
         }
 
@@ -406,10 +405,10 @@ export default class Lab extends React.Component {
      * @param {object} err - the error returned by the login method
      */
     handleLoginError(err) {
-        var alertText = "There was an error logging you in.";
+        let alertText = "There was an error logging you in.";
 
-        if (Object.prototype.hasOwnProperty.call(err.statusText)) {
-            alertText = err.statusText;
+        if ("statusText" in err) {
+            alertText = "statusText (" + err.status + "): " + err.statusText;
         }
 
         if (err.status === 400) {
@@ -425,17 +424,22 @@ export default class Lab extends React.Component {
      *
      * @param {object} event - the click event passed by the browser
      */
-    loginClick(event) {
+    async loginClick(event) {
         event.preventDefault();
         const options = {
             "username": document.getElementById("username").value,
             "password": document.getElementById("password").value
         };
 
-        this.apiClient.login(options).then(
-            this.handleToken.bind(this),
-            this.handleLoginError.bind(this)
-        );
+        let res = {};
+        try {
+            res = await this.apiClient.login(options);
+        } catch (err) {
+            this.handleLoginError(err);
+            return;
+        }
+
+        this.handleToken(res);
     }
 
     /**
