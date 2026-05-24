@@ -65,10 +65,14 @@ export default class Lab extends React.Component {
         ) {
             this.apiClient.setRefreshThreshold(config.api.refreshThreshold)
         }
-        if (storageData.token) {
-            this.apiClient.setToken(
-                storageData.token, storageData.tokenTime, storageData.tokenLife
-            );
+
+        if ("accessToken" in storageData && storageData.accessToken) {
+            const token = {
+                "access": storageData.accessToken,
+                "refresh": storageData.refreshToken
+            };
+
+            this.apiClient.setToken(token, storageData.tokenTime);
         }
 
         this.state = {
@@ -162,12 +166,7 @@ export default class Lab extends React.Component {
     fetchAll() {
         const loading = {};
 
-        try {
-            this.apiClient.checkToken();
-        } catch (err) {
-            this.handleFetchError(err);
-            return;
-        }
+        this.apiClient.checkToken();
 
         const thingsToLoad = config.api.models
             .filter(model => !model.local)
@@ -175,7 +174,11 @@ export default class Lab extends React.Component {
 
         thingsToLoad.forEach((endpoint) => {
             loading[endpoint] = true;
-            this.fetchData(endpoint);
+            try {
+                this.fetchData(endpoint);
+            } catch (err) {
+                this.handleFetchError(err);
+            }
         });
         this.setState({
             "activity": "read",
@@ -276,6 +279,8 @@ export default class Lab extends React.Component {
      * @param {object} err - The error object
      */
     handleFetchError(err) {
+        console.log("handleFetchError", err);
+
         if ("status" in err && err.status === 401) {
             this.handleUnauthorized();
             return;
@@ -289,6 +294,10 @@ export default class Lab extends React.Component {
         if ("statusText" in err) {
             console.log("err.statusText", err.statusText);
             this.addAlert("Fetch error", err.statusText);
+
+            if (err.statusText === "Token has expired") {
+                this.logout();
+            }
             return;
         }
 
@@ -355,17 +364,13 @@ export default class Lab extends React.Component {
      */
     handleToken(res) {
         const loadTime = new moment();
-        if (!Object.prototype.hasOwnProperty.call(res, "token")) {
-            throw new Error("No token in response!");
+        if (!Object.prototype.hasOwnProperty.call(res, "access")) {
+            throw new Error("No token in response");
         }
 
-        storageClient.setToken(
-            res.token, loadTime.format(), res.expiresIn
-        );
+        storageClient.setToken(res, loadTime.format());
 
-        this.apiClient.setToken(
-            res.token, loadTime.format(), res.expiresIn
-        );
+        this.apiClient.setToken(res, loadTime.format());
 
         if (this.state.activity == "login") {
             this.setActivity("read");
@@ -379,11 +384,10 @@ export default class Lab extends React.Component {
      * @param {object} err - the error returned by the token method
      */
     handleTokenError(err) {
-        console.log(err);
-
+        console.log("handleTokenError", err);
         let alertText = "Please see the Javascript console";
 
-        if (Object.hasOwnProperty.call(err, "statusText")) {
+        if ("statusText" in err) {
             alertText = err.statusText;
         }
 
@@ -392,6 +396,7 @@ export default class Lab extends React.Component {
         }
 
         this.addAlert("Token error", alertText);
+        this.logout();
     }
 
     /**
@@ -400,10 +405,10 @@ export default class Lab extends React.Component {
      * @param {object} err - the error returned by the login method
      */
     handleLoginError(err) {
-        var alertText = "There was an error logging you in.";
+        let alertText = "There was an error logging you in.";
 
-        if (Object.prototype.hasOwnProperty.call(err.statusText)) {
-            alertText = err.statusText;
+        if ("statusText" in err) {
+            alertText = "statusText (" + err.status + "): " + err.statusText;
         }
 
         if (err.status === 400) {
@@ -419,17 +424,22 @@ export default class Lab extends React.Component {
      *
      * @param {object} event - the click event passed by the browser
      */
-    loginClick(event) {
+    async loginClick(event) {
         event.preventDefault();
         const options = {
             "username": document.getElementById("username").value,
             "password": document.getElementById("password").value
         };
 
-        this.apiClient.login(options).then(
-            this.handleToken.bind(this),
-            this.handleLoginError.bind(this)
-        );
+        let res = {};
+        try {
+            res = await this.apiClient.login(options);
+        } catch (err) {
+            this.handleLoginError(err);
+            return;
+        }
+
+        this.handleToken(res);
     }
 
     /**
@@ -437,14 +447,13 @@ export default class Lab extends React.Component {
      *
      */
     logout() {
-        if (this.state.currentUser) {
-            storageClient.clearAll();
-            this.setState({
-                "activity": "login",
-                "currentUser": null
-            });
-            return;
-        }
+        storageClient.clearAll();
+        this.setState({
+            "activity": "login",
+            "currentUser": null,
+            "loading": false
+        });
+        return;
     }
 
     /**
@@ -652,7 +661,6 @@ export default class Lab extends React.Component {
             if (itemType === "lessons") {
                 item.level = parseInt(item.level);
             }
-            console.log(`saveItem(${itemType})`, item);
             this.apiClient.post(environment.api.baseUrl, itemType, item).then(
                 (res) => {
                     this.updateStateItem(res.response, itemType, "read", true);

@@ -15,6 +15,14 @@ from json import loads
 from logging import basicConfig, getLogger
 from os import environ, path
 
+from django.utils.translation import gettext
+from django.utils.encoding import smart_str
+
+import django
+
+django.utils.encoding.smart_text = smart_str
+django.utils.translation.ugettext = gettext
+
 from .django_environ import set_environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -41,9 +49,9 @@ CORS_ORIGIN_ALLOW_ALL = True
 DEBUG = True
 
 ALLOWED_LIST = loads(environ.get('DJANGO_ALLOWED_HOSTS'))
-ALLOWED_HOSTS = ['localhost', environ.get('DJANGO_HOST')] + ALLOWED_LIST
+ALLOWED_HOSTS = [environ.get('DJANGO_HOST')] + ALLOWED_LIST
 
-CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+CSRF_TRUSTED_ORIGINS = ['https://' + ALLOWED_HOSTS[0]]
 
 # Application definition
 
@@ -57,7 +65,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'taggit',
-    'taggit_serializer',
     'languagelab',
 ]
 
@@ -174,7 +181,7 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication'
     ],

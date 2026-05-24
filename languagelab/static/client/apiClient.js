@@ -9,7 +9,8 @@
     global moment
 
 */
-const DEFAULT_REFRESH_THRESHOLD = 60;
+const DEFAULT_REFRESH_THRESHOLD = 280;
+const DEFAULT_REFRESH_LIFE = 86400;
 
 /** Client class for the Language Lab API */
 export default class LanguageLabClient {
@@ -24,6 +25,7 @@ export default class LanguageLabClient {
         this.tokenTime = null;
         this.baseUrl = "";
         this.refreshThreshold = DEFAULT_REFRESH_THRESHOLD;
+        this.refreshLife = DEFAULT_REFRESH_LIFE;
     }
 
     /**
@@ -31,17 +33,17 @@ export default class LanguageLabClient {
      *
      * @param {string} token - the token string
      * @param {string} tokenTime - the time when the token was issued
-     * @param {string} tokenLife - the total life of the token in seconds
      */
-    setToken(token, tokenTime, tokenLife=this.tokenLife) {
+    setToken(token, tokenTime) {
         this.token = token;
         this.tokenTime = new moment(tokenTime);
-        this.tokenLife = tokenLife;
     }
 
     /** Indicate whether we have a token string */
     hasToken() {
-        return this.token.length > 0;
+        return (
+            typeof this.token === "object" && "access" in this.token
+            && this.token.access.length > 0);
     }
 
     /**
@@ -76,18 +78,31 @@ export default class LanguageLabClient {
      * or send a refresh request if we've passed the refresh threshold
      */
     checkToken() {
-        if (this.tokenLife <= this.refreshThreshold) {
-            return;
-        }
+        return new Promise(async (resolve, reject) => {
+            if (
+                !this.token
+                || typeof this.token !== "object"
+                || !("access" in this.token)
+            ) {
+                reject("No access token in API client object");
+            }
 
-        const difference = new moment().diff(this.tokenTime, "seconds");
-        if (this.tokenLife <= difference) {
-            throw new Error(this.expiredError);
-        }
+            const difference = new moment().diff(this.tokenTime, "seconds");
 
-        if (this.tokenLife - difference < this.refreshThreshold) {
-            this.refreshToken();
-        }
+            if (difference >= this.refreshLife) {
+                reject("Token has expired");
+            }
+
+            if (difference >= this.refreshThreshold) {
+                try {
+                    await this.refreshToken();
+                } catch (err) {
+                    reject(err);
+                }
+            }
+
+            resolve();
+        });
     }
 
     /**
@@ -111,6 +126,31 @@ export default class LanguageLabClient {
     }
 
     /**
+     * Fetch data from the API, parsing JSON
+     *
+     * @param {string} url - the url to fetch
+     * @param {object} options - options to pass to the fetch API
+     *
+     * @return {object}
+     */
+    fetchOnce(url, options={"headers": {}}) {
+        return new Promise(async (resolve, reject) => {
+            const res = await fetch(url, options);
+
+            if (res.status === 204) {
+                resolve(res);
+                return;
+            } else if (res.status < 200 || res.status > 299) {
+                reject(res);
+                return;
+            }
+
+            const resJson = await res.json();
+            resolve(resJson);
+        });
+    }
+
+    /**
      * Fetch data from the API, passing in options and handling pagination
      * and expired tokens
      *
@@ -118,47 +158,34 @@ export default class LanguageLabClient {
      * @param {object} options - options to pass to the fetch API
      * @param {array} results - array to append a new page of results to
      */
-    fetchData(url, options={}, results=[]) {
-        return new Promise((resolve, reject) => {
-            if (!this.token) {
-                reject("No token in API client object!");
+    fetchData(url, options={"headers": {}}, results=[]) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await this.checkToken();
+            } catch (err) {
+                reject(err);
             }
 
-            if (!Object.prototype.hasOwnProperty.call(options, "headers")) {
-                options.headers = {};
-            }
-            options.headers.Authorization = "JWT " + this.token;
+            options.headers.Authorization = "Bearer " + this.token.access;
 
-            this.checkToken();
-            fetch(url, options).then((res) => {
-                if (res.status === 204) {
-                    resolve(res);
-                    return;
-                } else if (res.status < 200 || res.status > 299) {
-                    reject(res);
+            let nextUrl = url;
+            while (nextUrl) {
+                const resJson = await this.fetchOnce(nextUrl, options);
+
+                if (!("results" in resJson)) {
+                    resolve(resJson);
                     return;
                 }
 
-                res.json().then((resJson) => {
-                    if (!Object.prototype.hasOwnProperty.call(
-                        resJson,
-                        "results"
-                        )
-                    ) {
-                        resolve(resJson);
-                        return;
-                    }
+                results = results.concat(resJson.results);
 
-                    results = results.concat(resJson.results);
-                    if (resJson.next) {
-                        this.fetchData(resJson.next, options, results).then(
-                            resolve, reject
-                        );
-                    } else {
-                       resolve(results);
-                    }
-                }, reject);
-            }, reject);
+                nextUrl = null;
+                if (resJson.next) {
+                    nextUrl = resJson.next;
+                }
+            }
+
+            resolve(results);
         });
     }
 
@@ -237,31 +264,33 @@ export default class LanguageLabClient {
         });
     }
 
-    /** Request a new refresh token */
+    /** Request a new token */
     refreshToken() {
-        const endpoint = "token-refresh";
+        if (typeof this.token !== "object" || !("refresh" in this.token)) {
+            throw new Error("No refresh token");
+        }
+
+        const endpoint = "token/refresh";
         const apiUrl = [this.baseUrl, endpoint, ""].join("/");
         const options = {
             "method": "POST",
             "headers": {
                 'Content-Type': 'application/json'
             },
-            "body": JSON.stringify({"token": this.token})
+            "body": JSON.stringify({"refresh": this.token.refresh})
         };
 
-        fetch(apiUrl, options).then((res) => {
+        return new Promise(async (resolve, reject) => {
+            const res = await fetch(apiUrl, options);
             if (res.status < 200 || res.status > 299) {
-                throw new Error(
-                    "Error refreshing token: " + res.statusText
-                );
+                console.log("failed to refresh token", res);
+                reject(res);
+                return;
             }
 
-            res.json().then((resJson) => {
-                this.handleToken(resJson);
-            }, (err) => {
-                console.log(err);
-                throw new Error("Error reading token JSON!");
-            });
+            const resJson = await res.json();
+            this.handleToken(resJson);
+            resolve();
         });
     }
 
@@ -271,7 +300,7 @@ export default class LanguageLabClient {
      * @param {object} data - the login data
      */
     login(data) {
-        const apiUrl = [this.baseUrl, "token-auth", ""].join("/");
+        const apiUrl = [this.baseUrl, "token", ""].join("/");
         const options = {
             "method": "POST",
             "headers": {
@@ -280,15 +309,16 @@ export default class LanguageLabClient {
             "body": JSON.stringify(data)
         };
 
-        return new Promise((resolve, reject) => {
-            fetch(apiUrl, options).then((res) => {
-                if (res.status < 200 || res.status > 299) {
-                    reject(res);
-                    return;
-                }
+        return new Promise(async (resolve, reject) => {
+            const res = await fetch(apiUrl, options);
 
-                res.json().then(resolve, reject);
-            }, reject);
+            if (res.status < 200 || res.status > 299) {
+                reject(res);
+                return;
+            }
+
+            const resJson = await res.json();
+            resolve(resJson);
         });
     }
 }
