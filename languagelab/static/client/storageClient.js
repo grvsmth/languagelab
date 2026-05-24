@@ -40,9 +40,12 @@ const exports = {
          * @param {object} token
          * @param {string} tokenTime - the time when the token was refreshed
          */
-        localStorage.setItem("accessToken", token.access);
-        localStorage.setItem("refreshToken", token.refresh);
         localStorage.setItem("tokenTime", tokenTime);
+        localStorage.setItem("accessToken", token.access);
+
+        if ("refresh" in token) {
+            localStorage.setItem("refreshToken", token.refresh);
+        }
     }
 };
 
