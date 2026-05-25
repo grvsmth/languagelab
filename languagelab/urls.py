@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView, TemplateView
 
 from rest_framework import routers
 from rest_framework_simplejwt.views import (
@@ -69,4 +69,8 @@ urlpatterns = [
     ),
 ] + static(STATIC_URL, document_root=STATIC_ROOT) + [
     path('', TemplateView.as_view(template_name='index.html')),
+    path(
+        r'^/static/client/$',
+        RedirectView.as_view(pattern_name='/', permanent=False)
+    ),
 ]
