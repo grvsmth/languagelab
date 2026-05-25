@@ -38,11 +38,16 @@ const notLoading = {
 export default class Lab {
     constructor(config) {
         this.config = config;
+        this.help = {};
         this.parentElement = {};
 
         this.state = {
             "currentUser": null
         };
+    }
+
+    setHelp(help) {
+        this.help = help;
     }
 
     setParentElement(parentElement) {
@@ -878,7 +883,11 @@ export default class Lab {
             const loginForm = new LoginForm();
 
             return loginForm.render(
-                {"loginClick": this.loginClick.bind(this)}
+                {
+                    "help": this.help,
+                    "loginClick": this.loginClick.bind(this)
+
+                }
             );
         }
 

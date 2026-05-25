@@ -11,7 +11,7 @@ const exports = {
         "description": `LanguageLab is a server and web client for learning
         languages, including singing and transgender speech practice.  It
         allows you to replicate the repetition exercises used in language
-        labs around the world.  It has been developed by Angus "Andrea"
+        labs around the world.  It has been developed by Angus Andrea
         Grieve-Smith since 2015.`,
         "a": {
             "href": "https://grieve-smith.com/blog/2021/02/a-free-open-source-language-lab-app/",

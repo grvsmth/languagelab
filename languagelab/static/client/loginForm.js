@@ -4,12 +4,7 @@
  * Angus B. Grieve-Smith, 2021
  */
 
-/*
-
-
-*/
-// import help from "./help.js";
-// import HelpCard from "./cards/helpCard.js";
+import HelpCard from "./cards/helpCard.js";
 
 /** The login form class */
 export default class LoginForm {
@@ -36,7 +31,7 @@ export default class LoginForm {
      */
     formLabel(fieldName) {
         const element = document.createElement("label");
-        element.htmlFor = fieldName;
+        element.for = fieldName;
         element.innerText = fieldName + ": ";
 
         return element;
@@ -51,17 +46,14 @@ export default class LoginForm {
      * @return {object}
      */
     formInput(fieldName, autofocus=false) {
-        const element = document.createElement(
-            "input",
-            {
-                "autoFocus": autofocus,
-                "className": "form-control",
-                "id": fieldName,
-                "name": fieldName,
-                "type": "text"
-            },
-            null
-        );
+        const element = document.createElement("input");
+        element.autofocus = autofocus;
+        element.classList.add("form-control");
+        element.id = fieldName;
+        element.name = fieldName;
+        element.type = "text";
+
+        return element;
     }
 
     /**
@@ -74,9 +66,9 @@ export default class LoginForm {
         element.classList.add("form-group");
 
         element.append(
-            this.formLabel("username")
+            this.formLabel("username"),
+            this.formInput("username", true)
         );
-//            this.formInput("username", true)
 
         return element;
     }
@@ -87,16 +79,13 @@ export default class LoginForm {
      * @return {object}
      */
     passwordInput() {
-        const element = document.createElement(
-            "input",
-            {
-                "className": "form-control",
-                "id": "password",
-                "name": "password",
-                "type": "password"
-            },
-            null
-        );
+        const element = document.createElement("input");
+        element.classList.add("form-control");
+        element.id = "password";
+        element.name = "password";
+        element.type = "password";
+
+        return element;
     }
 
     /**
@@ -112,7 +101,6 @@ export default class LoginForm {
             this.formLabel("password"),
             this.passwordInput()
         );
-
         return element;
     }
 
@@ -122,14 +110,12 @@ export default class LoginForm {
      * @return {object}
      */
     submitButton() {
-        const element = document.createElement(
-            "button",
-            {
-                "className": "btn btn-success",
-                "type": "submit"
-            },
-            "Log in"
-        );
+        const element = document.createElement("button");
+        element.classList.add("btn", "btn-success");
+        element.type = "submit";
+        element.innerText = "Log in";
+
+        return element;
     }
 
     /**
@@ -143,12 +129,11 @@ export default class LoginForm {
         element.addEventListener("submit", this.props.loginClick);
 
         element.append(
-            this.usernameGroup()
-        );
-        /*
+            this.usernameGroup(),
             this.passwordGroup(),
             this.submitButton()
-            */
+        );
+
         return element;
     }
 
@@ -179,7 +164,8 @@ export default class LoginForm {
         element.classList.add("card");
         element.append(this.cardBody());
 
-        return element;
+        col.append(element);
+        return col;
     }
 
     /**
@@ -190,14 +176,11 @@ export default class LoginForm {
      * @return {object}
      */
     helpCard(key) {
-        const element = document.createElement(
-            HelpCard,
-            {
-                "key": key,
-                "helpItem": help[key]
-            },
-            null
-        );
+        const element = new HelpCard();
+        return element.render({
+            "key": key,
+            "helpItem": this.props.help[key]
+        });
     }
 
     /**
@@ -209,15 +192,13 @@ export default class LoginForm {
         this.props = props;
 
         const element = document.createElement("div");
-        element.classList.add("row");
+        element.classList.add("row", "row-cols-1", "row-cols-md-3", "g-4");
 
         element.append(
-            this.loginCard()
-        );
-        /*
+            this.loginCard(),
             this.helpCard("about"),
-            this.helpCard("source"),
-        */
+            this.helpCard("source")
+        );
 
         return element;
     }

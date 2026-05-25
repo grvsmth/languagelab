@@ -11,18 +11,18 @@
     </head>
     <body>
         <div id="lab">Welcome!</div>
-        <script src="/static/node_modules/jquery/dist/jquery.slim.min.js">
-        </script>
         <script src="/static/node_modules/bootstrap/dist/js/bootstrap.min.js">
         </script>
         <script src="/static/node_modules/moment/min/moment.min.js"></script>
         <script type="module">
             import Lab from "/static/client/lab.js";
             import config from "/static/client/config.js";
+            import help from "/static/client/help.js";
 
             const init = function() {
                 const lab = new Lab(config);
 
+                lab.setHelp(help);
                 lab.setParentElement(document.body.querySelector("#lab"));
                 lab.render();
             }

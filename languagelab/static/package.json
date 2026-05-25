@@ -24,8 +24,7 @@
   "license": "ISC",
   "homepage": "https://github.com/grvsmth/languagelab",
   "dependencies": {
-    "bootstrap": "^4.6.2",
-    "jquery": "^3.5.1",
+    "bootstrap": "^5.3.8",
     "moment": "^2.29.1",
     "open-iconic": "^1.1.1"
   },
