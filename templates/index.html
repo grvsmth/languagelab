@@ -26,10 +26,10 @@
             import Lab from "/static/client/lab.js";
 
             const init = function() {
-                ReactDOM.render(
-                    React.createElement(Lab),
+                const root = ReactDOM.createRoot(
                     document.body.querySelector("#resultsDiv")
                 );
+                root.render(React.createElement(Lab));
             }
 
             window.addEventListener("DOMContentLoaded", init);
