@@ -6,14 +6,13 @@
 
 /*
 
-    global React, PropTypes
 
 */
-import help from "./help.js";
-import HelpCard from "./cards/helpCard.js";
+// import help from "./help.js";
+// import HelpCard from "./cards/helpCard.js";
 
-/** The login form class. @extends React.Component */
-export default class LoginForm extends React.Component {
+/** The login form class */
+export default class LoginForm {
 
     /**
      * Display the title for the login card
@@ -21,13 +20,11 @@ export default class LoginForm extends React.Component {
      * @return {object}
      */
     cardTitle() {
-        return React.createElement(
-            "h3",
-            {
-                "className": "card-title"
-            },
-            "Login"
-        );
+        const element = document.createElement("h3");
+        element.classList.add("card-title");
+        element.innerText = "Login";
+
+        return element;
     }
 
     /**
@@ -38,11 +35,11 @@ export default class LoginForm extends React.Component {
      * @return {object}
      */
     formLabel(fieldName) {
-        return React.createElement(
-            "label",
-            {"htmlFor": fieldName},
-            fieldName + ": "
-        );
+        const element = document.createElement("label");
+        element.htmlFor = fieldName;
+        element.innerText = fieldName + ": ";
+
+        return element;
     }
 
     /**
@@ -54,7 +51,7 @@ export default class LoginForm extends React.Component {
      * @return {object}
      */
     formInput(fieldName, autofocus=false) {
-        return React.createElement(
+        const element = document.createElement(
             "input",
             {
                 "autoFocus": autofocus,
@@ -73,12 +70,15 @@ export default class LoginForm extends React.Component {
      * @return {object}
      */
     usernameGroup() {
-        return React.createElement(
-            "div",
-            {"className": "form-group"},
-            this.formLabel("username"),
-            this.formInput("username", true)
+        const element = document.createElement("div");
+        element.classList.add("form-group");
+
+        element.append(
+            this.formLabel("username")
         );
+//            this.formInput("username", true)
+
+        return element;
     }
 
     /**
@@ -87,7 +87,7 @@ export default class LoginForm extends React.Component {
      * @return {object}
      */
     passwordInput() {
-        return React.createElement(
+        const element = document.createElement(
             "input",
             {
                 "className": "form-control",
@@ -105,12 +105,15 @@ export default class LoginForm extends React.Component {
      * @return {object}
      */
     passwordGroup() {
-        return React.createElement(
-            "div",
-            {"className": "form-group"},
+        const element = document.createElement("div");
+        element.classList.add("form-group");
+
+        element.append(
             this.formLabel("password"),
             this.passwordInput()
-        )
+        );
+
+        return element;
     }
 
     /**
@@ -119,7 +122,7 @@ export default class LoginForm extends React.Component {
      * @return {object}
      */
     submitButton() {
-        return React.createElement(
+        const element = document.createElement(
             "button",
             {
                 "className": "btn btn-success",
@@ -135,16 +138,18 @@ export default class LoginForm extends React.Component {
      * @return {object}
      */
     loginForm() {
-        return React.createElement(
-            "form",
-            {
-                "name": "loginForm",
-                "onSubmit": this.props.loginClick
-            },
-            this.usernameGroup(),
+        const element = document.createElement("form");
+        element.name = "loginForm";
+        element.addEventListener("submit", this.props.loginClick);
+
+        element.append(
+            this.usernameGroup()
+        );
+        /*
             this.passwordGroup(),
             this.submitButton()
-        )
+            */
+        return element;
     }
 
     /**
@@ -153,14 +158,14 @@ export default class LoginForm extends React.Component {
      * @return {object}
      */
     cardBody() {
-        return React.createElement(
-            "div",
-            {
-                "className": "card-body"
-            },
+        const element = document.createElement("div");
+        element.classList.add("card-body");
+
+        element.append(
             this.cardTitle(),
             this.loginForm()
         );
+        return element;
     }
 
     /**
@@ -169,13 +174,12 @@ export default class LoginForm extends React.Component {
      * @return {object}
      */
     loginCard() {
-        return React.createElement(
-            "div",
-            {
-                "className": "card"
-            },
-            this.cardBody()
-        );
+        const col = document.createElement("col");
+        const element = document.createElement("div");
+        element.classList.add("card");
+        element.append(this.cardBody());
+
+        return element;
     }
 
     /**
@@ -186,7 +190,7 @@ export default class LoginForm extends React.Component {
      * @return {object}
      */
     helpCard(key) {
-        return React.createElement(
+        const element = document.createElement(
             HelpCard,
             {
                 "key": key,
@@ -201,17 +205,20 @@ export default class LoginForm extends React.Component {
      *
      * @return {object}
      */
-    render() {
-        return React.createElement(
-            "div",
-            {"className": "card-columns"},
-            this.loginCard(),
+    render(props) {
+        this.props = props;
+
+        const element = document.createElement("div");
+        element.classList.add("row");
+
+        element.append(
+            this.loginCard()
+        );
+        /*
             this.helpCard("about"),
             this.helpCard("source"),
-        );
+        */
+
+        return element;
     }
 }
-
-LoginForm.propTypes = {
-    "loginClick": PropTypes.func.isRequired
-};

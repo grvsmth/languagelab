@@ -1,12 +1,15 @@
 /**
  * Configuration for LanguageLab client
  *
- * Angus B. Grieve-Smith, 2021
+ * Angus B. Grieve-Smith, 2026
  */
 const config = {
-    "version": "0.2beta",
+    "ui": {
+        "brandText": "LanguageLab"
+    },
+    "version": "0.3",
     "api": {
-        "baseUrl": "https://languagelab.grieve-smith.com/api/0.2",
+        "baseUrl": "https://languagelab-dev.grieve-smith.com/api/0.2",
         "models": [
             {
                 "menu": "Media",

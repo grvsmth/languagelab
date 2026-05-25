@@ -1,17 +1,19 @@
 /**
  * Navigation bar for the LanguageLab client
  *
- * Angus B. Grieve-Smith, 2021
+ * Angus B. Grieve-Smith, 2026
  */
 
 /*
 
-    global React, PropTypes
 
 */
 
 /** Navigation bar for the LanguageLab client */
-export default class Navbar extends React.Component {
+export default class Navbar {
+    constructor(config) {
+        this.config = config;
+    }
 
     /**
      * A link with the navbar brand (i.e. the name)
@@ -19,15 +21,12 @@ export default class Navbar extends React.Component {
      * @return {object}
      */
     navbarBrand() {
-        var brandText = "LanguageLab";
-        return React.createElement(
-            "a",
-            {
-                "className": "navbar-brand",
-                "href": "#"
-            },
-            brandText
-        );
+        const brandElement = document.createElement("a");
+        brandElement.classList.add("navbar-brand");
+        brandElement.href = "#";
+        brandElement.innerText = this.config.brandText;
+
+        return brandElement;
     }
 
     /**
@@ -40,11 +39,12 @@ export default class Navbar extends React.Component {
             return null;
         }
 
-        return React.createElement(
-            "li",
-            {"className": "navbar-text mr-2"},
-            "v. " + this.props.version
-        );
+        const element = document.createElement("li");
+        element.classList.add("navbar-text", "mr-2");
+
+        element.innerText = "v. " + this.props.version;
+
+        return element;
     }
 
     /**
@@ -72,7 +72,7 @@ export default class Navbar extends React.Component {
         if (this.props.selectedType !== endpoint) {
             return null;
         }
-        return React.createElement(
+        const element = document.createElement(
             "span",
             {"className": "sr-only"},
             "(current)"
@@ -88,7 +88,7 @@ export default class Navbar extends React.Component {
      * @return {object}
      */
     navLink(model) {
-        return React.createElement(
+        const element = document.createElement(
             "a",
             {
                 "className": "nav-link",
@@ -123,7 +123,7 @@ export default class Navbar extends React.Component {
         const activeClass = this.props.selectedType === model.endpoint
             ? " active": "";
 
-        return React.createElement(
+        const element = document.createElement(
             "li",
             {
                 "className": "nav-item" + activeClass,
@@ -143,7 +143,7 @@ export default class Navbar extends React.Component {
             return null;
         }
 
-        return React.createElement(
+        const element = document.createElement(
             "li",
             {
                 "className": "navbar-text text-success"
@@ -158,17 +158,23 @@ export default class Navbar extends React.Component {
      * @return {object}
      */
     navUl() {
+        return null;
         if (!this.props.currentUser) {
             return null;
         }
 
-        return React.createElement(
-            "ul",
-            {"className": "navbar-nav mr-auto"},
-            this.versionText(),
+        const element = document.createElement("ul");
+        element.classList.add("navbar-nav", "mr-auto");
+
+        element.append(
+            this.versionText()
+        );
+
+        /*
             this.welcomeItem(),
             this.props.models.map(this.navItem.bind(this))
-        );
+        */
+        return element;
     }
 
     /**
@@ -181,14 +187,13 @@ export default class Navbar extends React.Component {
             return null;
         }
 
-        return React.createElement(
-            "button",
-            {
-                "className": "btn btn-secondary",
-                "onClick": this.props.logout
-            },
-            "Logout"
-        )
+        const element = document.createElement("button");
+        element.classList.add("btn", "btn-secondary");
+        element.addEventListener("click", this.props.logout);
+
+        element.innerText = "Logout";
+
+        return element;
     }
 
     /**
@@ -197,15 +202,13 @@ export default class Navbar extends React.Component {
      * @return {object}
      */
     navContent() {
-        return React.createElement(
-            "div",
-            {
-                "className": "collapse navbar-collapse",
-                "id": "navContent"
-            },
-            this.navUl(),
-            this.logoutButton()
-        );
+        const element = document.createElement("div");
+        element.classList.add("collapse", "navbar-collapse");
+        element.id = "navContent";
+
+        element.append(this.navUl(), this.logoutButton());
+
+        return element;
     }
 
     /**
@@ -214,11 +217,10 @@ export default class Navbar extends React.Component {
      * @return {object}
      */
     togglerIcon() {
-        return React.createElement(
-            "span",
-            {"className": "navbar-toggler-icon"},
-            null
-        );
+        const element = document.createElement("span");
+        element.classList.add("navbar-toggler-icon");
+
+        return element;
     }
 
     /**
@@ -227,19 +229,18 @@ export default class Navbar extends React.Component {
      * @return {object}
      */
     toggler() {
-        return React.createElement(
-            "button",
-            {
-                "className": "navbar-toggler",
-                "type": "button",
-                "data-toggle": "collapse",
-                "data-target": "#navContent",
-                "aria-controls": "navContent",
-                "aria-expanded": false,
-                "aria-label": "Toggle navigation"
-            },
-            this.togglerIcon()
-        )
+        const toggler = document.createElement("button");
+        toggler.classList.add("navbar-toggler");
+        toggler.type = "button";
+        toggler.dataset.toggle = "collapse";
+        toggler.dataset.target = "#navContent";
+        toggler.setAttribute("aria-controls", "navContent");
+        toggler.setAttribute("aria-expanded", false);
+        toggler.setAttribute("aria-label", "Toggle navigation");
+
+        toggler.append(this.togglerIcon());
+
+        return toggler;
     }
 
     /**
@@ -247,33 +248,25 @@ export default class Navbar extends React.Component {
      *
      * @return {object}
      */
-    render() {
-        const className = [
+    render(props={}) {
+        this.props = props;
+
+        const element = document.createElement("nav");
+        element.classList.add([
             "navbar",
             "navbar-expand-md",
             "navbar-light",
             "bg-light",
             "sticky-top"
-        ].join(" ");
+        ]);
 
-        return React.createElement(
-            "nav",
-            {
-                "className": className
-            },
+        const children = [
             this.navbarBrand(),
             this.toggler(),
             this.navContent()
-        );
-    }
-}
+        ];
+        element.append(...children);
 
-Navbar.propTypes = {
-    "config": PropTypes.object.isRequired,
-    "currentUser": PropTypes.object.isRequired,
-    "logout": PropTypes.func.isRequired,
-    "models": PropTypes.object.isRequired,
-    "navClick": PropTypes.func.isRequired,
-    "selectedType": PropTypes.string.isRequired,
-    "version": PropTypes.string.isRequired
+        return element;
+    }
 };

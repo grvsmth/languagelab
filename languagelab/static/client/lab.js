@@ -1,28 +1,30 @@
 /**
  * Main page for Language Lab, with state handling
  *
- * Angus B. Grieve-Smith, 2021
+ * Angus Andrea Grieve-Smith, 2026
  *
  */
 
 /*
 
-    global moment, React
+    global moment
 
 */
+
+/*
 import CardList from "./cardList.js";
 import InfoArea from "./infoArea.js";
 import LoadingModal from "./loadingModal.js";
+
+import controls from "./controls.js";
+*/
+
 import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
 
-import controls from "./controls.js";
 import LanguageLabClient from "./apiClient.js";
 import storageClient from "./storageClient.js";
 import util from "./util.js";
-
-import config from "./config.js";
-import environment from "./environment.js";
 
 const notLoading = {
     "exercises": false,
@@ -32,13 +34,23 @@ const notLoading = {
 };
 
 
-/** The main lab class. @extends React.Component */
-export default class Lab extends React.Component {
+/** The main lab class. */
+export default class Lab {
+    constructor(config) {
+        this.config = config;
+        this.parentElement = {};
+
+        this.state = {
+            "currentUser": null
+        };
+    }
+
+    setParentElement(parentElement) {
+        this.parentElement = parentElement;
+    }
 
     /** Bind methods, instantiate API client and set sefault state */
-    constructor(props) {
-        super(props);
-
+    notConstructor(props) {
         this.checkClick = this.checkClick.bind(this);
         this.handleFetchError = this.handleFetchError.bind(this);
 
@@ -220,12 +232,13 @@ export default class Lab extends React.Component {
      */
     addAlert(title, message, status="danger") {
         const alert = {
-            "id": util.maxId(this.state.alerts) + 1,
+            "id": 0,
             "title": title,
             "status": status,
             "message": message
         };
-        this.updateStateItem(alert, "alerts");
+        console.log(alert);
+        // this.updateStateItem(alert, "alerts");
     }
 
     /**
@@ -862,15 +875,14 @@ export default class Lab extends React.Component {
      */
     body() {
         if (!this.state.currentUser) {
-            return React.createElement(
-                LoginForm,
-                {
-                    "loginClick": this.loginClick.bind(this)
-                },
-                null
+            const loginForm = new LoginForm();
+
+            return loginForm.render(
+                {"loginClick": this.loginClick.bind(this)}
             );
         }
 
+        /*
         if (this.state.loading[this.state.selected.itemType]) {
             return null;
         }
@@ -905,6 +917,7 @@ export default class Lab extends React.Component {
             },
             null
         );
+        */
     }
 
     /**
@@ -932,19 +945,20 @@ export default class Lab extends React.Component {
 
     /** Display the navbar */
     nav() {
-        return React.createElement(
-            Navbar,
-            {
+        const nav = new Navbar(this.config.ui);
+        const props = {
+            "currentUser": this.state.currentUser,
+            "logout": this.logout.bind(this),
+            "models": this.config.api.models,
+            "version": this.config.version
+        };
+        /*
                 "config": this.state.config,
-                "currentUser": this.state.currentUser,
-                "logout": this.logout.bind(this),
-                "models": config.api.models,
                 "navClick": this.readMode.bind(this),
                 "selectedType": this.state.selected.itemType,
-                "version": config.version
-            },
-            null
-        );
+        */
+
+        return nav.render(props);
     }
 
     /**
@@ -963,6 +977,8 @@ export default class Lab extends React.Component {
 
     /** Display the infoArea, passing the selected lesson */
     infoArea() {
+        return document.createElement("div");
+        /*
         const lesson = util.findItem(
             this.state.lessons, this.state.selected.lessons
         );
@@ -980,6 +996,7 @@ export default class Lab extends React.Component {
             },
             null
         )
+        */
     }
 
     /**
@@ -1006,18 +1023,22 @@ export default class Lab extends React.Component {
     /** The React render function, displaying the root element */
     render() {
         try {
-            return React.createElement(
-                "div",
-                {
-                    "className": "container-fluid"
-                },
+            const containerElement = document.createElement("div");
+            containerElement.classList.add("container-fluid");
+
+/*
+                this.loadingModal()
+*/
+            const children = [
                 this.nav(),
                 this.infoArea(),
-                this.body(),
-                this.loadingModal()
-            );
+                this.body()
+            ];
+            containerElement.append(...children);
+
+            this.parentElement.replaceChildren(containerElement);
         } catch (err) {
-            this.addAlert("Error displaying lab", err.getMessage());
+            this.addAlert("Error displaying lab", err);
         }
     }
-}
+};
