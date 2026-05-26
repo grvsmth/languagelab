@@ -6,11 +6,10 @@
 
 /*
 
-    global React, PropTypes
-
 */
 import util from "./util.js";
 
+/*
 import ControlCard from "./cards/controlCard.js";
 import DoExerciseCard from "./cards/doExerciseCard.js";
 import ExerciseCard from "./cards/exerciseCard.js";
@@ -23,6 +22,7 @@ import LessonCard from "./cards/lessonCard.js";
 import LessonFormCard from "./cards/lessonFormCard.js";
 import MediaCard from "./cards/mediaCard.js";
 import MediaFormCard from "./cards/mediaFormCard.js";
+*/
 
 const typeInfo = {
     "media": {
@@ -80,7 +80,7 @@ const typeInfo = {
 
 const doActivities = ["do", "loadExercise"];
 
-export default class CardList extends React.Component {
+export default class CardList {
 
     /**
      * Extend the constructor method with an itemCard property mapping item
@@ -118,7 +118,7 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     addButtonElement(cardId) {
-        return React.createElement(
+        const element = document.createElement(
             "button",
             {
                 "id": cardId,
@@ -139,7 +139,7 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     addButtonCardBody(cardId) {
-        return React.createElement(
+        const element = document.createElement(
             "div",
             {"className": "card-body"},
             this.addButtonElement(cardId)
@@ -155,7 +155,7 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     addButtonCard(cardId) {
-        return React.createElement(
+        const element = document.createElement(
             "div",
             {
                 "className": "card",
@@ -272,7 +272,7 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     controlCard(control) {
-        return React.createElement(
+        const element = document.createElement(
             ControlCard,
             {
                 "key": control.name,
@@ -291,7 +291,7 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     helpCard(helpItem) {
-        return React.createElement(
+        const element = document.createElement(
             HelpCard,
             {
                 "key": helpItem.title,
@@ -335,7 +335,7 @@ export default class CardList extends React.Component {
             "state": this.props.state
         };
 
-        return React.createElement(
+        const element = document.createElement(
             DoExerciseCard,
             options,
             null
@@ -364,7 +364,7 @@ export default class CardList extends React.Component {
             cardComponent = MediaFormCard;
         }
 
-        return React.createElement(
+        const element = document.createElement(
             cardComponent,
             {
                 "checkClick": this.props.checkClick,
@@ -405,7 +405,7 @@ export default class CardList extends React.Component {
             cardComponent = LanguageFormCard;
         }
 
-        return React.createElement(
+        const element = document.createElement(
             cardComponent,
             {
                 "key": language.id,
@@ -478,7 +478,7 @@ export default class CardList extends React.Component {
             "toggleLesson": this.props.toggleLesson
         };
 
-        return React.createElement(
+        const element = document.createElement(
             cardComponent,
             options,
             null
@@ -503,7 +503,7 @@ export default class CardList extends React.Component {
             "selectedType": this.props.state.selected.itemType
         };
 
-        return React.createElement(
+        const element = document.createElement(
             ExerciseFormCard,
             options,
             null
@@ -559,7 +559,7 @@ export default class CardList extends React.Component {
             "startExercise": this.props.startExercise
         };
 
-        return React.createElement(
+        const element = document.createElement(
             ExerciseCard,
             options,
             null
@@ -674,7 +674,7 @@ export default class CardList extends React.Component {
                 return this.helpCard(help[itemType]);
             }
 
-            return React.createElement(
+            const element = document.createElement(
                 "div",
                 {"className": "card"},
                 `No ${itemType} loaded`
@@ -691,34 +691,21 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     render() {
-        console.log(this.props);
+        console.log("cardList", this.props);
         const itemType = this.props.state.selected.itemType;
         const addable = this.props.state.activity !== "editQueue"
             && typeInfo[itemType].addable;
 
-        return React.createElement(
-            "div",
-            {"className": typeInfo[itemType].cardLayout},
+        const element = document.createElement("div");
+        element.classList.add(typeInfo[itemType].cardLayout);
+
+        element.innerText = "CardList goes here";
+/*
+        element.append(
             this.addCard(addable, "initial"),
             this.makeElements(itemType),
             this.addCard(addable, "final")
-        );
+        );*/
+        return element;
     }
 }
-
-CardList.propTypes = {
-    "checkClick": PropTypes.func.isRequired,
-    "config": PropTypes.object.isRequired,
-    "deleteClick": PropTypes.func.isRequired,
-    "doButton": PropTypes.object.isRequired,
-    "doFunction": PropTypes.object.isRequired,
-    "exportData": PropTypes.func.isRequired,
-    "maxRank": PropTypes.number.isRequired,
-    "queueClick": PropTypes.object.isRequired,
-    "saveItem": PropTypes.func.isRequired,
-    "selectItem": PropTypes.func.isRequired,
-    "setActivity": PropTypes.func.isRequired,
-    "startExercise": PropTypes.func.isRequired,
-    "state": PropTypes.object.isRequired,
-    "toggleLesson": PropTypes.func.isRequired
-};

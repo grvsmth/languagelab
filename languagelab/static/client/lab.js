@@ -11,11 +11,8 @@
 
 */
 
-/*
-import CardList from "./cardList.js";
+// import CardList from "./cardList.js";
 import InfoArea from "./infoArea.js";
-*/
-
 import LoadingModal from "./loadingModal.js";
 import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
@@ -894,6 +891,7 @@ export default class Lab {
      * CardList
      */
     body() {
+        console.log("body", this.state);
         if (!this.state.currentUser) {
             const loginForm = new LoginForm();
 
@@ -906,42 +904,42 @@ export default class Lab {
             );
         }
 
-        /*
         if (this.loadingState[this.selectedState.itemType]) {
-            return null;
+            return "";
         }
 
-        return React.createElement(
-            CardList,
-            {
-                "checkClick": this.checkClick,
-                "config": this.config,
-                "deleteClick": this.deleteClick.bind(this),
-                "doButton": config.doButton,
-                "doFunction": {
-                    "afterMimic": this.afterMimic.bind(this),
-                    "onMediaLoaded": this.onMediaLoaded.bind(this),
-                    "playMimic": this.playMimic.bind(this),
-                    "playModel": this.playModel.bind(this),
-                    "queueNav": this.queueNav,
-                    "readMode": this.readMode.bind(this),
-                    "setStatus": this.setStatus.bind(this),
-                    "setUserAudioUrl": this.setUserAudioUrl.bind(this),
-                    "toggleOnlyExercise": this.toggleOnlyExercise.bind(this)
-                },
-                "exportData": this.exportData.bind(this),
-                "maxRank": this.maxRank.bind(this),
-                "queueClick": this.queueClick.bind(this),
-                "saveItem": this.saveItem.bind(this),
-                "state": this.state,
-                "setActivity": this.setActivity.bind(this),
-                "toggleLesson": this.toggleLesson.bind(this),
-                "startExercise": this.startExercise.bind(this),
-                "selectItem": this.selectItem.bind(this)
+        const element = document.createElement("div");
+        element.innerText = "CardList coming soon!";
+        return element;
+/*
+        const cardList = new CardList();
+        return cardList.render({
+            "checkClick": this.checkClick,
+            "config": this.config,
+            "deleteClick": this.deleteClick.bind(this),
+            "doButton": config.doButton,
+            "doFunction": {
+                "afterMimic": this.afterMimic.bind(this),
+                "onMediaLoaded": this.onMediaLoaded.bind(this),
+                "playMimic": this.playMimic.bind(this),
+                "playModel": this.playModel.bind(this),
+                "queueNav": this.queueNav,
+                "readMode": this.readMode.bind(this),
+                "setStatus": this.setStatus.bind(this),
+                "setUserAudioUrl": this.setUserAudioUrl.bind(this),
+                "toggleOnlyExercise": this.toggleOnlyExercise.bind(this)
             },
-            null
-        );
-        */
+            "exportData": this.exportData.bind(this),
+            "maxRank": this.maxRank.bind(this),
+            "queueClick": this.queueClick.bind(this),
+            "saveItem": this.saveItem.bind(this),
+            "state": this.state,
+            "setActivity": this.setActivity.bind(this),
+            "toggleLesson": this.toggleLesson.bind(this),
+            "startExercise": this.startExercise.bind(this),
+            "selectItem": this.selectItem.bind(this)
+        });
+*/
     }
 
     /**
@@ -1002,26 +1000,21 @@ export default class Lab {
 
     /** Display the infoArea, passing the selected lesson */
     infoArea() {
-        return document.createElement("div");
-        /*
         const lesson = util.findItem(
             this.state.lessons, this.selectedState.lessons
         );
 
-        return React.createElement(
-            InfoArea,
-            {
-                "activity": this.state.activity,
-                "alerts": this.state.alerts,
-                "dismissAlert": this.dismissAlert.bind(this),
-                "iso639": this.config.iso639,
-                "lesson": lesson,
-                "selectedType": this.selectedState.itemType,
-                "setActivity": this.setActivity.bind(this)
-            },
-            null
-        )
-        */
+        const infoArea = new InfoArea();
+
+        return infoArea.render({
+            "activity": this.state.activity,
+            "alerts": this.state.alerts,
+            "dismissAlert": this.dismissAlert.bind(this),
+            "iso639": this.config.iso639,
+            "lesson": lesson,
+            "selectedType": this.selectedState.itemType,
+            "setActivity": this.setActivity.bind(this)
+        });
     }
 
     /**
