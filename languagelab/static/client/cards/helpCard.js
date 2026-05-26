@@ -26,7 +26,6 @@ export default class HelpCard {
      * @return {object}
      */
     cardText() {
-        console.log("cardText", this.props.helpItem);
         const element = document.createElement("p");
         element.classList.add("card-text");
         element.innerText = this.props.helpItem.description;
@@ -81,7 +80,6 @@ export default class HelpCard {
      */
     render(props) {
         this.props = props;
-        console.log("helpCard", this.props);
 
         const col = document.createElement("col");
         const element = document.createElement("div");

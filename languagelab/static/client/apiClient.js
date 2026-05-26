@@ -309,6 +309,7 @@ export default class LanguageLabClient {
             "body": JSON.stringify(data)
         };
 
+        console.log("login", options);
         return new Promise(async (resolve, reject) => {
             const res = await fetch(apiUrl, options);
 

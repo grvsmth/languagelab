@@ -260,12 +260,11 @@ export default class Navbar {
             "sticky-top"
         ]);
 
-        const children = [
+        element.append(
             this.navbarBrand(),
             this.toggler(),
             this.navContent()
-        ];
-        element.append(...children);
+        );
 
         return element;
     }

@@ -17,11 +17,13 @@
         <script type="module">
             import Lab from "/static/client/lab.js";
             import config from "/static/client/config.js";
+            import controls from "/static/client/controls.js";
             import help from "/static/client/help.js";
 
             const init = function() {
                 const lab = new Lab(config);
 
+                lab.setControls(controls);
                 lab.setHelp(help);
                 lab.setParentElement(document.body.querySelector("#lab"));
                 lab.render();

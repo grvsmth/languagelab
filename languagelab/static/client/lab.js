@@ -14,11 +14,9 @@
 /*
 import CardList from "./cardList.js";
 import InfoArea from "./infoArea.js";
-import LoadingModal from "./loadingModal.js";
-
-import controls from "./controls.js";
 */
 
+import LoadingModal from "./loadingModal.js";
 import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
 
@@ -36,26 +34,31 @@ const notLoading = {
 
 /** The main lab class. */
 export default class Lab {
+    /** Bind methods, instantiate API client and set default state */
     constructor(config) {
         this.config = config;
         this.help = {};
         this.parentElement = {};
+        const storageData = storageClient.launchData();
 
-        this.state = {
-            "currentUser": null
-        };
-    }
+        this.apiClient = new LanguageLabClient();
+        this.apiClient.setBaseUrl(this.config.api.baseUrl);
+        this.apiClient.setHandleToken(this.handleToken.bind(this));
+        if ("refreshThreshold" in this.config.api) {
+            this.apiClient.setRefreshThreshold(
+                this.config.api.refreshThreshold
+            );
+        }
 
-    setHelp(help) {
-        this.help = help;
-    }
+        if ("accessToken" in storageData && storageData.accessToken) {
+            const token = {
+                "access": storageData.accessToken,
+                "refresh": storageData.refreshToken
+            };
 
-    setParentElement(parentElement) {
-        this.parentElement = parentElement;
-    }
+            this.apiClient.setToken(token, storageData.tokenTime);
+        }
 
-    /** Bind methods, instantiate API client and set sefault state */
-    notConstructor(props) {
         this.checkClick = this.checkClick.bind(this);
         this.handleFetchError = this.handleFetchError.bind(this);
 
@@ -72,59 +75,82 @@ export default class Lab {
             "next": this.next.bind(this)
         };
 
-        const storageData = storageClient.launchData();
+        this.loadingState = {
+            "exercises": true,
+            "languages": true,
+            "lessons": true,
+            "media": true
+        };
 
-        this.apiClient = new LanguageLabClient();
-        this.apiClient.setBaseUrl(environment.api.baseUrl);
-        this.apiClient.setHandleToken(this.handleToken.bind(this));
-        if (Object.prototype.hasOwnProperty.call(
-            config.api, "refreshThreshold")
-        ) {
-            this.apiClient.setRefreshThreshold(config.api.refreshThreshold)
-        }
+        this.selectedState = {
+            "exercises": null,
+            "languages": null,
+            "lessons": null,
+            "media": null,
+            "itemType": "lessons"
+        };
 
-        if ("accessToken" in storageData && storageData.accessToken) {
-            const token = {
-                "access": storageData.accessToken,
-                "refresh": storageData.refreshToken
-            };
-
-            this.apiClient.setToken(token, storageData.tokenTime);
-        }
+        this.mimicCount = {};
 
         this.state = {
             "activity": "login",
             "alerts": [],
             "clickedAction": "",
-            "config": {},
-            "controls": controls,
             "currentUser": storageData.currentUser,
             "exercises": [],
             "languages": [],
             "lastUpdated": "",
             "lessons": [],
-            "loading": {
-                "exercises": true,
-                "languages": true,
-                "lessons": true,
-                "media": true
-            },
             "onlyExercise": true,
             "media": [],
-            "mimicCount": {},
             "nowPlaying": "",
-            "selected": {
-                "exercises": null,
-                "languages": null,
-                "lessons": null,
-                "media": null,
-                "itemType": "lessons"
-            },
             "status": "ready",
             "statusText": "Ready",
             "users": [],
             "userAudioUrl": ""
         };
+    }
+
+    setHelp(help) {
+        this.help = help;
+    }
+
+    setParentElement(parentElement) {
+        this.parentElement = parentElement;
+    }
+
+    setLoadingState(targetState) {
+        let currentlyLoading = false;
+
+        for (const property in notLoading) {
+            if (property in targetState) {
+                this.loadingState[property] = targetState[property];
+            }
+
+            if (this.loadingState[property]) {
+                currentlyLoading = true;
+            }
+        }
+
+        if (!currentlyLoading) {
+            this.render();
+        }
+    }
+
+    setMimicCount(property, count) {
+        this.mimicCount[property] = count;
+    }
+
+    setSelectedState(targetState) {
+        for (const property in targetState) {
+            this.selectedState[property] = targetState[property];
+        }
+    }
+
+    setState(targetState) {
+        for (const property in targetState) {
+            this.state[property] = targetState[property];
+        }
     }
 
     /**
@@ -165,15 +191,14 @@ export default class Lab {
      * @param {number} prevMimicCount - The previous mimicCount for this exercise
      */
     afterMimic(prevMimicCount) {
-        this.setState(prevState => ({
+        const prevSelectedState = this.selectedState;
+        this.setState({
             "status": "ready",
             "statusText": "Ready",
-            "clickedAction": null,
-            "mimicCount": {
-                ...prevState.mimicCount,
-                [prevState.selected.exercises]: prevMimicCount + 1
-            }
-        }));
+            "clickedAction": null
+        });
+
+        this.setMimicCount([prevSelectedState.exercises], prevMimicCount + 1);
     }
 
     /**
@@ -181,26 +206,22 @@ export default class Lab {
      *
      */
     fetchAll() {
-        const loading = {};
-
         this.apiClient.checkToken();
 
-        const thingsToLoad = config.api.models
+        const thingsToLoad = this.config.api.models
             .filter(model => !model.local)
             .map(model => model.endpoint);
 
         thingsToLoad.forEach((endpoint) => {
-            loading[endpoint] = true;
+            this.setLoadingState({[endpoint]: true});
             try {
                 this.fetchData(endpoint);
             } catch (err) {
                 this.handleFetchError(err);
             }
         });
-        this.setState({
-            "activity": "read",
-            "loading": loading
-        });
+
+        this.setState({"activity": "read"});
     }
 
     /**
@@ -210,22 +231,23 @@ export default class Lab {
      *
      * @param {string} dataType - the type of data to fetch from the API
      */
-    fetchData(dataType) {
+    async fetchData(dataType) {
         const loadTime = new moment();
-        const apiUrl = [
-            environment.api.baseUrl, dataType
-        ].join("/");
+        const apiUrl = [this.config.api.baseUrl, dataType].join("/");
 
-        this.apiClient.fetchData(apiUrl).then((res) => {
-            this.setState(prevState => ({
-                [dataType]: res,
-                "lastUpdated": loadTime.format(),
-                "loading": {
-                    ...prevState.loading,
-                    [dataType]: false
-                }
-            }));
-        }, this.handleFetchError);
+        let res = {};
+        try {
+            res = await this.apiClient.fetchData(apiUrl);
+        } catch (err) {
+            this.handleFetchError(err);
+        }
+
+        this.setState({
+            [dataType]: res,
+            "lastUpdated": loadTime.format()
+        });
+
+        this.setLoadingState({[dataType]: false});
     }
 
     /**
@@ -276,10 +298,8 @@ export default class Lab {
     handleForbidden() {
         const titleText = "Action forbidden";
         const errorMessage = "You do not have the right to do that";
-        this.setState({
-            "loading": notLoading,
-            "activity": "read"
-        });
+        this.setState({"activity": "read"});
+        this.setLoading(notLoading);
 
         if (!this.findAlert(titleText) && this.state.activity != "login") {
             this.addAlert(titleText, errorMessage);
@@ -361,14 +381,14 @@ export default class Lab {
         if (activity) {
             targetState.activity = activity;
         }
+
         if (resetSelected) {
-            targetState.selected = {
-                ...this.state.selected,
+            this.setSelectedState({
                 "exercises": null,
                 "languages": null,
                 "lessons": null,
                 "media": null
-            };
+            });
         }
 
         this.setState(targetState);
@@ -382,7 +402,7 @@ export default class Lab {
      */
     handleToken(res) {
         const loadTime = new moment();
-        if (!Object.prototype.hasOwnProperty.call(res, "access")) {
+        if (!("access" in res)) {
             throw new Error("No token in response");
         }
 
@@ -445,14 +465,15 @@ export default class Lab {
     async loginClick(event) {
         event.preventDefault();
         const options = {
-            "username": document.getElementById("username").value,
-            "password": document.getElementById("password").value
+            "username": document.querySelector("#username").value,
+            "password": document.querySelector("#password").value
         };
 
         let res = {};
         try {
             res = await this.apiClient.login(options);
         } catch (err) {
+            console.log("error", err);
             this.handleLoginError(err);
             return;
         }
@@ -468,9 +489,10 @@ export default class Lab {
         storageClient.clearAll();
         this.setState({
             "activity": "login",
-            "currentUser": null,
-            "loading": false
+            "currentUser": null
         });
+
+        this.setLoading(notLoading);
         return;
     }
 
@@ -481,7 +503,7 @@ export default class Lab {
      */
     removeFromQueue(queueItemId) {
         this.apiClient.delete(
-            environment.api.baseUrl, "queueItems", queueItemId
+            this.config.api.baseUrl, "queueItems", queueItemId
         ).then(() => {this.fetchData("lessons");}, this.handleFetchError
         );
     }
@@ -497,7 +519,7 @@ export default class Lab {
             "exercise": exerciseId,
             "lesson": lessonId
         };
-        this.apiClient.post(environment.api.baseUrl, "queueItems", queueItem)
+        this.apiClient.post(this.config.api.baseUrl, "queueItems", queueItem)
             .then(() => {
                 this.fetchData("lessons");
                 this.fetchData("exercises");
@@ -527,7 +549,7 @@ export default class Lab {
     checkClick(itemType, itemId, itemKey, itemChecked) {
         event.preventDefault();
         const payload = {[itemKey]: itemChecked};
-        this.apiClient.patch(environment.api.baseUrl, itemType, payload, itemId)
+        this.apiClient.patch(this.config.api.baseUrl, itemType, payload, itemId)
             .then((res) => {
             this.updateStateItem(res, itemType);
         }, this.handleFetchError
@@ -542,16 +564,13 @@ export default class Lab {
      * @param {string} activity - an optional activity to set in the state
      */
     selectItem(itemId, activity=null) {
-        const targetState = {
-            "selected": {
-                ...this.state.selected,
-                [this.state.selected.itemType]: itemId
-            }
-        };
+        const prevSelectedState = this.selectedState;
+        this.selectedState[prevSelectedState.itemType] = itemId;
+
         if (activity) {
-            targetState.activity = activity;
+            this.setState({"activity": activity});
         }
-        this.setState(targetState);
+
     }
 
     /**
@@ -577,7 +596,7 @@ export default class Lab {
      */
     toggleLesson(lessonId) {
         if (this.state.activity === "do"
-            && this.state.selected.lessons == lessonId) {
+            && this.selectedState.lessons == lessonId) {
             this.readMode();
             return;
         }
@@ -589,7 +608,8 @@ export default class Lab {
      * and end times
      */
     toggleOnlyExercise() {
-        this.setState(prevState => ({"onlyExercise": !prevState.onlyExercise}));
+        const prevState = this.state;
+        this.setState({"onlyExercise": !prevState.onlyExercise});
     }
 
     /**
@@ -609,25 +629,23 @@ export default class Lab {
         const exercise = util.findItem(this.state.exercises, exerciseId);
         const mediaItem = util.findItem(this.state.media, exercise.media);
 
-        if (!Object.prototype.hasOwnProperty.call(mediaItem, "mediaUrl")) {
+        if (!("mediaUrl" in mediaItem)) {
             this.addAlert("Media error", "Unable to find media for exercise!");
             return;
         }
 
-        const targetState = {
+        this.setState({
             "activity": "do",
             "mediaStatus": "loading",
-            "nowPlaying": mediaItem.mediaUrl,
-            "selected": {
-                ...this.state.selected,
-                "exercises": exerciseId
-            }
-        };
+            "nowPlaying": mediaItem.mediaUrl
+        });
 
+        const targetSelected = {"exercises": exerciseId};
         if (lessonId) {
-            targetState.selected.lessons = lessonId;
+            targetSelected.lessons = lessonId;
         }
-        this.setState(targetState);
+
+        this.setSelected(targetSelected);
     }
 
     /**
@@ -638,14 +656,12 @@ export default class Lab {
      * @param {number} lessonId - the selected lesson (optional)
      */
     setActivity(activity, exerciseId=null, lessonId=null) {
-        this.setState((prevState) => ({
-            "activity": activity,
-            "selected": {
-                ...prevState.selected,
-                "exercises": exerciseId,
-                "lessons": lessonId
-            }
-        }));
+        this.state.activity = activity;
+
+        this.setSelectedState({
+            "exercises": exerciseId,
+            "lessons": lessonId
+        });
     }
 
     /**
@@ -655,7 +671,7 @@ export default class Lab {
      * @param {number} itemId - the ID of the item to delete
      */
     deleteClick(itemType, itemId) {
-        this.apiClient.delete(environment.api.baseUrl, itemType, itemId)
+        this.apiClient.delete(this.config.api.baseUrl, itemType, itemId)
             .then(this.fetchAll.bind(this), this.handleFetchError);
     }
 
@@ -669,7 +685,7 @@ export default class Lab {
      */
     saveItem(item, itemType, itemId) {
         if (itemId) {
-            this.apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
+            this.apiClient.patch(this.config.api.baseUrl, itemType, item, itemId)
                 .then((res) => {
                     this.updateStateItem(res.response, itemType, "read", true);
                     this.fetchData(itemType);
@@ -679,7 +695,7 @@ export default class Lab {
             if (itemType === "lessons") {
                 item.level = parseInt(item.level);
             }
-            this.apiClient.post(environment.api.baseUrl, itemType, item).then(
+            this.apiClient.post(this.config.api.baseUrl, itemType, item).then(
                 (res) => {
                     this.updateStateItem(res.response, itemType, "read", true);
                     this.fetchData(itemType);
@@ -695,7 +711,7 @@ export default class Lab {
      */
     up(itemId) {
         this.apiClient.patch(
-            environment.api.baseUrl, "queueItems", {"item": itemId}, "up"
+            this.config.api.baseUrl, "queueItems", {"item": itemId}, "up"
         ).then(
             () => {this.fetchData("lessons");}, this.handleFetchError
         );
@@ -708,7 +724,7 @@ export default class Lab {
      */
     down(itemId) {
         this.apiClient.patch(
-            environment.api.baseUrl, "queueItems", {"item": itemId}, "down"
+            this.config.api.baseUrl, "queueItems", {"item": itemId}, "down"
         ).then(
             () => {this.fetchData("lessons");}, this.handleFetchError
         );
@@ -720,12 +736,12 @@ export default class Lab {
      * @return {number}
      */
     maxRank() {
-        if (!this.state.selected.lessons) {
+        if (!this.selectedState.lessons) {
             return 0;
         }
 
         const lesson = util.findItem(
-            this.state.lessons, this.state.selected.lessons
+            this.state.lessons, this.selectedState.lessons
         );
 
         if (lesson.queueItems.length < 1) {
@@ -748,7 +764,7 @@ export default class Lab {
      */
     selectByRank(rank) {
         const lesson = util.findItem(
-            this.state.lessons, this.state.selected.lessons
+            this.state.lessons, this.selectedState.lessons
         );
 
         const queueItem = lesson.queueItems.find(
@@ -767,14 +783,13 @@ export default class Lab {
             return;
         }
 
-        this.setState((prevState) => ({
+        const prevState = this.state;
+        this.setState({
             "activity": "loadExercise",
-            "nowPlaying": mediaItem.mediaUrl,
-            "selected": {
-                ...prevState.selected,
-                "exercises": queueItem.exercise
-            }
-        }));
+            "nowPlaying": mediaItem.mediaUrl
+        });
+
+        this.selectedState.exercises = queueItem.exercise;
     }
 
     /**
@@ -820,7 +835,7 @@ export default class Lab {
      */
     exportData(control) {
         const apiUrl = [
-            environment.api.baseUrl, control.endpoint
+            this.config.api.baseUrl, control.endpoint
         ].join("/");
 
         this.apiClient.fetchData(apiUrl).then((res) => {
@@ -846,11 +861,11 @@ export default class Lab {
     playModel(increment) {
         const exercise = util.findItem(
             this.state.exercises,
-            this.state.selected.exercises
+            this.selectedState.exercises
         );
 
         const mediaItem = util.findItem(this.state.media, exercise.media);
-        if (!Object.prototype.hasOwnProperty.call(mediaItem, "mediaUrl")) {
+        if (!("mediaUrl" in mediaItem)) {
             this.addAlert("Media error", "Unable to find media for exercise!");
             return;
         }
@@ -892,7 +907,7 @@ export default class Lab {
         }
 
         /*
-        if (this.state.loading[this.state.selected.itemType]) {
+        if (this.loadingState[this.selectedState.itemType]) {
             return null;
         }
 
@@ -900,7 +915,7 @@ export default class Lab {
             CardList,
             {
                 "checkClick": this.checkClick,
-                "config": this.state.config,
+                "config": this.config,
                 "deleteClick": this.deleteClick.bind(this),
                 "doButton": config.doButton,
                 "doFunction": {
@@ -940,15 +955,16 @@ export default class Lab {
             "activity": "read",
             "clickedAction": null,
             "nowPlaying": null,
-            "selected": {
-                "exercises": null,
-                "itemType": itemType,
-                "languages": null,
-                "lessons": null,
-                "media": null
-            },
             "status": "ready",
             "statusText": ""
+        });
+
+        this.setSelectedState({
+            "exercises": null,
+            "itemType": itemType,
+            "languages": null,
+            "lessons": null,
+            "media": null
         });
     }
 
@@ -962,9 +978,9 @@ export default class Lab {
             "version": this.config.version
         };
         /*
-                "config": this.state.config,
+                "config": this.config,
                 "navClick": this.readMode.bind(this),
-                "selectedType": this.state.selected.itemType,
+                "selectedType": this.selectedState.itemType,
         */
 
         return nav.render(props);
@@ -989,7 +1005,7 @@ export default class Lab {
         return document.createElement("div");
         /*
         const lesson = util.findItem(
-            this.state.lessons, this.state.selected.lessons
+            this.state.lessons, this.selectedState.lessons
         );
 
         return React.createElement(
@@ -998,9 +1014,9 @@ export default class Lab {
                 "activity": this.state.activity,
                 "alerts": this.state.alerts,
                 "dismissAlert": this.dismissAlert.bind(this),
-                "iso639": config.iso639,
+                "iso639": this.config.iso639,
                 "lesson": lesson,
-                "selectedType": this.state.selected.itemType,
+                "selectedType": this.selectedState.itemType,
                 "setActivity": this.setActivity.bind(this)
             },
             null
@@ -1014,19 +1030,17 @@ export default class Lab {
      * @return {object}
      */
     loadingModal() {
-        const localTypes = config.api.models
+        const localTypes = this.config.api.models
             .filter(model => model.local)
             .map(model => model.endpoint);
 
-        return React.createElement(
-            LoadingModal,
-            {
-                "activity": this.state.activity,
-                "itemType": this.state.selected.itemType,
-                "loading": this.state.loading,
-                "localTypes": localTypes
-            }
-        );
+        const loadingModal = new LoadingModal();
+        return loadingModal.render({
+            "activity": this.state.activity,
+            "itemType": this.selectedState.itemType,
+            "loading": this.loadingState,
+            "localTypes": localTypes
+        });
     }
 
     /** The React render function, displaying the root element */
@@ -1035,13 +1049,11 @@ export default class Lab {
             const containerElement = document.createElement("div");
             containerElement.classList.add("container-fluid");
 
-/*
-                this.loadingModal()
-*/
             const children = [
                 this.nav(),
                 this.infoArea(),
-                this.body()
+                this.body(),
+                this.loadingModal()
             ];
             containerElement.append(...children);
 
