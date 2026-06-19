@@ -108,6 +108,10 @@ export default class Lab {
         };
     }
 
+    setControls(controls) {
+        this.controls = controls;
+    }
+
     setHelp(help) {
         this.help = help;
     }
