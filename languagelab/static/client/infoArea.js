@@ -24,23 +24,6 @@ export default class InfoArea {
     }
 
     /**
-     * A span to make the Bootstrap dismiss icon look nice
-     *
-     * @param {string} id - the ID of the alert (or "queue") for the handler
-     * @param {string} text - text to display with the button
-     *
-     * @return {object}
-     */
-    dismissSpan(id, text=null) {
-        const element = document.createElement("span");
-        element.addEventListener("llick", this.dismissHandler.bind(this, id));
-
-        element.append("×", text);
-
-        return element;
-    }
-
-    /**
      * A dismiss button for the alert or queue
      *
      * @param {string} id - the ID of the alert (or "queue") for the handler
@@ -50,10 +33,11 @@ export default class InfoArea {
      */
     dismissButton(id, text=null) {
         const element = document.createElement("button");
-        element.classList.add("close");
-        element.type = "button";
+        element.classList.add("btn-close");
+        element.dataset.bsDismiss = "alert";
 
-        element.append(this.dismissSpan(id, text));
+        element.setAttribute("aria-label", "close");
+        element.type = "button";
 
         return element;
     }
@@ -67,7 +51,7 @@ export default class InfoArea {
      */
     alertTitle(alert) {
         const element = document.createElement("strong");
-        element.classList.add("mr-1");
+        element.classList.add("me-1");
 
         element.append(alert.title);
 
@@ -84,7 +68,7 @@ export default class InfoArea {
     alertDiv(alert) {
         const statusClass = "alert-" + alert.status;
         const element = document.createElement("div");
-        element.classList.add("alert", "alert-dismissible " + statusClass);
+        element.classList.add("alert", "alert-dismissible", statusClass);
         element.role = "alert";
         element.id = "alert_" + alert.id;
 
@@ -162,9 +146,9 @@ export default class InfoArea {
      */
     body() {
         const element = document.createElement("div");
-        element.classList.add("sticky-top");
 
-        element.append(this.alertSeries(), this.lessonQueueHeader());
+        element.classList.add("sticky-top");
+        element.append(...this.alertSeries(), this.lessonQueueHeader());
 
         return element;
     }

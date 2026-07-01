@@ -266,7 +266,7 @@ export default class Lab {
             "message": message
         };
         console.log(alert);
-        // this.updateStateItem(alert, "alerts");
+        this.updateStateItem(alert, "alerts");
     }
 
     /**
@@ -287,6 +287,7 @@ export default class Lab {
         const errorMessage = "Please try logging in again";
         if (!this.findAlert(titleText) && this.state.activity != "login") {
             this.addAlert(titleText, errorMessage);
+            this.render();
         }
 
         this.logout();
@@ -331,7 +332,6 @@ export default class Lab {
         }
 
         if ("statusText" in err) {
-            console.log("err.statusText", err.statusText);
             this.addAlert("Fetch error", err.statusText);
 
             if (err.statusText === "Token has expired") {
@@ -447,7 +447,7 @@ export default class Lab {
         let alertText = "There was an error logging you in.";
 
         if ("statusText" in err) {
-            alertText = "statusText (" + err.status + "): " + err.statusText;
+            alertText = err.statusText;
         }
 
         if (err.status === 400) {
@@ -455,6 +455,7 @@ export default class Lab {
         }
 
         this.addAlert("Unable to log in", alertText);
+        this.render();
     }
 
     /**
@@ -474,7 +475,7 @@ export default class Lab {
         try {
             res = await this.apiClient.login(options);
         } catch (err) {
-            console.log("error", err);
+            console.log("login error", err);
             this.handleLoginError(err);
             return;
         }
