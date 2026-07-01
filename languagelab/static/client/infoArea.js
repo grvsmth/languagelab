@@ -187,7 +187,6 @@ export default class InfoArea {
      * @return {object}
      */
     render(props) {
-        console.log("infoArea", props);
         this.props = props;
 
         if (this.props.alerts.length || this.props.activity === "editQueue") {

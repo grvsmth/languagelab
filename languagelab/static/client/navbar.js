@@ -12,6 +12,7 @@
 /** Navigation bar for the LanguageLab client */
 export default class Navbar {
     constructor(config) {
+        console.log("config", config);
         this.config = config;
     }
 
@@ -40,7 +41,7 @@ export default class Navbar {
         }
 
         const element = document.createElement("li");
-        element.classList.add("navbar-text", "mr-2");
+        element.classList.add("nav-item", "me-2");
 
         element.innerText = "v. " + this.props.version;
 
@@ -114,7 +115,7 @@ export default class Navbar {
             return null;
         }
 
-        if (!model.nonStaff && this.props.config.staffCanWrite) {
+        if (!model.nonStaff && this.props.staffCanWrite) {
             if (!this.props.currentUser.is_staff) {
                 return null;
             }
@@ -140,16 +141,15 @@ export default class Navbar {
      */
     welcomeItem() {
         if (!this.props.currentUser) {
+            console.log("returning null");
             return null;
         }
 
-        const element = document.createElement(
-            "li",
-            {
-                "className": "navbar-text text-success"
-            },
-            `Welcome ${this.props.currentUser.username}!`
-        )
+        const element = document.createElement("li");
+        element.classList.add("nav-item", "text-success");
+        element.innerText = `Welcome ${this.props.currentUser.username}!`;
+
+        return element;
     }
 
     /**
@@ -158,22 +158,19 @@ export default class Navbar {
      * @return {object}
      */
     navUl() {
-        return null;
         if (!this.props.currentUser) {
             return null;
         }
 
         const element = document.createElement("ul");
-        element.classList.add("navbar-nav", "mr-auto");
+        element.classList.add("navbar-nav", "me-auto");
 
         element.append(
-            this.versionText()
+            this.props.models.map(this.navItem.bind(this)),
+            this.versionText(),
+            this.welcomeItem()
         );
 
-        /*
-            this.welcomeItem(),
-            this.props.models.map(this.navItem.bind(this))
-        */
         return element;
     }
 
@@ -232,8 +229,8 @@ export default class Navbar {
         const toggler = document.createElement("button");
         toggler.classList.add("navbar-toggler");
         toggler.type = "button";
-        toggler.dataset.toggle = "collapse";
-        toggler.dataset.target = "#navContent";
+        toggler.dataset.bsToggle = "collapse";
+        toggler.dataset.bsTarget = "#navContent";
         toggler.setAttribute("aria-controls", "navContent");
         toggler.setAttribute("aria-expanded", false);
         toggler.setAttribute("aria-label", "Toggle navigation");
@@ -250,15 +247,15 @@ export default class Navbar {
      */
     render(props={}) {
         this.props = props;
+        console.log("nav", props);
 
         const element = document.createElement("nav");
-        element.classList.add([
+        element.classList.add(
             "navbar",
             "navbar-expand-md",
-            "navbar-light",
-            "bg-light",
+            "bg-body-tertiary",
             "sticky-top"
-        ]);
+        );
 
         element.append(
             this.navbarBrand(),

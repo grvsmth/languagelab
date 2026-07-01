@@ -37,6 +37,7 @@ export default class Lab {
         this.help = {};
         this.parentElement = {};
         const storageData = storageClient.launchData();
+        console.log("storageData", storageData);
 
         this.apiClient = new LanguageLabClient();
         this.apiClient.setBaseUrl(this.config.api.baseUrl);
@@ -90,7 +91,7 @@ export default class Lab {
         this.mimicCount = {};
 
         this.state = {
-            "activity": "login",
+            "activity": "read",
             "alerts": [],
             "clickedAction": "",
             "currentUser": storageData.currentUser,
@@ -978,13 +979,11 @@ export default class Lab {
             "currentUser": this.state.currentUser,
             "logout": this.logout.bind(this),
             "models": this.config.api.models,
+            "navClick": this.readMode.bind(this),
+            "selectedType": this.selectedState.itemType,
+            "staffCanWrite": this.config.staffCanWrite,
             "version": this.config.version
         };
-        /*
-                "config": this.config,
-                "navClick": this.readMode.bind(this),
-                "selectedType": this.selectedState.itemType,
-        */
 
         return nav.render(props);
     }
