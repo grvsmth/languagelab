@@ -126,7 +126,7 @@ export default class CardList {
                 "className": "btn btn-primary",
                 "onClick": this.addClick.bind(this)
             },
-            "Add " + typeInfo[this.props.state.selected.itemType].singular
+            "Add " + typeInfo[this.props.selected.itemType].singular
         );
     }
 
@@ -178,7 +178,7 @@ export default class CardList {
         if (!selection.exercise) {
             return null;
         }
-        return util.findItem(this.props.state.exercises, selection.exercise);
+        return util.findItem(this.props.data.exercises, selection.exercise);
     }
 
     /**
@@ -239,7 +239,7 @@ export default class CardList {
             );
 
             const previousExercise = util.findItem(
-                this.props.state.exercises,
+                this.props.data.exercises,
                 previousQueueItem.exercise
             );
             if (previousExercise) {
@@ -253,7 +253,7 @@ export default class CardList {
             );
 
             const nextExercise = util.findItem(
-                this.props.state.exercises,
+                this.props.data.exercises,
                 nextQueueItem.exercise
             );
             if (nextExercise) {
@@ -310,11 +310,11 @@ export default class CardList {
      */
     doCard(key, exercise) {
         const lesson = util.findItem(
-            this.props.state.lessons, this.props.state.selected.lessons
+            this.props.data.lessons, this.props.selected.lessons
         );
 
         const mediaItem = util.findItem(
-            this.props.state.media, exercise.media
+            this.props.data.media, exercise.media
         );
 
         const rank = this.exerciseRank(lesson, exercise);
@@ -350,14 +350,14 @@ export default class CardList {
      * @return {object}
      */
     mediaCard(mediaItem) {
-        var cardComponent = MediaCard;
+        let cardComponent = MediaCard;
 
-        if (this.props.state.activity === "edit"
-            && this.props.state.selected.media === mediaItem.id) {
+        if (this.props.activity === "edit"
+            && this.props.selected.media === mediaItem.id) {
             cardComponent = MediaFormCard;
         }
 
-        if (this.props.state.activity === "add"
+        if (this.props.activity === "add"
             && typeof mediaItem.id !== "number"
             ) {
             cardComponent = MediaFormCard;
@@ -370,11 +370,11 @@ export default class CardList {
                 "deleteClick": this.props.deleteClick,
                 "id": mediaItem.id,
                 "key": mediaItem.id,
-                "languages": this.props.state.languages,
+                "languages": this.props.data.languages,
                 "mediaItem": mediaItem,
                 "saveItem": this.props.saveItem,
                 "selectItem": this.props.selectItem,
-                "selectedItem": this.props.state.selected.media,
+                "selectedItem": this.props.selected.media,
                 "setActivity": this.props.setActivity,
                 "itemUser": this.itemUser(mediaItem)
             },
@@ -391,14 +391,14 @@ export default class CardList {
      * @return {object}
      */
     languageCard(language) {
-        var cardComponent = LanguageCard;
+        let cardComponent = LanguageCard;
 
-        if (this.props.state.activity === "edit"
-            && this.props.state.selected.languages === language.id) {
+        if (this.props.activity === "edit"
+            && this.props.selected.languages === language.id) {
             cardComponent = LanguageFormCard;
         }
 
-        if (this.props.state.activity === "add"
+        if (this.props.activity === "add"
             && typeof language.id !== "number"
             ) {
             cardComponent = LanguageFormCard;
@@ -427,9 +427,9 @@ export default class CardList {
      * @return {object}
      */
     lessonCard(lesson) {
-        var cardComponent = LessonCard;
+        let cardComponent = LessonCard;
 
-        if (this.props.state.activity === "editQueue") {
+        if (this.props.activity === "editQueue") {
             /**
              * This is actually an exercise retrieved by queueExercise(), not
              * a lesson!
@@ -437,36 +437,36 @@ export default class CardList {
             return this.exerciseCard(lesson);
         }
 
-        const selected = this.props.state.selected.lessons === lesson.id;
+        const selected = this.props.selected.lessons === lesson.id;
 
-        if (doActivities.includes(this.props.state.activity) && selected) {
+        if (doActivities.includes(this.props.activity) && selected) {
             const exercise = util.findItem(
-                this.props.state.exercises, this.props.state.selected.exercises
+                this.props.data.exercises, this.props.selected.exercises
             );
             return this.doCard(lesson.id, exercise);
         }
 
-        if (this.props.state.activity === "edit" && selected) {
+        if (this.props.activity === "edit" && selected) {
             cardComponent = LessonFormCard;
         }
 
-        if (this.props.state.activity === "add"
+        if (this.props.activity === "add"
             && typeof lesson.id !== "number"
         ) {
             cardComponent = LessonFormCard;
         }
 
         let canWrite = true;
-        if (this.props.config.staffCanWrite
-            && !this.props.state.currentUser.is_staff) {
+        if (this.props.staffCanWrite
+            && !this.props.currentUser.is_staff) {
                 canWrite = false;
         }
 
         const options = {
-            "activity": this.props.state.activity,
+            "activity": this.props.activity,
             "canWrite": canWrite,
             "deleteClick": this.props.deleteClick,
-            "exercisesLoading": this.props.state.loading.exercises,
+            "exercisesLoading": this.props.loading.exercises,
             "itemUser": this.itemUser(lesson),
             "key": lesson.id,
             "lesson": lesson,
@@ -492,14 +492,14 @@ export default class CardList {
      * @return {object}
      */
     exerciseFormCard(exercise) {
-        var options = {
+        let options = {
             "key": exercise.id,
             "exercise": exercise,
             "itemUser": this.itemUser(exercise),
-            "media": this.props.state.media,
+            "media": this.props.data.media,
             "setActivity": this.props.setActivity,
             "saveItem": this.props.saveItem,
-            "selectedType": this.props.state.selected.itemType
+            "selectedType": this.props.selected.itemType
         };
 
         const element = document.createElement(
@@ -519,41 +519,41 @@ export default class CardList {
      * @return {object}
      */
     exerciseCard(exercise) {
-        const mediaItem = util.findItem(this.props.state.media, exercise.media);
+        const mediaItem = util.findItem(this.props.data.media, exercise.media);
         const lesson = util.findItem(
-            this.props.state.lessons, this.props.state.selected.lessons
+            this.props.data.lessons, this.props.selected.lessons
         );
 
-        if (this.props.state.selected.exercises === exercise.id) {
-            if (["edit", "add"].includes(this.props.state.activity)) {
+        if (this.props.selected.exercises === exercise.id) {
+            if (["edit", "add"].includes(this.props.activity)) {
                 return this.exerciseFormCard(exercise);
             }
 
-            if (doActivities.includes(this.props.state.activity)) {
+            if (doActivities.includes(this.props.activity)) {
                 return this.doCard(exercise.id, exercise);
             }
         }
 
         let canWrite = true;
-        if (this.props.config.staffCanWrite
-            && !this.props.state.currentUser.is_staff) {
+        if (this.props.staffCanWrite
+            && !this.props.currentUser.is_staff) {
                 canWrite = false;
         }
 
-        var options = {
-            "activity": this.props.state.activity,
+        let options = {
+            "activity": this.props.activity,
             "canWrite": canWrite,
             "checkClick": this.props.checkClick,
             "deleteClick": this.props.deleteClick,
             "exercise": exercise,
             "key": exercise.id,
             "itemUser": this.itemUser(exercise),
-            "lessons": this.props.state.lessons,
+            "lessons": this.props.data.lessons,
             "mediaItem": mediaItem,
             "maxRank": this.props.maxRank(),
             "queueClick": this.props.queueClick,
             "queueItem": this.queueItem(lesson, exercise),
-            "selectedType": this.props.state.selected.itemType,
+            "selectedType": this.props.selected.itemType,
             "selectItem": this.props.selectItem,
             "startExercise": this.props.startExercise
         };
@@ -573,13 +573,13 @@ export default class CardList {
      *
      * @return {object}
      */
-    itemUser(item, type=this.props.state.selected.itemType) {
-        if (!this.props.state.users) {
+    itemUser(item, type=this.props.selected.itemType) {
+        if (!this.props.data.users) {
             return null;
         }
 
         const userFieldName = typeInfo[type].userField;
-        const user = util.findItem(this.props.state.users, item[userFieldName]);
+        const user = util.findItem(this.props.data.users, item[userFieldName]);
 
         return user;
     }
@@ -591,7 +591,7 @@ export default class CardList {
      * @return {object}
      */
     makeElement(item) {
-        return this.itemCard[this.props.state.selected.itemType](item);
+        return this.itemCard[this.props.selected.itemType](item);
     }
 
     /**
@@ -608,21 +608,20 @@ export default class CardList {
             return null;
         }
 
-        if (this.props.state.config.staffCanWrite
-            && !this.props.state.currentUser.is_staff) {
+        if (this.props.staffCanWrite
+            && !this.props.currentUser.is_staff) {
                 return null;
         }
 
-        const selectedState = this.props.state.selected;
         if (cardId === "initial"
-            && !this.props.state[selectedState.itemType].length) {
+            && !this.props.state[this.props.selected.itemType].length) {
             return null;
         }
 
-        if (this.props.state.activity === "add"
-            && selectedState[selectedState.itemType] === cardId
+        if (this.props.activity === "add"
+            && selectedState[this.props.selected.itemType] === cardId
             ) {
-            return this.itemCard[selectedState.itemType](
+            return this.itemCard[this.props.selected.itemType](
                 {"id": cardId}
             );
         }
@@ -642,12 +641,12 @@ export default class CardList {
             return Object.values(help);
         }
 
-        if (this.props.state.activity !== "editQueue") {
+        if (this.props.activity !== "editQueue") {
             return this.props.state[itemType];
         }
 
         const lesson = util.findItem(
-            this.props.state.lessons, this.props.state.selected.lessons
+            this.props.data.lessons, this.props.selected.lessons
         );
         return lesson.queueItems.map(this.queueExercise.bind(this));
     }
@@ -663,13 +662,8 @@ export default class CardList {
         const items = itemType === "help" ?
             Object.values(help) : this.props.state[itemType];
 
-        if (!items.length || !Object.prototype.hasOwnProperty.call(
-            typeInfo[itemType],
-            "card"
-            )
-        ) {
-
-            if (Object.prototype.hasOwnProperty.call(help, itemType)) {
+        if (!items.length || !("card" in typeInfo[itemType])) {
+            if (itemType in help) {
                 return this.helpCard(help[itemType]);
             }
 

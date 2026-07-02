@@ -88,13 +88,21 @@ export default class Lab {
             "itemType": "lessons"
         };
 
+        this.data = {
+            "currentUser": storageData.currentUser,
+            "exercises": [],
+            "languages": [],
+            "lessons": [],
+            "media": [],
+            "users": []
+        };
+
         this.mimicCount = {};
 
         this.state = {
             "activity": "read",
             "alerts": [],
             "clickedAction": "",
-            "currentUser": storageData.currentUser,
             "exercises": [],
             "languages": [],
             "lastUpdated": "",
@@ -244,10 +252,8 @@ export default class Lab {
             this.handleFetchError(err);
         }
 
-        this.setState({
-            [dataType]: res,
-            "lastUpdated": loadTime.format()
-        });
+        this.data[dataType] = res;
+        this.setState({"lastUpdated": loadTime.format()});
 
         this.setLoadingState({[dataType]: false});
     }
@@ -490,10 +496,8 @@ export default class Lab {
      */
     logout() {
         storageClient.clearAll();
-        this.setState({
-            "activity": "login",
-            "currentUser": null
-        });
+        this.setState({"activity": "login"});
+        this.data.currentUser = null;
 
         this.setLoading(notLoading);
         return;
@@ -898,7 +902,7 @@ export default class Lab {
      */
     body() {
         console.log("body", this.state);
-        if (!this.state.currentUser) {
+        if (!this.data.currentUser) {
             const loginForm = new LoginForm();
 
             return loginForm.render(
@@ -917,6 +921,7 @@ export default class Lab {
         const cardList = new CardList();
         return cardList.render({
             "activity": this.state.activity,
+            "data": this.data,
             "selected": this.selectedState
         });
 
@@ -975,7 +980,7 @@ export default class Lab {
     nav() {
         const nav = new Navbar(this.config.ui);
         const props = {
-            "currentUser": this.state.currentUser,
+            "currentUser": this.data.currentUser,
             "logout": this.logout.bind(this),
             "models": this.config.api.models,
             "navClick": this.readMode.bind(this),
@@ -1041,6 +1046,7 @@ export default class Lab {
 
     /** The React render function, displaying the root element */
     render() {
+        console.log("lab", this.state);
         try {
             const containerElement = document.createElement("div");
             containerElement.classList.add("container-fluid");

@@ -37,7 +37,7 @@ export default class Navbar {
      */
     versionText() {
         if (!this.props.version) {
-            return null;
+            return "";
         }
 
         const element = document.createElement("li");
@@ -120,8 +120,7 @@ export default class Navbar {
      */
     welcomeItem() {
         if (!this.props.currentUser) {
-            console.log("returning null");
-            return null;
+            return "";
         }
 
         const element = document.createElement("li");
@@ -138,7 +137,7 @@ export default class Navbar {
      */
     navUl() {
         if (!this.props.currentUser) {
-            return null;
+            return "";
         }
 
         const element = document.createElement("ul");
@@ -160,7 +159,7 @@ export default class Navbar {
      */
     logoutButton() {
         if (!this.props.currentUser) {
-            return null;
+            return "";
         }
 
         const element = document.createElement("button");
