@@ -7,14 +7,15 @@
 
 /*
 
-    global React, moment, PropTypes
+    global moment
 
 */
+
 import config from "./config.js";
 import commonElements from "./commonElements.js";
 import util from "./util.js";
 
-export default class LessonCard extends React.Component {
+export default class LessonCard {
 
     /** Call toggleLesson in the lab element, passing the lesson id */
     toggleLesson() {
@@ -27,11 +28,11 @@ export default class LessonCard extends React.Component {
      * @return {object}
      */
     itemTitle() {
-        return React.createElement(
-            "h5",
-            {"className": "card-title"},
-            this.props.lesson.name
-        );
+        const element = document.createElement("h5");
+        element.classList.add("card-title");
+        element.innerText = this.props.lesson.name;
+
+        return element;
     }
 
     /**
@@ -41,14 +42,14 @@ export default class LessonCard extends React.Component {
      */
     bySpan() {
         if (!this.props.itemUser) {
-            return null;
+            return "";
         }
 
-        return React.createElement(
-            "span",
-            {"className": "text-info"},
-            this.props.itemUser.username
-        );
+        const element = document.createElement("span");
+        element.classList.add("text-info");
+        element.innerText = this.props.itemUser.username;
+
+        return element;
     }
 
     /**
@@ -60,14 +61,16 @@ export default class LessonCard extends React.Component {
         const createdText = new moment(this.props.lesson.created)
             .format(config.dateTimeFormat);
 
-        return React.createElement(
-            "h6",
-            {"className": "card-subtitle text-dark"},
+        const element = document.createElement("h6");
+        element.classList.add("card-subtitle", "text-dark");
+        element.append(
             `${this.props.lesson.description} (level ${this.props.lesson.level},
               created ${createdText} by `,
             this.bySpan(),
             ")"
         );
+
+        return element;
     }
 
     /**
@@ -92,11 +95,12 @@ export default class LessonCard extends React.Component {
      * @return {object}
      */
     editLink() {
-        return React.createElement(
-            "a",
-            {"className": "text-primary", "onClick": this.editClick.bind(this)},
-            "edit"
-        );
+        const element = document.createElement("a");
+        element.classList.add("text-primary");
+        element.addEventListener("click", this.editClick.bind(this));
+        element.innerText = "edit";
+
+        return element;
     }
 
     /**
@@ -105,14 +109,12 @@ export default class LessonCard extends React.Component {
      * @return {object}
      */
     deleteLink() {
-        return React.createElement(
-            "a",
-            {
-                "className": "text-danger",
-                "onClick": this.deleteClick.bind(this)
-            },
-            "delete"
-        );
+        const element = document.createElement("a");
+        element.classList.add("text-danger");
+        element.addEventListener("click", this.deleteClick.bind(this));
+
+        element.innerText = "delete";
+        return element;
     }
 
     /**
@@ -129,13 +131,15 @@ export default class LessonCard extends React.Component {
             return null;
         }
 
-        return React.createElement(
-            "div",
-            {},
+        const element = document.createElement("div");
+
+        element.append(
             this.editLink(),
             " ",
             this.deleteLink()
         );
+
+        return element;
     }
 
     /**
@@ -144,11 +148,10 @@ export default class LessonCard extends React.Component {
      * @return {object}
      */
     notesDiv() {
-        return React.createElement(
-            "div",
-            {},
-            this.props.lesson.notes
-        );
+        const element = document.createElement("div");
+        element.innerText = this.props.lesson.notes;
+
+        return element;
     }
 
     /**
@@ -160,23 +163,22 @@ export default class LessonCard extends React.Component {
         const actionInfo = this.props.selected ? "End lesson": "Start lesson";
         const colorClass = this.props.selected ? "btn-secondary" : "btn-info";
 
-        const classList = [
+        const element = document.createElement("button");
+        element.type = "button";
+
+        element.classList.add(
             "btn",
             "btn-sm",
             "ml-2",
             colorClass
-        ];
-
-        return React.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": classList.join(" "),
-                "disabled": disabled,
-                "onClick": this.toggleLesson.bind(this)
-            },
-            actionInfo
         );
+
+        element.disabled = disabled;
+        element.addEventListener("click", this.toggleLesson.bind(this));
+
+        element.innerText = actionInfo;
+
+        return element;
     }
 
     /** Set the editQueue activity in lab state */
@@ -194,16 +196,16 @@ export default class LessonCard extends React.Component {
             return null;
         }
 
-        return React.createElement(
-            "button",
-            {
-                "className": "btn btn-sm btn-primary ml-2",
-                "onClick": this.editQueue.bind(this),
-                "disabled": disabled,
-                "type": "button"
-            },
-            "Edit queue"
-        );
+        const element = document.createElement("button");
+
+        element.classList.add("btn", "btn-sm", "btn-primary", "ml-2");
+        element.addEventListener("click", this.editQueue.bind(this));
+
+        element.disabled = disabled;
+        element.type = "button";
+
+        element.innerText = "Edit queue";
+        return element;
     }
 
     /**
@@ -217,13 +219,16 @@ export default class LessonCard extends React.Component {
         const disabled = this.props.lesson.queueItems.length < 1
             || this.props.exercisesLoading;
 
-        return React.createElement(
-            "div",
-            {"className": "pt-1"},
+        const element = document.createElement("div");
+        element.classList.add("pt-1");
+
+        element.append(
             util.howManyExercises(this.props.lesson.queueItems),
             this.editQueueButton(disabled),
             this.doQueueButton(disabled)
         );
+
+        return element;
     }
 
     /**
@@ -232,9 +237,10 @@ export default class LessonCard extends React.Component {
      * @return {object}
      */
     cardBody() {
-        return React.createElement(
-            "div",
-            {"className": "card-body"},
+        const element = document.createElement("div");
+        element.classList.add("card-body");
+
+        element.append(
             this.itemTitle(),
             this.itemSubtitle(),
             this.notesDiv(),
@@ -242,6 +248,8 @@ export default class LessonCard extends React.Component {
             this.linkDiv(),
             this.queueDiv()
         );
+
+        return element;
     }
 
     /**
@@ -250,24 +258,11 @@ export default class LessonCard extends React.Component {
      * @return {object}
      */
     render() {
-        return React.createElement(
-            "div",
-            {"className": "card border-secondary bg-light mb-3"},
-            this.cardBody()
-        );
+        const element = document.createElement("div");
+        element.classList.add("card", "border-secondary", "bg-light", "mb-3");
+
+        element.append(this.cardBody());
+
+        return element;
     }
 }
-
-LessonCard.propTypes = {
-    "activity": PropTypes.string.isRequired,
-    "canWrite": PropTypes.bool.isRequired,
-    "checkClick": PropTypes.func.isRequired,
-    "deleteClick": PropTypes.func.isRequired,
-    "exercisesLoading": PropTypes.bool.isRequired,
-    "itemUser": PropTypes.object.isRequired,
-    "lesson": PropTypes.object.isRequired,
-    "selected": PropTypes.bool.isRequired,
-    "selectItem": PropTypes.func.isRequired,
-    "setActivity": PropTypes.func.isRequired,
-    "toggleLesson": PropTypes.func.isRequired
-};

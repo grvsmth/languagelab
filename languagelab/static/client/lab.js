@@ -11,7 +11,7 @@
 
 */
 
-// import CardList from "./cardList.js";
+import CardList from "./cardList.js";
 import InfoArea from "./infoArea.js";
 import LoadingModal from "./loadingModal.js";
 import LoginForm from "./loginForm.js";
@@ -914,12 +914,13 @@ export default class Lab {
             return "";
         }
 
-        const element = document.createElement("div");
-        element.innerText = "CardList coming soon!";
-        return element;
-/*
         const cardList = new CardList();
         return cardList.render({
+            "activity": this.state.activity,
+            "selected": this.selectedState
+        });
+
+/*
             "checkClick": this.checkClick,
             "config": this.config,
             "deleteClick": this.deleteClick.bind(this),
@@ -939,12 +940,10 @@ export default class Lab {
             "maxRank": this.maxRank.bind(this),
             "queueClick": this.queueClick.bind(this),
             "saveItem": this.saveItem.bind(this),
-            "state": this.state,
             "setActivity": this.setActivity.bind(this),
             "toggleLesson": this.toggleLesson.bind(this),
             "startExercise": this.startExercise.bind(this),
             "selectItem": this.selectItem.bind(this)
-        });
 */
     }
 
@@ -1056,7 +1055,7 @@ export default class Lab {
 
             this.parentElement.replaceChildren(containerElement);
         } catch (err) {
-            this.addAlert("Error displaying lab", err);
+            console.log("Error displaying lab", err);
         }
     }
 };

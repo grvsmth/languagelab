@@ -4,45 +4,25 @@
  * Angus B. Grieve-Smith, 2021
  */
 
-/*
-
-*/
+import help from "./help.js";
 import util from "./util.js";
 
-/*
 import ControlCard from "./cards/controlCard.js";
+import HelpCard from "./cards/helpCard.js";
+import LessonCard from "./cards/lessonCard.js";
+import LessonFormCard from "./cards/lessonFormCard.js";
+
+/*
 import DoExerciseCard from "./cards/doExerciseCard.js";
 import ExerciseCard from "./cards/exerciseCard.js";
 import ExerciseFormCard from "./cards/exerciseFormCard.js";
-import help from "./help.js";
-import HelpCard from "./cards/helpCard.js";
 import LanguageCard from "./cards/languageCard.js";
 import LanguageFormCard from "./cards/languageFormCard.js";
-import LessonCard from "./cards/lessonCard.js";
-import LessonFormCard from "./cards/lessonFormCard.js";
 import MediaCard from "./cards/mediaCard.js";
 import MediaFormCard from "./cards/mediaFormCard.js";
 */
 
 const typeInfo = {
-    "media": {
-        "addable": true,
-        "card": MediaCard,
-        "cardLayout": "",
-        "doable": false,
-        "formCard": MediaFormCard,
-        "singular": "media item",
-        "userField": "uploader"
-    },
-    "exercises": {
-        "addable": true,
-        "card": ExerciseCard,
-        "cardLayout": "",
-        "doable": true,
-        "formCard": ExerciseFormCard,
-        "singular": "exercise",
-        "userField": "creator"
-    },
     "lessons": {
         "addable": true,
         "card": LessonCard,
@@ -51,14 +31,6 @@ const typeInfo = {
         "formCard": LessonFormCard,
         "singular": "lesson",
         "userField": "creator"
-    },
-    "languages": {
-        "addable": true,
-        "card": LanguageCard,
-        "cardLayout": "card-columns",
-        "doable": false,
-        "singular": "language",
-        "userField": ""
     },
     "controls": {
         "addable": false,
@@ -78,6 +50,34 @@ const typeInfo = {
     }
 };
 
+/*
+"media": {
+        "addable": true,
+        "card": MediaCard,
+        "cardLayout": "",
+        "doable": false,
+        "formCard": MediaFormCard,
+        "singular": "media item",
+        "userField": "uploader"
+    },
+    "exercises": {
+        "addable": true,
+        "card": ExerciseCard,
+        "cardLayout": "",
+        "doable": true,
+        "formCard": ExerciseFormCard,
+        "singular": "exercise",
+        "userField": "creator"
+    },
+    "languages": {
+        "addable": true,
+        "card": LanguageCard,
+        "cardLayout": "card-columns",
+        "doable": false,
+        "singular": "language",
+        "userField": ""
+    },
+*/
 const doActivities = ["do", "loadExercise"];
 
 export default class CardList {
@@ -86,20 +86,20 @@ export default class CardList {
      * Extend the constructor method with an itemCard property mapping item
      * keys to card generator methods.
      *
-     * @param {object} props - the React props passed from the calling script
      */
-    constructor(props) {
-        super(props);
-
+    constructor() {
         this.itemCard = {
-            "controls": this.controlCard.bind(this),
-            "exercises": this.exerciseCard.bind(this),
+            "controls": this.controlCard.bind(this)
+        };
+/*
+"exercises": this.exerciseCard.bind(this),
             "help": this.helpCard.bind(this),
             "languages": this.languageCard.bind(this),
             "lessons": this.lessonCard.bind(this),
             "media": this.mediaCard.bind(this)
         }
-    }
+*/
+        }
 
     /**
      * Handle a click on the "add" button, passing the button ID to selectItem()
@@ -272,15 +272,14 @@ export default class CardList {
      * @return {object}
      */
     controlCard(control) {
-        const element = document.createElement(
-            ControlCard,
+        const element = new ControlCard(
             {
                 "key": control.name,
                 "control": control,
                 "exportData": this.props.exportData
-            },
-            null
+            }
         );
+        return element;
     }
 
     /**
@@ -304,7 +303,7 @@ export default class CardList {
     /**
      * Generate a DoExerciseCard
      *
-     * @param {number} key - the React key for the card
+     * @param {number} key - the key for the card
      * @param {object} exercise - the exercise to be performed in the card
      *
      * @return {object}
@@ -686,26 +685,30 @@ export default class CardList {
     }
 
     /**
-     * The React render() method
+     * @param {object} props - the props passed from the calling script
      *
      * @return {object}
      */
-    render() {
+    render(props) {
+        this.props = props;
+
         console.log("cardList", this.props);
-        const itemType = this.props.state.selected.itemType;
-        const addable = this.props.state.activity !== "editQueue"
+        const itemType = this.props.selected.itemType;
+        const addable = this.props.activity !== "editQueue"
             && typeInfo[itemType].addable;
 
         const element = document.createElement("div");
-        element.classList.add(typeInfo[itemType].cardLayout);
 
-        element.innerText = "CardList goes here";
-/*
+        if (typeInfo[itemType].cardLayout) {
+            element.classList.add(typeInfo[itemType].cardLayout);
+        }
+
         element.append(
             this.addCard(addable, "initial"),
             this.makeElements(itemType),
             this.addCard(addable, "final")
-        );*/
+        );
+
         return element;
     }
 }

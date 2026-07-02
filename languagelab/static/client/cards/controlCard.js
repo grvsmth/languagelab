@@ -6,28 +6,20 @@
  *
  */
 
-/*
-
-    global React, PropTypes
-
-*/
-
 /** Card for linking to control features */
-export default class ControlCard extends React.Component {
-
+export default class ControlCard {
     /**
      * Card title with the title prop
      *
      * @return {object}
      */
     cardTitle() {
-        return React.createElement(
-            "h3",
-            {
-                "className": "card-title"
-            },
-            this.props.control.title
-        );
+        const element = document.createElement("h3");
+        element.classList.add("card-title");
+
+        element.innerText = this.props.control.title;
+
+        return element;
     }
 
     /**
@@ -36,13 +28,11 @@ export default class ControlCard extends React.Component {
      * @return {object}
      */
     cardText() {
-        return React.createElement(
-            "p",
-            {
-                "className": "card-text"
-            },
-            this.props.control.description
-        );
+        const element = document.createElement("p");
+        element.classList.add("card-text");
+        element.innerText = this.props.control.description;
+
+        return element;
     }
 
     /**
@@ -69,21 +59,18 @@ export default class ControlCard extends React.Component {
      * @return {object}
      */
     cardLink() {
-        const options = {
-            "className": "card-link",
-            "href": this.props.control.url,
-            "target": this.props.control.target
-        };
+        const element = document.createElement("a");
+        element.classList.add("card-link");
+        element.href = this.props.control.url;
+        element.target = this.props.control.target;
+
+        element.innerText = this.linkText();
 
         if (this.props.control.endpoint) {
-            options.onClick = this.exportData.bind(this);
+            element.addEventListener("click", this.exportData.bind(this));
         }
 
-        return React.createElement(
-            "a",
-            options,
-            this.linkText()
-        );
+        return element;
     }
 
     /**
@@ -92,15 +79,15 @@ export default class ControlCard extends React.Component {
      * @return {object}
      */
     cardBody() {
-        return React.createElement(
-            "div",
-            {
-                "className": "card-body"
-            },
+        const element = document.createElement("div");
+        element.classList.add("card-body");
+        element.append(
             this.cardTitle(),
             this.cardText(),
             this.cardLink()
         );
+
+        return element;
     }
 
     /**
@@ -109,17 +96,10 @@ export default class ControlCard extends React.Component {
      * @return {object}
      */
     render() {
-        return React.createElement(
-            "div",
-            {
-                "className": "card"
-            },
-            this.cardBody()
-        );
+        const element = document.createElement("div");
+        element.classList.add("card");
+        element.append(this.cardBody());
+
+        return element;
     }
 }
-
-ControlCard.propTypes = {
-    "control": PropTypes.object.isRequired,
-    "exportData": PropTypes.func.isRequired
-};
