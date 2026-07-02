@@ -61,26 +61,6 @@ export default class Navbar {
     }
 
     /**
-     * Tell screen readers which button corresponds to the current view, since
-     * otherwise it's only visible via whatever formatting Bootstrap puts on its
-     * active class
-     *
-     * @param {string} model
-     *
-     * @return {object}
-     */
-    srOnlySpan(endpoint) {
-        if (this.props.selectedType !== endpoint) {
-            return null;
-        }
-        const element = document.createElement(
-            "span",
-            {"className": "sr-only"},
-            "(current)"
-        );
-    }
-
-    /**
      * Create a link for the model, with ID, screenreader only span and click
      * handler
      *
@@ -89,18 +69,19 @@ export default class Navbar {
      * @return {object}
      */
     navLink(model) {
-        const element = document.createElement(
-            "a",
-            {
-                "className": "nav-link",
-                "href": "#",
-                "target": "_self",
-                "id": model.endpoint,
-                "onClick": this.navClick.bind(this)
-            },
-            model.menu,
-            this.srOnlySpan(model.endpoint)
-        );
+        const element = document.createElement("a");
+        element.classList.add("nav-link");
+        element.href = "#";
+        element.target = "_self";
+        element.id = model.endpoint;
+        element.addEventListener("click", this.navClick.bind(this));
+        element.innerText = model.menu;
+
+        if (this.props.selectedType !== model.endpoint) {
+            element.setAttribute("aria-current", "page");
+        }
+
+        return element;
     }
 
     /**
@@ -112,26 +93,24 @@ export default class Navbar {
      */
     navItem(model) {
         if (model.hideNav) {
-            return null;
+            return "";
         }
 
         if (!model.nonStaff && this.props.staffCanWrite) {
             if (!this.props.currentUser.is_staff) {
-                return null;
+                return "";
             }
         }
 
-        const activeClass = this.props.selectedType === model.endpoint
-            ? " active": "";
+        const element = document.createElement("li");
+        element.classList.add("nav-item");
+        if (this.props.selectedType === model.endpoint) {
+            element.classList.add("active");
+        }
 
-        const element = document.createElement(
-            "li",
-            {
-                "className": "nav-item" + activeClass,
-                "key": model.endpoint
-            },
-            this.navLink(model)
-        )
+        element.append(this.navLink(model));
+
+        return element;
     }
 
     /**
@@ -166,7 +145,7 @@ export default class Navbar {
         element.classList.add("navbar-nav", "me-auto");
 
         element.append(
-            this.props.models.map(this.navItem.bind(this)),
+            ...this.props.models.map(this.navItem.bind(this)),
             this.versionText(),
             this.welcomeItem()
         );
@@ -247,7 +226,6 @@ export default class Navbar {
      */
     render(props={}) {
         this.props = props;
-        console.log("nav", props);
 
         const element = document.createElement("nav");
         element.classList.add(
