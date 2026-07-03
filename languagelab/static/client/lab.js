@@ -499,7 +499,7 @@ export default class Lab {
         this.setState({"activity": "login"});
         this.data.currentUser = null;
 
-        this.setLoading(notLoading);
+        this.setLoadingState(notLoading);
         return;
     }
 
@@ -921,15 +921,10 @@ export default class Lab {
         const cardList = new CardList();
         return cardList.render({
             "activity": this.state.activity,
-            "data": this.data,
-            "selected": this.selectedState
-        });
-
-/*
             "checkClick": this.checkClick,
-            "config": this.config,
+            "data": this.data,
             "deleteClick": this.deleteClick.bind(this),
-            "doButton": config.doButton,
+            "doButton": this.config.doButton,
             "doFunction": {
                 "afterMimic": this.afterMimic.bind(this),
                 "onMediaLoaded": this.onMediaLoaded.bind(this),
@@ -942,14 +937,16 @@ export default class Lab {
                 "toggleOnlyExercise": this.toggleOnlyExercise.bind(this)
             },
             "exportData": this.exportData.bind(this),
+            "loading": this.loadingState,
             "maxRank": this.maxRank.bind(this),
             "queueClick": this.queueClick.bind(this),
             "saveItem": this.saveItem.bind(this),
             "setActivity": this.setActivity.bind(this),
-            "toggleLesson": this.toggleLesson.bind(this),
+            "selected": this.selectedState,
+            "selectItem": this.selectItem.bind(this),
             "startExercise": this.startExercise.bind(this),
-            "selectItem": this.selectItem.bind(this)
-*/
+            "toggleLesson": this.toggleLesson.bind(this)
+        });
     }
 
     /**

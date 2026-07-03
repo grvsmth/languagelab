@@ -89,13 +89,13 @@ export default class CardList {
      */
     constructor() {
         this.itemCard = {
-            "controls": this.controlCard.bind(this)
+            "controls": this.controlCard.bind(this),
+            "help": this.helpCard.bind(this),
+            "lessons": this.lessonCard.bind(this),
         };
 /*
 "exercises": this.exerciseCard.bind(this),
-            "help": this.helpCard.bind(this),
             "languages": this.languageCard.bind(this),
-            "lessons": this.lessonCard.bind(this),
             "media": this.mediaCard.bind(this)
         }
 */
@@ -118,16 +118,16 @@ export default class CardList {
      * @return {object}
      */
     addButtonElement(cardId) {
-        const element = document.createElement(
-            "button",
-            {
-                "id": cardId,
-                "type": "button",
-                "className": "btn btn-primary",
-                "onClick": this.addClick.bind(this)
-            },
-            "Add " + typeInfo[this.props.selected.itemType].singular
-        );
+        const element = document.createElement("button");
+        element.id = cardId;
+        element.type = "button";
+        element.classList.add("btn", "btn-primary");
+        element.addEventListener("click", this.addClick.bind(this));
+
+        element.innerText = "Add "
+            + typeInfo[this.props.selected.itemType].singular;
+
+        return element;
     }
 
     /**
@@ -139,11 +139,11 @@ export default class CardList {
      * @return {object}
      */
     addButtonCardBody(cardId) {
-        const element = document.createElement(
-            "div",
-            {"className": "card-body"},
-            this.addButtonElement(cardId)
-        );
+        const element = document.createElement("div");
+        element.classList.add("card-body");
+        element.append(this.addButtonElement(cardId));
+
+        return element;
     }
 
     /**
@@ -155,20 +155,17 @@ export default class CardList {
      * @return {object}
      */
     addButtonCard(cardId) {
-        const element = document.createElement(
-            "div",
-            {
-                "className": "card",
-                "key": cardId,
-                "id": cardId
-            },
-            this.addButtonCardBody(cardId)
-        );
+        const element = document.createElement("div");
+        element.classList.add("card");
+        element.id = cardId;
+        element.append(this.addButtonCardBody(cardId));
+
+        return element;
     }
 
     /**
      * Find the exercise specified in a queue item.  If the queue item has no
-     * exercise parameter, return null.
+     * exercise parameter, return "".
      *
      * @param {object} selection - A queueItem with an exercise holding an ID
      *
@@ -176,7 +173,7 @@ export default class CardList {
      */
     queueExercise(selection) {
         if (!selection.exercise) {
-            return null;
+            return "";
         }
         return util.findItem(this.props.data.exercises, selection.exercise);
     }
@@ -191,7 +188,7 @@ export default class CardList {
      */
     queueItem(lesson, exercise) {
         if (!lesson) {
-            return null;
+            return "";
         }
 
         return lesson.queueItems.find(
@@ -209,13 +206,13 @@ export default class CardList {
      */
     exerciseRank(lesson, exercise) {
         if (!lesson) {
-            return null;
+            return "";
         }
 
         const queueItem = this.queueItem(lesson, exercise);
 
         if (!queueItem) {
-            return null;
+            return "";
         }
 
         return queueItem.rank;
@@ -290,14 +287,11 @@ export default class CardList {
      * @return {object}
      */
     helpCard(helpItem) {
-        const element = document.createElement(
-            HelpCard,
-            {
-                "key": helpItem.title,
-                "helpItem": helpItem
-            },
-            null
-        )
+        const element = new HelpCard();
+        return element.render({
+            "key": helpItem.title,
+            "helpItem": helpItem
+        });
     }
 
     /**
@@ -331,14 +325,11 @@ export default class CardList {
             "queueInfo": this.queueInfo(lesson, rank, maxRank),
             "rank": rank,
             "setActivity": this.props.setActivity,
-            "state": this.props.state
+            "state": this.props.data
         };
 
-        const element = document.createElement(
-            DoExerciseCard,
-            options,
-            null
-        );
+        const element = new DoExerciseCard();
+        return element.render(options);
     }
 
     /**
@@ -363,23 +354,20 @@ export default class CardList {
             cardComponent = MediaFormCard;
         }
 
-        const element = document.createElement(
-            cardComponent,
-            {
-                "checkClick": this.props.checkClick,
-                "deleteClick": this.props.deleteClick,
-                "id": mediaItem.id,
-                "key": mediaItem.id,
-                "languages": this.props.data.languages,
-                "mediaItem": mediaItem,
-                "saveItem": this.props.saveItem,
-                "selectItem": this.props.selectItem,
-                "selectedItem": this.props.selected.media,
-                "setActivity": this.props.setActivity,
-                "itemUser": this.itemUser(mediaItem)
-            },
-            null
-        );
+        const element = new cardComponent();
+        return element.render({
+            "checkClick": this.props.checkClick,
+            "deleteClick": this.props.deleteClick,
+            "id": mediaItem.id,
+            "key": mediaItem.id,
+            "languages": this.props.data.languages,
+            "mediaItem": mediaItem,
+            "saveItem": this.props.saveItem,
+            "selectItem": this.props.selectItem,
+            "selectedItem": this.props.selected.media,
+            "setActivity": this.props.setActivity,
+            "itemUser": this.itemUser(mediaItem)
+        });
     }
 
     /**
@@ -404,17 +392,14 @@ export default class CardList {
             cardComponent = LanguageFormCard;
         }
 
-        const element = document.createElement(
-            cardComponent,
-            {
-                "key": language.id,
-                "language": language,
-                "saveItem": this.props.saveItem,
-                "selectItem": this.props.selectItem,
-                "setActivity": this.props.setActivity
-            },
-            null
-        );
+        const element = new cardComponent();
+        return element.render({
+            "key": language.id,
+            "language": language,
+            "saveItem": this.props.saveItem,
+            "selectItem": this.props.selectItem,
+            "setActivity": this.props.setActivity
+        });
     }
 
     /**
@@ -477,11 +462,8 @@ export default class CardList {
             "toggleLesson": this.props.toggleLesson
         };
 
-        const element = document.createElement(
-            cardComponent,
-            options,
-            null
-        );
+        const component = new cardComponent();
+        return component.render(options);
     }
 
     /**
@@ -502,11 +484,8 @@ export default class CardList {
             "selectedType": this.props.selected.itemType
         };
 
-        const element = document.createElement(
-            ExerciseFormCard,
-            options,
-            null
-        );
+        const element = new ExerciseFormCard();
+        return element.render(options);
     }
 
     /**
@@ -558,11 +537,8 @@ export default class CardList {
             "startExercise": this.props.startExercise
         };
 
-        const element = document.createElement(
-            ExerciseCard,
-            options,
-            null
-        );
+        const element = new ExerciseCard();
+        return element.render(options);
     }
 
     /**
@@ -575,7 +551,7 @@ export default class CardList {
      */
     itemUser(item, type=this.props.selected.itemType) {
         if (!this.props.data.users) {
-            return null;
+            return "";
         }
 
         const userFieldName = typeInfo[type].userField;
@@ -605,17 +581,17 @@ export default class CardList {
      */
     addCard(addable, cardId="form") {
         if (!addable) {
-            return null;
+            return "";
         }
 
         if (this.props.staffCanWrite
             && !this.props.currentUser.is_staff) {
-                return null;
+                return "";
         }
 
         if (cardId === "initial"
-            && !this.props.state[this.props.selected.itemType].length) {
-            return null;
+            && !this.props.data[this.props.selected.itemType].length) {
+            return "";
         }
 
         if (this.props.activity === "add"
@@ -642,7 +618,7 @@ export default class CardList {
         }
 
         if (this.props.activity !== "editQueue") {
-            return this.props.state[itemType];
+            return this.props.data[itemType];
         }
 
         const lesson = util.findItem(
@@ -660,18 +636,18 @@ export default class CardList {
      */
     makeElements(itemType) {
         const items = itemType === "help" ?
-            Object.values(help) : this.props.state[itemType];
+            Object.values(help) : this.props.data[itemType];
 
         if (!items.length || !("card" in typeInfo[itemType])) {
             if (itemType in help) {
                 return this.helpCard(help[itemType]);
             }
 
-            const element = document.createElement(
-                "div",
-                {"className": "card"},
-                `No ${itemType} loaded`
-            );
+            const element = document.createElement("div");
+            element.classList.add("card");
+            element.innerText = `No ${itemType} loaded`;
+
+            return element;
         }
 
         const itemList = this.makeItemList(itemType);
@@ -699,7 +675,7 @@ export default class CardList {
 
         element.append(
             this.addCard(addable, "initial"),
-            this.makeElements(itemType),
+            ...this.makeElements(itemType),
             this.addCard(addable, "final")
         );
 

@@ -257,7 +257,9 @@ export default class LessonCard {
      *
      * @return {object}
      */
-    render() {
+    render(props) {
+        this.props = props;
+
         const element = document.createElement("div");
         element.classList.add("card", "border-secondary", "bg-light", "mb-3");
 

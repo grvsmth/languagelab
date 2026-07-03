@@ -84,13 +84,13 @@ export default class LanguageLabClient {
                 || typeof this.token !== "object"
                 || !("access" in this.token)
             ) {
-                reject("No access token in API client object");
+                reject({"message": "No access token in API client object"});
             }
 
             const difference = new moment().diff(this.tokenTime, "seconds");
 
             if (difference >= this.refreshLife) {
-                reject("Token has expired");
+                reject({"message": "Token has expired"});
             }
 
             if (difference >= this.refreshThreshold) {
