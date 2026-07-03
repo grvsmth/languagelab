@@ -956,6 +956,7 @@ export default class Lab {
      * @param {string} itemType - the type of item to select
      */
     readMode(itemType="lessons") {
+        console.log("readMode", itemType);
         this.setState({
             "activity": "read",
             "clickedAction": null,
@@ -971,6 +972,8 @@ export default class Lab {
             "lessons": null,
             "media": null
         });
+
+        this.render();
     }
 
     /** Display the navbar */

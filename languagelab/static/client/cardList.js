@@ -11,6 +11,8 @@ import ControlCard from "./cards/controlCard.js";
 import HelpCard from "./cards/helpCard.js";
 import LessonCard from "./cards/lessonCard.js";
 import LessonFormCard from "./cards/lessonFormCard.js";
+import MediaCard from "./cards/mediaCard.js";
+import MediaFormCard from "./cards/mediaFormCard.js";
 
 /*
 import DoExerciseCard from "./cards/doExerciseCard.js";
@@ -18,20 +20,9 @@ import ExerciseCard from "./cards/exerciseCard.js";
 import ExerciseFormCard from "./cards/exerciseFormCard.js";
 import LanguageCard from "./cards/languageCard.js";
 import LanguageFormCard from "./cards/languageFormCard.js";
-import MediaCard from "./cards/mediaCard.js";
-import MediaFormCard from "./cards/mediaFormCard.js";
 */
 
 const typeInfo = {
-    "lessons": {
-        "addable": true,
-        "card": LessonCard,
-        "cardLayout": "",
-        "doable": false,
-        "formCard": LessonFormCard,
-        "singular": "lesson",
-        "userField": "creator"
-    },
     "controls": {
         "addable": false,
         "card": ControlCard,
@@ -47,11 +38,17 @@ const typeInfo = {
         "doable": false,
         "singular": "help items",
         "userField": ""
-    }
-};
-
-/*
-"media": {
+    },
+    "lessons": {
+        "addable": true,
+        "card": LessonCard,
+        "cardLayout": "",
+        "doable": false,
+        "formCard": LessonFormCard,
+        "singular": "lesson",
+        "userField": "creator"
+    },
+    "media": {
         "addable": true,
         "card": MediaCard,
         "cardLayout": "",
@@ -59,7 +56,10 @@ const typeInfo = {
         "formCard": MediaFormCard,
         "singular": "media item",
         "userField": "uploader"
-    },
+    }
+};
+
+/*
     "exercises": {
         "addable": true,
         "card": ExerciseCard,
@@ -90,16 +90,13 @@ export default class CardList {
     constructor() {
         this.itemCard = {
             "controls": this.controlCard.bind(this),
+            "exercises": this.exerciseCard.bind(this),
             "help": this.helpCard.bind(this),
-            "lessons": this.lessonCard.bind(this),
-        };
-/*
-"exercises": this.exerciseCard.bind(this),
             "languages": this.languageCard.bind(this),
+            "lessons": this.lessonCard.bind(this),
             "media": this.mediaCard.bind(this)
-        }
-*/
-        }
+        };
+    }
 
     /**
      * Handle a click on the "add" button, passing the button ID to selectItem()

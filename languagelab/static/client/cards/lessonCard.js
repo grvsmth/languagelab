@@ -169,7 +169,7 @@ export default class LessonCard {
         element.classList.add(
             "btn",
             "btn-sm",
-            "ml-2",
+            "ms-2",
             colorClass
         );
 
@@ -198,7 +198,7 @@ export default class LessonCard {
 
         const element = document.createElement("button");
 
-        element.classList.add("btn", "btn-sm", "btn-primary", "ml-2");
+        element.classList.add("btn", "btn-sm", "btn-primary", "ms-2");
         element.addEventListener("click", this.editQueue.bind(this));
 
         element.disabled = disabled;

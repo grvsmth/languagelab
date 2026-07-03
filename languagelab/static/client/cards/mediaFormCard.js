@@ -7,7 +7,7 @@
 
 /*
 
-    global React, moment, PropTypes
+    global moment
 
 */
 import config from "./config.js";
@@ -16,17 +16,11 @@ import util from "./util.js";
 import commonElements from "./commonElements.js";
 
 /** Form for adding and editing media in the LanguageLab client */
-export default class MediaFormCard extends React.Component {
+export default class MediaFormCard {
 
     /**
-     * Set a ref for the audio element (only used for calculating duration)
-     *
-     * @param {object} props
      */
     constructor(props) {
-        super(props);
-
-        this.audio = React.createRef();
     }
 
     /**
@@ -151,7 +145,7 @@ export default class MediaFormCard extends React.Component {
     tagsInputDiv() {
         const inputId = "tags_" + this.props.mediaItem.id;
 
-        return React.createElement(
+        const element = document.createElement(
             "div",
             {"className": "col-sm"},
             commonElements.itemLabel("tags", inputId),
@@ -165,7 +159,7 @@ export default class MediaFormCard extends React.Component {
      * @return {object}
      */
     nameRow() {
-        return React.createElement(
+        const element = document.createElement(
             "div",
             {"className": "form-row mt-3"},
             this.textInputDiv("name", null, "", this.reportValidity.bind(this)),
@@ -181,7 +175,7 @@ export default class MediaFormCard extends React.Component {
      * @return {object}
      */
     fileRow() {
-        return React.createElement(
+        const element = document.createElement(
             "div",
             {"className": "form-row mt-3"},
             this.textInputDiv(
@@ -201,7 +195,7 @@ export default class MediaFormCard extends React.Component {
      * @return {object}
      */
     saveButton() {
-        return React.createElement(
+        const element = document.createElement(
             "button",
             {
                 "type": "button",
@@ -218,7 +212,7 @@ export default class MediaFormCard extends React.Component {
      * @return {object}
      */
     cancelButton() {
-        return React.createElement(
+        const element = document.createElement(
             "button",
             {
                 "type": "button",
@@ -235,7 +229,7 @@ export default class MediaFormCard extends React.Component {
      * @return {object}
      */
     buttonDiv() {
-        return React.createElement(
+        const element = document.createElement(
             "div",
             {"className": "col"},
             this.saveButton(),
@@ -249,7 +243,7 @@ export default class MediaFormCard extends React.Component {
      * @return {object}
      */
     optionsRow() {
-        return React.createElement(
+        const element = document.createElement(
             "div",
             {"className": "form-row mt-3"},
             this.tagsInputDiv(),
@@ -274,7 +268,7 @@ export default class MediaFormCard extends React.Component {
      * @return {object}
      */
     submitRow() {
-        return React.createElement(
+        const element = document.createElement(
             "div",
             {"className": "form-row"},
             this.buttonDiv()
@@ -287,7 +281,7 @@ export default class MediaFormCard extends React.Component {
      * @return {object}
      */
     cardBody() {
-        return React.createElement(
+        const element = document.createElement(
             "form",
             {
                 "className": "card-body",
@@ -306,17 +300,10 @@ export default class MediaFormCard extends React.Component {
      * @return {object}
      */
     render() {
-        return React.createElement(
+        const element = document.createElement(
             "div",
             {"className": "card bg-light mb-3"},
             this.cardBody()
         );
     }
 }
-
-MediaFormCard.propTypes = {
-    "languages": PropTypes.array.isRequired,
-    "mediaItem": PropTypes.object.isRequired,
-    "setActivity": PropTypes.func.isRequired,
-    "saveItem": PropTypes.func.isRequired
-};

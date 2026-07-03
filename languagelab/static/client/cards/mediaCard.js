@@ -7,7 +7,7 @@
 
 /*
 
-    global React, moment, PropTypes
+    global moment
 
 */
 import config from "./config.js";
@@ -15,17 +15,11 @@ import commonElements from "./commonElements.js";
 import util from "./util.js";
 
 /**  Card for displaying info about a media item in the LanguageLab client */
-export default class MediaCard extends React.Component {
+export default class MediaCard {
 
     /**
-     * Create a ref for the player
-     *
-     * @param {object} props
      */
-    constructor(props) {
-        super(props);
-
-        this.player = React.createRef();
+    constructor() {
     }
 
     /**
@@ -48,11 +42,12 @@ export default class MediaCard extends React.Component {
         const durationMoment = moment.duration(this.props.mediaItem.duration)
         const duration = util.formatDuration(durationMoment, 0);
 
-        return React.createElement(
-            "h5",
-            {"className": "card-title"},
-            `${this.props.mediaItem.name} (${formatText}, ${languageText}${duration})`
-        );
+        const element = document.createElement("h5");
+        element.classList.add("card-title");
+        element.innerText = `${this.props.mediaItem.name} (${formatText},`
+            + `${languageText}${duration})`;
+
+        return element;
     }
 
     /**
@@ -65,12 +60,11 @@ export default class MediaCard extends React.Component {
             return null;
         }
 
-        return React.createElement(
-            "span",
-            {"className": "text-info"},
-            " by ",
-            this.props.itemUser.username
-        );
+        const element = document.createElement("span");
+        element.classList.add("text-info");
+        element.innerText = " by " + this.props.itemUser.username;
+
+        return element;
     }
 
     /**
@@ -82,13 +76,15 @@ export default class MediaCard extends React.Component {
         const uploadedText = new moment(this.props.mediaItem.uploaded)
             .format(config.dateTimeFormat);
 
-        return React.createElement(
-            "h6",
-            {"className": "card-subtitle text-dark"},
+        const element = document.createElement("h6");
+        element.classList.add("card-subtitle", "text-dark");
+        element.append(
             `${this.props.mediaItem.creator} (added ${uploadedText}`,
             this.bySpan(),
             ")"
         );
+
+        return element;
     }
 
     /**
@@ -97,11 +93,11 @@ export default class MediaCard extends React.Component {
      * @return {object}
      */
     rightsSpan() {
-        return React.createElement(
-            "span",
-            {"className": "card-text mr-2"},
-            this.props.mediaItem.rights
-        );
+        const element = document.createElement("span");
+        element.classList.add("card-text", "me-2");
+        element.innerText = this.props.mediaItem.rights;
+
+        return element;
     }
 
     /**
@@ -126,11 +122,12 @@ export default class MediaCard extends React.Component {
      * @return {object}
      */
     editLink() {
-        return React.createElement(
-            "a",
-            {"className": "text-primary", "onClick": this.editClick.bind(this)},
-            "edit"
-        );
+        const element = document.createElement("a");
+        element.classList.add("text-primary");
+        element.addEventListener("click", this.editClick.bind(this));
+        element.innerText = "edit";
+
+        return element;
     }
 
     /**
@@ -139,14 +136,12 @@ export default class MediaCard extends React.Component {
      * @return {object}
      */
     deleteLink() {
-        return React.createElement(
-            "a",
-            {
-                "className": "text-danger",
-                "onClick": this.deleteClick.bind(this)
-            },
-            "delete"
-        );
+        const element = document.createElement("a");
+        element.classList.add("text-danger");
+        element.addEventListener("click", this.deleteClick.bind(this));
+        element.innerText = "delete";
+
+        return element;
     }
 
     /** Select this item in state if the user has pressed play */
@@ -182,22 +177,16 @@ export default class MediaCard extends React.Component {
      * @return {object}
      */
     makePlayer() {
-        return React.createElement(
-            "audio",
-            {
-                "id": "audio1",
-                "ref": this.player,
-                "src": this.props.mediaItem.mediaUrl,
-                "onEnded": this.afterPlay.bind(this),
-                "onPause": this.afterPlay.bind(this),
-                "onPlay": this.playHandler.bind(this),
-                "controls": this.showControls(),
-                "style": {
-                    "width": "100%"
-                }
-            },
-            null
-        );
+        const element = document.createElement("audio");
+        element.id = "audio1";
+        element.src = this.props.mediaItem.mediaUrl;
+        element.addEventListener("ended", this.afterPlay.bind(this));
+        element.addEventListener("pause", this.afterPlay.bind(this));
+        element.addEventListener("play", this.playHandler.bind(this));
+        element.controls = this.showControls();
+        element.style.width = "100%";
+
+        return element;
     }
 
     /**
@@ -206,11 +195,11 @@ export default class MediaCard extends React.Component {
      * @return {object}
      */
     playerDiv() {
-        return React.createElement(
-            "div",
-            {"className": "d-flex flex-row mt-3"},
-            this.makePlayer()
-        );
+        const element = document.createElement("div");
+        element.classList.add("d-flex", "flex-row", "mt-3");
+        element.append(this.makePlayer());
+
+        return element;
     }
 
     /**
@@ -222,13 +211,14 @@ export default class MediaCard extends React.Component {
         if (this.props.activity === "add") {
             return null;
         }
-        return React.createElement(
-            "div",
-            {},
+        const element = document.createElement("div");
+        element.append(
             this.editLink(),
             " ",
             this.deleteLink()
         );
+
+        return element;
     }
 
     /**
@@ -237,9 +227,10 @@ export default class MediaCard extends React.Component {
      * @return {object}
      */
     cardBody() {
-        return React.createElement(
-            "div",
-            {"className": "card-body"},
+        const element = document.createElement("div");
+        element.classList.add("card-body");
+
+        element.append(
             this.itemTitle(),
             this.itemSubtitle(),
             this.playerDiv(),
@@ -247,6 +238,8 @@ export default class MediaCard extends React.Component {
             this.rightsSpan(),
             this.linkDiv()
         );
+
+        return element;
     }
 
     /**
@@ -254,22 +247,13 @@ export default class MediaCard extends React.Component {
      *
      * @return {object}
      */
-    render() {
-        return React.createElement(
-            "div",
-            {"className": "card border-primary bg-light mb-3"},
-            this.cardBody()
-        );
+    render(props) {
+        this.props = props;
+
+        const element = document.createElement("div");
+        element.classList.add("card", "border-primary", "bg-light", "mb-3");
+        element.append(this.cardBody());
+
+        return element;
     }
 }
-
-MediaCard.propTypes = {
-    "activity": PropTypes.string.isRequired,
-    "deleteClick": PropTypes.func.isRequired,
-    "id": PropTypes.string.isRequired,
-    "itemUser": PropTypes.object.isRequired,
-    "languages": PropTypes.array.isRequired,
-    "mediaItem": PropTypes.object.isRequired,
-    "selectItem": PropTypes.func.isRequired,
-    "selectedItem": PropTypes.string.isRequired
-};
