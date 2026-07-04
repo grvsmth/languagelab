@@ -40,7 +40,7 @@ export default class HelpCard {
      * @return {object}
      */
     cardLink() {
-        if ("a" in this.props.helpItem) {
+        if (!("a" in this.props.helpItem)) {
             return "";
         }
 

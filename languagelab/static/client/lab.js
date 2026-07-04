@@ -122,7 +122,7 @@ export default class Lab {
     }
 
     setHelp(help) {
-        this.help = help;
+        this.data.help = help;
     }
 
     setParentElement(parentElement) {

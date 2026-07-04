@@ -26,7 +26,7 @@ const typeInfo = {
     "controls": {
         "addable": false,
         "card": ControlCard,
-        "cardLayout": "card-columns",
+        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-4"],
         "doable": false,
         "singular": "control",
         "userField": ""
@@ -34,7 +34,7 @@ const typeInfo = {
     "help": {
         "addable": false,
         "card": HelpCard,
-        "cardLayout": "card-columns",
+        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-4"],
         "doable": false,
         "singular": "help items",
         "userField": ""
@@ -286,6 +286,7 @@ export default class CardList {
      */
     helpCard(helpItem) {
         const element = new HelpCard();
+
         return element.render({
             "key": helpItem.title,
             "helpItem": helpItem
@@ -565,7 +566,6 @@ export default class CardList {
      * @return {object}
      */
     makeElement(item) {
-        console.log("makeElement", item);
         return this.itemCard[this.props.selected.itemType](item);
     }
 
@@ -670,7 +670,7 @@ export default class CardList {
         const element = document.createElement("div");
 
         if (typeInfo[itemType].cardLayout) {
-            element.classList.add(typeInfo[itemType].cardLayout);
+            element.classList.add(...typeInfo[itemType].cardLayout);
         }
 
         element.append(
