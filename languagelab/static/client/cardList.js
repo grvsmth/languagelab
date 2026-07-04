@@ -266,14 +266,15 @@ export default class CardList {
      * @return {object}
      */
     controlCard(control) {
-        const element = new ControlCard(
+        const element = new ControlCard();
+
+        return element.render(
             {
                 "key": control.name,
                 "control": control,
                 "exportData": this.props.exportData
             }
         );
-        return element;
     }
 
     /**
@@ -587,6 +588,7 @@ export default class CardList {
                 return "";
         }
 
+        console.log("addCard", this.props);
         if (cardId === "initial"
             && !this.props.data[this.props.selected.itemType].length) {
             return "";

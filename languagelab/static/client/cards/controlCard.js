@@ -16,7 +16,6 @@ export default class ControlCard {
     cardTitle() {
         const element = document.createElement("h3");
         element.classList.add("card-title");
-
         element.innerText = this.props.control.title;
 
         return element;
@@ -49,7 +48,8 @@ export default class ControlCard {
      * Call the exportData function, passing in an object with the endpoint
      * and mimetype to export
      */
-    exportData() {
+    exportData(event) {
+        event.preventDefault();
         this.props.exportData(this.props.control);
     }
 
@@ -61,10 +61,13 @@ export default class ControlCard {
     cardLink() {
         const element = document.createElement("a");
         element.classList.add("card-link");
-        element.href = this.props.control.url;
         element.target = this.props.control.target;
-
         element.innerText = this.linkText();
+        element.href = "#";
+
+        if ("url" in this.props.control) {
+            element.href = this.props.control.url;
+        }
 
         if (this.props.control.endpoint) {
             element.addEventListener("click", this.exportData.bind(this));
@@ -95,7 +98,9 @@ export default class ControlCard {
      *
      * @return {object}
      */
-    render() {
+    render(props) {
+        this.props = props;
+
         const element = document.createElement("div");
         element.classList.add("card");
         element.append(this.cardBody());

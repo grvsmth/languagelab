@@ -118,7 +118,7 @@ export default class Lab {
     }
 
     setControls(controls) {
-        this.controls = controls;
+        this.data.controls = controls;
     }
 
     setHelp(help) {
@@ -840,7 +840,7 @@ export default class Lab {
      *
      * @param {object} control - an object containing the endpoint and mimeType
      */
-    exportData(control) {
+    exportData(control, foo) {
         const apiUrl = [
             this.config.api.baseUrl, control.endpoint
         ].join("/");
