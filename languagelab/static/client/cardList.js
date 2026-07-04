@@ -9,6 +9,8 @@ import util from "./util.js";
 
 import ControlCard from "./cards/controlCard.js";
 import HelpCard from "./cards/helpCard.js";
+import LanguageCard from "./cards/languageCard.js";
+import LanguageFormCard from "./cards/languageFormCard.js";
 import LessonCard from "./cards/lessonCard.js";
 import LessonFormCard from "./cards/lessonFormCard.js";
 import MediaCard from "./cards/mediaCard.js";
@@ -18,8 +20,6 @@ import MediaFormCard from "./cards/mediaFormCard.js";
 import DoExerciseCard from "./cards/doExerciseCard.js";
 import ExerciseCard from "./cards/exerciseCard.js";
 import ExerciseFormCard from "./cards/exerciseFormCard.js";
-import LanguageCard from "./cards/languageCard.js";
-import LanguageFormCard from "./cards/languageFormCard.js";
 */
 
 const typeInfo = {
@@ -37,6 +37,14 @@ const typeInfo = {
         "cardLayout": "card-columns",
         "doable": false,
         "singular": "help items",
+        "userField": ""
+    },
+    "languages": {
+        "addable": true,
+        "card": LanguageCard,
+        "cardLayout": "card-columns",
+        "doable": false,
+        "singular": "language",
         "userField": ""
     },
     "lessons": {
@@ -68,14 +76,6 @@ const typeInfo = {
         "formCard": ExerciseFormCard,
         "singular": "exercise",
         "userField": "creator"
-    },
-    "languages": {
-        "addable": true,
-        "card": LanguageCard,
-        "cardLayout": "card-columns",
-        "doable": false,
-        "singular": "language",
-        "userField": ""
     },
 */
 const doActivities = ["do", "loadExercise"];
@@ -564,6 +564,7 @@ export default class CardList {
      * @return {object}
      */
     makeElement(item) {
+        console.log("makeElement", item);
         return this.itemCard[this.props.selected.itemType](item);
     }
 

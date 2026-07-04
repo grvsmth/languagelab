@@ -5,16 +5,11 @@
  *
  */
 
- /*
-
-    global React, PropTypes
-
-*/
 import commonElements from "./commonElements.js";
 import util from "./util.js";
 
 /** Card for editing info about a language in the LanguageLab client */
-export default class LanguageFormCard extends React.Component {
+export default class LanguageFormCard {
 
     /**
      * Handle a click on the cancel button with a call to the setActivity() prop
@@ -91,15 +86,13 @@ export default class LanguageFormCard extends React.Component {
      * @return {object}
      */
     saveButton() {
-        return React.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": "btn btn-success btn-sm m-1",
-                "onClick": this.saveClick.bind(this)
-            },
-            "Save"
-        );
+        const element = document.createElement("button");
+        element.type = "button";
+        element.classList.add("btn", "btn-success", "btn-sm", "m-1");
+        element.addEventListener("click", this.saveClick.bind(this));
+        element.innerText = "Save";
+
+        return element;
     }
 
     /**
@@ -108,15 +101,13 @@ export default class LanguageFormCard extends React.Component {
      * @return {object}
      */
     cancelButton() {
-        return React.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": "btn btn-danger btn-sm m-1",
-                "onClick": this.cancelClick.bind(this)
-            },
-            "Cancel"
-        );
+        const element = document.createElement("button");
+        element.type = "button";
+        element.classList.add("btn", "btn-danger", "btn-sm", "m-1");
+        element.addEventListener("click", this.cancelClick.bind(this));
+        element.innerText = "Cancel";
+
+        return element;
     }
 
     /**
@@ -125,12 +116,11 @@ export default class LanguageFormCard extends React.Component {
      * @return {object}
      */
     buttonDiv() {
-        return React.createElement(
-            "div",
-            {"className": "col"},
-            this.saveButton(),
-            this.cancelButton()
-        );
+        const element = document.createElement("div");
+        element.classList.add("col");
+        element.append(this.saveButton(), this.cancelButton());
+
+        return element;
     }
 
     /**
@@ -139,11 +129,11 @@ export default class LanguageFormCard extends React.Component {
      * @return {object}
      */
     submitRow() {
-        return React.createElement(
-            "div",
-            {"className": "form-row"},
-            this.buttonDiv()
-        );
+        const element = document.createElement("div");
+        element.classList.add("form-row");
+        element.append(this.buttonDiv());
+
+        return element;
     }
 
     /**
@@ -152,16 +142,17 @@ export default class LanguageFormCard extends React.Component {
      * @return {object}
      */
     cardBody() {
-        return React.createElement(
-            "form",
-            {
-                "className": "card-body",
-                "id": "form_" + this.props.language.id
-            },
+        const element = document.createElement("form");
+        element.classList.add("card-body");
+        element.id = "form_" + this.props.language.id;
+
+        element.append(
             this.textInputDiv("name", null, "", this.reportValidity.bind(this)),
             this.textInputDiv("code", null, "", this.reportValidity.bind(this)),
             this.submitRow()
         );
+
+        return element;
     }
 
     /**
@@ -169,17 +160,13 @@ export default class LanguageFormCard extends React.Component {
      *
      * @return {object}
      */
-    render() {
-        return React.createElement(
-            "div",
-            {"className": "card bg-light border-warning mb-3"},
-            this.cardBody()
-        );
+    render(props) {
+        this.props = props;
+
+        const element = document.createElement("div");
+        element.classList.add("card", "bg-light", "border-warning", "mb-3");
+        element.append(this.cardBody());
+
+        return element;
     }
 }
-
-LanguageFormCard.propTypes = {
-    "language": PropTypes.object.isRequired,
-    "saveItem": PropTypes.func.isRequired,
-    "setActivity": PropTypes.func.isRequired
-};
