@@ -209,7 +209,7 @@ export default class QueueFooter {
         }
 
         const element = document.createElement("div");
-        element.classList.add("card-footer"},
+        element.classList.add("card-footer");
 
         element.append(
             this.exerciseLessons(),

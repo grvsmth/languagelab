@@ -228,6 +228,7 @@ export default class Lab {
                 this.fetchData(endpoint);
             } catch (err) {
                 this.handleFetchError(err);
+                return;
             }
         });
 
@@ -352,6 +353,14 @@ export default class Lab {
                 this.handleUnauthorized(err.message);
                 return;
             }
+
+            if (err.message === "Token has expired"
+            || err.message === "No access token in API client object"
+            ) {
+                this.logout();
+            }
+
+            return;
 
             this.addAlert("Fetch error", err.message);
             return;
@@ -497,10 +506,11 @@ export default class Lab {
     logout() {
         storageClient.clearAll();
         this.setState({"activity": "login"});
+        console.log("logout", this.state);
         this.data.currentUser = null;
 
         this.setLoadingState(notLoading);
-        return;
+        this.render();
     }
 
     /**
@@ -901,13 +911,16 @@ export default class Lab {
      * CardList
      */
     body() {
-        console.log("body", this.state);
-        if (!this.data.currentUser) {
+        if (!this.data.currentUser
+            || typeof this.data.currentUser !== 'object'
+            || !("id" in this.data.currentUser)
+        ) {
+            console.log("no current user");
             const loginForm = new LoginForm();
 
             return loginForm.render(
                 {
-                    "help": this.help,
+                    "help": this.data.help,
                     "loginClick": this.loginClick.bind(this)
 
                 }
@@ -1046,7 +1059,7 @@ export default class Lab {
 
     /** The React render function, displaying the root element */
     render() {
-        console.log("lab", this.state);
+        console.log("lab", JSON.stringify(this.state));
         try {
             const containerElement = document.createElement("div");
             containerElement.classList.add("container-fluid");

@@ -5,11 +5,6 @@
  *
  */
 
-/*
-
-    global moment, React, PropTypes
-
-*/
 import commonElements from "./commonElements.js";
 import config from "./config.js";
 import util from "./util.js";
@@ -33,7 +28,7 @@ const statusColor = {
 };
 
 /** Card for performing exercises in the LanguageLab client */
-export default class DoExerciseCard extends React.Component {
+export default class DoExerciseCard {
 
     /**
      * Declare refs and bind handlers
@@ -41,8 +36,6 @@ export default class DoExerciseCard extends React.Component {
      * @param {object} props
      */
     constructor(props) {
-        super(props);
-
         this.afterPlay = this.afterPlay.bind(this);
         this.handleGetInput = this.handleGetInput.bind(this);
         this.handleError = this.handleError.bind(this);
@@ -745,17 +738,3 @@ export default class DoExerciseCard extends React.Component {
         );
     }
 }
-
-DoExerciseCard.propTypes = {
-    "doButton": PropTypes.array.isRequired,
-    "doFunction": PropTypes.object.isRequired,
-    "exercise": PropTypes.object.isRequired,
-    "itemUser": PropTypes.object.isRequired,
-    "lesson": PropTypes.object.isRequired,
-    "maxRank": PropTypes.number.isRequired,
-    "mediaItem": PropTypes.object.isRequired,
-    "queueInfo": PropTypes.object.isRequired,
-    "queueNav": PropTypes.object.isRequired,
-    "rank": PropTypes.number.isRequired,
-    "state": PropTypes.object.isRequired
-};

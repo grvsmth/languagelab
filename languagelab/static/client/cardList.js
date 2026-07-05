@@ -8,6 +8,9 @@ import help from "./help.js";
 import util from "./util.js";
 
 import ControlCard from "./cards/controlCard.js";
+import DoExerciseCard from "./cards/doExerciseCard.js";
+import ExerciseCard from "./cards/exerciseCard.js";
+import ExerciseFormCard from "./cards/exerciseFormCard.js";
 import HelpCard from "./cards/helpCard.js";
 import LanguageCard from "./cards/languageCard.js";
 import LanguageFormCard from "./cards/languageFormCard.js";
@@ -15,12 +18,6 @@ import LessonCard from "./cards/lessonCard.js";
 import LessonFormCard from "./cards/lessonFormCard.js";
 import MediaCard from "./cards/mediaCard.js";
 import MediaFormCard from "./cards/mediaFormCard.js";
-
-/*
-import DoExerciseCard from "./cards/doExerciseCard.js";
-import ExerciseCard from "./cards/exerciseCard.js";
-import ExerciseFormCard from "./cards/exerciseFormCard.js";
-*/
 
 const typeInfo = {
     "controls": {
@@ -30,6 +27,15 @@ const typeInfo = {
         "doable": false,
         "singular": "control",
         "userField": ""
+    },
+    "exercises": {
+        "addable": true,
+        "card": ExerciseCard,
+        "cardLayout": "",
+        "doable": true,
+        "formCard": ExerciseFormCard,
+        "singular": "exercise",
+        "userField": "creator"
     },
     "help": {
         "addable": false,
@@ -67,17 +73,6 @@ const typeInfo = {
     }
 };
 
-/*
-    "exercises": {
-        "addable": true,
-        "card": ExerciseCard,
-        "cardLayout": "",
-        "doable": true,
-        "formCard": ExerciseFormCard,
-        "singular": "exercise",
-        "userField": "creator"
-    },
-*/
 const doActivities = ["do", "loadExercise"];
 
 export default class CardList {
@@ -640,14 +635,14 @@ export default class CardList {
 
         if (!items.length || !("card" in typeInfo[itemType])) {
             if (itemType in help) {
-                return this.helpCard(help[itemType]);
+                return [this.helpCard(help[itemType])];
             }
 
             const element = document.createElement("div");
             element.classList.add("card");
             element.innerText = `No ${itemType} loaded`;
 
-            return element;
+            return [element];
         }
 
         const itemList = this.makeItemList(itemType);

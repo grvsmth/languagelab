@@ -120,7 +120,10 @@ export default class Navbar {
      * @return {object}
      */
     welcomeItem() {
-        if (!this.props.currentUser) {
+        if (!this.props.currentUser
+            || typeof this.props.currentUser !== 'object'
+            || !("id" in this.props.currentUser)
+        ) {
             return "";
         }
 
@@ -137,7 +140,10 @@ export default class Navbar {
      * @return {object}
      */
     navUl() {
-        if (!this.props.currentUser) {
+        if (!this.props.currentUser
+            || typeof this.props.currentUser !== 'object'
+            || !("id" in this.props.currentUser)
+        ) {
             return "";
         }
 
@@ -159,7 +165,10 @@ export default class Navbar {
      * @return {object}
      */
     logoutButton() {
-        if (!this.props.currentUser) {
+        if (!this.props.currentUser
+            || typeof this.props.currentUser !== 'object'
+            || !("id" in this.props.currentUser)
+        ) {
             return "";
         }
 
