@@ -120,7 +120,7 @@ export default class LoadingModal {
         const element = document.createElement("div");
         element.setAttribute("aria-hidden", true);
         element.setAttribute("aria-labelledby", "loadingLabel");
-        element.classList.add("modal");
+        element.classList.add("modal-fade");
         element.dataset.keyboard = "false";
         element.id = "loadingModal";
         element.style.setProperty("display", "block");

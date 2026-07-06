@@ -197,7 +197,6 @@ export default class InfoArea {
             return this.languageInfo();
         }
 
-        console.log("Nothing for the infoArea");
         return "";
     }
 }

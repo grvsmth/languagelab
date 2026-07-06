@@ -583,7 +583,6 @@ export default class CardList {
                 return "";
         }
 
-        console.log("addCard", this.props);
         if (cardId === "initial"
             && !this.props.data[this.props.selected.itemType].length) {
             return "";
@@ -657,7 +656,6 @@ export default class CardList {
     render(props) {
         this.props = props;
 
-        console.log("cardList", this.props);
         const itemType = this.props.selected.itemType;
         const addable = this.props.activity !== "editQueue"
             && typeInfo[itemType].addable;

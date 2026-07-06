@@ -142,9 +142,7 @@ export default class Lab {
             }
         }
 
-        if (!currentlyLoading) {
-            this.render();
-        }
+        this.render();
     }
 
     setMimicCount(property, count) {
@@ -911,11 +909,14 @@ export default class Lab {
      * CardList
      */
     body() {
+        if (this.loadingState[this.selectedState.itemType]) {
+            return "";
+        }
+
         if (!this.data.currentUser
             || typeof this.data.currentUser !== 'object'
             || !("id" in this.data.currentUser)
         ) {
-            console.log("no current user");
             const loginForm = new LoginForm();
 
             return loginForm.render(
@@ -925,10 +926,6 @@ export default class Lab {
 
                 }
             );
-        }
-
-        if (this.loadingState[this.selectedState.itemType]) {
-            return "";
         }
 
         const cardList = new CardList();

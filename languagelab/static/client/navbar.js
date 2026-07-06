@@ -12,7 +12,6 @@
 /** Navigation bar for the LanguageLab client */
 export default class Navbar {
     constructor(config) {
-        console.log("config", config);
         this.config = config;
     }
 
