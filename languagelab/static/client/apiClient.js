@@ -223,7 +223,7 @@ export default class LanguageLabClient {
      * @param {number} id - the ID of the item to be updated
      */
     delete(baseUrl, endpoint, id) {
-        const apiUrl = [baseUrl, endpoint, id].join("/");
+        const apiUrl = [baseUrl, endpoint, id, ""].join("/");
         const options = {
             "method": "DELETE",
             "headers": {

@@ -594,7 +594,7 @@ export default class Lab {
      * @param {number} lessonId - the ID of the lesson
      */
     firstExerciseId(lessonId) {
-        const lesson = util.findItem(this.state.lessons, lessonId);
+        const lesson = util.findItem(this.data.lessons, lessonId);
 
         if (!lesson.queueItems) {
             return null;
@@ -610,7 +610,7 @@ export default class Lab {
      * @param {number} lessonId - the ID of the lesson
      */
     toggleLesson(lessonId) {
-        if (this.state.activity === "do"
+        if (this.data.activity === "do"
             && this.selectedState.lessons == lessonId) {
             this.readMode();
             return;
@@ -641,8 +641,8 @@ export default class Lab {
      * @param {number} lessonId - the ID of the lesson
      */
     startExercise(exerciseId, lessonId=null) {
-        const exercise = util.findItem(this.state.exercises, exerciseId);
-        const mediaItem = util.findItem(this.state.media, exercise.media);
+        const exercise = util.findItem(this.data.exercises, exerciseId);
+        const mediaItem = util.findItem(this.data.media, exercise.media);
 
         if (!("mediaUrl" in mediaItem)) {
             this.addAlert("Media error", "Unable to find media for exercise!");
@@ -660,7 +660,7 @@ export default class Lab {
             targetSelected.lessons = lessonId;
         }
 
-        this.setSelected(targetSelected);
+        this.setSelectedState(targetSelected);
     }
 
     /**
@@ -756,7 +756,7 @@ export default class Lab {
         }
 
         const lesson = util.findItem(
-            this.state.lessons, this.selectedState.lessons
+            this.data.lessons, this.selectedState.lessons
         );
 
         if (lesson.queueItems.length < 1) {
@@ -779,7 +779,7 @@ export default class Lab {
      */
     selectByRank(rank) {
         const lesson = util.findItem(
-            this.state.lessons, this.selectedState.lessons
+            this.data.lessons, this.selectedState.lessons
         );
 
         const queueItem = lesson.queueItems.find(
@@ -787,11 +787,11 @@ export default class Lab {
         );
 
         const exercise = util.findItem(
-            this.state.exercises,
+            this.data.exercises,
             queueItem.exercise
         );
 
-        const mediaItem = util.findItem(this.state.media, exercise.media);
+        const mediaItem = util.findItem(this.data.media, exercise.media);
 
         if (!Object.prototype.hasOwnProperty.call(mediaItem, "mediaUrl")) {
             this.addAlert("Media error", "Unable to find media for exercise!");
@@ -875,11 +875,11 @@ export default class Lab {
      */
     playModel(increment) {
         const exercise = util.findItem(
-            this.state.exercises,
+            this.data.exercises,
             this.selectedState.exercises
         );
 
-        const mediaItem = util.findItem(this.state.media, exercise.media);
+        const mediaItem = util.findItem(this.data.media, exercise.media);
         if (!("mediaUrl" in mediaItem)) {
             this.addAlert("Media error", "Unable to find media for exercise!");
             return;
@@ -1019,7 +1019,7 @@ export default class Lab {
     /** Display the infoArea, passing the selected lesson */
     infoArea() {
         const lesson = util.findItem(
-            this.state.lessons, this.selectedState.lessons
+            this.data.lessons, this.selectedState.lessons
         );
 
         const infoArea = new InfoArea();
