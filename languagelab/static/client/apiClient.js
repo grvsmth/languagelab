@@ -266,6 +266,7 @@ export default class LanguageLabClient {
     /** Request a new token */
     refreshToken() {
         if (typeof this.token !== "object" || !("refresh" in this.token)) {
+            console.log(this.token);
             throw new Error("No refresh token");
         }
 

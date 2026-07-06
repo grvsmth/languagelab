@@ -221,9 +221,11 @@ export default class LessonFormCard {
      *
      * @return {object}
      */
-    render() {
+    render(props) {
+        this.props = props;
+
         const element = document.createElement("div");
-        element.classList.add("card bg-light mb-3");
+        element.classList.add("card", "bg-light", "mb-3");
 
         element.append(this.cardBody());
 

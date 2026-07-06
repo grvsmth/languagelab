@@ -20,7 +20,7 @@ export default class QueueFooter {
      */
     rankBadge() {
         const element = document.createElement("span");
-        element.classList.add("badge", "badge-success");
+        element.classList.add("badge", "text-bg-success");
         element.innerText = this.props.queueItem.rank;
 
         return element;

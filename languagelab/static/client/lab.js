@@ -586,6 +586,7 @@ export default class Lab {
             this.setState({"activity": activity});
         }
 
+        this.render();
     }
 
     /**
@@ -671,12 +672,15 @@ export default class Lab {
      * @param {number} lessonId - the selected lesson (optional)
      */
     setActivity(activity, exerciseId=null, lessonId=null) {
+        console.log(`setActivity(${activity}, ${exerciseId}, ${lessonId}`);
         this.state.activity = activity;
 
         this.setSelectedState({
             "exercises": exerciseId,
             "lessons": lessonId
         });
+
+        this.render();
     }
 
     /**

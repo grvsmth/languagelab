@@ -43,7 +43,7 @@ export default class LoadingModal {
      */
     spinnerSr() {
         const element = document.createElement("span");
-        element.classList.add("sr-only");
+        element.classList.add("visually-hidden");
         element.id = "loadingLabel";
         element.innerText = "Loading...";
 
