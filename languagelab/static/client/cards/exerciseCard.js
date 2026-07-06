@@ -18,7 +18,7 @@ export default class ExerciseCard {
      */
     cardHeader() {
         const element = document.createElement("h5");
-        element.classlist.add("card-header");
+        element.classList.add("card-header");
         element.innerText = this.props.exercise.name;
 
         return element;
@@ -75,7 +75,7 @@ export default class ExerciseCard {
         this.props = props;
 
         const element = document.createElement("div");
-        element.classlist.add("card", "bg-light");
+        element.classList.add("card", "bg-light");
 
         if (this.props.activity !== "editQueue") {
             element.classList.add("mb-3");

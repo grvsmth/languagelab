@@ -57,7 +57,7 @@ export default class ExerciseCardBody {
         }
 
         const element = document.createElement("h6");
-        element.classList.add("card-subtitle text-muted");
+        element.classList.add("card-subtitle", "text-muted");
         element.innerText = mediaName + timeRange;
 
         return element;
@@ -113,7 +113,7 @@ export default class ExerciseCardBody {
     editLink() {
         const element = document.createElement("a");
         element.classList.add("text-primary");
-        element.addEventListener(this.editClick.bind(this));
+        element.addEventListener("click", this.editClick.bind(this));
         element.innerText = "edit";
 
         return element;
@@ -198,7 +198,9 @@ export default class ExerciseCardBody {
      *
      * @return {object}
      */
-    render() {
+    render(props) {
+        this.props = props;
+
         const element = document.createElement("div");
         element.classList.add("card-body");
 

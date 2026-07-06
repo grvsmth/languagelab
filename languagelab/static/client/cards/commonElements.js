@@ -78,6 +78,8 @@ const exports = {
         element.value = optionKey;
 
         element.append(optionValue);
+
+        return element;
     },
     "lessonSubtitle": function(lesson) {
         /**
@@ -200,14 +202,11 @@ exports.itemSelect = function(fieldName, options, inputId, defaultValue) {
     element.name = fieldName;
     element.defaultValue = defaultValue;
 
-    element.append(
-        ...Object.keys(options).map((optionKey) => {
-            return exports.itemOption(
-                optionKey,
-                options[optionKey]
-            );
-        })
+    const optionElements = Object.keys(options).map(
+        optionKey => exports.itemOption(optionKey, options[optionKey])
     );
+
+    element.append(...optionElements);
 
     return element;
 };

@@ -666,11 +666,9 @@ export default class CardList {
             element.classList.add(...typeInfo[itemType].cardLayout);
         }
 
-        element.append(
-            this.addCard(addable, "initial"),
-            ...this.makeElements(itemType),
-            this.addCard(addable, "final")
-        );
+        element.append(this.addCard(addable, "initial"));
+        element.append(...this.makeElements(itemType));
+        element.append(this.addCard(addable, "final"));
 
         return element;
     }
