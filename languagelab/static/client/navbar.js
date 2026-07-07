@@ -56,7 +56,6 @@ export default class Navbar {
      */
     navClick(event) {
         event.preventDefault();
-        console.log("navClick", event);
         this.props.navClick(event.target.id);
     }
 

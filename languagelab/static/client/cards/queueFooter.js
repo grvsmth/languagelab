@@ -44,12 +44,14 @@ export default class QueueFooter {
      * @param {object} event
      */
     queueClick(event) {
-        const idParts = event.currentTarget.id.split("_");
-        if (!idParts) {
+        if (!("action" in event.currentTarget.dataset)) {
+            console.log("No action in event target dataset", event);
             return;
         }
 
-        this.props.queueClick(idParts[0], this.props.queueItem.id);
+        this.props.queueClick(
+            event.currentTarget.dataset.action, this.props.queueItem.id
+        );
     }
 
     /**
@@ -91,6 +93,7 @@ export default class QueueFooter {
 
         element.disabled = this.isRankButtonDisabled(buttonContent);
         element.Id = [buttonContent, this.props.queueItem.id].join("_");
+        element.dataset.action = buttonContent;
         element.addEventListener("click", this.queueClick.bind(this));
 
         element.append(

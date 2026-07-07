@@ -406,7 +406,6 @@ export default class CardList {
      * @return {object}
      */
     lessonCard(lesson) {
-        console.log("lessonCard", lesson);
         let cardComponent = LessonCard;
 
         if (this.props.activity === "editQueue") {

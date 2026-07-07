@@ -797,7 +797,7 @@ export default class Lab {
 
         const mediaItem = util.findItem(this.data.media, exercise.media);
 
-        if (!Object.prototype.hasOwnProperty.call(mediaItem, "mediaUrl")) {
+        if (!("mediaUrl" in mediaItem)) {
             this.addAlert("Media error", "Unable to find media for exercise!");
             return;
         }

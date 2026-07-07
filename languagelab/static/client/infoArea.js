@@ -34,7 +34,7 @@ export default class InfoArea {
     dismissButton(id, text=null) {
         const element = document.createElement("button");
         element.classList.add("btn-close");
-        element.dataset.bsDismiss = "alert";
+            element.dataset.bsDismiss = "alert";
 
         element.setAttribute("aria-label", "close");
         element.type = "button";
@@ -100,6 +100,8 @@ export default class InfoArea {
         element.classList.add("card-title");
 
         element.append(this.props.lesson.name);
+
+        return element;
     }
 
     /**
@@ -111,10 +113,16 @@ export default class InfoArea {
         const element = document.createElement("div");
         element.classList.add("card-body");
 
+        const dismissButton = this.dismissButton("queue", "Close queue");
+        dismissButton.dataset.bsDismiss = "queue";
+        dismissButton.classList.add(
+            "position-absolute", "top-0", "end-0", "m-2"
+        );
+
         element.append(
             this.itemTitle(),
             commonElements.lessonSubtitle(this.props.lesson),
-            this.dismissButton("queue", "Close queue")
+            dismissButton
         );
 
         return element;
@@ -132,6 +140,7 @@ export default class InfoArea {
             && this.props.activity === "editQueue"
         ) {
             element = document.createElement("div");
+            element.role = "queue";
             element.classList.add("card", "bg-light", "border-secondary");
             element.append(this.lessonQueueBody());
         }
