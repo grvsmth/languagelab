@@ -19,6 +19,7 @@ export default class LessonCard {
 
     /** Call toggleLesson in the lab element, passing the lesson id */
     toggleLesson() {
+        console.log("togglelesson", this.props);
         this.props.toggleLesson(this.props.lesson.id);
     }
 
@@ -124,11 +125,11 @@ export default class LessonCard {
      */
     linkDiv() {
         if (this.props.activity === "add") {
-            return null;
+            return "";
         }
 
         if (!this.props.canWrite) {
-            return null;
+            return "";
         }
 
         const element = document.createElement("div");
@@ -193,7 +194,7 @@ export default class LessonCard {
      */
     editQueueButton(disabled=false) {
         if (!this.props.canWrite) {
-            return null;
+            return "";
         }
 
         const element = document.createElement("button");

@@ -316,10 +316,12 @@ export default class CardList {
             "lesson": lesson,
             "maxRank": maxRank,
             "mediaItem": mediaItem,
+            "mimicCount": this.props.mimicCount,
             "queueInfo": this.queueInfo(lesson, rank, maxRank),
             "rank": rank,
+            "selected": this.props.selected,
             "setActivity": this.props.setActivity,
-            "state": this.props.data
+            "state": this.props.state
         };
 
         const element = new DoExerciseCard();
@@ -589,7 +591,7 @@ export default class CardList {
         }
 
         if (this.props.activity === "add"
-            && selectedState[this.props.selected.itemType] === cardId
+            && this.props.selected[this.props.selected.itemType] === cardId
             ) {
             return this.itemCard[this.props.selected.itemType](
                 {"id": cardId}
@@ -656,6 +658,7 @@ export default class CardList {
      */
     render(props) {
         this.props = props;
+        console.log("CardList", this.props);
 
         const itemType = this.props.selected.itemType;
         const addable = this.props.activity !== "editQueue"

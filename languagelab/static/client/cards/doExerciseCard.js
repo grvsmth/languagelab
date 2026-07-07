@@ -41,8 +41,7 @@ export default class DoExerciseCard {
         this.handleError = this.handleError.bind(this);
 
         this.mediaRecorder = null;
-        this.mimicButton = React.createRef();
-        this.player = React.createRef();
+        this.player = null;
     }
 
     /** On mount, find an audio input device and register it */
@@ -122,11 +121,11 @@ export default class DoExerciseCard {
      * @return {object}
      */
     title(prop) {
-        return React.createElement(
-            "h5",
-            {"className": "card-title"},
-            prop.name
-        );
+        const element = document.createElement("h5");
+        element.classList.add("card-title");
+        element.innerText = prop.name;
+
+        return element;
     }
 
     /**
@@ -136,15 +135,14 @@ export default class DoExerciseCard {
      */
     bySpan() {
         if (!this.props.itemUser) {
-            return null;
+            return "";
         }
 
-        return React.createElement(
-            "span",
-            {"className": "text-dark"},
-            " by ",
-            this.props.itemUser.username
-        );
+        const element = document.createElement("span");
+        element.classList.add("text-dark");
+        element.innerText = " by " + this.props.itemUser.username;
+
+        return element;
     }
 
     /**
@@ -159,18 +157,16 @@ export default class DoExerciseCard {
             config.timeFormat
         );
 
-        var mediaName = "";
+        let mediaName = "";
         if (this.props.mediaItem) {
             mediaName = this.props.mediaItem.name + ", ";
-
         }
 
-        return React.createElement(
-            "h6",
-            {"className": "card-subtitle text-muted"},
-            mediaName,
-            timeRange
-        );
+        const element = document.createElement("h6");
+        element.classList.add("card-subtitle", "text-muted");
+        element.innerText = mediaName + timeRange;
+
+        return element;
     }
 
     /**
@@ -179,18 +175,16 @@ export default class DoExerciseCard {
      * @return {object}
      */
     descriptionRow() {
-        var mediaCreator = "";
+        let mediaCreator = "";
         if (this.props.mediaItem) {
             mediaCreator = this.props.mediaItem.creator;
         }
 
-        return React.createElement(
-            "div",
-            {},
-            mediaCreator,
-            " – ",
-            this.props.exercise.description
-        );
+        const element = document.createElement("div");
+        element.innerText = mediaCreator + " – "
+            + this.props.exercise.description;
+
+        return element;
     }
 
     /** Set the start time on the media player, handling potential errors */
@@ -234,11 +228,11 @@ export default class DoExerciseCard {
 
         if (playActivities.includes(this.props.state.status)) {
             const playPromise = this.player.current.play();
-                if (playPromise === undefined) {
-                    console.log("Promise undefined!", this.player.current);
-                    return;
-                }
-                playPromise.catch(this.handleError, this.props.state.status);
+            if (playPromise === undefined) {
+                console.log("Promise undefined!", this.player.current);
+                return;
+            }
+            playPromise.catch(this.handleError, this.props.state.status);
         }
     }
 
@@ -333,25 +327,22 @@ export default class DoExerciseCard {
         const endSeconds = this.timeAsSeconds(this.props.exercise.endTime);
 
         const timeUpdateHandler = startSeconds < endSeconds
-            ? this.timeUpdateHandler.bind(this) : null;
+            ? this.timeUpdateHandler.bind(this) : "";
 
-        return React.createElement(
-            "audio",
-            {
-                "id": "audio1",
-                "ref": this.player,
-                "src": this.props.state.nowPlaying,
-                "controls": true,
-                "onEnded": this.afterPlay,
-                "onLoadedMetadata": this.loadedMetadata.bind(this),
-                "onPlay": this.playHandler.bind(this),
-                "onTimeUpdate": timeUpdateHandler,
-                "style": {
-                    "width": "70%"
-                }
-            },
-            null
+        const element = document.createElement("audio");
+        element.id = "audio1";
+        element.src = this.props.state.nowPlaying;
+        element.controls = true;
+        element.style.width = "70%";
+
+        element.addEventListener("ended", this.afterPlay);
+        element.addEventListener(
+            "loadedmetadata", this.loadedMetadata.bind(this)
         );
+        element.addEventListener("play", this.playHandler.bind(this));
+        element.addEventListener("timeupdate", timeUpdateHandler);
+
+        return element;
     }
 
     /**
@@ -369,10 +360,13 @@ export default class DoExerciseCard {
      * @return {object}
      */
     playerDiv() {
-        return React.createElement(
-            "div",
-            {"className": "d-flex flex-row mt-3"},
-            this.makePlayer(),
+        const element = document.createElement("div");
+        element.classList.add("d-flex", "flex-row", "mt-3");
+
+        this.player = this.makePlayer();
+
+        element.append(
+            this.player,
             commonElements.checkboxDiv(
                 "onlyExercise",
                 this.props.state.onlyExercise,
@@ -381,6 +375,8 @@ export default class DoExerciseCard {
                 this.onlyCheck.bind(this)
             )
         );
+
+        return element;
     }
 
     /**
@@ -398,7 +394,7 @@ export default class DoExerciseCard {
      * we're at the end, disable the forward button.  If we're playing or
      * recording, or we can't get the rank, disable both buttons.
      *
-     * Returns a string for use in the React component props.
+     * Returns a string for use in the component props.
      *
      * @param {string) direction - the direction (forward or back) of the button
      *
@@ -413,13 +409,14 @@ export default class DoExerciseCard {
             return "disabled";
         }
         if (direction === "previous") {
-            return this.props.rank <= 1 ? "disabled" : null;
+            return this.props.rank <= 1 ? "disabled" : "";
         }
         if (direction === "next") {
             return this.props.rank >= this.props.maxRank
-                ? "disabled" : null;
+                ? "disabled" : "";
         }
-        return null;
+
+        return "";
     }
 
     /**
@@ -445,20 +442,23 @@ export default class DoExerciseCard {
         );
 
         if (direction === "previous") {
-            return React.createElement(
-                "span",
-                {},
+            const element = document.createElement("span");
+            element.append(
                 commonElements.iconSpan(this.props.doButton[direction].icon),
                 " " + nameText
             );
+
+            return element;
         }
 
-        return React.createElement(
-            "span",
-            {},
+        const element = document.createElement("span");
+
+        element.append(
             nameText + " ",
             commonElements.iconSpan(this.props.doButton[direction].icon)
         );
+
+        return element;
     }
 
     /**
@@ -470,22 +470,22 @@ export default class DoExerciseCard {
      * @return {object}
      */
     navButton(direction) {
-        if (this.props.state.selected.itemType !== "lessons") {
-            return null;
+        if (this.props.selected.itemType !== "lessons") {
+            return "";
         }
 
+        const element = document.createElement("button");
+
         const colorClass = this.props.doButton[direction].color;
-        const disabled = this.navDisabled(direction);
-        return React.createElement(
-            "button",
-            {
-                "type": "button",
-                "onClick": () => this.queueNav(direction),
-                "className": "btn col btn-" + colorClass,
-                "disabled": disabled
-            },
-            this.navButtonElements(direction)
-        );
+        element.classList.add("btn", "col", "btn-" + colorClass);
+
+        element.type = "button";
+        element.disabled = this.navDisabled(direction);
+
+        element.addEventListener("click", () => this.queueNav(direction));
+        element.append(this.navButtonElements(direction));
+
+        return element;
     }
 
     /**
@@ -495,12 +495,8 @@ export default class DoExerciseCard {
      * @return {number}
      */
     exerciseCount() {
-        if (Object.prototype.hasOwnProperty.call(
-                this.props.state.mimicCount,
-                this.props.exercise.id
-                )
-            ) {
-            return this.props.state.mimicCount[this.props.exercise.id];
+        if (this.props.exercise.id in this.props.mimicCount) {
+            return this.props.mimicCount[this.props.exercise.id];
         }
 
         return 0;
@@ -512,11 +508,11 @@ export default class DoExerciseCard {
      * @return {object}
      */
     mimicCountSpan() {
-        return React.createElement(
-            "span",
-            {"className": "badge badge-light"},
-            this.exerciseCount()
-        );
+        const element = document.createElement("span");
+        element.classList.add("badge", "badge-light");
+        element.append(this.exerciseCount());
+
+        return element;
     }
 
     /**
@@ -587,23 +583,17 @@ export default class DoExerciseCard {
      * @return {object}
      */
     makeMimicButton() {
-        const mimicDisabled = playActivities.includes(
-            this.props.state.status
-        );
 
-        const className = "btn col-3 btn-" + this.mimicButtonColor();
-        return React.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": className,
-                "disabled": mimicDisabled,
-                "onClick": this.mimicClick.bind(this),
-                "ref": this.mimicButton
-            },
-            "Mimic ",
-            this.mimicCountSpan()
-        );
+        const element = document.createElement("button");
+        element.classList.add("btn", "col-3", "btn-" + this.mimicButtonColor());
+        element.type = "button";
+
+        element.disabled = playActivities.includes(this.props.state.status);
+        element.addEventListener("click", this.mimicClick.bind(this));
+
+        element.append("Mimic ", this.mimicCountSpan());
+
+        return element;
     }
 
     /**
@@ -627,15 +617,14 @@ export default class DoExerciseCard {
      * @return {object}
      */
     exitButton() {
-        return React.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": "btn col-2 btn-info",
-                "onClick": this.exitClick.bind(this)
-            },
-            commonElements.iconSpan("oi-circle-x")
-        );
+        const element = document.createElement("button");
+        element.classList.add("btn", "col-2", "btn-info");
+        element.type = "button";
+        element.addEventListener("click", this.exitClick.bind(this));
+
+        element.append(commonElements.iconSpan("oi-circle-x"));
+
+        return element;
     }
 
     /**
@@ -644,11 +633,11 @@ export default class DoExerciseCard {
      * @return {object}
      */
     statusRow() {
-        return React.createElement(
-            "div",
-            {"className": "text-" + statusColor[this.props.state.status]},
-            this.props.state.statusText
-        );
+        const element = document.createElement("div");
+        element.classList.add("text-" + statusColor[this.props.state.status]);
+        element.innerText = this.props.state.statusText;
+
+        return element;
     }
 
     /**
@@ -674,16 +663,17 @@ export default class DoExerciseCard {
             }
         }
 
-        return React.createElement(
-            "div",
-            {
-                "className": "btn-group w-100"
-            },
+        const element = document.createElement("div");
+        element.classList.add("btn-group", "w-100");
+
+        element.append(
             this.navButton("previous"),
             this.makeMimicButton(),
             this.exitButton(),
             this.navButton("next")
         );
+
+        return element;
     }
 
     /**
@@ -693,15 +683,18 @@ export default class DoExerciseCard {
      */
     cardHeader() {
         if (!this.props.lesson) {
-            return null;
+            return "";
         }
 
-        return React.createElement(
-            "div",
-            {"className": "card-header"},
+        const element = document.createElement("div");
+        element.classList.add("card-header");
+
+        element.append(
             this.title(this.props.lesson),
             commonElements.lessonSubtitle(this.props.lesson)
         );
+
+        return element;
     }
 
     /**
@@ -711,9 +704,10 @@ export default class DoExerciseCard {
      * @return {object}
      */
     cardBody() {
-        return React.createElement(
-            "div",
-            {"className": "card-body"},
+        const element = document.createElement("div");
+        element.classList.add("card-body");
+
+        element.append(
             this.title(this.props.exercise),
             this.itemSubtitle(),
             this.descriptionRow(),
@@ -721,6 +715,8 @@ export default class DoExerciseCard {
             this.statusRow(),
             this.controls()
         );
+
+        return element;
     }
 
     /**
@@ -728,13 +724,14 @@ export default class DoExerciseCard {
      *
      * @return {object}
      */
-    render() {
-        console.log(this.props);
-        return React.createElement(
-            "div",
-            {"className": "card bg-light mb-3"},
-            this.cardHeader(),
-            this.cardBody()
-        );
+    render(props) {
+        this.props = props;
+        console.log("DoExerciseCard", this.props);
+
+        const element = document.createElement("div");
+        element.classList.add("card", "bg-light", "mb-3");
+
+        element.append(this.cardHeader(), this.cardBody());
+        return element;
     }
 }

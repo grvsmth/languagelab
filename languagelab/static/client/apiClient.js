@@ -265,22 +265,22 @@ export default class LanguageLabClient {
 
     /** Request a new token */
     refreshToken() {
-        if (typeof this.token !== "object" || !("refresh" in this.token)) {
-            console.log(this.token);
-            throw new Error("No refresh token");
-        }
-
-        const endpoint = "token/refresh";
-        const apiUrl = [this.baseUrl, endpoint, ""].join("/");
-        const options = {
-            "method": "POST",
-            "headers": {
-                'Content-Type': 'application/json'
-            },
-            "body": JSON.stringify({"refresh": this.token.refresh})
-        };
-
         return new Promise(async (resolve, reject) => {
+            if (typeof this.token !== "object" || !("refresh" in this.token)) {
+                console.log(this.token);
+                reject({"message": "No refresh token"});
+            }
+
+            const endpoint = "token/refresh";
+            const apiUrl = [this.baseUrl, endpoint, ""].join("/");
+            const options = {
+                "method": "POST",
+                "headers": {
+                    'Content-Type': 'application/json'
+                },
+                "body": JSON.stringify({"refresh": this.token.refresh})
+            };
+
             const res = await fetch(apiUrl, options);
             if (res.status < 200 || res.status > 299) {
                 console.log("failed to refresh token", res);

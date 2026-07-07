@@ -46,6 +46,7 @@ export default class LessonFormCard {
      *
      */
     reportValidity() {
+        console.log("reportValidity", this.props);
         document.querySelector("#form_" + this.props.lesson.id)
             .reportValidity();
     }

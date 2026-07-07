@@ -39,6 +39,12 @@ export default class InfoArea {
         element.setAttribute("aria-label", "close");
         element.type = "button";
 
+        if (id === "queue") {
+            element.addEventListener(
+                "click", this.dismissHandler.bind(this, id)
+            );
+        }
+
         return element;
     }
 

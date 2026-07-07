@@ -97,7 +97,13 @@ export default class Lab {
             "users": []
         };
 
-        this.mimicCount = {};
+        this.mimicCount = {
+            "exercises": {},
+            "languages": {},
+            "lessons": {},
+            "media": {},
+            "users": {}
+        };
 
         this.state = {
             "activity": "read",
@@ -244,7 +250,7 @@ export default class Lab {
         const loadTime = new moment();
         const apiUrl = [this.config.api.baseUrl, dataType].join("/");
 
-        let res = {};
+        let res = [];
         try {
             res = await this.apiClient.fetchData(apiUrl);
         } catch (err) {
@@ -611,11 +617,12 @@ export default class Lab {
      * @param {number} lessonId - the ID of the lesson
      */
     toggleLesson(lessonId) {
-        if (this.data.activity === "do"
+        if (this.state.activity === "do"
             && this.selectedState.lessons == lessonId) {
             this.readMode();
             return;
         }
+
         this.startExercise(this.firstExerciseId(lessonId), lessonId);
     }
 
@@ -662,6 +669,7 @@ export default class Lab {
         }
 
         this.setSelectedState(targetSelected);
+        this.render();
     }
 
     /**
@@ -689,9 +697,15 @@ export default class Lab {
      * @param {string} itemType - the type of item to delete
      * @param {number} itemId - the ID of the item to delete
      */
-    deleteClick(itemType, itemId) {
-        this.apiClient.delete(this.config.api.baseUrl, itemType, itemId)
-            .then(this.fetchAll.bind(this), this.handleFetchError);
+    async deleteClick(itemType, itemId) {
+        try {
+            await this.apiClient.delete(
+                this.config.api.baseUrl, itemType, itemId
+            );
+            this.fetchAll();
+        } catch (error) {
+            this.handleFetchError(error);
+        }
     }
 
     /**
@@ -953,11 +967,13 @@ export default class Lab {
             "exportData": this.exportData.bind(this),
             "loading": this.loadingState,
             "maxRank": this.maxRank.bind(this),
+            "mimicCount": this.mimicCount,
             "queueClick": this.queueClick.bind(this),
             "saveItem": this.saveItem.bind(this),
             "setActivity": this.setActivity.bind(this),
             "selected": this.selectedState,
             "selectItem": this.selectItem.bind(this),
+            "state": this.state,
             "startExercise": this.startExercise.bind(this),
             "toggleLesson": this.toggleLesson.bind(this)
         });
