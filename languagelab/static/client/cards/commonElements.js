@@ -1,5 +1,5 @@
 /**
- * Common React elements used in multiple cards in the LanguageLab client
+ * Common elements used in multiple cards in the LanguageLab client
  *
  * Angus B. Grieve-Smith, 2021
  *
@@ -157,7 +157,7 @@ const exports = {
 /**
  * An element containing a checkbox with its label to the right
  *
- * @param {string} key - the React key in case it's part of a list
+ * @param {string} key - was usde for the React key in case it's part of a list
  * @param {string} checked - The HTML "checked" parameter
  * @param {string} labelText
  * @param {string} itemId

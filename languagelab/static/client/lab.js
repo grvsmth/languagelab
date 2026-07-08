@@ -1074,7 +1074,7 @@ export default class Lab {
         });
     }
 
-    /** The React render function, displaying the root element */
+    /** The render function, displaying the root element */
     render() {
         console.log("lab", JSON.stringify(this.state));
         try {

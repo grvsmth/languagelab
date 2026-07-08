@@ -218,7 +218,7 @@ export default class LessonFormCard {
     }
 
     /**
-     * The React render() method
+     * The render() method
      *
      * @return {object}
      */

@@ -88,7 +88,7 @@ export default class InfoArea {
     }
 
     /**
-     * Generate a React element for each alert in the props
+     * Generate an element for each alert in the props
      *
      * @return {array}
      */

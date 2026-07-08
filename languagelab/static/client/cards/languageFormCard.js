@@ -156,7 +156,7 @@ export default class LanguageFormCard {
     }
 
     /**
-     * The React render() method
+     * The render() method
      *
      * @return {object}
      */

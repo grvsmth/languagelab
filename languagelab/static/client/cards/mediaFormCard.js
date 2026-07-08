@@ -303,7 +303,7 @@ export default class MediaFormCard {
     }
 
     /**
-     * The React render() method
+     * The render() method
      *
      * @return {object}
      */

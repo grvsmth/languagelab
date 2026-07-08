@@ -85,7 +85,7 @@ export default class LanguageCard {
     }
 
     /**
-     * The React render() method
+     * The render() method
      *
      * @return {object}
      */

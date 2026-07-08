@@ -184,7 +184,7 @@ export default class LoginForm {
     }
 
     /**
-     * The React render method
+     * The render method
      *
      * @return {object}
      */
