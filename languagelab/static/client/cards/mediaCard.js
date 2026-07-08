@@ -20,6 +20,7 @@ export default class MediaCard {
     /**
      */
     constructor() {
+        this.player = null;
     }
 
     /**
@@ -30,7 +31,7 @@ export default class MediaCard {
     itemTitle() {
         const formatText = config.formatName[this.props.mediaItem.format];
 
-        var languageText = "";
+        let languageText = "";
         if (this.props.mediaItem.language && this.props.languages
             && this.props.languages.length > this.props.mediaItem.language) {
             const language = this.props.languages.find(
@@ -57,7 +58,7 @@ export default class MediaCard {
      */
     bySpan() {
         if (!this.props.itemUser) {
-            return null;
+            return "";
         }
 
         const element = document.createElement("span");
@@ -163,7 +164,10 @@ export default class MediaCard {
     showControls() {
         if (this.props.selectedItem
             && this.props.id !== this.props.selectedItem) {
-            this.player.current.pause();
+            if (this.player) {
+                this.player.pause();
+            }
+
             return false;
         }
         return true;
@@ -197,7 +201,9 @@ export default class MediaCard {
     playerDiv() {
         const element = document.createElement("div");
         element.classList.add("d-flex", "flex-row", "mt-3");
-        element.append(this.makePlayer());
+
+        this.player = this.makePlayer();
+        element.append(this.player);
 
         return element;
     }
@@ -209,7 +215,7 @@ export default class MediaCard {
      */
     linkDiv() {
         if (this.props.activity === "add") {
-            return null;
+            return "";
         }
         const element = document.createElement("div");
         element.append(

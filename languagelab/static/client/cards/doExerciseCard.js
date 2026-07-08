@@ -45,7 +45,7 @@ export default class DoExerciseCard {
     }
 
     /** On mount, find an audio input device and register it */
-    componentDidMount() {
+    getMedia() {
         navigator.mediaDevices.getUserMedia({"audio": true}).then(
             (stream) => this.handleGetInput(stream),
             (error) => this.handleGetMediaError(error)
@@ -54,7 +54,7 @@ export default class DoExerciseCard {
 
     /** On update, re-establish focus on the mimic button */
     componentDidUpdate() {
-        this.mimicButton.current.focus();
+        this.mimicButton.focus();
     }
 
     /** When we have recorded data available, create a URL for that and set
@@ -77,6 +77,7 @@ export default class DoExerciseCard {
      * @param {object} stream
      */
     handleGetInput(stream) {
+        console.log("handleGetInput", stream);
         window.stream = stream;
         this.mediaRecorder = new window.MediaRecorder(
             stream, config.audio.options
@@ -189,24 +190,25 @@ export default class DoExerciseCard {
 
     /** Set the start time on the media player, handling potential errors */
     setStartTime() {
+        console.log("setStartTime", this);
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
 
         if (startSeconds < 0) {
             return;
         }
 
-        if (startSeconds > this.player.current.duration) {
+        if (startSeconds > this.player.duration) {
             const msg = `Your startTime of ${this.props.exercise.startTime}
             seconds is greater than the total duration
-            (${this.player.current.duration} seconds) of this media clip.`;
+            (${this.player.duration} seconds) of this media clip.`;
             this.props.doFunction.setStatus({
                 "statusText": msg,
                 "status": "error"
             });
             return;
         }
-        this.player.current.currentTime = startSeconds;
-        if (this.player.current.currentTime !== startSeconds) {
+        this.player.currentTime = startSeconds;
+        if (this.player.currentTime !== startSeconds) {
             const msg = `Unable to set start time.  You may need to use a
             different browser or host your media on a server that supports <a
             target="_blank"
@@ -227,7 +229,7 @@ export default class DoExerciseCard {
         }
 
         if (playActivities.includes(this.props.state.status)) {
-            const playPromise = this.player.current.play();
+            const playPromise = this.player.play();
             if (playPromise === undefined) {
                 console.log("Promise undefined!", this.player.current);
                 return;
@@ -244,6 +246,7 @@ export default class DoExerciseCard {
      * * playMimic - increment exercises
      */
     afterPlay() {
+        console.log("afterPlay", this);
         if (this.props.state.clickedAction === "mimic"
             && this.props.state.status === "playModelFirst") {
             this.mediaRecorder.start();
@@ -335,7 +338,7 @@ export default class DoExerciseCard {
         element.controls = true;
         element.style.width = "70%";
 
-        element.addEventListener("ended", this.afterPlay);
+        element.addEventListener("ended", this.afterPlay.bind(this));
         element.addEventListener(
             "loadedmetadata", this.loadedMetadata.bind(this)
         );
@@ -648,11 +651,11 @@ export default class DoExerciseCard {
      */
     controls() {
         if (this.player.current) {
-            if (this.player.current.paused
+            if (this.player.paused
                 && this.props.state.mediaStatus === "ready"
                 && playActivities.includes(this.props.state.status)
             ) {
-                const playPromise = this.player.current.play();
+                const playPromise = this.player.play();
                 if (playPromise === undefined) {
                     console.log("Promise undefined!", this.player.current);
                 } else {
@@ -727,6 +730,8 @@ export default class DoExerciseCard {
     render(props) {
         this.props = props;
         console.log("DoExerciseCard", this.props);
+
+        this.getMedia();
 
         const element = document.createElement("div");
         element.classList.add("card", "bg-light", "mb-3");

@@ -63,7 +63,7 @@ export default class ExerciseFormCard {
      * @return {object}
      */
     textInputDiv(fieldName, onChange=null, defaultVal="", validationCheck=null) {
-        var defaultValue = defaultVal;
+        let defaultValue = defaultVal;
 
         if (fieldName in this.props.exercise) {
             defaultValue = this.props.exercise[fieldName];
@@ -212,7 +212,9 @@ export default class ExerciseFormCard {
      *
      * @return {object}
      */
-    render() {
+    render(props) {
+        this.props = props;
+
         const element = document.createElement("div");
         element.classList.add("card", "bg-light", "mb-3");
         element.append(this.cardBody());

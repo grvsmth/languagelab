@@ -34,7 +34,7 @@ export default class LessonFormCard {
                 return object;
             }, {});
 
-        var itemId = null;
+        let itemId = null;
         if (typeof this.props.lesson.id === "number") {
             itemId = this.props.lesson.id;
         }
@@ -61,7 +61,7 @@ export default class LessonFormCard {
      * @return {object}
      */
     textInputDiv(fieldName, onChange=null, defaultVal="", validationCheck=null) {
-        var defaultValue = defaultVal;
+        let defaultValue = defaultVal;
 
         if (Object.prototype.hasOwnProperty.call(
             this.props.lesson,

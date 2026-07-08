@@ -111,10 +111,11 @@ export default class LanguageLabClient {
      * @param {string} cookieKey - the key of the value we're interested in
      */
     extractCookie(cookieKey) {
-        var cookieValue;
         if (!document.cookie || document.cookie == '') {
             return;
         }
+
+        let cookieValue;
         document.cookie.split(';').forEach((cookie) => {
             let cookiePiece = cookie.split("=");
             if (cookiePiece[0].trim() === cookieKey) {

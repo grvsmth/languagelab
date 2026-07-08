@@ -21,6 +21,7 @@ export default class MediaFormCard {
     /**
      */
     constructor(props) {
+        this.audio = null;
     }
 
     /**
@@ -29,7 +30,7 @@ export default class MediaFormCard {
      * @param {object} event
      */
     inputChange(event) {
-        this.audio.current.src = event.target.value;
+        this.audio.src = event.target.value;
     }
 
     /**
@@ -63,15 +64,13 @@ export default class MediaFormCard {
      * return {object}
      */
     audioElement() {
-        const audio = React.createElement(
-            "audio",
-            {
-                "id": "audio1",
-                "onLoadedMetadata": this.loadedMetadata.bind(this),
-                "ref": this.audio
-            },
-            null
+        const audio = document.createElement("audio");
+        audio.id = "audio1";
+        audio.addEventListener(
+            "loadedmetadata", this.loadedMetadata.bind(this)
         );
+
+        this.audio = audio;
         return audio;
     }
 
@@ -92,10 +91,11 @@ export default class MediaFormCard {
                 return object;
             }, {});
 
-        var itemId = null;
+        let itemId = null;
         if (typeof this.props.mediaItem.id === "number") {
             itemId = this.props.mediaItem.id;
         }
+
         this.props.saveItem(formData, "media", itemId);
     }
 
@@ -118,7 +118,7 @@ export default class MediaFormCard {
      * @return {object}
      */
     textInputDiv(fieldName, onChange=null, defaultVal="", validationCheck=null) {
-        var defaultValue = defaultVal;
+        let defaultValue = defaultVal;
 
         if (Object.prototype.hasOwnProperty.call(
             this.props.mediaItem,
@@ -145,12 +145,15 @@ export default class MediaFormCard {
     tagsInputDiv() {
         const inputId = "tags_" + this.props.mediaItem.id;
 
-        const element = document.createElement(
-            "div",
-            {"className": "col-sm"},
+        const element = document.createElement("div");
+        element.classList.add("col-sm");
+
+        element.append(
             commonElements.itemLabel("tags", inputId),
             commonElements.tagsInput(inputId, this.props.mediaItem.tags)
         )
+
+        return element;
     }
 
     /**
@@ -159,13 +162,16 @@ export default class MediaFormCard {
      * @return {object}
      */
     nameRow() {
-        const element = document.createElement(
-            "div",
-            {"className": "form-row mt-3"},
+        const element = document.createElement("div");
+        element.classList.add("form-row", "mt-3");
+
+        element.append(
             this.textInputDiv("name", null, "", this.reportValidity.bind(this)),
             this.textInputDiv("creator"),
             this.textInputDiv("rights")
         );
+
+        return element;
     }
 
     /**
@@ -175,9 +181,10 @@ export default class MediaFormCard {
      * @return {object}
      */
     fileRow() {
-        const element = document.createElement(
-            "div",
-            {"className": "form-row mt-3"},
+        const element = document.createElement("div");
+        element.classList.add("form-row", "mt-3");
+
+        element.append(
             this.textInputDiv(
                 "mediaUrl",
                 this.inputChange.bind(this),
@@ -187,6 +194,8 @@ export default class MediaFormCard {
             this.textInputDiv("duration", null, "00:00:00"),
             this.audioElement()
         );
+
+        return element;
     }
 
     /**
@@ -195,15 +204,13 @@ export default class MediaFormCard {
      * @return {object}
      */
     saveButton() {
-        const element = document.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": "btn btn-success btn-sm m-1",
-                "onClick": this.saveClick.bind(this)
-            },
-            "Save"
-        );
+        const element = document.createElement("button");
+        element.classList.add("btn", "btn-success", "btn-sm", "m-1");
+        element.type = "button";
+        element.addEventListener("click", this.saveClick.bind(this));
+        element.innerText = "Save";
+
+        return element;
     }
 
     /**
@@ -212,15 +219,13 @@ export default class MediaFormCard {
      * @return {object}
      */
     cancelButton() {
-        const element = document.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": "btn btn-danger btn-sm m-1",
-                "onClick": this.cancelClick.bind(this)
-            },
-            "Cancel"
-        );
+        const element = document.createElement("button");
+        element.type = "button";
+        element.classList.add("btn", "btn-danger", "btn-sm", "m-1");
+        element.addEventListener("click", this.cancelClick.bind(this));
+        element.innerText = "Cancel";
+
+        return element;
     }
 
     /**
@@ -229,12 +234,11 @@ export default class MediaFormCard {
      * @return {object}
      */
     buttonDiv() {
-        const element = document.createElement(
-            "div",
-            {"className": "col"},
-            this.saveButton(),
-            this.cancelButton()
-        );
+        const element = document.createElement("div");
+        element.classList.add("col");
+        element.append(this.saveButton(), this.cancelButton());
+
+        return element;
     }
 
     /**
@@ -243,9 +247,10 @@ export default class MediaFormCard {
      * @return {object}
      */
     optionsRow() {
-        const element = document.createElement(
-            "div",
-            {"className": "form-row mt-3"},
+        const element = document.createElement("div");
+        element.classList.add("form-row", "mt-3");
+
+        element.append(
             this.tagsInputDiv(),
             commonElements.selectDiv(
                 "format",
@@ -260,6 +265,8 @@ export default class MediaFormCard {
                 this.props.mediaItem.language
             )
         );
+
+        return element;
     }
 
     /**
@@ -268,11 +275,11 @@ export default class MediaFormCard {
      * @return {object}
      */
     submitRow() {
-        const element = document.createElement(
-            "div",
-            {"className": "form-row"},
-            this.buttonDiv()
-        );
+        const element = document.createElement("div");
+        element.classList.add("form-row");
+        element.append(this.buttonDiv());
+
+        return element;
     }
 
     /**
@@ -281,17 +288,18 @@ export default class MediaFormCard {
      * @return {object}
      */
     cardBody() {
-        const element = document.createElement(
-            "form",
-            {
-                "className": "card-body",
-                "id": "form_" + this.props.mediaItem.id
-            },
+        const element = document.createElement("form");
+        element.classList.add("card-body");
+        element.id = "form_" + this.props.mediaItem.id;
+
+        element.append(
             this.nameRow(),
             this.fileRow(),
             this.optionsRow(),
             this.submitRow()
         );
+
+        return element;
     }
 
     /**
@@ -299,11 +307,13 @@ export default class MediaFormCard {
      *
      * @return {object}
      */
-    render() {
-        const element = document.createElement(
-            "div",
-            {"className": "card bg-light mb-3"},
-            this.cardBody()
-        );
+    render(props) {
+        this.props = props;
+
+        const element = document.createElement("div");
+        element.classList.add("card", "bg-light", "mb-3");
+        element.append(this.cardBody());
+
+        return element;
     }
 }

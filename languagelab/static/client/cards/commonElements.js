@@ -271,7 +271,7 @@ exports.textInputDiv = function(fieldName, parentId, onChange=null, defaultValue
  */
 exports.tagBadge = function(tagText) {
     const element = document.createElement("span");
-    element.classList.add("badge", "badge-pill", "badge-info", "mr-1");
+    element.classList.add("badge", "badge-pill", "badge-info", "me-1");
 
     element.innerText = tagText;
 

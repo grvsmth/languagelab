@@ -35,7 +35,7 @@ export default class LanguageFormCard {
                 return object;
             }, {});
 
-        var itemId = null;
+        let itemId = null;
         if (typeof this.props.language.id === "number") {
             itemId = this.props.language.id;
         }
@@ -61,7 +61,7 @@ export default class LanguageFormCard {
      * @return {object}
      */
     textInputDiv(fieldName, onChange=null, defaultVal="", validationCheck=null) {
-        var defaultValue = defaultVal;
+        let defaultValue = defaultVal;
 
         if (Object.prototype.hasOwnProperty.call(
             this.props.language,
