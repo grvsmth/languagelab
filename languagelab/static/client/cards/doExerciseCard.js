@@ -611,7 +611,7 @@ export default class DoExerciseCard {
             (track) => track.stop()
         );
 
-        this.props.doFunction.readMode(this.props.state.selected.itemType);
+        this.props.doFunction.readMode(this.props.selected.itemType);
     }
 
     /**
