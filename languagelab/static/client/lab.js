@@ -151,8 +151,8 @@ export default class Lab {
         this.render();
     }
 
-    setMimicCount(property, count) {
-        this.mimicCount[property] = count;
+    updateMimicCount(count) {
+        this.mimicCount = count;
     }
 
     setSelectedState(targetState) {
@@ -204,23 +204,26 @@ export default class Lab {
      *
      * @param {number} prevMimicCount - The previous mimicCount for this exercise
      */
-    afterMimic(prevMimicCount) {
+    afterMimic() {
         const prevSelectedState = this.selectedState;
         this.setState({
             "status": "ready",
             "statusText": "Ready",
             "clickedAction": null
         });
-
-        this.setMimicCount([prevSelectedState.exercises], prevMimicCount + 1);
     }
 
     /**
      * Pull the list of things to load from the config, and fetch them all
      *
      */
-    fetchAll() {
-        this.apiClient.checkToken();
+    async fetchAll() {
+        try {
+            await this.apiClient.checkToken();
+        } catch (err) {
+            this.logout();
+            return;
+        }
 
         const thingsToLoad = this.config.api.models
             .filter(model => !model.local)
@@ -636,13 +639,6 @@ export default class Lab {
     }
 
     /**
-     * Handle the mediaLoaded event by setting mediaStatus to ready in state
-     */
-    onMediaLoaded() {
-        this.setState({"mediaStatus": "ready"});
-    }
-
-    /**
      * Start a new exercise in a given lesson
      *
      * @param {number} exerciseId - the ID of the selected exercise
@@ -835,6 +831,7 @@ export default class Lab {
             return;
         }
         this.selectByRank(rank - 1);
+        this.render();
     }
 
     /**
@@ -847,6 +844,7 @@ export default class Lab {
             return;
         }
         this.selectByRank(rank + 1);
+        this.render();
     }
 
     /**
@@ -955,14 +953,13 @@ export default class Lab {
             "doButton": this.config.doButton,
             "doFunction": {
                 "afterMimic": this.afterMimic.bind(this),
-                "onMediaLoaded": this.onMediaLoaded.bind(this),
                 "playMimic": this.playMimic.bind(this),
                 "playModel": this.playModel.bind(this),
                 "queueNav": this.queueNav,
                 "readMode": this.readMode.bind(this),
                 "setStatus": this.setStatus.bind(this),
                 "setUserAudioUrl": this.setUserAudioUrl.bind(this),
-                "toggleOnlyExercise": this.toggleOnlyExercise.bind(this)
+                "updateMimicCount": this.updateMimicCount.bind(this)
             },
             "exportData": this.exportData.bind(this),
             "loading": this.loadingState,

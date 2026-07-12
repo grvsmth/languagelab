@@ -20,7 +20,10 @@ export default class LanguageLabClient {
         this.handleToken;
         this.expiredError = "Login expired!";
 
-        this.token = "";
+        this.token = {
+            "access": "",
+            "refresh": ""
+        };
         this.tokenLife = 0;
         this.tokenTime = null;
         this.baseUrl = "";
@@ -31,11 +34,14 @@ export default class LanguageLabClient {
     /**
      * Set the token, the time when the token was refreshed, and the token life
      *
-     * @param {string} token - the token string
+     * @param {Object} token - the token Object
      * @param {string} tokenTime - the time when the token was issued
      */
     setToken(token, tokenTime) {
-        this.token = token;
+        for (const property in token) {
+            this.token[property] = token[property];
+        }
+
         this.tokenTime = new moment(tokenTime);
     }
 

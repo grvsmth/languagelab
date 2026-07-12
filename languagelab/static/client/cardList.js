@@ -317,11 +317,14 @@ export default class CardList {
             "maxRank": maxRank,
             "mediaItem": mediaItem,
             "mimicCount": this.props.mimicCount,
+            "onlyExercise": this.props.state.onlyExercise,
+            "nowPlaying": this.props.state.nowPlaying,
             "queueInfo": this.queueInfo(lesson, rank, maxRank),
+            "queueNav": this.props.doFunction.queueNav,
             "rank": rank,
             "selected": this.props.selected,
             "setActivity": this.props.setActivity,
-            "state": this.props.state
+            "status": this.props.state.status
         };
 
         const element = new DoExerciseCard();

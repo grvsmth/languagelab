@@ -12,6 +12,16 @@ const config = {
             "sampleRate": 48000
         }
     },
+    "doButton": {
+        "previous": {
+            "icon": "oi-caret-left",
+            "color": "info"
+        },
+        "next": {
+            "icon": "oi-caret-right",
+            "color": "info"
+        }
+    },
     "queueButton": {
         "up": {
             "icon": "oi-caret-top",
@@ -30,7 +40,26 @@ const config = {
         "lessonQueue": "If you add lessons, you can add this exercise to a lesson"
     },
     "hideIsAvailablePublic": true,
-    "exerciseNameLimit": 10
+    "exerciseNameLimit": 10,
+    "playStatuses": [
+        "playModelFirst",
+        "playModelSecond",
+        "playModelOnly",
+        "playMimic"
+    ],
+    "statusColor": {
+        "error": "danger",
+        "warning": "warning",
+        "playMimic": "success",
+        "playModelOnly": "info",
+        "playModelFirst": "success",
+        "playModelSecond": "success",
+        "ready": "info",
+        "recording": "danger"
+    }
 };
+
+config.playableStatuses = config.playStatuses + ["ready"];
+config.activeStatuses = config.playStatuses + ["recording"];
 
 export default config;

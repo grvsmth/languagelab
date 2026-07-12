@@ -65,16 +65,6 @@ const config = {
             }
         ]
     },
-    "doButton": {
-        "previous": {
-            "icon": "oi-caret-left",
-            "color": "info"
-        },
-        "next": {
-            "icon": "oi-caret-right",
-            "color": "info"
-        }
-    },
     "iso639": {
         "url": "https://iso639-3.sil.org/code_tables/639/data"
     }
