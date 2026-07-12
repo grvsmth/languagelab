@@ -641,13 +641,6 @@ export default class Lab {
     }
 
     /**
-     * Handle the mediaLoaded event by setting mediaStatus to ready in state
-     */
-    onMediaLoaded() {
-        this.setState({"mediaStatus": "ready"});
-    }
-
-    /**
      * Start a new exercise in a given lesson
      *
      * @param {number} exerciseId - the ID of the selected exercise
@@ -840,6 +833,7 @@ export default class Lab {
             return;
         }
         this.selectByRank(rank - 1);
+        this.render();
     }
 
     /**
@@ -852,6 +846,7 @@ export default class Lab {
             return;
         }
         this.selectByRank(rank + 1);
+        this.render();
     }
 
     /**
@@ -960,7 +955,6 @@ export default class Lab {
             "doButton": this.config.doButton,
             "doFunction": {
                 "afterMimic": this.afterMimic.bind(this),
-                "onMediaLoaded": this.onMediaLoaded.bind(this),
                 "playMimic": this.playMimic.bind(this),
                 "playModel": this.playModel.bind(this),
                 "queueNav": this.queueNav,

@@ -22,6 +22,7 @@ export default class DoExerciseCard {
         this.state = {
             "nowPlaying": "",
             "status": "loading",
+            "statusText": "",
             "userAudioUrl": ""
         };
     }
@@ -84,7 +85,6 @@ export default class DoExerciseCard {
 
     /** Set the start time on the media player, handling potential errors */
     setStartTime() {
-        console.log("setStartTime", this);
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
 
         if (startSeconds < 0) {
@@ -119,7 +119,19 @@ export default class DoExerciseCard {
 
     /** Handle metadata load; replay mimic or set the ready state in the Lab */
     handleLoadedMetadata() {
-        console.log("Time to set up handleLoadedMetadata()");
+        if (this.status !== "playMimic") {
+            this.setStartTime();
+        }
+
+        if (config.playStatuses.includes(this.status)) {
+            const playPromise = this.player.play();
+
+            if (playPromise === undefined) {
+                console.log("Player promise undefined!", this.player);
+                return;
+            }
+            playPromise.catch(this.handleError, this.status);
+        }
     }
 
     /** Set the state to play the mimic recording */
@@ -145,7 +157,22 @@ export default class DoExerciseCard {
      * @param {object} event
      */
     timeUpdateHandler(event) {
-        console.log("Time to set up timeUpdateHandler()");
+        if (this.state.status === "playModelOnly"
+            && !this.props.state.onlyExercise) {
+            return;
+        }
+
+        if (!config.playStatuses.includes(this.state.status)) {
+            return;
+        }
+
+        const endSeconds = this.timeAsSeconds(this.props.exercise.endTime);
+        if (event.target.currentTime < endSeconds) {
+            return;
+        }
+
+        event.target.pause();
+        this.afterPlay();
     }
 
     /**
@@ -254,8 +281,6 @@ export default class DoExerciseCard {
      * @return {object}
      */
     makePlayer() {
-        console.log("makePlayer", this.state);
-        console.log("props", this.props);
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
         const endSeconds = this.timeAsSeconds(this.props.exercise.endTime);
 
@@ -264,7 +289,7 @@ export default class DoExerciseCard {
 
         const element = document.createElement("audio");
         element.id = "audio1";
-        element.src = this.props.nowPlaying;
+        element.src = this.state.nowPlaying;
         element.controls = true;
         element.style.width = "70%";
 
@@ -310,7 +335,7 @@ export default class DoExerciseCard {
      * @param {string} direction - the direction (forward or back) of the button
      */
     queueNav(direction) {
-        this.props.doFunction.queueNav[direction](this.props.rank);
+        this.props.queueNav[direction](this.props.rank);
     }
 
     /**
@@ -528,7 +553,7 @@ export default class DoExerciseCard {
     statusRow() {
         const element = document.createElement("div");
         element.classList.add("text-" + config.statusColor[this.state.status]);
-        element.innerText = this.props.statusText;
+        element.innerText = this.state.statusText;
 
         return element;
     }

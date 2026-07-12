@@ -320,9 +320,11 @@ export default class CardList {
             "onlyExercise": this.props.state.onlyExercise,
             "nowPlaying": this.props.state.nowPlaying,
             "queueInfo": this.queueInfo(lesson, rank, maxRank),
+            "queueNav": this.props.doFunction.queueNav,
             "rank": rank,
             "selected": this.props.selected,
-            "setActivity": this.props.setActivity
+            "setActivity": this.props.setActivity,
+            "status": this.props.state.status
         };
 
         const element = new DoExerciseCard();
