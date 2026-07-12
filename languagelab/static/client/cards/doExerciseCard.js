@@ -449,7 +449,7 @@ export default class DoExerciseCard {
             return "danger";
         }
 
-        if (config.playActivities.includes(this.state.status)) {
+        if (config.playStatuses.includes(this.state.status)) {
             return "success";
         }
 
@@ -467,7 +467,7 @@ export default class DoExerciseCard {
         element.classList.add("btn", "col-3", "btn-" + this.mimicButtonColor());
         element.type = "button";
 
-        element.disabled = playActivities.includes(this.state.status);
+        element.disabled = config.playStatuses.includes(this.state.status);
         element.addEventListener("click", this.mimicClick.bind(this));
 
         element.append("Mimic ", this.mimicCountSpan());
