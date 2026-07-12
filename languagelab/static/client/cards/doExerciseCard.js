@@ -20,6 +20,7 @@ export default class DoExerciseCard {
         this.player = {};
 
         this.state = {
+            "onlyExercise": false,
             "nowPlaying": "",
             "status": "loading",
             "statusText": "",
@@ -158,7 +159,7 @@ export default class DoExerciseCard {
      */
     timeUpdateHandler(event) {
         if (this.state.status === "playModelOnly"
-            && !this.props.state.onlyExercise) {
+            && !this.state.onlyExercise) {
             return;
         }
 
@@ -188,7 +189,7 @@ export default class DoExerciseCard {
      * @param {object} event
      */
     handleOnlyCheck(event) {
-        console.log("Time to set up handleOnlyCheck()!");
+        this.state.onlyExercise = event.target.checked;
     }
 
     /**
@@ -632,6 +633,7 @@ export default class DoExerciseCard {
         this.props = props;
         console.log("DoExerciseCard", this.props);
 
+        this.state.onlyExercise = this.props.onlyExercise;
         this.state.nowPlaying = this.props.nowPlaying;
         this.state.status = this.props.status;
 
