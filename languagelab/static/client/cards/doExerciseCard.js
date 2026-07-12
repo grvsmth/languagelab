@@ -254,6 +254,8 @@ export default class DoExerciseCard {
      * @return {object}
      */
     makePlayer() {
+        console.log("makePlayer", this.state);
+        console.log("props", this.props);
         const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
         const endSeconds = this.timeAsSeconds(this.props.exercise.endTime);
 
@@ -262,7 +264,7 @@ export default class DoExerciseCard {
 
         const element = document.createElement("audio");
         element.id = "audio1";
-        element.src = this.state.nowPlaying;
+        element.src = this.props.nowPlaying;
         element.controls = true;
         element.style.width = "70%";
 
@@ -291,7 +293,7 @@ export default class DoExerciseCard {
             this.player,
             commonElements.checkboxDiv(
                 "onlyExercise",
-                this.props.state.onlyExercise,
+                this.props.onlyExercise,
                 "Play only this exercise",
                 this.props.exercise.id,
                 this.handleOnlyCheck.bind(this)
@@ -605,7 +607,9 @@ export default class DoExerciseCard {
         this.props = props;
         console.log("DoExerciseCard", this.props);
 
+        this.state.nowPlaying = this.props.nowPlaying;
         this.state.status = this.props.status;
+
         this.mimicCount = this.props.mimicCount;
 
         this.getMedia();

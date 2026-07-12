@@ -151,8 +151,8 @@ export default class Lab {
         this.render();
     }
 
-    setMimicCount(property, count) {
-        this.mimicCount[property] = count;
+    updateMimicCount(count) {
+        this.mimicCount = count;
     }
 
     setSelectedState(targetState) {
@@ -967,7 +967,7 @@ export default class Lab {
                 "readMode": this.readMode.bind(this),
                 "setStatus": this.setStatus.bind(this),
                 "setUserAudioUrl": this.setUserAudioUrl.bind(this),
-                "toggleOnlyExercise": this.toggleOnlyExercise.bind(this)
+                "updateMimicCount": this.updateMimicCount.bind(this)
             },
             "exportData": this.exportData.bind(this),
             "loading": this.loadingState,
