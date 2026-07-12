@@ -59,7 +59,8 @@ export default class DoExerciseCard {
         this.elements.mediaRecorder = new window.MediaRecorder(
             stream, config.audio.options
         );
-        this.elements.mediaRecorder.ondataavailable = this.onDataAvailable.bind(this);
+        this.elements.mediaRecorder.ondataavailable = this.onDataAvailable
+            .bind(this);
     }
 
     /**
@@ -135,6 +136,14 @@ export default class DoExerciseCard {
         playPromise.catch(this.handleError, this.status);
     }
 
+    record() {
+        console.log("about to record", this.elements);
+        this.elements.mimicButton.disabled = false;
+        this.updateMimicButtonColor();
+
+        this.elements.mediaRecorder.start();
+    }
+
     /** Handle metadata load; replay mimic or set the ready state in the Lab */
     handleLoadedMetadata() {
         if (this.status !== "playMimic") {
@@ -142,6 +151,7 @@ export default class DoExerciseCard {
         }
 
         if (config.playStatuses.includes(this.status)) {
+            console.log("now playing in handleLoadedMetadata()");
             this.play();
         }
     }
@@ -159,7 +169,36 @@ export default class DoExerciseCard {
      * * playMimic - increment exercises
      */
     afterPlay() {
-        console.log("Time to set up afterPlay()");
+        console.log("afterPlay", this);
+        if (this.state.clickedAction === "mimic"
+            && this.state.status === "playModelFirst") {
+            this.updateStatus("recording", "Now recording");
+
+            this.record();
+            return;
+        }
+
+        if (this.state.status === "playModelSecond") {
+            if (this.state.userAudioUrl.length < 11) {
+                this.updateStatus("warning", "No recorded audio found");
+
+                this.setStartTime();
+            } else {
+                this.playMimic();
+            }
+
+            return;
+        }
+
+        if (this.state.status === "playMimic") {
+            this.props.doFunction.afterMimic(this.exerciseCount());
+            return;
+        }
+
+        this.elements.mimicButton.disabled = false;
+
+        this.updateStatus("ready");
+        this.updateMimicButtonColor();
     }
 
     /**
@@ -195,9 +234,11 @@ export default class DoExerciseCard {
     playModel(increment) {
         this.state.clickedAction = "mimic";
 
-        this.state.status = "playModel" + increment;
-        this.state.statusText = "Now playing " + this.props.mediaItem.name;
-        this.updateStatusRow();
+        this.updateStatus(
+            "playModel" + increment,
+            "Now playing " + this.props.mediaItem.name
+        );
+        this.updateMimicButtonColor();
 
         if (this.state.nowPlaying !== this.props.mediaItem.mediaUrl) {
             this.state.nowPlaying = this.props.mediaItem.mediaUrl;
@@ -209,6 +250,17 @@ export default class DoExerciseCard {
             this.state.clickedAction = "play"
         }
 
+        console.log("now playing in playModel()");
+        this.play();
+    }
+
+    /** Set the state to play the mimic recording */
+    playMimic() {
+        this.state.nowPlaying = this.state.userAudioUrl;
+        console.log("playMimic", this.state.userAudioUrl);
+        this.elements.player.src = this.state.userAudioUrl;
+
+        this.updateStatus("playMimic", "Now playing recorded audio");
         this.play();
     }
 
@@ -347,7 +399,7 @@ export default class DoExerciseCard {
             "loadedmetadata", this.handleLoadedMetadata.bind(this)
         );
         element.addEventListener("play", this.playHandler.bind(this));
-        element.addEventListener("pause", this.afterPlay.bind(this));
+//        element.addEventListener("pause", this.afterPlay.bind(this));
         element.addEventListener("timeupdate", timeUpdateHandler);
 
         return element;
@@ -510,6 +562,12 @@ export default class DoExerciseCard {
         return element;
     }
 
+    updateMimicButtonColor() {
+        this.elements.mimicButton.classList.add(
+            "btn", "col-3", "btn-" + this.mimicButtonColor()
+        );
+    }
+
     /**
      * Determine the appropriate Bootstrap color class for the Mimic button:
      *
@@ -563,7 +621,7 @@ export default class DoExerciseCard {
         if (this.state.status === "recording") {
             this.elements.mediaRecorder.stop();
 
-            this.props.playModel("Second");
+            this.playModel("Second");
             this.setStartTime();
             return;
         }
@@ -613,7 +671,10 @@ export default class DoExerciseCard {
      *
      * @return {object}
      */
-    updateStatusRow() {
+    updateStatus(status, statusText="") {
+        this.state.status = status;
+        this.state.statusText = statusText;
+
         this.elements.statusRow.classList.add(
             "text-" + config.statusColor[this.state.status]
         );
