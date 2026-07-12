@@ -40,7 +40,6 @@ export default class DoExerciseCard {
      * @param {object} event
      */
     onDataAvailable(event) {
-        console.log("dataavailable", event);
         this.state.userAudioUrl = window.URL.createObjectURL(
             event.data,
             {"type": "audio/ogg"}
@@ -54,7 +53,6 @@ export default class DoExerciseCard {
      * @param {object} stream
      */
     handleGetInput(stream) {
-        console.log("handleGetInput", stream);
         window.stream = stream;
         this.elements.mediaRecorder = new window.MediaRecorder(
             stream, config.audio.options
@@ -133,11 +131,10 @@ export default class DoExerciseCard {
             console.log("Player promise undefined!", this.elements.player);
             return;
         }
-        playPromise.catch(this.handleError, this.status);
+        playPromise.catch(this.handleError, this.state.status);
     }
 
     record() {
-        console.log("about to record", this.elements);
         this.elements.mimicButton.disabled = false;
         this.updateMimicButtonColor();
 
@@ -146,19 +143,13 @@ export default class DoExerciseCard {
 
     /** Handle metadata load; replay mimic or set the ready state in the Lab */
     handleLoadedMetadata() {
-        if (this.status !== "playMimic") {
+        if (this.state.status !== "playMimic") {
             this.setStartTime();
         }
 
-        if (config.playStatuses.includes(this.status)) {
-            console.log("now playing in handleLoadedMetadata()");
+        if (config.playStatuses.includes(this.state.status)) {
             this.play();
         }
-    }
-
-    /** Set the state to play the mimic recording */
-    playMimic() {
-        console.log("Time to set up playMimic()");
     }
 
     /**
@@ -250,14 +241,12 @@ export default class DoExerciseCard {
             this.state.clickedAction = "play"
         }
 
-        console.log("now playing in playModel()");
         this.play();
     }
 
     /** Set the state to play the mimic recording */
     playMimic() {
         this.state.nowPlaying = this.state.userAudioUrl;
-        console.log("playMimic", this.state.userAudioUrl);
         this.elements.player.src = this.state.userAudioUrl;
 
         this.updateStatus("playMimic", "Now playing recorded audio");
@@ -562,9 +551,21 @@ export default class DoExerciseCard {
         return element;
     }
 
+    removeCurrentColor(element, prefix) {
+        const currentClass = element.classList.values().find((value) =>
+            value.startsWith(prefix)
+        );
+
+        if (currentClass) {
+            element.classList.remove(currentClass);
+        }
+    }
+
     updateMimicButtonColor() {
+        this.removeCurrentColor(this.elements.mimicButton, "bg-");
+
         this.elements.mimicButton.classList.add(
-            "btn", "col-3", "btn-" + this.mimicButtonColor()
+            "bg-" + this.mimicButtonColor()
         );
     }
 
@@ -599,7 +600,7 @@ export default class DoExerciseCard {
      */
     makeMimicButton() {
         const element = document.createElement("button");
-        element.classList.add("btn", "col-3", "btn-" + this.mimicButtonColor());
+        element.classList.add("btn", "col-3", "bg-" + this.mimicButtonColor());
         element.type = "button";
 
         element.disabled = config.playStatuses.includes(this.state.status);
@@ -621,8 +622,8 @@ export default class DoExerciseCard {
         if (this.state.status === "recording") {
             this.elements.mediaRecorder.stop();
 
-            this.playModel("Second");
             this.setStartTime();
+            this.playModel("Second");
             return;
         }
 
@@ -674,6 +675,8 @@ export default class DoExerciseCard {
     updateStatus(status, statusText="") {
         this.state.status = status;
         this.state.statusText = statusText;
+
+        this.removeCurrentColor(this.elements.statusRow, "text-");
 
         this.elements.statusRow.classList.add(
             "text-" + config.statusColor[this.state.status]
