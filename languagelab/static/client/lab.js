@@ -204,15 +204,13 @@ export default class Lab {
      *
      * @param {number} prevMimicCount - The previous mimicCount for this exercise
      */
-    afterMimic(prevMimicCount) {
+    afterMimic() {
         const prevSelectedState = this.selectedState;
         this.setState({
             "status": "ready",
             "statusText": "Ready",
             "clickedAction": null
         });
-
-        this.setMimicCount([prevSelectedState.exercises], prevMimicCount + 1);
     }
 
     /**

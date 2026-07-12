@@ -19,6 +19,7 @@ export default class DoExerciseCard {
         this.elements = {
             "mediaRecorder": {},
             "mimicButton": {},
+            "mimicCountSpan": {},
             "player": {},
             "statusRow": {}
         };
@@ -152,6 +153,11 @@ export default class DoExerciseCard {
         }
     }
 
+    incrementMimic() {
+        this.mimicCount.exercises[this.props.exercise.id.toString()] += 1;
+        this.updateMimicCountSpan();
+    }
+
     /**
      * Handle end of playback, depending on what we just played:
      *
@@ -160,7 +166,6 @@ export default class DoExerciseCard {
      * * playMimic - increment exercises
      */
     afterPlay() {
-        console.log("afterPlay", this);
         if (this.state.clickedAction === "mimic"
             && this.state.status === "playModelFirst") {
             this.updateStatus("recording", "Now recording");
@@ -172,7 +177,6 @@ export default class DoExerciseCard {
         if (this.state.status === "playModelSecond") {
             if (this.state.userAudioUrl.length < 11) {
                 this.updateStatus("warning", "No recorded audio found");
-
                 this.setStartTime();
             } else {
                 this.playMimic();
@@ -182,8 +186,7 @@ export default class DoExerciseCard {
         }
 
         if (this.state.status === "playMimic") {
-            this.props.doFunction.afterMimic(this.exerciseCount());
-            return;
+            this.incrementMimic();
         }
 
         this.elements.mimicButton.disabled = false;
@@ -524,18 +527,10 @@ export default class DoExerciseCard {
         return element;
     }
 
-    /**
-     * A count of how many times the exercise has been performed this session,
-     * retrieved from props.
-     *
-     * @return {number}
-     */
-    exerciseCount() {
-        if (this.props.exercise.id in this.mimicCount) {
-            return this.mimicCount[this.props.exercise.id];
-        }
-
-        return 0;
+    updateMimicCountSpan() {
+        this.elements.mimicCountSpan.innerText = this.mimicCount.exercises[
+            this.props.exercise.id.toString()
+        ];
     }
 
     /**
@@ -546,7 +541,6 @@ export default class DoExerciseCard {
     mimicCountSpan() {
         const element = document.createElement("span");
         element.classList.add("badge", "badge-light");
-        element.append(this.exerciseCount());
 
         return element;
     }
@@ -606,7 +600,9 @@ export default class DoExerciseCard {
         element.disabled = config.playStatuses.includes(this.state.status);
         element.addEventListener("click", this.mimicClick.bind(this));
 
-        element.append("Mimic ", this.mimicCountSpan());
+        this.elements.mimicCountSpan = this.mimicCountSpan();
+        this.updateMimicCountSpan();
+        element.append("Mimic ", this.elements.mimicCountSpan);
 
         return element;
     }
@@ -778,6 +774,9 @@ export default class DoExerciseCard {
         this.state.status = this.props.status;
 
         this.mimicCount = this.props.mimicCount;
+        if (!(this.props.exercise.id in this.mimicCount.exercises)) {
+            this.mimicCount.exercises[this.props.exercise.id.toString()] = 0;
+        }
 
         this.getMedia();
 
