@@ -9,66 +9,21 @@ import commonElements from "./commonElements.js";
 import config from "./config.js";
 import util from "./util.js";
 
-const playActivities = [
-    "playModelFirst", "playModelSecond", "playModelOnly", "playMimic"
-];
-
-const playableActivities = playActivities + ["ready"];
-const activeStatuses = playActivities + ["recording"];
-
-const statusColor = {
-    "error": "danger",
-    "warning": "warning",
-    "playMimic": "success",
-    "playModelOnly": "info",
-    "playModelFirst": "success",
-    "playModelSecond": "success",
-    "ready": "info",
-    "recording": "danger"
-};
-
 /** Card for performing exercises in the LanguageLab client */
 export default class DoExerciseCard {
 
     /**
      * Declare refs and bind handlers
-     *
-     * @param {object} props
      */
-    constructor(props) {
-        this.afterPlay = this.afterPlay.bind(this);
-        this.handleGetInput = this.handleGetInput.bind(this);
-        this.handleError = this.handleError.bind(this);
+    constructor() {
+        this.mediaRecorder = {};
+        this.player = {};
 
-        this.mediaRecorder = null;
-        this.player = null;
-
-        this.clickedAction = "";
-        this.status = "loading";
-        this.userAudioUrl = "";
-    }
-
-    /** On mount, find an audio input device and register it */
-    getMedia() {
-        navigator.mediaDevices.getUserMedia({"audio": true}).then(
-            (stream) => this.handleGetInput(stream),
-            (error) => this.handleGetMediaError(error)
-        );
-    }
-
-    /**
-     * Set the userAudioUrl in state
-     *
-     * @param {string} url - the target userAudioUrl
-     *
-     */
-    setUserAudioUrl(url) {
-        this.userAudioUrl = url;
-    }
-
-    /** On update, re-establish focus on the mimic button */
-    componentDidUpdate() {
-        this.mimicButton.focus();
+        this.state = {
+            "nowPlaying": "",
+            "status": "loading",
+            "userAudioUrl": ""
+        };
     }
 
     /** When we have recorded data available, create a URL for that and set
@@ -77,11 +32,11 @@ export default class DoExerciseCard {
      * @param {object} event
      */
     onDataAvailable(event) {
-        const userAudioUrl = window.URL.createObjectURL(
+        console.log("dataavailable", event);
+        this.state.userAudioUrl = window.URL.createObjectURL(
             event.data,
             {"type": "audio/ogg"}
         );
-        this.setUserAudioUrl(userAudioUrl);
     }
 
     /**
@@ -117,6 +72,96 @@ export default class DoExerciseCard {
             "statusText": `getUserMedia(): ${error.message}`,
             "status": "error"
         });
+    }
+
+    /** On mount, find an audio input device and register it */
+    getMedia() {
+        navigator.mediaDevices.getUserMedia({"audio": true}).then(
+            (stream) => this.handleGetInput(stream),
+            (error) => this.handleGetMediaError(error)
+        );
+    }
+
+    /** Set the start time on the media player, handling potential errors */
+    setStartTime() {
+        console.log("setStartTime", this);
+        const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
+
+        if (startSeconds < 0) {
+            return;
+        }
+
+        if (startSeconds > this.player.duration) {
+            const msg = `Your startTime of ${this.props.exercise.startTime}
+            seconds is greater than the total duration
+            (${this.player.duration} seconds) of this media clip.`;
+            this.props.doFunction.setStatus({
+                "statusText": msg,
+                "status": "error"
+            });
+            return;
+        }
+
+        this.player.currentTime = startSeconds;
+
+        if (this.player.currentTime !== startSeconds) {
+            const msg = `Unable to set start time.  You may need to use a
+            different browser or host your media on a server that supports <a
+            target="_blank"
+            href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests"
+            >byte-range requests</a>.`;
+            this.props.doFunction.setStatus({
+                "statusText": msg,
+                "status": "error"
+            });
+        }
+    }
+
+    /** Handle metadata load; replay mimic or set the ready state in the Lab */
+    handleLoadedMetadata() {
+        console.log("Time to set up handleLoadedMetadata()");
+    }
+
+    /** Set the state to play the mimic recording */
+    playMimic() {
+        console.log("Time to set up playMimic()");
+    }
+
+    /**
+     * Handle end of playback, depending on what we just played:
+     *
+     * * playModelFirst - start recording
+     * * playModelSecond - play back the recording
+     * * playMimic - increment exercises
+     */
+    afterPlay() {
+        console.log("Time to set up afterPlay()");
+    }
+
+    /**
+     * At intervals, check to see whether we've reached the endTime.  If so,
+     * and playModelOnly is checked, stop playback and call afterPlay()
+     *
+     * @param {object} event
+     */
+    timeUpdateHandler(event) {
+        console.log("Time to set up timeUpdateHandler()");
+    }
+
+    /**
+     * If the user is playing the model, set the proper functions in state
+     */
+    playHandler() {
+        console.log("Time to set up playHandler()");
+    }
+
+    /**
+     * Handle clicks on the onlyExercise checkbox
+     *
+     * @param {object} event
+     */
+    handleOnlyCheck(event) {
+        console.log("Time to set up handleOnlyCheck()!");
     }
 
     /**
@@ -203,147 +248,6 @@ export default class DoExerciseCard {
         return element;
     }
 
-    /** Set the start time on the media player, handling potential errors */
-    setStartTime() {
-        console.log("setStartTime", this);
-        const startSeconds = this.timeAsSeconds(this.props.exercise.startTime);
-
-        if (startSeconds < 0) {
-            return;
-        }
-
-        if (startSeconds > this.player.duration) {
-            const msg = `Your startTime of ${this.props.exercise.startTime}
-            seconds is greater than the total duration
-            (${this.player.duration} seconds) of this media clip.`;
-            this.props.doFunction.setStatus({
-                "statusText": msg,
-                "status": "error"
-            });
-            return;
-        }
-
-        this.player.currentTime = startSeconds;
-
-        if (this.player.currentTime !== startSeconds) {
-            const msg = `Unable to set start time.  You may need to use a
-            different browser or host your media on a server that supports <a
-            target="_blank"
-            href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests"
-            >byte-range requests</a>.`;
-            this.props.doFunction.setStatus({
-                "statusText": msg,
-                "status": "error"
-            });
-        }
-    }
-
-    /** Handle metadata load; replay mimic or set the ready state in the Lab */
-    loadedMetadata() {
-        if (this.status !== "playMimic") {
-            this.setStartTime();
-            this.onMediaLoaded();
-        }
-
-        if (playActivities.includes(this.status)) {
-            const playPromise = this.player.play();
-
-            if (playPromise === undefined) {
-                console.log("Promise undefined!", this.player);
-                return;
-            }
-            playPromise.catch(this.handleError, this.status);
-        }
-    }
-
-
-    /** Set the state to play the mimic recording */
-    playMimic() {
-        this.nowPlaying = this.userAudioUrl;
-        this.updateStatus("playMimic", "Now playing recorded audio");
-        this.play();
-    }
-
-    /**
-     * Handle end of playback, depending on what we just played:
-     *
-     * * playModelFirst - start recording
-     * * playModelSecond - play back the recording
-     * * playMimic - increment exercises
-     */
-    afterPlay() {
-        console.log("afterPlay", this);
-        if (this.clickedAction === "mimic"
-            && this.status === "playModelFirst") {
-            this.mediaRecorder.start();
-
-            this.updateStatus("recording", "Now recording");
-            this.record();
-
-            return;
-        }
-
-        if (this.status === "playModelSecond") {
-            if (this.userAudioUrl.length < 11) {
-                this.updateStatus("warning", "No recorded audio found");
-
-                this.setStartTime();
-            } else {
-                this.playMimic();
-            }
-            return;
-        }
-
-        if (this.status === "playMimic") {
-            this.afterMimic(this.exerciseCount());
-            return;
-        }
-
-        this.updateStatus("ready");
-    }
-
-    /**
-     * At intervals, check to see whether we've reached the endTime.  If so,
-     * and playModelOnly is checked, stop playback and call afterPlay()
-     *
-     * @param {object} event
-     */
-    timeUpdateHandler(event) {
-        if (this.status === "playModelOnly"
-            && !this.props.state.onlyExercise) {
-            return;
-        }
-
-        if (!playActivities.includes(this.status)) {
-            return;
-        }
-
-        const endSeconds = this.timeAsSeconds(this.props.exercise.endTime);
-        if (event.target.currentTime < endSeconds) {
-            return;
-        }
-
-        event.target.pause();
-        this.afterPlay();
-    }
-
-    /**
-     * If the user is playing the model, set the proper functions in state
-     */
-    playHandler() {
-        if (this.status !== "ready") {
-            return;
-        }
-
-        if (this.props.state.nowPlaying === this.props.mediaItem.mediaUrl) {
-            this.setStartTime();
-            this.props.doFunction.playModel("Only");
-            return;
-        }
-
-        this.props.doFunction.playMimic();
-    }
-
     /**
      * Create our player element with the proper handlers
      *
@@ -354,31 +258,22 @@ export default class DoExerciseCard {
         const endSeconds = this.timeAsSeconds(this.props.exercise.endTime);
 
         const timeUpdateHandler = startSeconds < endSeconds
-            ? this.timeUpdateHandler.bind(this) : "";
+            ? this.timeUpdateHandler.bind(this) : null;
 
         const element = document.createElement("audio");
         element.id = "audio1";
-        element.src = this.props.state.nowPlaying;
+        element.src = this.state.nowPlaying;
         element.controls = true;
         element.style.width = "70%";
 
         element.addEventListener("ended", this.afterPlay.bind(this));
         element.addEventListener(
-            "loadedmetadata", this.loadedMetadata.bind(this)
+            "loadedmetadata", this.handleLoadedMetadata.bind(this)
         );
         element.addEventListener("play", this.playHandler.bind(this));
         element.addEventListener("timeupdate", timeUpdateHandler);
 
         return element;
-    }
-
-    /**
-     * Handle clicks on the onlyExercise checkbox
-     *
-     * @param {object} event
-     */
-    onlyCheck(event) {
-        this.props.doFunction.toggleOnlyExercise(event.target.checked);
     }
 
     /**
@@ -399,7 +294,7 @@ export default class DoExerciseCard {
                 this.props.state.onlyExercise,
                 "Play only this exercise",
                 this.props.exercise.id,
-                this.onlyCheck.bind(this)
+                this.handleOnlyCheck.bind(this)
             )
         );
 
@@ -428,7 +323,7 @@ export default class DoExerciseCard {
      * @return {string}
      */
     navDisabled(direction) {
-        if (activeStatuses.includes(this.status)) {
+        if (config.activeStatuses.includes(this.state.status)) {
             return "disabled";
         }
 
@@ -455,12 +350,8 @@ export default class DoExerciseCard {
      * @return {object}
      */
     navButtonElements(direction) {
-        if (!Object.prototype.hasOwnProperty.call(
-                this.props.queueInfo,
-                direction
-            )
-        ) {
-            return commonElements.iconSpan(this.props.doButton[direction].icon);
+        if (!(direction in this.props.queueInfo)) {
+            return commonElements.iconSpan(config.doButton[direction].icon);
         }
 
         const nameText = util.truncateString(
@@ -471,7 +362,7 @@ export default class DoExerciseCard {
         if (direction === "previous") {
             const element = document.createElement("span");
             element.append(
-                commonElements.iconSpan(this.props.doButton[direction].icon),
+                commonElements.iconSpan(config.doButton[direction].icon),
                 " " + nameText
             );
 
@@ -482,7 +373,7 @@ export default class DoExerciseCard {
 
         element.append(
             nameText + " ",
-            commonElements.iconSpan(this.props.doButton[direction].icon)
+            commonElements.iconSpan(config.doButton[direction].icon)
         );
 
         return element;
@@ -503,7 +394,7 @@ export default class DoExerciseCard {
 
         const element = document.createElement("button");
 
-        const colorClass = this.props.doButton[direction].color;
+        const colorClass = config.doButton[direction].color;
         element.classList.add("btn", "col", "btn-" + colorClass);
 
         element.type = "button";
@@ -522,8 +413,8 @@ export default class DoExerciseCard {
      * @return {number}
      */
     exerciseCount() {
-        if (this.props.exercise.id in this.props.mimicCount) {
-            return this.props.mimicCount[this.props.exercise.id];
+        if (this.props.exercise.id in this.mimicCount) {
+            return this.mimicCount[this.props.exercise.id];
         }
 
         return 0;
@@ -543,79 +434,6 @@ export default class DoExerciseCard {
     }
 
     /**
-     * Handle errors with playback by displaying them in the statusText area.
-     *
-     * @param {object} error - the error returned by the player
-     * @param {string} action - the action being attempted
-     */
-    handleError(error, action="unknown") {
-        console.error(error);
-        this.props.doFunction.setStatus({
-            "statusText": action + ": " + error.message,
-            "status": "error"
-        });
-    }
-
-    /**
-     * Handle clicks on the "Mimic" button:
-     *
-     * * If we're recording, stop recording.
-     * * If we're not in a state where we could start playing, do nothing
-     * * Otherwise, initiate the mimic sequence with PlayModelFirst
-     */
-    mimicClick() {
-        if (this.status === "recording") {
-            this.mediaRecorder.stop();
-
-            this.props.playModel("Second");
-            this.setStartTime();
-            return;
-        }
-
-        if (!playableActivities.includes(this.status)) {
-            return;
-        }
-
-        this.setStartTime();
-        this.playModel("First");
-    }
-
-    /**
-     * If the user clicks the exit button, stop any recording tracks to release
-     * the microphone to other apps, and go back to read mode.
-     */
-    exitClick() {
-        if (!window.stream) {
-            return;
-        }
-        window.stream.getTracks().forEach(
-            (track) => track.stop()
-        );
-
-        this.props.doFunction.readMode(this.props.selected.itemType);
-    }
-
-    playerIsReady() {
-        if (!this.player) {
-            return false;
-        }
-
-        if (this.player.paused) {
-            return false;
-        }
-
-        if (this.props.state.mediaStatus !== "ready") {
-            return false;
-        }
-
-        if (playActivities.includes(this.status)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Determine the appropriate Bootstrap color class for the Mimic button:
      *
      * * "Danger" if we're recording
@@ -623,15 +441,15 @@ export default class DoExerciseCard {
      * * "Info" otherwise
      */
      mimicButtonColor() {
-        if (this.props.state.clickedAction !== "mimic") {
+        if (this.state.clickedAction !== "mimic") {
             return "info";
         }
 
-        if (this.status === "recording") {
+        if (this.state.status === "recording") {
             return "danger";
         }
 
-        if (playActivities.includes(this.status)) {
+        if (config.playActivities.includes(this.state.status)) {
             return "success";
         }
 
@@ -649,7 +467,7 @@ export default class DoExerciseCard {
         element.classList.add("btn", "col-3", "btn-" + this.mimicButtonColor());
         element.type = "button";
 
-        element.disabled = playActivities.includes(this.status);
+        element.disabled = playActivities.includes(this.state.status);
         element.addEventListener("click", this.mimicClick.bind(this));
 
         element.append("Mimic ", this.mimicCountSpan());
@@ -657,20 +475,31 @@ export default class DoExerciseCard {
         return element;
     }
 
-    play() {
-        if (!this.playerIsReady()) {
+    /**
+     * Handle clicks on the "Mimic" button:
+     *
+     * * If we're recording, stop recording.
+     * * If we're not in a state where we could start playing, do nothing
+     * * Otherwise, initiate the mimic sequence with PlayModelFirst
+     */
+    mimicClick() {
+        console.log("time to set up mimicClick()!");
+    }
+
+    /**
+     * If the user clicks the exit button, stop any recording tracks to release
+     * the microphone to other apps, and go back to read mode.
+     */
+    exitClick() {
+        if (!window.stream) {
             return;
         }
+        window.stream.getTracks().forEach(
+            (track) => track.stop()
+        );
 
-        const playPromise = this.player.play();
-
-        if (playPromise === undefined) {
-            console.log("Promise undefined!", this.player);
-        } else {
-            playPromise.catch(
-                this.handleError, this.status
-            );
-        }
+        this.props.doFunction.updateMimicCount(this.mimicCount);
+        this.props.doFunction.readMode(this.props.selected.itemType);
     }
 
     /**
@@ -689,14 +518,6 @@ export default class DoExerciseCard {
         return element;
     }
 
-    updateStatus(status, statusText="") {
-        this.status = status;
-        this.statusText = statusText;
-
-        this.statusRowObject.classList.add("text-" + statusColor[status]);
-        this.statusRowObject.innerText = statusText;
-    }
-
     /**
      * A div with the statusText from props
      *
@@ -704,7 +525,7 @@ export default class DoExerciseCard {
      */
     statusRow() {
         const element = document.createElement("div");
-        element.classList.add("text-" + statusColor[this.props.status]);
+        element.classList.add("text-" + config.statusColor[this.state.status]);
         element.innerText = this.props.statusText;
 
         return element;
@@ -776,13 +597,16 @@ export default class DoExerciseCard {
     }
 
     /**
-     * The render function: header and body
+     * The render function: header and body.  Run .getMedia() while we're at it.
      *
      * @return {object}
      */
     render(props) {
         this.props = props;
         console.log("DoExerciseCard", this.props);
+
+        this.state.status = this.props.status;
+        this.mimicCount = this.props.mimicCount;
 
         this.getMedia();
 
@@ -792,4 +616,4 @@ export default class DoExerciseCard {
         element.append(this.cardHeader(), this.cardBody());
         return element;
     }
-}
+};

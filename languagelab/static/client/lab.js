@@ -219,8 +219,13 @@ export default class Lab {
      * Pull the list of things to load from the config, and fetch them all
      *
      */
-    fetchAll() {
-        this.apiClient.checkToken();
+    async fetchAll() {
+        try {
+            await this.apiClient.checkToken();
+        } catch (err) {
+            this.logout();
+            return;
+        }
 
         const thingsToLoad = this.config.api.models
             .filter(model => !model.local)
