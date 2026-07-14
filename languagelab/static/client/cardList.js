@@ -4,18 +4,13 @@
  * Angus B. Grieve-Smith, 2021
  */
 
-/*
-
-    global React, PropTypes
-
-*/
+import help from "./help.js";
 import util from "./util.js";
 
 import ControlCard from "./cards/controlCard.js";
 import DoExerciseCard from "./cards/doExerciseCard.js";
 import ExerciseCard from "./cards/exerciseCard.js";
 import ExerciseFormCard from "./cards/exerciseFormCard.js";
-import help from "./help.js";
 import HelpCard from "./cards/helpCard.js";
 import LanguageCard from "./cards/languageCard.js";
 import LanguageFormCard from "./cards/languageFormCard.js";
@@ -25,14 +20,13 @@ import MediaCard from "./cards/mediaCard.js";
 import MediaFormCard from "./cards/mediaFormCard.js";
 
 const typeInfo = {
-    "media": {
-        "addable": true,
-        "card": MediaCard,
-        "cardLayout": "",
+    "controls": {
+        "addable": false,
+        "card": ControlCard,
+        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-4"],
         "doable": false,
-        "formCard": MediaFormCard,
-        "singular": "media item",
-        "userField": "uploader"
+        "singular": "control",
+        "userField": ""
     },
     "exercises": {
         "addable": true,
@@ -43,14 +37,13 @@ const typeInfo = {
         "singular": "exercise",
         "userField": "creator"
     },
-    "lessons": {
-        "addable": true,
-        "card": LessonCard,
-        "cardLayout": "",
+    "help": {
+        "addable": false,
+        "card": HelpCard,
+        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-4"],
         "doable": false,
-        "formCard": LessonFormCard,
-        "singular": "lesson",
-        "userField": "creator"
+        "singular": "help items",
+        "userField": ""
     },
     "languages": {
         "addable": true,
@@ -60,37 +53,36 @@ const typeInfo = {
         "singular": "language",
         "userField": ""
     },
-    "controls": {
-        "addable": false,
-        "card": ControlCard,
-        "cardLayout": "card-columns",
+    "lessons": {
+        "addable": true,
+        "card": LessonCard,
+        "cardLayout": "",
         "doable": false,
-        "singular": "control",
-        "userField": ""
+        "formCard": LessonFormCard,
+        "singular": "lesson",
+        "userField": "creator"
     },
-    "help": {
-        "addable": false,
-        "card": HelpCard,
-        "cardLayout": "card-columns",
+    "media": {
+        "addable": true,
+        "card": MediaCard,
+        "cardLayout": "",
         "doable": false,
-        "singular": "help items",
-        "userField": ""
+        "formCard": MediaFormCard,
+        "singular": "media item",
+        "userField": "uploader"
     }
 };
 
 const doActivities = ["do", "loadExercise"];
 
-export default class CardList extends React.Component {
+export default class CardList {
 
     /**
      * Extend the constructor method with an itemCard property mapping item
      * keys to card generator methods.
      *
-     * @param {object} props - the React props passed from the calling script
      */
-    constructor(props) {
-        super(props);
-
+    constructor() {
         this.itemCard = {
             "controls": this.controlCard.bind(this),
             "exercises": this.exerciseCard.bind(this),
@@ -98,7 +90,7 @@ export default class CardList extends React.Component {
             "languages": this.languageCard.bind(this),
             "lessons": this.lessonCard.bind(this),
             "media": this.mediaCard.bind(this)
-        }
+        };
     }
 
     /**
@@ -118,16 +110,16 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     addButtonElement(cardId) {
-        return React.createElement(
-            "button",
-            {
-                "id": cardId,
-                "type": "button",
-                "className": "btn btn-primary",
-                "onClick": this.addClick.bind(this)
-            },
-            "Add " + typeInfo[this.props.state.selected.itemType].singular
-        );
+        const element = document.createElement("button");
+        element.id = cardId;
+        element.type = "button";
+        element.classList.add("btn", "btn-primary");
+        element.addEventListener("click", this.addClick.bind(this));
+
+        element.innerText = "Add "
+            + typeInfo[this.props.selected.itemType].singular;
+
+        return element;
     }
 
     /**
@@ -139,11 +131,11 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     addButtonCardBody(cardId) {
-        return React.createElement(
-            "div",
-            {"className": "card-body"},
-            this.addButtonElement(cardId)
-        );
+        const element = document.createElement("div");
+        element.classList.add("card-body");
+        element.append(this.addButtonElement(cardId));
+
+        return element;
     }
 
     /**
@@ -155,20 +147,17 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     addButtonCard(cardId) {
-        return React.createElement(
-            "div",
-            {
-                "className": "card",
-                "key": cardId,
-                "id": cardId
-            },
-            this.addButtonCardBody(cardId)
-        );
+        const element = document.createElement("div");
+        element.classList.add("card");
+        element.id = cardId;
+        element.append(this.addButtonCardBody(cardId));
+
+        return element;
     }
 
     /**
      * Find the exercise specified in a queue item.  If the queue item has no
-     * exercise parameter, return null.
+     * exercise parameter, return "".
      *
      * @param {object} selection - A queueItem with an exercise holding an ID
      *
@@ -176,9 +165,9 @@ export default class CardList extends React.Component {
      */
     queueExercise(selection) {
         if (!selection.exercise) {
-            return null;
+            return "";
         }
-        return util.findItem(this.props.state.exercises, selection.exercise);
+        return util.findItem(this.props.data.exercises, selection.exercise);
     }
 
     /**
@@ -191,7 +180,7 @@ export default class CardList extends React.Component {
      */
     queueItem(lesson, exercise) {
         if (!lesson) {
-            return null;
+            return "";
         }
 
         return lesson.queueItems.find(
@@ -209,13 +198,13 @@ export default class CardList extends React.Component {
      */
     exerciseRank(lesson, exercise) {
         if (!lesson) {
-            return null;
+            return "";
         }
 
         const queueItem = this.queueItem(lesson, exercise);
 
         if (!queueItem) {
-            return null;
+            return "";
         }
 
         return queueItem.rank;
@@ -239,7 +228,7 @@ export default class CardList extends React.Component {
             );
 
             const previousExercise = util.findItem(
-                this.props.state.exercises,
+                this.props.data.exercises,
                 previousQueueItem.exercise
             );
             if (previousExercise) {
@@ -253,7 +242,7 @@ export default class CardList extends React.Component {
             );
 
             const nextExercise = util.findItem(
-                this.props.state.exercises,
+                this.props.data.exercises,
                 nextQueueItem.exercise
             );
             if (nextExercise) {
@@ -272,14 +261,14 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     controlCard(control) {
-        return React.createElement(
-            ControlCard,
+        const element = new ControlCard();
+
+        return element.render(
             {
                 "key": control.name,
                 "control": control,
                 "exportData": this.props.exportData
-            },
-            null
+            }
         );
     }
 
@@ -291,55 +280,53 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     helpCard(helpItem) {
-        return React.createElement(
-            HelpCard,
-            {
-                "key": helpItem.title,
-                "helpItem": helpItem
-            },
-            null
-        )
+        const element = new HelpCard();
+
+        return element.render({
+            "key": helpItem.title,
+            "helpItem": helpItem
+        });
     }
 
     /**
      * Generate a DoExerciseCard
      *
-     * @param {number} key - the React key for the card
+     * @param {number} key - the key for the card
      * @param {object} exercise - the exercise to be performed in the card
      *
      * @return {object}
      */
     doCard(key, exercise) {
         const lesson = util.findItem(
-            this.props.state.lessons, this.props.state.selected.lessons
+            this.props.data.lessons, this.props.selected.lessons
         );
 
         const mediaItem = util.findItem(
-            this.props.state.media, exercise.media
+            this.props.data.media, exercise.media
         );
 
-        const rank = this.exerciseRank(lesson, exercise);
         const maxRank = this.props.maxRank();
+        const rank = this.exerciseRank(lesson, exercise);
 
         const options = {
-            "doButton": this.props.doButton,
             "doFunction": this.props.doFunction,
-            "key": key,
             "exercise": exercise,
             "lesson": lesson,
             "maxRank": maxRank,
             "mediaItem": mediaItem,
+            "mimicCount": this.props.mimicCount,
+            "onlyExercise": this.props.state.onlyExercise,
+            "nowPlaying": this.props.state.nowPlaying,
             "queueInfo": this.queueInfo(lesson, rank, maxRank),
+            "queueNav": this.props.doFunction.queueNav,
             "rank": rank,
+            "selected": this.props.selected,
             "setActivity": this.props.setActivity,
-            "state": this.props.state
+            "status": this.props.state.status
         };
 
-        return React.createElement(
-            DoExerciseCard,
-            options,
-            null
-        );
+        const element = new DoExerciseCard();
+        return element.render(options);
     }
 
     /**
@@ -351,36 +338,33 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     mediaCard(mediaItem) {
-        var cardComponent = MediaCard;
+        let cardComponent = MediaCard;
 
-        if (this.props.state.activity === "edit"
-            && this.props.state.selected.media === mediaItem.id) {
+        if (this.props.activity === "edit"
+            && this.props.selected.media === mediaItem.id) {
             cardComponent = MediaFormCard;
         }
 
-        if (this.props.state.activity === "add"
+        if (this.props.activity === "add"
             && typeof mediaItem.id !== "number"
             ) {
             cardComponent = MediaFormCard;
         }
 
-        return React.createElement(
-            cardComponent,
-            {
-                "checkClick": this.props.checkClick,
-                "deleteClick": this.props.deleteClick,
-                "id": mediaItem.id,
-                "key": mediaItem.id,
-                "languages": this.props.state.languages,
-                "mediaItem": mediaItem,
-                "saveItem": this.props.saveItem,
-                "selectItem": this.props.selectItem,
-                "selectedItem": this.props.state.selected.media,
-                "setActivity": this.props.setActivity,
-                "itemUser": this.itemUser(mediaItem)
-            },
-            null
-        );
+        const element = new cardComponent();
+        return element.render({
+            "checkClick": this.props.checkClick,
+            "deleteClick": this.props.deleteClick,
+            "id": mediaItem.id,
+            "key": mediaItem.id,
+            "languages": this.props.data.languages,
+            "mediaItem": mediaItem,
+            "saveItem": this.props.saveItem,
+            "selectItem": this.props.selectItem,
+            "selectedItem": this.props.selected.media,
+            "setActivity": this.props.setActivity,
+            "itemUser": this.itemUser(mediaItem)
+        });
     }
 
     /**
@@ -392,30 +376,27 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     languageCard(language) {
-        var cardComponent = LanguageCard;
+        let cardComponent = LanguageCard;
 
-        if (this.props.state.activity === "edit"
-            && this.props.state.selected.languages === language.id) {
+        if (this.props.activity === "edit"
+            && this.props.selected.languages === language.id) {
             cardComponent = LanguageFormCard;
         }
 
-        if (this.props.state.activity === "add"
+        if (this.props.activity === "add"
             && typeof language.id !== "number"
             ) {
             cardComponent = LanguageFormCard;
         }
 
-        return React.createElement(
-            cardComponent,
-            {
-                "key": language.id,
-                "language": language,
-                "saveItem": this.props.saveItem,
-                "selectItem": this.props.selectItem,
-                "setActivity": this.props.setActivity
-            },
-            null
-        );
+        const element = new cardComponent();
+        return element.render({
+            "key": language.id,
+            "language": language,
+            "saveItem": this.props.saveItem,
+            "selectItem": this.props.selectItem,
+            "setActivity": this.props.setActivity
+        });
     }
 
     /**
@@ -428,9 +409,9 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     lessonCard(lesson) {
-        var cardComponent = LessonCard;
+        let cardComponent = LessonCard;
 
-        if (this.props.state.activity === "editQueue") {
+        if (this.props.activity === "editQueue") {
             /**
              * This is actually an exercise retrieved by queueExercise(), not
              * a lesson!
@@ -438,36 +419,36 @@ export default class CardList extends React.Component {
             return this.exerciseCard(lesson);
         }
 
-        const selected = this.props.state.selected.lessons === lesson.id;
+        const selected = this.props.selected.lessons === lesson.id;
 
-        if (doActivities.includes(this.props.state.activity) && selected) {
+        if (doActivities.includes(this.props.activity) && selected) {
             const exercise = util.findItem(
-                this.props.state.exercises, this.props.state.selected.exercises
+                this.props.data.exercises, this.props.selected.exercises
             );
             return this.doCard(lesson.id, exercise);
         }
 
-        if (this.props.state.activity === "edit" && selected) {
+        if (this.props.activity === "edit" && selected) {
             cardComponent = LessonFormCard;
         }
 
-        if (this.props.state.activity === "add"
+        if (this.props.activity === "add"
             && typeof lesson.id !== "number"
         ) {
             cardComponent = LessonFormCard;
         }
 
         let canWrite = true;
-        if (this.props.config.staffCanWrite
-            && !this.props.state.currentUser.is_staff) {
+        if (this.props.staffCanWrite
+            && !this.props.currentUser.is_staff) {
                 canWrite = false;
         }
 
         const options = {
-            "activity": this.props.state.activity,
+            "activity": this.props.activity,
             "canWrite": canWrite,
             "deleteClick": this.props.deleteClick,
-            "exercisesLoading": this.props.state.loading.exercises,
+            "exercisesLoading": this.props.loading.exercises,
             "itemUser": this.itemUser(lesson),
             "key": lesson.id,
             "lesson": lesson,
@@ -478,11 +459,8 @@ export default class CardList extends React.Component {
             "toggleLesson": this.props.toggleLesson
         };
 
-        return React.createElement(
-            cardComponent,
-            options,
-            null
-        );
+        const component = new cardComponent();
+        return component.render(options);
     }
 
     /**
@@ -493,21 +471,18 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     exerciseFormCard(exercise) {
-        var options = {
+        let options = {
             "key": exercise.id,
             "exercise": exercise,
             "itemUser": this.itemUser(exercise),
-            "media": this.props.state.media,
+            "media": this.props.data.media,
             "setActivity": this.props.setActivity,
             "saveItem": this.props.saveItem,
-            "selectedType": this.props.state.selected.itemType
+            "selectedType": this.props.selected.itemType
         };
 
-        return React.createElement(
-            ExerciseFormCard,
-            options,
-            null
-        );
+        const element = new ExerciseFormCard();
+        return element.render(options);
     }
 
     /**
@@ -520,50 +495,47 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     exerciseCard(exercise) {
-        const mediaItem = util.findItem(this.props.state.media, exercise.media);
+        const mediaItem = util.findItem(this.props.data.media, exercise.media);
         const lesson = util.findItem(
-            this.props.state.lessons, this.props.state.selected.lessons
+            this.props.data.lessons, this.props.selected.lessons
         );
 
-        if (this.props.state.selected.exercises === exercise.id) {
-            if (["edit", "add"].includes(this.props.state.activity)) {
+        if (this.props.selected.exercises === exercise.id) {
+            if (["edit", "add"].includes(this.props.activity)) {
                 return this.exerciseFormCard(exercise);
             }
 
-            if (doActivities.includes(this.props.state.activity)) {
+            if (doActivities.includes(this.props.activity)) {
                 return this.doCard(exercise.id, exercise);
             }
         }
 
         let canWrite = true;
-        if (this.props.config.staffCanWrite
-            && !this.props.state.currentUser.is_staff) {
+        if (this.props.staffCanWrite
+            && !this.props.currentUser.is_staff) {
                 canWrite = false;
         }
 
-        var options = {
-            "activity": this.props.state.activity,
+        let options = {
+            "activity": this.props.activity,
             "canWrite": canWrite,
             "checkClick": this.props.checkClick,
             "deleteClick": this.props.deleteClick,
             "exercise": exercise,
             "key": exercise.id,
             "itemUser": this.itemUser(exercise),
-            "lessons": this.props.state.lessons,
+            "lessons": this.props.data.lessons,
             "mediaItem": mediaItem,
             "maxRank": this.props.maxRank(),
             "queueClick": this.props.queueClick,
             "queueItem": this.queueItem(lesson, exercise),
-            "selectedType": this.props.state.selected.itemType,
+            "selectedType": this.props.selected.itemType,
             "selectItem": this.props.selectItem,
             "startExercise": this.props.startExercise
         };
 
-        return React.createElement(
-            ExerciseCard,
-            options,
-            null
-        );
+        const element = new ExerciseCard();
+        return element.render(options);
     }
 
     /**
@@ -574,13 +546,13 @@ export default class CardList extends React.Component {
      *
      * @return {object}
      */
-    itemUser(item, type=this.props.state.selected.itemType) {
-        if (!this.props.state.users) {
-            return null;
+    itemUser(item, type=this.props.selected.itemType) {
+        if (!this.props.data.users) {
+            return "";
         }
 
         const userFieldName = typeInfo[type].userField;
-        const user = util.findItem(this.props.state.users, item[userFieldName]);
+        const user = util.findItem(this.props.data.users, item[userFieldName]);
 
         return user;
     }
@@ -592,7 +564,7 @@ export default class CardList extends React.Component {
      * @return {object}
      */
     makeElement(item) {
-        return this.itemCard[this.props.state.selected.itemType](item);
+        return this.itemCard[this.props.selected.itemType](item);
     }
 
     /**
@@ -606,24 +578,23 @@ export default class CardList extends React.Component {
      */
     addCard(addable, cardId="form") {
         if (!addable) {
-            return null;
+            return "";
         }
 
-        if (this.props.state.config.staffCanWrite
-            && !this.props.state.currentUser.is_staff) {
-                return null;
+        if (this.props.staffCanWrite
+            && !this.props.currentUser.is_staff) {
+                return "";
         }
 
-        const selectedState = this.props.state.selected;
         if (cardId === "initial"
-            && !this.props.state[selectedState.itemType].length) {
-            return null;
+            && !this.props.data[this.props.selected.itemType].length) {
+            return "";
         }
 
-        if (this.props.state.activity === "add"
-            && selectedState[selectedState.itemType] === cardId
+        if (this.props.activity === "add"
+            && this.props.selected[this.props.selected.itemType] === cardId
             ) {
-            return this.itemCard[selectedState.itemType](
+            return this.itemCard[this.props.selected.itemType](
                 {"id": cardId}
             );
         }
@@ -643,13 +614,14 @@ export default class CardList extends React.Component {
             return Object.values(help);
         }
 
-        if (this.props.state.activity !== "editQueue") {
-            return this.props.state[itemType];
+        if (this.props.activity !== "editQueue") {
+            return this.props.data[itemType];
         }
 
         const lesson = util.findItem(
-            this.props.state.lessons, this.props.state.selected.lessons
+            this.props.data.lessons, this.props.selected.lessons
         );
+
         return lesson.queueItems.map(this.queueExercise.bind(this));
     }
 
@@ -662,23 +634,18 @@ export default class CardList extends React.Component {
      */
     makeElements(itemType) {
         const items = itemType === "help" ?
-            Object.values(help) : this.props.state[itemType];
+            Object.values(help) : this.props.data[itemType];
 
-        if (!items.length || !Object.prototype.hasOwnProperty.call(
-            typeInfo[itemType],
-            "card"
-            )
-        ) {
-
-            if (Object.prototype.hasOwnProperty.call(help, itemType)) {
-                return this.helpCard(help[itemType]);
+        if (!items.length || !("card" in typeInfo[itemType])) {
+            if (itemType in help) {
+                return [this.helpCard(help[itemType])];
             }
 
-            return React.createElement(
-                "div",
-                {"className": "card"},
-                `No ${itemType} loaded`
-            );
+            const element = document.createElement("div");
+            element.classList.add("card");
+            element.innerText = `No ${itemType} loaded`;
+
+            return [element];
         }
 
         const itemList = this.makeItemList(itemType);
@@ -686,39 +653,28 @@ export default class CardList extends React.Component {
     }
 
     /**
-     * The React render() method
+     * @param {object} props - the props passed from the calling script
      *
      * @return {object}
      */
-    render() {
-        console.log(this.props);
-        const itemType = this.props.state.selected.itemType;
-        const addable = this.props.state.activity !== "editQueue"
+    render(props) {
+        this.props = props;
+        console.log("CardList", this.props);
+
+        const itemType = this.props.selected.itemType;
+        const addable = this.props.activity !== "editQueue"
             && typeInfo[itemType].addable;
 
-        return React.createElement(
-            "div",
-            {"className": typeInfo[itemType].cardLayout},
-            this.addCard(addable, "initial"),
-            this.makeElements(itemType),
-            this.addCard(addable, "final")
-        );
+        const element = document.createElement("div");
+
+        if (typeInfo[itemType].cardLayout) {
+            element.classList.add(...typeInfo[itemType].cardLayout);
+        }
+
+        element.append(this.addCard(addable, "initial"));
+        element.append(...this.makeElements(itemType));
+        element.append(this.addCard(addable, "final"));
+
+        return element;
     }
 }
-
-CardList.propTypes = {
-    "checkClick": PropTypes.func.isRequired,
-    "config": PropTypes.object.isRequired,
-    "deleteClick": PropTypes.func.isRequired,
-    "doButton": PropTypes.object.isRequired,
-    "doFunction": PropTypes.object.isRequired,
-    "exportData": PropTypes.func.isRequired,
-    "maxRank": PropTypes.number.isRequired,
-    "queueClick": PropTypes.object.isRequired,
-    "saveItem": PropTypes.func.isRequired,
-    "selectItem": PropTypes.func.isRequired,
-    "setActivity": PropTypes.func.isRequired,
-    "startExercise": PropTypes.func.isRequired,
-    "state": PropTypes.object.isRequired,
-    "toggleLesson": PropTypes.func.isRequired
-};

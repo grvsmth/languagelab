@@ -6,17 +6,12 @@
  *
  */
 
-/*
-
-    global React, PropTypes
-
-*/
 import config from "./config.js";
 import commonElements from "./commonElements.js";
 import util from "./util.js";
 
 /** Card footer component for adding or ranking an exercise in a lesson queue */
-export default class QueueFooter extends React.Component {
+export default class QueueFooter {
 
     /**
      * A badge to indicate the rank of an item in the queue
@@ -24,11 +19,11 @@ export default class QueueFooter extends React.Component {
      * @return {object}
      */
     rankBadge() {
-        return React.createElement(
-            "span",
-            {"className": "badge badge-success"},
-            this.props.queueItem.rank
-        );
+        const element = document.createElement("span");
+        element.classList.add("badge", "text-bg-success");
+        element.innerText = this.props.queueItem.rank;
+
+        return element;
     }
 
     /**
@@ -49,12 +44,14 @@ export default class QueueFooter extends React.Component {
      * @param {object} event
      */
     queueClick(event) {
-        const idParts = event.currentTarget.id.split("_");
-        if (!idParts) {
+        if (!("action" in event.currentTarget.dataset)) {
+            console.log("No action in event target dataset", event);
             return;
         }
 
-        this.props.queueClick(idParts[0], this.props.queueItem.id);
+        this.props.queueClick(
+            event.currentTarget.dataset.action, this.props.queueItem.id
+        );
     }
 
     /**
@@ -86,24 +83,24 @@ export default class QueueFooter extends React.Component {
      * @return {object}
      */
     rankButton(buttonContent) {
-        const disabled = this.isRankButtonDisabled(buttonContent);
+        const element = document.createElement("button");
+        element.type = "button";
 
-        const iconClass = config.queueButton[buttonContent]["icon"];
-        const btnClass = "btn-" + config.queueButton[buttonContent]["color"];
-        const buttonId = [buttonContent, this.props.queueItem.id].join("_");
-
-        return React.createElement(
-            "button",
-            {
-                "className": "btn " + btnClass,
-                "disabled": disabled,
-                "id": buttonId,
-                "key": "rank-button-" + buttonContent,
-                "onClick": this.queueClick.bind(this),
-                "type": "button"
-            },
-            commonElements.iconSpan(iconClass)
+        element.classList.add("btn");
+        element.classList.add(
+            "btn-" + config.queueButton[buttonContent]["color"]
         );
+
+        element.disabled = this.isRankButtonDisabled(buttonContent);
+        element.Id = [buttonContent, this.props.queueItem.id].join("_");
+        element.dataset.action = buttonContent;
+        element.addEventListener("click", this.queueClick.bind(this));
+
+        element.append(
+            commonElements.iconSpan(config.queueButton[buttonContent]["icon"])
+        );
+
+        return element;
     }
 
     /**
@@ -112,12 +109,10 @@ export default class QueueFooter extends React.Component {
      * @return {object}
      */
     badgeSpan() {
-        return React.createElement(
-            "span",
-            {},
-            this.rankBadge(),
-            " in queue "
-        );
+        const element = document.createElement("span");
+        element.append(this.rankBadge(), " in queue ");
+
+        return element;
     }
 
     /**
@@ -126,16 +121,14 @@ export default class QueueFooter extends React.Component {
      * @return {object}
      */
     addButton() {
-        return React.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": "btn btn-success btn-sm ml-2",
-                "id": "add",
-                "onClick": this.addClick.bind(this)
-            },
-            "Add to lesson",
-        );
+        const element = document.createElement("button");
+        element.type = "button";
+        element.classList.add("btn", "btn-success", "btn-sm", "ms-2");
+        element.id = "add";
+        element.addEventListener("click", this.addClick.bind(this));
+        element.innerText = "Add to lesson";
+
+        return element;
     }
 
     /**
@@ -145,7 +138,7 @@ export default class QueueFooter extends React.Component {
      */
     firstLesson() {
         if (!this.props.exerciseLessons || !this.props.exerciseLessons.length) {
-            return null;
+            return "";
         }
 
         return this.props.exerciseLessons[0].lesson;
@@ -159,9 +152,10 @@ export default class QueueFooter extends React.Component {
     lessonSpan() {
         const inputId = ["lesson", this.props.exerciseId].join("_");
 
-        return React.createElement(
-            "span",
-            {"className": "d-inline-block"},
+        const element = document.createElement("span");
+        element.classList.add("d-inline-block");
+
+        element.append(
             commonElements.itemSelect(
                 "lesson",
                 util.listToObject(this.props.lessons),
@@ -169,6 +163,8 @@ export default class QueueFooter extends React.Component {
                 this.firstLesson()
             )
         );
+
+        return element;
     }
 
     /**
@@ -177,11 +173,11 @@ export default class QueueFooter extends React.Component {
      * @return {object}
      */
     lessonMessage() {
-        return React.createElement(
-            "div",
-            {"className": "card-footer"},
-            config.message.lessonQueue
-        )
+        const element = document.createElement("div");
+        element.classList.add("card-footer");
+        element.innerText = config.message.lessonQueue;
+
+        return element;
     }
 
     /**
@@ -191,14 +187,14 @@ export default class QueueFooter extends React.Component {
      */
     exerciseLessons() {
         if (!this.props.exerciseLessons) {
-            return null;
+            return "";
         }
 
-        return React.createElement(
-            "span",
-            {"className": "mr-2"},
-            `In ${this.props.exerciseLessons.length} lessons`
-        );
+        const element = document.createElement("span");
+        element.classList.add("me-2");
+        element.innerText = `In ${this.props.exerciseLessons.length} lessons`;
+
+        return element;
     }
 
     /**
@@ -208,20 +204,23 @@ export default class QueueFooter extends React.Component {
      */
     addFooter() {
         if (!this.props.canWrite) {
-            return null;
+            return "";
         }
 
         if (!this.props.lessons || !this.props.lessons.length) {
             return this.lessonMessage();
         }
 
-        return React.createElement(
-            "div",
-            {"className": "card-footer"},
+        const element = document.createElement("div");
+        element.classList.add("card-footer");
+
+        element.append(
             this.exerciseLessons(),
             this.lessonSpan(),
             this.addButton(),
         );
+
+        return element;
     }
 
     /**
@@ -230,14 +229,14 @@ export default class QueueFooter extends React.Component {
      * @return {object}
      */
     rankButtonGroup() {
-        return React.createElement(
-            "div",
-            {
-                "className": "btn-group btn-group-sm",
-                "role": "group"
-            },
-            Object.keys(config.queueButton).map(this.rankButton, this)
+        const element = document.createElement("div");
+        element.classList.add("btn-group", "btn-group-sm");
+        element.role = "group";
+        element.append(
+            ...Object.keys(config.queueButton).map(this.rankButton, this)
         );
+
+        return element;
     }
 
     /**
@@ -246,27 +245,18 @@ export default class QueueFooter extends React.Component {
      *
      * @return {object}
      */
-    render() {
+    render(props) {
+        this.props = props;
+
         if (!this.props.queueItem) {
             return this.addFooter();
         }
 
-        return React.createElement(
-            "div",
-            {"className": "card-footer"},
-            this.badgeSpan(),
-            this.rankButtonGroup()
-        );
+        const element = document.createElement("div");
+        element.classList.add("card-footer");
+
+        element.append(this.badgeSpan(), this.rankButtonGroup());
+
+        return element;
     }
 }
-
-QueueFooter.propTypes = {
-    "canWrite": PropTypes.bool.isRequired,
-    "exerciseClick": PropTypes.func.isRequired,
-    "exerciseId": PropTypes.string.isRequired,
-    "exerciseLessons": PropTypes.array.isRequired,
-    "lessons": PropTypes.array.isRequired,
-    "maxRank": PropTypes.func.isRequired,
-    "queueClick": PropTypes.func.isRequired,
-    "queueItem": PropTypes.object.isRequired
-};

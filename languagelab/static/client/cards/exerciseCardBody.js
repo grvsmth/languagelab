@@ -4,17 +4,13 @@
  * Angus B. Grieve-Smith, 2021
  *
  */
-/*
 
-    global React, PropTypes
-
-*/
 import util from "./util.js";
 
 const timeFormat = "HH:mm:ss.S";
 
 /** Card body for displaying info about an exercise in the LanguageLab client */
-export default class ExerciseCardBody extends React.Component {
+export default class ExerciseCardBody {
 
     /**
      * Bind the start click handler
@@ -22,8 +18,6 @@ export default class ExerciseCardBody extends React.Component {
      * @param {props}
      */
     constructor(props) {
-        super(props);
-
         this.startClick = this.startClick.bind(this);
     }
 
@@ -34,15 +28,14 @@ export default class ExerciseCardBody extends React.Component {
      */
     bySpan() {
         if (!this.props.itemUser) {
-            return null;
+            return "";
         }
 
-        return React.createElement(
-            "span",
-            {"className": "text-dark"},
-            " by ",
-            this.props.itemUser.username
-        );
+        const element = document.createElement("span");
+        element.classList.add("text-dark");
+        element.innerText = " by " + this.props.itemUser.username;
+
+        return element;
     }
 
     /**
@@ -57,18 +50,17 @@ export default class ExerciseCardBody extends React.Component {
             timeFormat
         );
 
-        var mediaName = "";
+        let mediaName = "";
         if (this.props.mediaItem) {
             mediaName = this.props.mediaItem.name + ", ";
 
         }
 
-        return React.createElement(
-            "h6",
-            {"className": "card-subtitle text-muted"},
-            mediaName,
-            timeRange
-        );
+        const element = document.createElement("h6");
+        element.classList.add("card-subtitle", "text-muted");
+        element.innerText = mediaName + timeRange;
+
+        return element;
     }
 
     /**
@@ -77,18 +69,16 @@ export default class ExerciseCardBody extends React.Component {
      * @return {object}
      */
     descriptionRow() {
-        var mediaCreator = "";
+        let mediaCreator = "";
         if (this.props.mediaItem) {
             mediaCreator = this.props.mediaItem.creator;
         }
 
-        return React.createElement(
-            "div",
-            {},
-            mediaCreator,
-            " – ",
-            this.props.exercise.description
-        );
+        const element = document.createElement("div");
+        element.innerText = mediaCreator + " – "
+            + this.props.exercise.description;
+
+        return element;
     }
 
     /**
@@ -121,11 +111,12 @@ export default class ExerciseCardBody extends React.Component {
      * @return {object}
      */
     editLink() {
-        return React.createElement(
-            "a",
-            {"className": "text-primary", "onClick": this.editClick.bind(this)},
-            "edit"
-        );
+        const element = document.createElement("a");
+        element.classList.add("text-primary");
+        element.addEventListener("click", this.editClick.bind(this));
+        element.innerText = "edit";
+
+        return element;
     }
 
     /**
@@ -134,14 +125,12 @@ export default class ExerciseCardBody extends React.Component {
      * @return {object}
      */
     deleteLink() {
-        return React.createElement(
-            "a",
-            {
-                "className": "text-danger",
-                "onClick": this.deleteClick.bind(this)
-            },
-            "delete"
-        );
+        const element = document.createElement("a");
+        element.classList.add("text-danger");
+        element.addEventListener("click", this.deleteClick.bind(this));
+        element.innerText = "delete";
+
+        return element;
     }
 
     /**
@@ -152,24 +141,25 @@ export default class ExerciseCardBody extends React.Component {
     linkDiv() {
         if (this.props.activity === "add"
             || this.props.selectedType === "queueItems") {
-            return null;
+            return "";
         }
 
         if (this.props.activity === "editQueue") {
-            return null;
+            return "";
         }
 
         if (!this.props.canWrite) {
-            return null;
+            return "";
         }
 
-        return React.createElement(
-            "div",
-            {},
+        const element = document.createElement("div");
+        element.append(
             this.editLink(),
             " ",
             this.deleteLink()
         );
+
+        return element;
     }
 
     /**
@@ -179,18 +169,16 @@ export default class ExerciseCardBody extends React.Component {
      */
     startButton() {
         if (this.props.activity === "editQueue") {
-            return null;
+            return "";
         }
-        return React.createElement(
-            "button",
-            {
-                "className": "btn btn-success",
-                "type": "button",
-                "id": "start_" + this.props.exercise.id,
-                "onClick": this.startClick
-            },
-            "Start exercise"
-        );
+        const element = document.createElement("button");
+        element.classList.add("btn", "btn-success");
+        element.type = "button",
+        element.id = "start_" + this.props.exercise.id;
+        element.addEventListener("click", this.startClick);
+        element.innerText = "Start exercise";
+
+        return element;
     }
 
     /**
@@ -199,11 +187,10 @@ export default class ExerciseCardBody extends React.Component {
      * @return {object}
      */
     startDiv() {
-        return React.createElement(
-            "div",
-            {},
-            this.startButton()
-        );
+        const element = document.createElement("div");
+        element.append(this.startButton());
+
+        return element;
     }
 
     /**
@@ -211,27 +198,19 @@ export default class ExerciseCardBody extends React.Component {
      *
      * @return {object}
      */
-    render() {
-        return React.createElement(
-            "div",
-            {"className": "card-body"},
+    render(props) {
+        this.props = props;
+
+        const element = document.createElement("div");
+        element.classList.add("card-body");
+
+        element.append(
             this.itemSubtitle(),
             this.descriptionRow(),
             this.linkDiv(),
             this.startDiv()
         );
+
+        return element;
     }
 }
-
-ExerciseCardBody.propTypes = {
-    "activity": PropTypes.string.isRequired,
-    "canWrite": PropTypes.bool.isRequired,
-    "deleteClick": PropTypes.func.isRequired,
-    "exercise": PropTypes.object.isRequired,
-    "itemUser": PropTypes.object.isRequired,
-    "mediaItem": PropTypes.object.isRequired,
-    "saveItem": PropTypes.func.isRequired,
-    "selectItem": PropTypes.func.isRequired,
-    "selectedType": PropTypes.string.isRequired,
-    "startExercise": PropTypes.func.isRequired
-};

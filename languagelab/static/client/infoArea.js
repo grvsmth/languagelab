@@ -5,14 +5,11 @@
  */
 
 /*
-
-    global React, PropTypes
-
 */
 import commonElements from "./cards/commonElements.js";
 
 /** Sticky top div for information about the status of the LanguageLab client */
-export default class InfoArea extends React.Component {
+export default class InfoArea {
 
     /**
      * Handle a click on the close button for an alert OR the lesson queue
@@ -27,25 +24,6 @@ export default class InfoArea extends React.Component {
     }
 
     /**
-     * A span to make the Bootstrap dismiss icon look nice
-     *
-     * @param {string} id - the ID of the alert (or "queue") for the handler
-     * @param {string} text - text to display with the button
-     *
-     * @return {object}
-     */
-    dismissSpan(id, text=null) {
-        return React.createElement(
-            "span",
-            {
-                "onClick": this.dismissHandler.bind(this, id)
-            },
-            "×",
-            text
-        );
-    }
-
-    /**
      * A dismiss button for the alert or queue
      *
      * @param {string} id - the ID of the alert (or "queue") for the handler
@@ -54,14 +32,20 @@ export default class InfoArea extends React.Component {
      * @return {object}
      */
     dismissButton(id, text=null) {
-        return React.createElement(
-            "button",
-            {
-                "className": "close",
-                "type": "button",
-            },
-            this.dismissSpan(id, text)
-        );
+        const element = document.createElement("button");
+        element.classList.add("btn-close");
+            element.dataset.bsDismiss = "alert";
+
+        element.setAttribute("aria-label", "close");
+        element.type = "button";
+
+        if (id === "queue") {
+            element.addEventListener(
+                "click", this.dismissHandler.bind(this, id)
+            );
+        }
+
+        return element;
     }
 
     /**
@@ -72,11 +56,12 @@ export default class InfoArea extends React.Component {
      * @return {object}
      */
     alertTitle(alert) {
-        return React.createElement(
-            "strong",
-            {"className": "mr-1"},
-            alert.title
-        );
+        const element = document.createElement("strong");
+        element.classList.add("me-1");
+
+        element.append(alert.title);
+
+        return element;
     }
 
     /**
@@ -88,22 +73,22 @@ export default class InfoArea extends React.Component {
      */
     alertDiv(alert) {
         const statusClass = "alert-" + alert.status;
-        return React.createElement(
-            "div",
-            {
-                "className": "alert alert-dismissible " + statusClass,
-                "role": "alert",
-                "key": alert.id,
-                "id": "alert_" + alert.id
-            },
+        const element = document.createElement("div");
+        element.classList.add("alert", "alert-dismissible", statusClass);
+        element.role = "alert";
+        element.id = "alert_" + alert.id;
+
+        element.append(
             this.alertTitle(alert),
             alert.message,
             this.dismissButton(alert.id)
         );
+
+        return element;
     }
 
     /**
-     * Generate a React element for each alert in the props
+     * Generate an element for each alert in the props
      *
      * @return {array}
      */
@@ -117,11 +102,12 @@ export default class InfoArea extends React.Component {
      * @return {object}
      */
     itemTitle() {
-        return React.createElement(
-            "h5",
-            {"className": "card-title"},
-            this.props.lesson.name
-        );
+        const element = document.createElement("h5");
+        element.classList.add("card-title");
+
+        element.append(this.props.lesson.name);
+
+        return element;
     }
 
     /**
@@ -130,13 +116,22 @@ export default class InfoArea extends React.Component {
      * @return {object}
      */
     lessonQueueBody() {
-        return React.createElement(
-            "div",
-            {"className": "card-body"},
+        const element = document.createElement("div");
+        element.classList.add("card-body");
+
+        const dismissButton = this.dismissButton("queue", "Close queue");
+        dismissButton.dataset.bsDismiss = "queue";
+        dismissButton.classList.add(
+            "position-absolute", "top-0", "end-0", "m-2"
+        );
+
+        element.append(
             this.itemTitle(),
             commonElements.lessonSubtitle(this.props.lesson),
-            this.dismissButton("queue", "Close queue")
+            dismissButton
         );
+
+        return element;
     }
 
     /**
@@ -145,18 +140,18 @@ export default class InfoArea extends React.Component {
      * @return {object}
      */
     lessonQueueHeader() {
+        let element = "";
+
         if (this.props.selectedType === "lessons"
             && this.props.activity === "editQueue"
         ) {
-            return React.createElement(
-                "div",
-                {
-                    "className": "card bg-light border-secondary"
-                },
-                this.lessonQueueBody()
-            );
+            element = document.createElement("div");
+            element.role = "queue";
+            element.classList.add("card", "bg-light", "border-secondary");
+            element.append(this.lessonQueueBody());
         }
-        return null;
+
+        return element;
     }
 
     /**
@@ -165,12 +160,12 @@ export default class InfoArea extends React.Component {
      * @return {object}
      */
     body() {
-        return React.createElement(
-            "div",
-            {"className": "sticky-top"},
-            this.alertSeries(),
-            this.lessonQueueHeader()
-        );
+        const element = document.createElement("div");
+
+        element.classList.add("sticky-top");
+        element.append(...this.alertSeries(), this.lessonQueueHeader());
+
+        return element;
     }
 
     /**
@@ -179,14 +174,12 @@ export default class InfoArea extends React.Component {
      * @return {object}
      */
     iso639a() {
-        return React.createElement(
-            "a",
-            {
-                "href": this.props.iso639.url,
-                "target": "_blank"
-            },
-            "list of ISO-639-3 language names and codes"
-        );
+        const element = document.createElement("a");
+        element.href = this.props.iso639.url;
+        element.target = "_blank";
+        element.innerText = "list of ISO-639-3 language names and codes";
+
+        return element;
     }
 
     /**
@@ -195,13 +188,11 @@ export default class InfoArea extends React.Component {
      * @return {object}
      */
     languageInfo() {
-        return React.createElement(
-            "div",
-            {"className": "sticky-top mb-3"},
-            "You may find this ",
-            this.iso639a(),
-            " useful."
-        );
+        const element = document.createElement("div");
+        element.classList.add("sticky-top", "mb-3");
+        element.append("You may find this ", this.iso639a(), " useful.");
+
+        return element;
     }
 
     /**
@@ -210,23 +201,17 @@ export default class InfoArea extends React.Component {
      *
      * @return {object}
      */
-    render() {
+    render(props) {
+        this.props = props;
+
         if (this.props.alerts.length || this.props.activity === "editQueue") {
             return this.body();
         }
+
         if (this.props.selectedType === "languages") {
             return this.languageInfo();
         }
-        return null;
+
+        return "";
     }
 }
-
-InfoArea.propTypes = {
-    "activity": PropTypes.string.isRequired,
-    "alerts": PropTypes.array.isRequired,
-    "dismissAlert": PropTypes.func.isRequired,
-    "iso639": PropTypes.object.isRequired,
-    "lesson": PropTypes.object,
-    "selectedType": PropTypes.string.isRequired,
-    "setActivity": PropTypes.func.isRequired
-};

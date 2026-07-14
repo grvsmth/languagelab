@@ -1,13 +1,11 @@
 /**
- * Common React elements used in multiple cards in the LanguageLab client
+ * Common elements used in multiple cards in the LanguageLab client
  *
  * Angus B. Grieve-Smith, 2021
  *
  */
 
 /*
-
-    global React
 
 */
 import util from "./util.js";
@@ -21,11 +19,10 @@ const exports = {
          *
          * @return {object}
          */
-        return React.createElement(
-            "i",
-            {"className": "oi " + iconClass},
-            null
-        );
+        const element = document.createElement("i");
+        element.classList.add("oi", iconClass);
+
+        return element;
     },
     "itemLabel": function(fieldName, inputId) {
         /**
@@ -36,11 +33,12 @@ const exports = {
          *
          * @return {object}
          */
-        return React.createElement(
-            "label",
-            {"htmlFor": inputId},
-            fieldName
-        );
+        const element = document.createElement("label");
+
+        element.for = inputId;
+        element.innerText = fieldName;
+
+        return element;
     },
     "checkboxInput": function(name, checked, inputId, callback) {
         /**
@@ -51,25 +49,21 @@ const exports = {
          * @param {string} inputId
          * @param {func} callback
          */
-        const options = {
-            "className": "form-check-input",
-            "type": "checkbox",
-            "id": inputId,
-            "name": name
-        }
+        const element = document.createElement("input");
+
+        element.classList.add("form-check-input");
+        element.type = "checkbox";
+        element.id = inputId;
+        element.name = name;
 
         if (callback) {
-            options.onChange = callback;
-            options.checked = checked;
+            element.addEventListener("change", callback);
+            element.checked = checked;
         } else {
-            options.defaultChecked = checked;
+            element.defaultChecked = checked;
         }
 
-        return React.createElement(
-            "input",
-            options,
-            null
-        );
+        return element;
     },
     "itemOption": function(optionKey, optionValue) {
         /**
@@ -80,11 +74,12 @@ const exports = {
          *
          * @return {object}
          */
-        return React.createElement(
-            "option",
-            {"value": optionKey},
-            optionValue
-        );
+        const element = document.createElement("option");
+        element.value = optionKey;
+
+        element.append(optionValue);
+
+        return element;
     },
     "lessonSubtitle": function(lesson) {
         /**
@@ -94,16 +89,19 @@ const exports = {
          *
          * @return {object}
          */
+        const element = document.createElement("h6");
+        element.classList.add("card-subtitle", "text-dark");
+
         const howManyExercises = util.howManyExercises(
             lesson.queueItems
         );
 
-        return React.createElement(
-            "h6",
-            {"className": "card-subtitle text-dark"},
+        element.append(
             lesson.description,
             ` (${howManyExercises}, level ${lesson.level})`
         );
+
+        return element;
     },
     "textInput": function(fieldName, inputId, onChange, defaultValue, validationCheck) {
         /**
@@ -117,28 +115,23 @@ const exports = {
          *
          * @return {object}
          */
-        const options = {
-            "id": inputId,
-            "className": "form-control",
-            "type": "text",
-            "name": fieldName,
-            "defaultValue": defaultValue
-        };
+        const element = document.createElement("input");
+        element.id = inputId;
+        element.classList.add("form-control");
+        element.type = "text";
+        element.name = fieldName;
+        element.defaultValue = defaultValue;
 
         if (onChange) {
-            options.onChange = onChange;
+            element.addEventListener("change", onChange);
         }
 
         if (validationCheck) {
-            options.onBlur = validationCheck;
-            options.required = true;
+            element.addEventListener("blur", validationCheck);
+            element.required = true;
         }
 
-        return React.createElement(
-            "input",
-            options,
-            null
-        );
+        return element;
     },
     "tagsInput": function(inputId, tags) {
         /**
@@ -150,24 +143,21 @@ const exports = {
          *
          * @return {object}
          */
-        return React.createElement(
-            "input",
-            {
-                "id": inputId,
-                "className": "form-control",
-                "type": "text",
-                "name": "tags",
-                "defaultValue": util.joinTags(tags)
-            },
-            null
-        );
+        const element = document.createElement("input");
+        element.id = inputId;
+        element.classList.add("form-control");
+        element.type = "text";
+        element.name = "tags";
+        element.defaultValue = util.joinTags(tags);
+
+        return element;
     }
 };
 
 /**
  * An element containing a checkbox with its label to the right
  *
- * @param {string} key - the React key in case it's part of a list
+ * @param {string} key - was usde for the React key in case it's part of a list
  * @param {string} checked - The HTML "checked" parameter
  * @param {string} labelText
  * @param {string} itemId
@@ -178,9 +168,10 @@ const exports = {
 exports.checkboxDiv = function(key, checked, labelText, itemId, callback=null) {
     const inputId = [key, itemId].join("_");
 
-    return React.createElement(
-        "div",
-        {"className": "form-check form-check-inline mx-1"},
+    const element = document.createElement("div");
+    element.classList.add("form-check", "form-check-inline", "mx-1");
+
+    element.append(
         exports.checkboxInput(
             key,
             checked,
@@ -189,6 +180,8 @@ exports.checkboxDiv = function(key, checked, labelText, itemId, callback=null) {
         ),
         exports.itemLabel(labelText, inputId)
     );
+
+    return element;
 };
 
 /**
@@ -203,21 +196,19 @@ exports.checkboxDiv = function(key, checked, labelText, itemId, callback=null) {
  * @return {object}
  */
 exports.itemSelect = function(fieldName, options, inputId, defaultValue) {
-    return React.createElement(
-        "select",
-        {
-            "className": "form-control",
-            "id": inputId,
-            "name": fieldName,
-            "defaultValue": defaultValue
-        },
-        ...Object.keys(options).map((optionKey) => {
-            return exports.itemOption(
-                optionKey,
-                options[optionKey]
-            );
-        })
+    const element = document.createElement("select");
+    element.classList.add("form-control");
+    element.id = inputId;
+    element.name = fieldName;
+    element.defaultValue = defaultValue;
+
+    const optionElements = Object.keys(options).map(
+        optionKey => exports.itemOption(optionKey, options[optionKey])
     );
+
+    element.append(...optionElements);
+
+    return element;
 };
 
 /**
@@ -236,14 +227,16 @@ exports.selectDiv = function(fieldName, optionList, parentId, defaultValue) {
     }
 
     const inputId = [fieldName, parentId].join("_");
-    return React.createElement(
-        "div",
-        {},
+    const element = document.createElement("div");
+
+    element.append(
         exports.itemLabel(fieldName, inputId),
         exports.itemSelect(
             fieldName, optionList, inputId, defaultValue
         )
     );
+
+    return element;
 };
 
 /**
@@ -260,12 +253,15 @@ exports.selectDiv = function(fieldName, optionList, parentId, defaultValue) {
  */
 exports.textInputDiv = function(fieldName, parentId, onChange=null, defaultValue=null, validationCheck=null) {
     const inputId = [fieldName, parentId].join("_");
-    return React.createElement(
-        "div",
-        {"className": "col-sm"},
+    const element = document.createElement("div");
+    element.classList.add("col-sm");
+
+    element.append(
         exports.itemLabel(fieldName, inputId),
         exports.textInput(fieldName, inputId, onChange, defaultValue, validationCheck)
     );
+
+    return element;
 };
 
 /**
@@ -274,12 +270,13 @@ exports.textInputDiv = function(fieldName, parentId, onChange=null, defaultValue
  * @return {object}
  */
 exports.tagBadge = function(tagText) {
-    return React.createElement(
-        "span",
-        {"className": "badge badge-pill badge-info mr-1"},
-        tagText
-    );
-}
+    const element = document.createElement("span");
+    element.classList.add("badge", "badge-pill", "badge-info", "me-1");
+
+    element.innerText = tagText;
+
+    return element;
+};
 
 /**
  * A span with all the tags
@@ -291,13 +288,10 @@ exports.tagsElement = function(tags, elementType="div") {
         return null;
     }
 
-    return React.createElement(
-        elementType,
-        {},
-        ...tags.map((tag) => {
-            return exports.tagBadge(tag);
-        })
-    );
+    const element = document.createElement(elementType);
+    element.append(...tags.map((tag) => {return exports.tagBadge(tag);}));
+
+    return element;
 }
 
 export default exports;

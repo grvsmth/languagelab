@@ -10,26 +10,23 @@
         <title>LanguageLab</title>
     </head>
     <body>
-        <div id="resultsDiv">Welcome!</div>
-        <script src="/static/node_modules/jquery/dist/jquery.slim.min.js">
-        </script>
-        <script src="/static/node_modules/prop-types/prop-types.min.js">
-        </script>
-        <script src="/static/node_modules/react/umd/react.development.js">
-        </script>
-        <script src="/static/node_modules/react-dom/umd/react-dom.development.js">
-        </script>
+        <div id="lab">Welcome!</div>
         <script src="/static/node_modules/bootstrap/dist/js/bootstrap.min.js">
         </script>
         <script src="/static/node_modules/moment/min/moment.min.js"></script>
         <script type="module">
             import Lab from "/static/client/lab.js";
+            import config from "/static/client/config.js";
+            import controls from "/static/client/controls.js";
+            import help from "/static/client/help.js";
 
             const init = function() {
-                const root = ReactDOM.createRoot(
-                    document.body.querySelector("#resultsDiv")
-                );
-                root.render(React.createElement(Lab));
+                const lab = new Lab(config);
+
+                lab.setControls(controls);
+                lab.setHelp(help);
+                lab.setParentElement(document.body.querySelector("#lab"));
+                lab.fetchAll();
             }
 
             window.addEventListener("DOMContentLoaded", init);

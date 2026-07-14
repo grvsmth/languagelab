@@ -1,28 +1,25 @@
 /**
  * Main page for Language Lab, with state handling
  *
- * Angus B. Grieve-Smith, 2021
+ * Angus Andrea Grieve-Smith, 2026
  *
  */
 
 /*
 
-    global moment, React
+    global moment
 
 */
+
 import CardList from "./cardList.js";
 import InfoArea from "./infoArea.js";
 import LoadingModal from "./loadingModal.js";
 import LoginForm from "./loginForm.js";
 import Navbar from "./navbar.js";
 
-import controls from "./controls.js";
 import LanguageLabClient from "./apiClient.js";
 import storageClient from "./storageClient.js";
 import util from "./util.js";
-
-import config from "./config.js";
-import environment from "./environment.js";
 
 const notLoading = {
     "exercises": false,
@@ -32,12 +29,33 @@ const notLoading = {
 };
 
 
-/** The main lab class. @extends React.Component */
-export default class Lab extends React.Component {
+/** The main lab class. */
+export default class Lab {
+    /** Bind methods, instantiate API client and set default state */
+    constructor(config) {
+        this.config = config;
+        this.help = {};
+        this.parentElement = {};
+        const storageData = storageClient.launchData();
+        console.log("storageData", storageData);
 
-    /** Bind methods, instantiate API client and set sefault state */
-    constructor(props) {
-        super(props);
+        this.apiClient = new LanguageLabClient();
+        this.apiClient.setBaseUrl(this.config.api.baseUrl);
+        this.apiClient.setHandleToken(this.handleToken.bind(this));
+        if ("refreshThreshold" in this.config.api) {
+            this.apiClient.setRefreshThreshold(
+                this.config.api.refreshThreshold
+            );
+        }
+
+        if ("accessToken" in storageData && storageData.accessToken) {
+            const token = {
+                "access": storageData.accessToken,
+                "refresh": storageData.refreshToken
+            };
+
+            this.apiClient.setToken(token, storageData.tokenTime);
+        }
 
         this.checkClick = this.checkClick.bind(this);
         this.handleFetchError = this.handleFetchError.bind(this);
@@ -55,59 +73,98 @@ export default class Lab extends React.Component {
             "next": this.next.bind(this)
         };
 
-        const storageData = storageClient.launchData();
+        this.loadingState = {
+            "exercises": true,
+            "languages": true,
+            "lessons": true,
+            "media": true
+        };
 
-        this.apiClient = new LanguageLabClient();
-        this.apiClient.setBaseUrl(environment.api.baseUrl);
-        this.apiClient.setHandleToken(this.handleToken.bind(this));
-        if (Object.prototype.hasOwnProperty.call(
-            config.api, "refreshThreshold")
-        ) {
-            this.apiClient.setRefreshThreshold(config.api.refreshThreshold)
-        }
+        this.selectedState = {
+            "exercises": null,
+            "languages": null,
+            "lessons": null,
+            "media": null,
+            "itemType": "lessons"
+        };
 
-        if ("accessToken" in storageData && storageData.accessToken) {
-            const token = {
-                "access": storageData.accessToken,
-                "refresh": storageData.refreshToken
-            };
+        this.data = {
+            "currentUser": storageData.currentUser,
+            "exercises": [],
+            "languages": [],
+            "lessons": [],
+            "media": [],
+            "users": []
+        };
 
-            this.apiClient.setToken(token, storageData.tokenTime);
-        }
+        this.mimicCount = {
+            "exercises": {},
+            "languages": {},
+            "lessons": {},
+            "media": {},
+            "users": {}
+        };
 
         this.state = {
-            "activity": "login",
+            "activity": "read",
             "alerts": [],
             "clickedAction": "",
-            "config": {},
-            "controls": controls,
-            "currentUser": storageData.currentUser,
             "exercises": [],
             "languages": [],
             "lastUpdated": "",
             "lessons": [],
-            "loading": {
-                "exercises": true,
-                "languages": true,
-                "lessons": true,
-                "media": true
-            },
             "onlyExercise": true,
             "media": [],
-            "mimicCount": {},
             "nowPlaying": "",
-            "selected": {
-                "exercises": null,
-                "languages": null,
-                "lessons": null,
-                "media": null,
-                "itemType": "lessons"
-            },
             "status": "ready",
             "statusText": "Ready",
             "users": [],
             "userAudioUrl": ""
         };
+    }
+
+    setControls(controls) {
+        this.data.controls = controls;
+    }
+
+    setHelp(help) {
+        this.data.help = help;
+    }
+
+    setParentElement(parentElement) {
+        this.parentElement = parentElement;
+    }
+
+    setLoadingState(targetState) {
+        let currentlyLoading = false;
+
+        for (const property in notLoading) {
+            if (property in targetState) {
+                this.loadingState[property] = targetState[property];
+            }
+
+            if (this.loadingState[property]) {
+                currentlyLoading = true;
+            }
+        }
+
+        this.render();
+    }
+
+    updateMimicCount(count) {
+        this.mimicCount = count;
+    }
+
+    setSelectedState(targetState) {
+        for (const property in targetState) {
+            this.selectedState[property] = targetState[property];
+        }
+    }
+
+    setState(targetState) {
+        for (const property in targetState) {
+            this.state[property] = targetState[property];
+        }
     }
 
     /**
@@ -132,58 +189,32 @@ export default class Lab extends React.Component {
     }
 
     /**
-     * Set the userAudioUrl in state
-     *
-     * @param {string} url - the target userAudioUrl
-     *
-     */
-    setUserAudioUrl(url) {
-        this.setState({"userAudioUrl": url});
-    }
-
-    /**
-     * Update the state after a successful mimic round.  Return the status to
-     * "ready," remove the clickedAction and increment the mimicCount
-     *
-     * @param {number} prevMimicCount - The previous mimicCount for this exercise
-     */
-    afterMimic(prevMimicCount) {
-        this.setState(prevState => ({
-            "status": "ready",
-            "statusText": "Ready",
-            "clickedAction": null,
-            "mimicCount": {
-                ...prevState.mimicCount,
-                [prevState.selected.exercises]: prevMimicCount + 1
-            }
-        }));
-    }
-
-    /**
      * Pull the list of things to load from the config, and fetch them all
      *
      */
-    fetchAll() {
-        const loading = {};
+    async fetchAll() {
+        try {
+            await this.apiClient.checkToken();
+        } catch (err) {
+            this.logout();
+            return;
+        }
 
-        this.apiClient.checkToken();
-
-        const thingsToLoad = config.api.models
+        const thingsToLoad = this.config.api.models
             .filter(model => !model.local)
             .map(model => model.endpoint);
 
         thingsToLoad.forEach((endpoint) => {
-            loading[endpoint] = true;
+            this.setLoadingState({[endpoint]: true});
             try {
                 this.fetchData(endpoint);
             } catch (err) {
                 this.handleFetchError(err);
+                return;
             }
         });
-        this.setState({
-            "activity": "read",
-            "loading": loading
-        });
+
+        this.setState({"activity": "read"});
     }
 
     /**
@@ -193,22 +224,21 @@ export default class Lab extends React.Component {
      *
      * @param {string} dataType - the type of data to fetch from the API
      */
-    fetchData(dataType) {
+    async fetchData(dataType) {
         const loadTime = new moment();
-        const apiUrl = [
-            environment.api.baseUrl, dataType
-        ].join("/");
+        const apiUrl = [this.config.api.baseUrl, dataType].join("/");
 
-        this.apiClient.fetchData(apiUrl).then((res) => {
-            this.setState(prevState => ({
-                [dataType]: res,
-                "lastUpdated": loadTime.format(),
-                "loading": {
-                    ...prevState.loading,
-                    [dataType]: false
-                }
-            }));
-        }, this.handleFetchError);
+        let res = [];
+        try {
+            res = await this.apiClient.fetchData(apiUrl);
+        } catch (err) {
+            this.handleFetchError(err);
+        }
+
+        this.data[dataType] = res;
+        this.setState({"lastUpdated": loadTime.format()});
+
+        this.setLoadingState({[dataType]: false});
     }
 
     /**
@@ -220,11 +250,12 @@ export default class Lab extends React.Component {
      */
     addAlert(title, message, status="danger") {
         const alert = {
-            "id": util.maxId(this.state.alerts) + 1,
+            "id": 0,
             "title": title,
             "status": status,
             "message": message
         };
+        console.log(alert);
         this.updateStateItem(alert, "alerts");
     }
 
@@ -246,6 +277,7 @@ export default class Lab extends React.Component {
         const errorMessage = "Please try logging in again";
         if (!this.findAlert(titleText) && this.state.activity != "login") {
             this.addAlert(titleText, errorMessage);
+            this.render();
         }
 
         this.logout();
@@ -258,10 +290,8 @@ export default class Lab extends React.Component {
     handleForbidden() {
         const titleText = "Action forbidden";
         const errorMessage = "You do not have the right to do that";
-        this.setState({
-            "loading": notLoading,
-            "activity": "read"
-        });
+        this.setState({"activity": "read"});
+        this.setLoading(notLoading);
 
         if (!this.findAlert(titleText) && this.state.activity != "login") {
             this.addAlert(titleText, errorMessage);
@@ -292,7 +322,6 @@ export default class Lab extends React.Component {
         }
 
         if ("statusText" in err) {
-            console.log("err.statusText", err.statusText);
             this.addAlert("Fetch error", err.statusText);
 
             if (err.statusText === "Token has expired") {
@@ -306,6 +335,14 @@ export default class Lab extends React.Component {
                 this.handleUnauthorized(err.message);
                 return;
             }
+
+            if (err.message === "Token has expired"
+            || err.message === "No access token in API client object"
+            ) {
+                this.logout();
+            }
+
+            return;
 
             this.addAlert("Fetch error", err.message);
             return;
@@ -343,14 +380,14 @@ export default class Lab extends React.Component {
         if (activity) {
             targetState.activity = activity;
         }
+
         if (resetSelected) {
-            targetState.selected = {
-                ...this.state.selected,
+            this.setSelectedState({
                 "exercises": null,
                 "languages": null,
                 "lessons": null,
                 "media": null
-            };
+            });
         }
 
         this.setState(targetState);
@@ -364,7 +401,7 @@ export default class Lab extends React.Component {
      */
     handleToken(res) {
         const loadTime = new moment();
-        if (!Object.prototype.hasOwnProperty.call(res, "access")) {
+        if (!("access" in res)) {
             throw new Error("No token in response");
         }
 
@@ -408,7 +445,7 @@ export default class Lab extends React.Component {
         let alertText = "There was an error logging you in.";
 
         if ("statusText" in err) {
-            alertText = "statusText (" + err.status + "): " + err.statusText;
+            alertText = err.statusText;
         }
 
         if (err.status === 400) {
@@ -416,6 +453,7 @@ export default class Lab extends React.Component {
         }
 
         this.addAlert("Unable to log in", alertText);
+        this.render();
     }
 
     /**
@@ -427,14 +465,15 @@ export default class Lab extends React.Component {
     async loginClick(event) {
         event.preventDefault();
         const options = {
-            "username": document.getElementById("username").value,
-            "password": document.getElementById("password").value
+            "username": document.querySelector("#username").value,
+            "password": document.querySelector("#password").value
         };
 
         let res = {};
         try {
             res = await this.apiClient.login(options);
         } catch (err) {
+            console.log("login error", err);
             this.handleLoginError(err);
             return;
         }
@@ -448,12 +487,12 @@ export default class Lab extends React.Component {
      */
     logout() {
         storageClient.clearAll();
-        this.setState({
-            "activity": "login",
-            "currentUser": null,
-            "loading": false
-        });
-        return;
+        this.setState({"activity": "login"});
+        console.log("logout", this.state);
+        this.data.currentUser = null;
+
+        this.setLoadingState(notLoading);
+        this.render();
     }
 
     /**
@@ -463,7 +502,7 @@ export default class Lab extends React.Component {
      */
     removeFromQueue(queueItemId) {
         this.apiClient.delete(
-            environment.api.baseUrl, "queueItems", queueItemId
+            this.config.api.baseUrl, "queueItems", queueItemId
         ).then(() => {this.fetchData("lessons");}, this.handleFetchError
         );
     }
@@ -479,7 +518,7 @@ export default class Lab extends React.Component {
             "exercise": exerciseId,
             "lesson": lessonId
         };
-        this.apiClient.post(environment.api.baseUrl, "queueItems", queueItem)
+        this.apiClient.post(this.config.api.baseUrl, "queueItems", queueItem)
             .then(() => {
                 this.fetchData("lessons");
                 this.fetchData("exercises");
@@ -509,7 +548,7 @@ export default class Lab extends React.Component {
     checkClick(itemType, itemId, itemKey, itemChecked) {
         event.preventDefault();
         const payload = {[itemKey]: itemChecked};
-        this.apiClient.patch(environment.api.baseUrl, itemType, payload, itemId)
+        this.apiClient.patch(this.config.api.baseUrl, itemType, payload, itemId)
             .then((res) => {
             this.updateStateItem(res, itemType);
         }, this.handleFetchError
@@ -524,16 +563,14 @@ export default class Lab extends React.Component {
      * @param {string} activity - an optional activity to set in the state
      */
     selectItem(itemId, activity=null) {
-        const targetState = {
-            "selected": {
-                ...this.state.selected,
-                [this.state.selected.itemType]: itemId
-            }
-        };
+        const prevSelectedState = this.selectedState;
+        this.selectedState[prevSelectedState.itemType] = itemId;
+
         if (activity) {
-            targetState.activity = activity;
+            this.setState({"activity": activity});
         }
-        this.setState(targetState);
+
+        this.render();
     }
 
     /**
@@ -542,7 +579,7 @@ export default class Lab extends React.Component {
      * @param {number} lessonId - the ID of the lesson
      */
     firstExerciseId(lessonId) {
-        const lesson = util.findItem(this.state.lessons, lessonId);
+        const lesson = util.findItem(this.data.lessons, lessonId);
 
         if (!lesson.queueItems) {
             return null;
@@ -559,10 +596,11 @@ export default class Lab extends React.Component {
      */
     toggleLesson(lessonId) {
         if (this.state.activity === "do"
-            && this.state.selected.lessons == lessonId) {
+            && this.selectedState.lessons == lessonId) {
             this.readMode();
             return;
         }
+
         this.startExercise(this.firstExerciseId(lessonId), lessonId);
     }
 
@@ -571,14 +609,8 @@ export default class Lab extends React.Component {
      * and end times
      */
     toggleOnlyExercise() {
-        this.setState(prevState => ({"onlyExercise": !prevState.onlyExercise}));
-    }
-
-    /**
-     * Handle the mediaLoaded event by setting mediaStatus to ready in state
-     */
-    onMediaLoaded() {
-        this.setState({"mediaStatus": "ready"});
+        const prevState = this.state;
+        this.setState({"onlyExercise": !prevState.onlyExercise});
     }
 
     /**
@@ -588,28 +620,27 @@ export default class Lab extends React.Component {
      * @param {number} lessonId - the ID of the lesson
      */
     startExercise(exerciseId, lessonId=null) {
-        const exercise = util.findItem(this.state.exercises, exerciseId);
-        const mediaItem = util.findItem(this.state.media, exercise.media);
+        const exercise = util.findItem(this.data.exercises, exerciseId);
+        const mediaItem = util.findItem(this.data.media, exercise.media);
 
-        if (!Object.prototype.hasOwnProperty.call(mediaItem, "mediaUrl")) {
+        if (!("mediaUrl" in mediaItem)) {
             this.addAlert("Media error", "Unable to find media for exercise!");
             return;
         }
 
-        const targetState = {
+        this.setState({
             "activity": "do",
             "mediaStatus": "loading",
-            "nowPlaying": mediaItem.mediaUrl,
-            "selected": {
-                ...this.state.selected,
-                "exercises": exerciseId
-            }
-        };
+            "nowPlaying": mediaItem.mediaUrl
+        });
 
+        const targetSelected = {"exercises": exerciseId};
         if (lessonId) {
-            targetState.selected.lessons = lessonId;
+            targetSelected.lessons = lessonId;
         }
-        this.setState(targetState);
+
+        this.setSelectedState(targetSelected);
+        this.render();
     }
 
     /**
@@ -620,14 +651,15 @@ export default class Lab extends React.Component {
      * @param {number} lessonId - the selected lesson (optional)
      */
     setActivity(activity, exerciseId=null, lessonId=null) {
-        this.setState((prevState) => ({
-            "activity": activity,
-            "selected": {
-                ...prevState.selected,
-                "exercises": exerciseId,
-                "lessons": lessonId
-            }
-        }));
+        console.log(`setActivity(${activity}, ${exerciseId}, ${lessonId}`);
+        this.state.activity = activity;
+
+        this.setSelectedState({
+            "exercises": exerciseId,
+            "lessons": lessonId
+        });
+
+        this.render();
     }
 
     /**
@@ -636,9 +668,15 @@ export default class Lab extends React.Component {
      * @param {string} itemType - the type of item to delete
      * @param {number} itemId - the ID of the item to delete
      */
-    deleteClick(itemType, itemId) {
-        this.apiClient.delete(environment.api.baseUrl, itemType, itemId)
-            .then(this.fetchAll.bind(this), this.handleFetchError);
+    async deleteClick(itemType, itemId) {
+        try {
+            await this.apiClient.delete(
+                this.config.api.baseUrl, itemType, itemId
+            );
+            this.fetchAll();
+        } catch (error) {
+            this.handleFetchError(error);
+        }
     }
 
     /**
@@ -651,7 +689,7 @@ export default class Lab extends React.Component {
      */
     saveItem(item, itemType, itemId) {
         if (itemId) {
-            this.apiClient.patch(environment.api.baseUrl, itemType, item, itemId)
+            this.apiClient.patch(this.config.api.baseUrl, itemType, item, itemId)
                 .then((res) => {
                     this.updateStateItem(res.response, itemType, "read", true);
                     this.fetchData(itemType);
@@ -661,7 +699,7 @@ export default class Lab extends React.Component {
             if (itemType === "lessons") {
                 item.level = parseInt(item.level);
             }
-            this.apiClient.post(environment.api.baseUrl, itemType, item).then(
+            this.apiClient.post(this.config.api.baseUrl, itemType, item).then(
                 (res) => {
                     this.updateStateItem(res.response, itemType, "read", true);
                     this.fetchData(itemType);
@@ -677,7 +715,7 @@ export default class Lab extends React.Component {
      */
     up(itemId) {
         this.apiClient.patch(
-            environment.api.baseUrl, "queueItems", {"item": itemId}, "up"
+            this.config.api.baseUrl, "queueItems", {"item": itemId}, "up"
         ).then(
             () => {this.fetchData("lessons");}, this.handleFetchError
         );
@@ -690,7 +728,7 @@ export default class Lab extends React.Component {
      */
     down(itemId) {
         this.apiClient.patch(
-            environment.api.baseUrl, "queueItems", {"item": itemId}, "down"
+            this.config.api.baseUrl, "queueItems", {"item": itemId}, "down"
         ).then(
             () => {this.fetchData("lessons");}, this.handleFetchError
         );
@@ -702,12 +740,12 @@ export default class Lab extends React.Component {
      * @return {number}
      */
     maxRank() {
-        if (!this.state.selected.lessons) {
+        if (!this.selectedState.lessons) {
             return 0;
         }
 
         const lesson = util.findItem(
-            this.state.lessons, this.state.selected.lessons
+            this.data.lessons, this.selectedState.lessons
         );
 
         if (lesson.queueItems.length < 1) {
@@ -730,7 +768,7 @@ export default class Lab extends React.Component {
      */
     selectByRank(rank) {
         const lesson = util.findItem(
-            this.state.lessons, this.state.selected.lessons
+            this.data.lessons, this.selectedState.lessons
         );
 
         const queueItem = lesson.queueItems.find(
@@ -738,25 +776,24 @@ export default class Lab extends React.Component {
         );
 
         const exercise = util.findItem(
-            this.state.exercises,
+            this.data.exercises,
             queueItem.exercise
         );
 
-        const mediaItem = util.findItem(this.state.media, exercise.media);
+        const mediaItem = util.findItem(this.data.media, exercise.media);
 
-        if (!Object.prototype.hasOwnProperty.call(mediaItem, "mediaUrl")) {
+        if (!("mediaUrl" in mediaItem)) {
             this.addAlert("Media error", "Unable to find media for exercise!");
             return;
         }
 
-        this.setState((prevState) => ({
+        const prevState = this.state;
+        this.setState({
             "activity": "loadExercise",
-            "nowPlaying": mediaItem.mediaUrl,
-            "selected": {
-                ...prevState.selected,
-                "exercises": queueItem.exercise
-            }
-        }));
+            "nowPlaying": mediaItem.mediaUrl
+        });
+
+        this.selectedState.exercises = queueItem.exercise;
     }
 
     /**
@@ -769,6 +806,7 @@ export default class Lab extends React.Component {
             return;
         }
         this.selectByRank(rank - 1);
+        this.render();
     }
 
     /**
@@ -781,6 +819,7 @@ export default class Lab extends React.Component {
             return;
         }
         this.selectByRank(rank + 1);
+        this.render();
     }
 
     /**
@@ -800,59 +839,14 @@ export default class Lab extends React.Component {
      *
      * @param {object} control - an object containing the endpoint and mimeType
      */
-    exportData(control) {
+    exportData(control, foo) {
         const apiUrl = [
-            environment.api.baseUrl, control.endpoint
+            this.config.api.baseUrl, control.endpoint
         ].join("/");
 
         this.apiClient.fetchData(apiUrl).then((res) => {
                 this.handleExportData(res, control.mimeType);
         }, this.handleFetchError.bind(this));
-    }
-
-    /** Set the state to play the mimic recording */
-    playMimic() {
-        this.setState({
-            "nowPlaying": this.state.userAudioUrl,
-            "status": "playMimic",
-            "statusText": "Now playing recorded audio"
-        });
-    }
-
-    /**
-     * Given the increment stage of the repetition, play the mediaItem for the
-     * exercise
-     *
-     * @param {string} increment - "first" or "second" increment of playback
-     */
-    playModel(increment) {
-        const exercise = util.findItem(
-            this.state.exercises,
-            this.state.selected.exercises
-        );
-
-        const mediaItem = util.findItem(this.state.media, exercise.media);
-        if (!Object.prototype.hasOwnProperty.call(mediaItem, "mediaUrl")) {
-            this.addAlert("Media error", "Unable to find media for exercise!");
-            return;
-        }
-
-        const targetState = {
-            "clickedAction": "mimic",
-            "status": "playModel" + increment,
-            "statusText": "Now playing " + mediaItem.name
-        };
-
-        if (this.state.nowPlaying !== mediaItem.mediaUrl) {
-            targetState.mediaStatus = "loading";
-            targetState.nowPlaying = mediaItem.mediaUrl;
-        }
-
-        if (increment === "Only") {
-            targetState.clickedAction = "play"
-        }
-
-        this.setState(targetState);
     }
 
     /**
@@ -861,50 +855,50 @@ export default class Lab extends React.Component {
      * CardList
      */
     body() {
-        if (!this.state.currentUser) {
-            return React.createElement(
-                LoginForm,
+        if (this.loadingState[this.selectedState.itemType]) {
+            return "";
+        }
+
+        if (!this.data.currentUser
+            || typeof this.data.currentUser !== 'object'
+            || !("id" in this.data.currentUser)
+        ) {
+            const loginForm = new LoginForm();
+
+            return loginForm.render(
                 {
+                    "help": this.data.help,
                     "loginClick": this.loginClick.bind(this)
-                },
-                null
+
+                }
             );
         }
 
-        if (this.state.loading[this.state.selected.itemType]) {
-            return null;
-        }
-
-        return React.createElement(
-            CardList,
-            {
-                "checkClick": this.checkClick,
-                "config": this.state.config,
-                "deleteClick": this.deleteClick.bind(this),
-                "doButton": config.doButton,
-                "doFunction": {
-                    "afterMimic": this.afterMimic.bind(this),
-                    "onMediaLoaded": this.onMediaLoaded.bind(this),
-                    "playMimic": this.playMimic.bind(this),
-                    "playModel": this.playModel.bind(this),
-                    "queueNav": this.queueNav,
-                    "readMode": this.readMode.bind(this),
-                    "setStatus": this.setStatus.bind(this),
-                    "setUserAudioUrl": this.setUserAudioUrl.bind(this),
-                    "toggleOnlyExercise": this.toggleOnlyExercise.bind(this)
-                },
-                "exportData": this.exportData.bind(this),
-                "maxRank": this.maxRank.bind(this),
-                "queueClick": this.queueClick.bind(this),
-                "saveItem": this.saveItem.bind(this),
-                "state": this.state,
-                "setActivity": this.setActivity.bind(this),
-                "toggleLesson": this.toggleLesson.bind(this),
-                "startExercise": this.startExercise.bind(this),
-                "selectItem": this.selectItem.bind(this)
+        const cardList = new CardList();
+        return cardList.render({
+            "activity": this.state.activity,
+            "checkClick": this.checkClick,
+            "data": this.data,
+            "deleteClick": this.deleteClick.bind(this),
+            "doFunction": {
+                "queueNav": this.queueNav,
+                "readMode": this.readMode.bind(this),
+                "setStatus": this.setStatus.bind(this),
+                "updateMimicCount": this.updateMimicCount.bind(this)
             },
-            null
-        );
+            "exportData": this.exportData.bind(this),
+            "loading": this.loadingState,
+            "maxRank": this.maxRank.bind(this),
+            "mimicCount": this.mimicCount,
+            "queueClick": this.queueClick.bind(this),
+            "saveItem": this.saveItem.bind(this),
+            "setActivity": this.setActivity.bind(this),
+            "selected": this.selectedState,
+            "selectItem": this.selectItem.bind(this),
+            "state": this.state,
+            "startExercise": this.startExercise.bind(this),
+            "toggleLesson": this.toggleLesson.bind(this)
+        });
     }
 
     /**
@@ -914,37 +908,40 @@ export default class Lab extends React.Component {
      * @param {string} itemType - the type of item to select
      */
     readMode(itemType="lessons") {
+        console.log("readMode", itemType);
         this.setState({
             "activity": "read",
             "clickedAction": null,
             "nowPlaying": null,
-            "selected": {
-                "exercises": null,
-                "itemType": itemType,
-                "languages": null,
-                "lessons": null,
-                "media": null
-            },
             "status": "ready",
             "statusText": ""
         });
+
+        this.setSelectedState({
+            "exercises": null,
+            "itemType": itemType,
+            "languages": null,
+            "lessons": null,
+            "media": null
+        });
+
+        this.render();
     }
 
     /** Display the navbar */
     nav() {
-        return React.createElement(
-            Navbar,
-            {
-                "config": this.state.config,
-                "currentUser": this.state.currentUser,
-                "logout": this.logout.bind(this),
-                "models": config.api.models,
-                "navClick": this.readMode.bind(this),
-                "selectedType": this.state.selected.itemType,
-                "version": config.version
-            },
-            null
-        );
+        const nav = new Navbar(this.config.ui);
+        const props = {
+            "currentUser": this.data.currentUser,
+            "logout": this.logout.bind(this),
+            "models": this.config.api.models,
+            "navClick": this.readMode.bind(this),
+            "selectedType": this.selectedState.itemType,
+            "staffCanWrite": this.config.staffCanWrite,
+            "version": this.config.version
+        };
+
+        return nav.render(props);
     }
 
     /**
@@ -964,22 +961,20 @@ export default class Lab extends React.Component {
     /** Display the infoArea, passing the selected lesson */
     infoArea() {
         const lesson = util.findItem(
-            this.state.lessons, this.state.selected.lessons
+            this.data.lessons, this.selectedState.lessons
         );
 
-        return React.createElement(
-            InfoArea,
-            {
-                "activity": this.state.activity,
-                "alerts": this.state.alerts,
-                "dismissAlert": this.dismissAlert.bind(this),
-                "iso639": config.iso639,
-                "lesson": lesson,
-                "selectedType": this.state.selected.itemType,
-                "setActivity": this.setActivity.bind(this)
-            },
-            null
-        )
+        const infoArea = new InfoArea();
+
+        return infoArea.render({
+            "activity": this.state.activity,
+            "alerts": this.state.alerts,
+            "dismissAlert": this.dismissAlert.bind(this),
+            "iso639": this.config.iso639,
+            "lesson": lesson,
+            "selectedType": this.selectedState.itemType,
+            "setActivity": this.setActivity.bind(this)
+        });
     }
 
     /**
@@ -988,36 +983,37 @@ export default class Lab extends React.Component {
      * @return {object}
      */
     loadingModal() {
-        const localTypes = config.api.models
+        const localTypes = this.config.api.models
             .filter(model => model.local)
             .map(model => model.endpoint);
 
-        return React.createElement(
-            LoadingModal,
-            {
-                "activity": this.state.activity,
-                "itemType": this.state.selected.itemType,
-                "loading": this.state.loading,
-                "localTypes": localTypes
-            }
-        );
+        const loadingModal = new LoadingModal();
+        return loadingModal.render({
+            "activity": this.state.activity,
+            "itemType": this.selectedState.itemType,
+            "loading": this.loadingState,
+            "localTypes": localTypes
+        });
     }
 
-    /** The React render function, displaying the root element */
+    /** The render function, displaying the root element */
     render() {
+        console.log("lab", JSON.stringify(this.state));
         try {
-            return React.createElement(
-                "div",
-                {
-                    "className": "container-fluid"
-                },
+            const containerElement = document.createElement("div");
+            containerElement.classList.add("container-fluid");
+
+            const children = [
                 this.nav(),
                 this.infoArea(),
                 this.body(),
                 this.loadingModal()
-            );
+            ];
+            containerElement.append(...children);
+
+            this.parentElement.replaceChildren(containerElement);
         } catch (err) {
-            this.addAlert("Error displaying lab", err.getMessage());
+            console.log("Error displaying lab", err);
         }
     }
-}
+};

@@ -1,16 +1,11 @@
 /**
  * Bootstrap card for help documentation for the LanguageLab app
  *
- * Angus B. Grieve-Smith, 2021
+ * Angus B. Grieve-Smith, 2026
  *
  */
 
-/*
-
-    global React, PropTypes
-
-*/
-export default class HelpCard extends React.Component {
+export default class HelpCard {
 
     /**
      * Return an element with title styling and the title prop
@@ -18,13 +13,11 @@ export default class HelpCard extends React.Component {
      * @return {object}
      */
     cardTitle() {
-        return React.createElement(
-            "h3",
-            {
-                "className": "card-title"
-            },
-            this.props.helpItem.title
-        );
+        const element = document.createElement("h3");
+        element.classList.add("card-title");
+        element.innerText = this.props.helpItem.title;
+
+        return element;
     }
 
     /**
@@ -33,13 +26,11 @@ export default class HelpCard extends React.Component {
      * @return {object}
      */
     cardText() {
-        return React.createElement(
-            "p",
-            {
-                "className": "card-text"
-            },
-            this.props.helpItem.description
-        );
+        const element = document.createElement("p");
+        element.classList.add("card-text");
+        element.innerText = this.props.helpItem.description;
+
+        return element;
     }
 
     /**
@@ -49,20 +40,18 @@ export default class HelpCard extends React.Component {
      * @return {object}
      */
     cardLink() {
-        if (!Object.hasOwnProperty.call(this.props.helpItem, "a")) {
-            return null;
+        if (!("a" in this.props.helpItem)) {
+            return "";
         }
 
 
-        return React.createElement(
-            "a",
-            {
-                "className": "card-link",
-                "href": this.props.helpItem.a.href,
-                "target": this.props.helpItem.a.target
-            },
-            this.props.helpItem.a.html
-        );
+        const element = document.createElement("a");
+        element.classList.add("card-link");
+        element.href = this.props.helpItem.a.href;
+        element.target = this.props.helpItem.a.target;
+        element.innerText = this.props.helpItem.a.html;
+
+        return element;
     }
 
     /**
@@ -72,35 +61,32 @@ export default class HelpCard extends React.Component {
      * @return {object}
      */
     cardBody() {
-        return React.createElement(
-            "div",
-            {
-                "className": "card-body"
-            },
+        const element = document.createElement("div");
+        element.classList.add("card-body");
+
+        element.append(
             this.cardTitle(),
             this.cardText(),
             this.cardLink()
         );
+
+        return element;
     }
 
     /**
-     * The React render() method
+     * The render() method
      *
      * @return {object}
      */
-    render() {
-        return React.createElement(
-            "div",
-            {
-                "className": "card"
-            },
-            this.cardBody()
-        );
+    render(props) {
+        this.props = props;
+
+        const col = document.createElement("col");
+        const element = document.createElement("div");
+        element.classList.add("card");
+        element.append(this.cardBody());
+
+        col.append(element);
+        return col;
     }
 }
-
-HelpCard.propTypes = {
-    "helpItem": PropTypes.object.isRequired,
-    "helpItem.title": PropTypes.string.isRequired,
-    "helpItem.description": PropTypes.string.isRequired
-};

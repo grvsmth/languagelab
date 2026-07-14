@@ -5,16 +5,11 @@
  *
  */
 
-/*
-
-    global React, PropTypes
-
-*/
 import util from "./util.js";
 import commonElements from "./commonElements.js";
 
 /** Form for adding and editing exercises in the LanguageLab client */
-export default class ExerciseFormCard extends React.Component {
+export default class ExerciseFormCard {
 
     /**
      * Handle a click on the cancel button with a call to the setActivity() prop
@@ -40,7 +35,7 @@ export default class ExerciseFormCard extends React.Component {
                 return object;
             }, {});
 
-        var itemId = null;
+        let itemId = null;
         if (typeof this.props.exercise.id === "number") {
             itemId = this.props.exercise.id;
         }
@@ -68,13 +63,9 @@ export default class ExerciseFormCard extends React.Component {
      * @return {object}
      */
     textInputDiv(fieldName, onChange=null, defaultVal="", validationCheck=null) {
-        var defaultValue = defaultVal;
+        let defaultValue = defaultVal;
 
-        if (Object.prototype.hasOwnProperty.call(
-            this.props.exercise,
-            fieldName
-            )
-        ) {
+        if (fieldName in this.props.exercise) {
             defaultValue = this.props.exercise[fieldName];
         }
 
@@ -93,12 +84,14 @@ export default class ExerciseFormCard extends React.Component {
      * @return {object}
      */
     nameRow() {
-        return React.createElement(
-            "div",
-            {"className": "form-row"},
+        const element = document.createElement("div");
+        element.classList.add("form-row");
+        element.append(
             this.textInputDiv("name", null, "", this.reportValidity.bind(this)),
             this.textInputDiv("description")
         );
+
+        return element;
     }
 
     /**
@@ -107,12 +100,15 @@ export default class ExerciseFormCard extends React.Component {
      * @return {object}
      */
     timeRow() {
-        return React.createElement(
-            "div",
-            {"className": "form-row"},
+        const element = document.createElement("div");
+        element.classList.add("form-row");
+
+        element.append(
             this.textInputDiv("startTime", null, "00:00:00"),
             this.textInputDiv("endTime", null, "00:00:00")
         );
+
+        return element;
     }
 
     /**
@@ -121,15 +117,13 @@ export default class ExerciseFormCard extends React.Component {
      * @return {object}
      */
     saveButton() {
-        return React.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": "btn btn-success btn-sm m-1",
-                "onClick": this.saveClick.bind(this)
-            },
-            "Save"
-        );
+        const element = document.createElement("button");
+        element.type = "button";
+        element.classList.add("btn", "btn-success", "btn-sm", "m-1");
+        element.addEventListener("click", this.saveClick.bind(this));
+        element.innerText = "Save";
+
+        return element;
     }
 
     /**
@@ -138,15 +132,13 @@ export default class ExerciseFormCard extends React.Component {
      * @return {object}
      */
     cancelButton() {
-        return React.createElement(
-            "button",
-            {
-                "type": "button",
-                "className": "btn btn-danger btn-sm m-1",
-                "onClick": this.cancelClick.bind(this)
-            },
-            "Cancel"
-        );
+        const element = document.createElement("button");
+        element.type = "button";
+        element.classList.add("btn", "btn-danger", "btn-sm", "m-1");
+        element.addEventListener("click", this.cancelClick.bind(this));
+        element.innerText = "Cancel";
+
+        return element;
     }
 
     /**
@@ -155,12 +147,11 @@ export default class ExerciseFormCard extends React.Component {
      * @return {object}
      */
     buttonDiv() {
-        return React.createElement(
-            "div",
-            {"className": "col"},
-            this.saveButton(),
-            this.cancelButton()
-        );
+        const element = document.createElement("div");
+        element.classList.add("col");
+        element.append(this.saveButton(), this.cancelButton());
+
+        return element;
     }
 
     /**
@@ -169,17 +160,18 @@ export default class ExerciseFormCard extends React.Component {
      * @return {object}
      */
     mediaRow() {
-        return React.createElement(
-            "div",
-            {"class-name": "form-row-mt-3"},
+        const element = document.createElement("div");
+        element.classList.add("form-row-mt-3");
+        element.append(
             commonElements.selectDiv(
                 "media",
                 util.listToObject(this.props.media),
                 this.props.exercise.id,
                 this.props.exercise.media
             )
-        )
+        );
 
+        return element;
     }
 
     /**
@@ -188,11 +180,11 @@ export default class ExerciseFormCard extends React.Component {
      * @return {object}
      */
     submitRow() {
-        return React.createElement(
-            "div",
-            {"className": "form-row"},
-            this.buttonDiv()
-        );
+        const element = document.createElement("div");
+        element.classList.add("form-row");
+        element.append(this.buttonDiv());
+
+        return element;
     }
 
     /**
@@ -201,37 +193,32 @@ export default class ExerciseFormCard extends React.Component {
      * @return {object}
      */
     cardBody() {
-        return React.createElement(
-            "form",
-            {
-                "className": "card-body",
-                "id": "form_" + this.props.exercise.id
-            },
+        const element = document.createElement("form");
+        element.classList.add("card-body");
+        element.id = "form_" + this.props.exercise.id;
+
+        element.append(
             this.nameRow(),
             this.mediaRow(),
             this.timeRow(),
             this.submitRow()
         );
+
+        return element;
     }
 
     /**
-     * The React render() method
+     * The render() method
      *
      * @return {object}
      */
-    render() {
-        return React.createElement(
-            "div",
-            {"className": "card bg-light mb-3"},
-            this.cardBody()
-        );
+    render(props) {
+        this.props = props;
+
+        const element = document.createElement("div");
+        element.classList.add("card", "bg-light", "mb-3");
+        element.append(this.cardBody());
+
+        return element;
     }
 }
-
-ExerciseFormCard.propTypes = {
-    "exercise": PropTypes.object.isRequired,
-    "media": PropTypes.array.isRequired,
-    "saveItem": PropTypes.func.isRequired,
-    "selectedType": PropTypes.string.isRequired,
-    "setActivity": PropTypes.func.isRequired
-};

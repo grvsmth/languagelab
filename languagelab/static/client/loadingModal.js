@@ -6,13 +6,10 @@
 
 /*
 
-    global React, PropTypes
-
 */
 
 /** Modal with spinner while data is loading in the LanguageLab client */
-export default class LoadingModal extends React.Component {
-
+export default class LoadingModal {
     /**
      * Are we still loading this item type?  Return true even if undefined.
      * Also return true if lessons are loaded but exercises are not.  Return
@@ -45,14 +42,12 @@ export default class LoadingModal extends React.Component {
      * @return {object}
      */
     spinnerSr() {
-        return React.createElement(
-            "span",
-            {
-                "className": "sr-only",
-                "id": "loadingLabel"
-            },
-            "Loading..."
-        );
+        const element = document.createElement("span");
+        element.classList.add("visually-hidden");
+        element.id = "loadingLabel";
+        element.innerText = "Loading...";
+
+        return element;
     }
 
     /**
@@ -61,18 +56,14 @@ export default class LoadingModal extends React.Component {
      * @return {object}
      */
     spinner() {
-        return React.createElement(
-            "div",
-            {
-                "className": "spinner-border text-success",
-                "role": "status",
-                "style": {
-                    "height": "10rem",
-                    "width": "10rem"
-                }
-            },
-            this.spinnerSr()
-        );
+        const element = document.createElement("div");
+        element.classList.add("spinner-border", "text-success");
+        element.role = "status";
+        element.style.setProperty("height", "10rem");
+        element.style.setProperty("width", "10rem");
+        element.append(this.spinnerSr());
+
+        return element;
     }
 
     /**
@@ -81,11 +72,11 @@ export default class LoadingModal extends React.Component {
      * @return {object}
      */
     body() {
-        return React.createElement(
-            "div",
-            {"className": "modal-body mx-auto"},
-            this.spinner()
-        );
+        const element = document.createElement("div");
+        element.classList.add("modal-body", "mx-auto");
+        element.append(this.spinner());
+
+        return element;
     }
 
     /**
@@ -94,11 +85,11 @@ export default class LoadingModal extends React.Component {
      * @return {object}
      */
     content() {
-        return React.createElement(
-            "div",
-            {"className": "modal-content"},
-            this.body()
-        );
+        const element = document.createElement("div");
+        element.classList.add("modal-content");
+        element.append(this.body());
+
+        return element;
     }
 
     /**
@@ -107,11 +98,11 @@ export default class LoadingModal extends React.Component {
      * @return {object}
      */
     dialog() {
-        return React.createElement(
-            "div",
-            {"className": "modal-dialog modal-dialog-centered"},
-            this.content()
-        );
+        const element = document.createElement("div");
+        element.classList.add("modal-dialog", "modal-dialog-centered");
+        element.append(this.content());
+
+        return element;
     }
 
     /**
@@ -119,30 +110,24 @@ export default class LoadingModal extends React.Component {
      *
      * @return {object}
      */
-    render() {
+    render(props) {
+        this.props = props;
+
         if (!this.loading()) {
-            return null;
+            return "";
         }
 
-        return React.createElement(
-            "div",
-            {
-                "aria-hidden": true,
-                "aria-labelledby": "loadingLabel",
-                "className": "modal",
-                "data-keyboard": "false",
-                "id": "loadingModal",
-                "style": {"display": "block"},
-                "tabIndex": "-1"
-            },
-            this.dialog()
-        );
+        const element = document.createElement("div");
+        element.setAttribute("aria-hidden", true);
+        element.setAttribute("aria-labelledby", "loadingLabel");
+        element.classList.add("modal-fade");
+        element.dataset.keyboard = "false";
+        element.id = "loadingModal";
+        element.style.setProperty("display", "block");
+        element.tabIndex = -1;
+
+        element.append(this.dialog());
+
+        return element;
     }
 }
-
-LoadingModal.propTypes = {
-    "activity": PropTypes.string.isRequired,
-    "itemType": PropTypes.string.isRequired,
-    "loading": PropTypes.object.isRequired,
-    "localTypes": PropTypes.array.isRequired
-};

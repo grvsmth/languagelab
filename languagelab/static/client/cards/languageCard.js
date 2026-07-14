@@ -5,26 +5,19 @@
  *
  */
 
-/*
-
-    global React, PropTypes
-
-*/
-
 /** Card for displaying info about a language in the LanguageLab client */
-export default class LanguageCard extends React.Component {
-
+export default class LanguageCard {
     /**
      * A title element with the language name from the props
      *
      * @return {object}
      */
     cardTitle() {
-        return React.createElement(
-            "h5",
-            {"className": "card-title"},
-            this.props.language.name
-        );
+        const element = document.createElement("h5");
+        element.classList.add("card-title");
+        element.innerText = this.props.language.name;
+
+        return element;
     }
 
     /**
@@ -33,11 +26,11 @@ export default class LanguageCard extends React.Component {
      * @return {object}
      */
     cardText() {
-        return React.createElement(
-            "span",
-            {"className": "card-text mr-3"},
-            this.props.language.code
-        );
+        const element = document.createElement("span");
+        element.classList.add("card-text", "me-3");
+        element.innerText = this.props.language.code;
+
+        return element;
     }
 
     /**
@@ -54,15 +47,13 @@ export default class LanguageCard extends React.Component {
      * @return {object}
      */
     editButton() {
-        return React.createElement(
-            "button",
-            {
-                "className": "btn btn-sm btn-primary",
-                "onClick": this.editClick.bind(this),
-                "type": "button"
-            },
-            "Edit"
-        );
+        const element = document.createElement("button");
+        element.classList.add("btn", "btn-sm", "btn-primary");
+        element.addEventListener("click", this.editClick.bind(this));
+        element.type = "button";
+        element.innerText = "Edit";
+
+        return element;
     }
 
     /**
@@ -71,12 +62,10 @@ export default class LanguageCard extends React.Component {
      * @return {object}
      */
     textRow() {
-        return React.createElement(
-            "p",
-            {},
-            this.cardText(),
-            this.editButton()
-        );
+        const element = document.createElement("p");
+        element.append(this.cardText(), this.editButton());
+
+        return element;
     }
 
     /**
@@ -85,30 +74,29 @@ export default class LanguageCard extends React.Component {
      * @return {object}
      */
     cardBody() {
-        return React.createElement(
-            "div",
-            {"className": "card-body"},
+        const element = document.createElement("div");
+        element.classList.add("card-body");
+        element.append(
             this.cardTitle(),
             this.textRow()
         );
+
+        return element;
     }
 
     /**
-     * The React render() method
+     * The render() method
      *
      * @return {object}
      */
-    render() {
-        return React.createElement(
-            "div",
-            {"className": "card border-success bg-light"},
-            this.cardBody()
-        );
+    render(props) {
+        this.props = props;
+
+        const element = document.createElement("div");
+        element.classList.add("card", "border-success", "bg-light");
+        element.append(this.cardBody());
+
+        return element;
     }
 
 }
-
-LanguageCard.propTypes = {
-    "language": PropTypes.object.isRequired,
-    "selectItem": PropTypes.func.isRequired
-};

@@ -1,6 +1,5 @@
-Django==6.0.5
 django-cors-headers==4.9.0
-django-filter==25.2
+django-filter==26.1
 django-taggit==6.1.0
 django-taggit-serializer==0.1.7
 djangorestframework==3.17.1

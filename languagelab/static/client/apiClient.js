@@ -20,7 +20,10 @@ export default class LanguageLabClient {
         this.handleToken;
         this.expiredError = "Login expired!";
 
-        this.token = "";
+        this.token = {
+            "access": "",
+            "refresh": ""
+        };
         this.tokenLife = 0;
         this.tokenTime = null;
         this.baseUrl = "";
@@ -31,11 +34,14 @@ export default class LanguageLabClient {
     /**
      * Set the token, the time when the token was refreshed, and the token life
      *
-     * @param {string} token - the token string
+     * @param {Object} token - the token Object
      * @param {string} tokenTime - the time when the token was issued
      */
     setToken(token, tokenTime) {
-        this.token = token;
+        for (const property in token) {
+            this.token[property] = token[property];
+        }
+
         this.tokenTime = new moment(tokenTime);
     }
 
@@ -84,13 +90,12 @@ export default class LanguageLabClient {
                 || typeof this.token !== "object"
                 || !("access" in this.token)
             ) {
-                reject("No access token in API client object");
+                reject({"message": "No access token in API client object"});
             }
 
             const difference = new moment().diff(this.tokenTime, "seconds");
-
             if (difference >= this.refreshLife) {
-                reject("Token has expired");
+                reject({"message": "Token has expired"});
             }
 
             if (difference >= this.refreshThreshold) {
@@ -112,10 +117,11 @@ export default class LanguageLabClient {
      * @param {string} cookieKey - the key of the value we're interested in
      */
     extractCookie(cookieKey) {
-        var cookieValue;
         if (!document.cookie || document.cookie == '') {
             return;
         }
+
+        let cookieValue;
         document.cookie.split(';').forEach((cookie) => {
             let cookiePiece = cookie.split("=");
             if (cookiePiece[0].trim() === cookieKey) {
@@ -224,7 +230,7 @@ export default class LanguageLabClient {
      * @param {number} id - the ID of the item to be updated
      */
     delete(baseUrl, endpoint, id) {
-        const apiUrl = [baseUrl, endpoint, id].join("/");
+        const apiUrl = [baseUrl, endpoint, id, ""].join("/");
         const options = {
             "method": "DELETE",
             "headers": {
@@ -266,21 +272,22 @@ export default class LanguageLabClient {
 
     /** Request a new token */
     refreshToken() {
-        if (typeof this.token !== "object" || !("refresh" in this.token)) {
-            throw new Error("No refresh token");
-        }
-
-        const endpoint = "token/refresh";
-        const apiUrl = [this.baseUrl, endpoint, ""].join("/");
-        const options = {
-            "method": "POST",
-            "headers": {
-                'Content-Type': 'application/json'
-            },
-            "body": JSON.stringify({"refresh": this.token.refresh})
-        };
-
         return new Promise(async (resolve, reject) => {
+            if (typeof this.token !== "object" || !("refresh" in this.token)) {
+                console.log(this.token);
+                reject({"message": "No refresh token"});
+            }
+
+            const endpoint = "token/refresh";
+            const apiUrl = [this.baseUrl, endpoint, ""].join("/");
+            const options = {
+                "method": "POST",
+                "headers": {
+                    'Content-Type': 'application/json'
+                },
+                "body": JSON.stringify({"refresh": this.token.refresh})
+            };
+
             const res = await fetch(apiUrl, options);
             if (res.status < 200 || res.status > 299) {
                 console.log("failed to refresh token", res);
@@ -309,6 +316,7 @@ export default class LanguageLabClient {
             "body": JSON.stringify(data)
         };
 
+        console.log("login", options);
         return new Promise(async (resolve, reject) => {
             const res = await fetch(apiUrl, options);
 
