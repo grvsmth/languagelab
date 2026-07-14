@@ -89,6 +89,7 @@ export default class LanguageLabClient {
                 !this.token
                 || typeof this.token !== "object"
                 || !("access" in this.token)
+                || !this.token.access
             ) {
                 reject({"message": "No access token in API client object"});
             }
