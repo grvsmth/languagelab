@@ -305,13 +305,11 @@ export default class CardList {
             this.props.data.media, exercise.media
         );
 
-        const rank = this.exerciseRank(lesson, exercise);
         const maxRank = this.props.maxRank();
+        const rank = this.exerciseRank(lesson, exercise);
 
         const options = {
-            "doButton": this.props.doButton,
             "doFunction": this.props.doFunction,
-            "key": key,
             "exercise": exercise,
             "lesson": lesson,
             "maxRank": maxRank,

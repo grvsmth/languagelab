@@ -189,31 +189,6 @@ export default class Lab {
     }
 
     /**
-     * Set the userAudioUrl in state
-     *
-     * @param {string} url - the target userAudioUrl
-     *
-     */
-    setUserAudioUrl(url) {
-        this.setState({"userAudioUrl": url});
-    }
-
-    /**
-     * Update the state after a successful mimic round.  Return the status to
-     * "ready," remove the clickedAction and increment the mimicCount
-     *
-     * @param {number} prevMimicCount - The previous mimicCount for this exercise
-     */
-    afterMimic() {
-        const prevSelectedState = this.selectedState;
-        this.setState({
-            "status": "ready",
-            "statusText": "Ready",
-            "clickedAction": null
-        });
-    }
-
-    /**
      * Pull the list of things to load from the config, and fetch them all
      *
      */
@@ -874,51 +849,6 @@ export default class Lab {
         }, this.handleFetchError.bind(this));
     }
 
-    /** Set the state to play the mimic recording */
-    playMimic() {
-        this.setState({
-            "nowPlaying": this.state.userAudioUrl,
-            "status": "playMimic",
-            "statusText": "Now playing recorded audio"
-        });
-    }
-
-    /**
-     * Given the increment stage of the repetition, play the mediaItem for the
-     * exercise
-     *
-     * @param {string} increment - "first" or "second" increment of playback
-     */
-    playModel(increment) {
-        const exercise = util.findItem(
-            this.data.exercises,
-            this.selectedState.exercises
-        );
-
-        const mediaItem = util.findItem(this.data.media, exercise.media);
-        if (!("mediaUrl" in mediaItem)) {
-            this.addAlert("Media error", "Unable to find media for exercise!");
-            return;
-        }
-
-        const targetState = {
-            "clickedAction": "mimic",
-            "status": "playModel" + increment,
-            "statusText": "Now playing " + mediaItem.name
-        };
-
-        if (this.state.nowPlaying !== mediaItem.mediaUrl) {
-            targetState.mediaStatus = "loading";
-            targetState.nowPlaying = mediaItem.mediaUrl;
-        }
-
-        if (increment === "Only") {
-            targetState.clickedAction = "play"
-        }
-
-        this.setState(targetState);
-    }
-
     /**
      * If the user isn't logged in, display the login form.  If we're still
      * loading the selected item, display nothing.  Otherwise, display the
@@ -950,15 +880,10 @@ export default class Lab {
             "checkClick": this.checkClick,
             "data": this.data,
             "deleteClick": this.deleteClick.bind(this),
-            "doButton": this.config.doButton,
             "doFunction": {
-                "afterMimic": this.afterMimic.bind(this),
-                "playMimic": this.playMimic.bind(this),
-                "playModel": this.playModel.bind(this),
                 "queueNav": this.queueNav,
                 "readMode": this.readMode.bind(this),
                 "setStatus": this.setStatus.bind(this),
-                "setUserAudioUrl": this.setUserAudioUrl.bind(this),
                 "updateMimicCount": this.updateMimicCount.bind(this)
             },
             "exportData": this.exportData.bind(this),
