@@ -176,7 +176,13 @@ export default class LanguageLabClient {
 
             let nextUrl = url;
             while (nextUrl) {
-                const resJson = await this.fetchOnce(nextUrl, options);
+                let resJson = {};
+                try {
+                    resJson = await this.fetchOnce(nextUrl, options);
+                } catch (err) {
+                    reject(err);
+                    return;
+                }
 
                 if (!("results" in resJson)) {
                     resolve(resJson);
