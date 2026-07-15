@@ -23,7 +23,7 @@ const typeInfo = {
     "controls": {
         "addable": false,
         "card": ControlCard,
-        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-4"],
+        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-3"],
         "doable": false,
         "singular": "control",
         "userField": ""
@@ -40,7 +40,7 @@ const typeInfo = {
     "help": {
         "addable": false,
         "card": HelpCard,
-        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-4"],
+        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-3"],
         "doable": false,
         "singular": "help items",
         "userField": ""
@@ -48,7 +48,7 @@ const typeInfo = {
     "languages": {
         "addable": true,
         "card": LanguageCard,
-        "cardLayout": "card-columns",
+        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-3"],
         "doable": false,
         "singular": "language",
         "userField": ""
@@ -147,12 +147,16 @@ export default class CardList {
      * @return {object}
      */
     addButtonCard(cardId) {
+        const col = document.createElement("div");
+        col.classList.add("col");
+
         const element = document.createElement("div");
         element.classList.add("card");
         element.id = cardId;
         element.append(this.addButtonCardBody(cardId));
 
-        return element;
+        col.append(element);
+        return col;
     }
 
     /**

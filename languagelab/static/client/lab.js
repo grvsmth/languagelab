@@ -651,7 +651,6 @@ export default class Lab {
      * @param {number} lessonId - the selected lesson (optional)
      */
     setActivity(activity, exerciseId=null, lessonId=null) {
-        console.log(`setActivity(${activity}, ${exerciseId}, ${lessonId}`);
         this.state.activity = activity;
 
         this.setSelectedState({

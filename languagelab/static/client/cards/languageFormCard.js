@@ -164,9 +164,13 @@ export default class LanguageFormCard {
         this.props = props;
 
         const element = document.createElement("div");
+        const col = document.createElement("div");
+        col.classList.add("col");
+
         element.classList.add("card", "bg-light", "border-warning", "mb-3");
         element.append(this.cardBody());
 
-        return element;
+        col.append(element);
+        return col;
     }
 }
