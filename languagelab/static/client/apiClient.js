@@ -89,6 +89,7 @@ export default class LanguageLabClient {
                 !this.token
                 || typeof this.token !== "object"
                 || !("access" in this.token)
+                || !this.token.access
             ) {
                 reject({"message": "No access token in API client object"});
             }
@@ -176,7 +177,13 @@ export default class LanguageLabClient {
 
             let nextUrl = url;
             while (nextUrl) {
-                const resJson = await this.fetchOnce(nextUrl, options);
+                let resJson = {};
+                try {
+                    resJson = await this.fetchOnce(nextUrl, options);
+                } catch (err) {
+                    reject(err);
+                    return;
+                }
 
                 if (!("results" in resJson)) {
                     resolve(resJson);

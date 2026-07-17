@@ -22,10 +22,13 @@ import storageClient from "./storageClient.js";
 import util from "./util.js";
 
 const notLoading = {
+    "config": false,
+    "currentUser": false,
     "exercises": false,
     "languages": false,
     "lessons": false,
-    "media": false
+    "media": false,
+    "users": false
 };
 
 
@@ -36,8 +39,8 @@ export default class Lab {
         this.config = config;
         this.help = {};
         this.parentElement = {};
+
         const storageData = storageClient.launchData();
-        console.log("storageData", storageData);
 
         this.apiClient = new LanguageLabClient();
         this.apiClient.setBaseUrl(this.config.api.baseUrl);
@@ -74,10 +77,13 @@ export default class Lab {
         };
 
         this.loadingState = {
-            "exercises": true,
-            "languages": true,
-            "lessons": true,
-            "media": true
+            "config": false,
+            "currentUser": false,
+            "exercises": false,
+            "languages": false,
+            "lessons": false,
+            "media": false,
+            "users": false
         };
 
         this.selectedState = {
@@ -89,6 +95,7 @@ export default class Lab {
         };
 
         this.data = {
+            "config": {"staffCanWrite": true},
             "currentUser": storageData.currentUser,
             "exercises": [],
             "languages": [],
@@ -109,16 +116,11 @@ export default class Lab {
             "activity": "read",
             "alerts": [],
             "clickedAction": "",
-            "exercises": [],
-            "languages": [],
             "lastUpdated": "",
-            "lessons": [],
             "onlyExercise": true,
-            "media": [],
             "nowPlaying": "",
             "status": "ready",
             "statusText": "Ready",
-            "users": [],
             "userAudioUrl": ""
         };
     }
@@ -488,7 +490,6 @@ export default class Lab {
     logout() {
         storageClient.clearAll();
         this.setState({"activity": "login"});
-        console.log("logout", this.state);
         this.data.currentUser = null;
 
         this.setLoadingState(notLoading);
@@ -651,7 +652,6 @@ export default class Lab {
      * @param {number} lessonId - the selected lesson (optional)
      */
     setActivity(activity, exerciseId=null, lessonId=null) {
-        console.log(`setActivity(${activity}, ${exerciseId}, ${lessonId}`);
         this.state.activity = activity;
 
         this.setSelectedState({
@@ -887,6 +887,7 @@ export default class Lab {
                 "updateMimicCount": this.updateMimicCount.bind(this)
             },
             "exportData": this.exportData.bind(this),
+            "isStaff": this.data.currentUser.is_staff,
             "loading": this.loadingState,
             "maxRank": this.maxRank.bind(this),
             "mimicCount": this.mimicCount,
@@ -895,6 +896,7 @@ export default class Lab {
             "setActivity": this.setActivity.bind(this),
             "selected": this.selectedState,
             "selectItem": this.selectItem.bind(this),
+            "staffCanWrite": this.data.config.staffCanWrite,
             "state": this.state,
             "startExercise": this.startExercise.bind(this),
             "toggleLesson": this.toggleLesson.bind(this)
@@ -908,7 +910,6 @@ export default class Lab {
      * @param {string} itemType - the type of item to select
      */
     readMode(itemType="lessons") {
-        console.log("readMode", itemType);
         this.setState({
             "activity": "read",
             "clickedAction": null,
@@ -937,7 +938,7 @@ export default class Lab {
             "models": this.config.api.models,
             "navClick": this.readMode.bind(this),
             "selectedType": this.selectedState.itemType,
-            "staffCanWrite": this.config.staffCanWrite,
+            "staffCanWrite": this.data.config.staffCanWrite,
             "version": this.config.version
         };
 
@@ -998,7 +999,6 @@ export default class Lab {
 
     /** The render function, displaying the root element */
     render() {
-        console.log("lab", JSON.stringify(this.state));
         try {
             const containerElement = document.createElement("div");
             containerElement.classList.add("container-fluid");

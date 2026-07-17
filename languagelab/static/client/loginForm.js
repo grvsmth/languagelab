@@ -192,7 +192,7 @@ export default class LoginForm {
         this.props = props;
 
         const element = document.createElement("div");
-        element.classList.add("row", "row-cols-1", "row-cols-md-3", "g-4");
+        element.classList.add("row", "row-cols-1", "row-cols-lg-3", "g-4");
 
         element.append(
             this.loginCard(),

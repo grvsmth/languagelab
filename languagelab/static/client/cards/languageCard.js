@@ -92,11 +92,15 @@ export default class LanguageCard {
     render(props) {
         this.props = props;
 
+        const col = document.createElement("div");
+        col.classList.add("col");
+
         const element = document.createElement("div");
         element.classList.add("card", "border-success", "bg-light");
         element.append(this.cardBody());
 
-        return element;
+        col.append(element);
+        return col;
     }
 
 }

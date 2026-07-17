@@ -23,7 +23,7 @@ const typeInfo = {
     "controls": {
         "addable": false,
         "card": ControlCard,
-        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-4"],
+        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-3"],
         "doable": false,
         "singular": "control",
         "userField": ""
@@ -40,7 +40,7 @@ const typeInfo = {
     "help": {
         "addable": false,
         "card": HelpCard,
-        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-4"],
+        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-3"],
         "doable": false,
         "singular": "help items",
         "userField": ""
@@ -48,7 +48,7 @@ const typeInfo = {
     "languages": {
         "addable": true,
         "card": LanguageCard,
-        "cardLayout": "card-columns",
+        "cardLayout": ["row", "row-cols-1", "row-cols-md-2", "g-3"],
         "doable": false,
         "singular": "language",
         "userField": ""
@@ -83,6 +83,8 @@ export default class CardList {
      *
      */
     constructor() {
+        this.canWrite = false,
+
         this.itemCard = {
             "controls": this.controlCard.bind(this),
             "exercises": this.exerciseCard.bind(this),
@@ -147,12 +149,16 @@ export default class CardList {
      * @return {object}
      */
     addButtonCard(cardId) {
+        const col = document.createElement("div");
+        col.classList.add("col");
+
         const element = document.createElement("div");
         element.classList.add("card");
         element.id = cardId;
         element.append(this.addButtonCardBody(cardId));
 
-        return element;
+        col.append(element);
+        return col;
     }
 
     /**
@@ -438,15 +444,9 @@ export default class CardList {
             cardComponent = LessonFormCard;
         }
 
-        let canWrite = true;
-        if (this.props.staffCanWrite
-            && !this.props.currentUser.is_staff) {
-                canWrite = false;
-        }
-
         const options = {
             "activity": this.props.activity,
-            "canWrite": canWrite,
+            "canWrite": this.canWrite,
             "deleteClick": this.props.deleteClick,
             "exercisesLoading": this.props.loading.exercises,
             "itemUser": this.itemUser(lesson),
@@ -508,12 +508,6 @@ export default class CardList {
             if (doActivities.includes(this.props.activity)) {
                 return this.doCard(exercise.id, exercise);
             }
-        }
-
-        let canWrite = true;
-        if (this.props.staffCanWrite
-            && !this.props.currentUser.is_staff) {
-                canWrite = false;
         }
 
         let options = {
@@ -581,9 +575,8 @@ export default class CardList {
             return "";
         }
 
-        if (this.props.staffCanWrite
-            && !this.props.currentUser.is_staff) {
-                return "";
+        if (!this.canWrite) {
+            return "";
         }
 
         if (cardId === "initial"
@@ -659,7 +652,7 @@ export default class CardList {
      */
     render(props) {
         this.props = props;
-        console.log("CardList", this.props);
+        this.canWrite = this.props.staffCanWrite && this.props.isStaff;
 
         const itemType = this.props.selected.itemType;
         const addable = this.props.activity !== "editQueue"

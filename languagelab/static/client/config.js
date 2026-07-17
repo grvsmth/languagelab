@@ -9,7 +9,7 @@ const config = {
     },
     "version": "0.3",
     "api": {
-        "baseUrl": "https://languagelab-dev.grieve-smith.com/api/0.2",
+        "baseUrl": "/api/0.2",
         "models": [
             {
                 "menu": "Media",
