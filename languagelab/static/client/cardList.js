@@ -83,6 +83,8 @@ export default class CardList {
      *
      */
     constructor() {
+        this.canWrite = false,
+
         this.itemCard = {
             "controls": this.controlCard.bind(this),
             "exercises": this.exerciseCard.bind(this),
@@ -442,15 +444,9 @@ export default class CardList {
             cardComponent = LessonFormCard;
         }
 
-        let canWrite = true;
-        if (this.props.staffCanWrite
-            && !this.props.currentUser.is_staff) {
-                canWrite = false;
-        }
-
         const options = {
             "activity": this.props.activity,
-            "canWrite": canWrite,
+            "canWrite": this.canWrite,
             "deleteClick": this.props.deleteClick,
             "exercisesLoading": this.props.loading.exercises,
             "itemUser": this.itemUser(lesson),
@@ -512,12 +508,6 @@ export default class CardList {
             if (doActivities.includes(this.props.activity)) {
                 return this.doCard(exercise.id, exercise);
             }
-        }
-
-        let canWrite = true;
-        if (this.props.staffCanWrite
-            && !this.props.currentUser.is_staff) {
-                canWrite = false;
         }
 
         let options = {
@@ -585,9 +575,8 @@ export default class CardList {
             return "";
         }
 
-        if (this.props.staffCanWrite
-            && !this.props.currentUser.is_staff) {
-                return "";
+        if (!this.canWrite) {
+            return "";
         }
 
         if (cardId === "initial"
@@ -663,7 +652,7 @@ export default class CardList {
      */
     render(props) {
         this.props = props;
-        console.log("CardList", this.props);
+        this.canWrite = this.props.staffCanWrite && this.props.isStaff;
 
         const itemType = this.props.selected.itemType;
         const addable = this.props.activity !== "editQueue"
