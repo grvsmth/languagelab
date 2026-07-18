@@ -512,7 +512,7 @@ export default class CardList {
 
         let options = {
             "activity": this.props.activity,
-            "canWrite": canWrite,
+            "canWrite": this.canWrite,
             "checkClick": this.props.checkClick,
             "deleteClick": this.props.deleteClick,
             "exercise": exercise,

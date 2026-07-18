@@ -39,12 +39,11 @@ export default class Navbar {
             return "";
         }
 
-        const element = document.createElement("li");
-        element.classList.add("nav-item", "me-2");
+        const textSpan = document.createElement("span");
+        textSpan.classList.add("navbar-text", "me-2")
+        textSpan.innerText = "v. " + this.props.version;
 
-        element.innerText = "v. " + this.props.version;
-
-        return element;
+        return textSpan;
     }
 
     /**
@@ -125,11 +124,11 @@ export default class Navbar {
             return "";
         }
 
-        const element = document.createElement("li");
-        element.classList.add("nav-item", "text-success");
-        element.innerText = `Welcome ${this.props.currentUser.username}!`;
+        const textSpan = document.createElement("span");
+        textSpan.classList.add("navbar-text", "text-success")
+        textSpan.innerText = `Welcome ${this.props.currentUser.username}!`;
 
-        return element;
+        return textSpan;
     }
 
     /**
