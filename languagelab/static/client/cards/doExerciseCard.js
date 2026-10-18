@@ -69,17 +69,12 @@ export default class DoExerciseCard {
      */
     handleGetMediaError(error) {
         if (error.code === 8) {
-            this.props.doFunction.setStatus({
-                "statusText": "Unable to find a recording device!",
-                "status": "warning"
-            });
+            this.updateStatus("warning", "Unable to find a recording device!");
             return;
         }
 
-        this.props.doFunction.setStatus({
-            "statusText": `getUserMedia(): ${error.message}`,
-            "status": "error"
-        });
+        console.log("handleGetMediaError", error);
+        this.updateStatus("error", `getUserMedia(): ${error.message}`);
     }
 
     /** On mount, find an audio input device and register it */
@@ -102,10 +97,8 @@ export default class DoExerciseCard {
             const msg = `Your startTime of ${this.props.exercise.startTime}
             seconds is greater than the total duration
             (${this.elements.player.duration} seconds) of this media clip.`;
-            this.props.doFunction.setStatus({
-                "statusText": msg,
-                "status": "error"
-            });
+
+            this.updateStatus("error", msg);
             return;
         }
 
@@ -117,10 +110,7 @@ export default class DoExerciseCard {
             target="_blank"
             href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests"
             >byte-range requests</a>.`;
-            this.props.doFunction.setStatus({
-                "statusText": msg,
-                "status": "error"
-            });
+            this.updateStatus("error", msg);
         }
     }
 
@@ -137,6 +127,7 @@ export default class DoExerciseCard {
 
     record() {
         this.elements.mimicButton.disabled = false;
+        this.elements.mimicButton.focus();
         this.updateMimicButtonColor();
 
         this.elements.mediaRecorder.start();
@@ -150,6 +141,8 @@ export default class DoExerciseCard {
 
         if (config.playStatuses.includes(this.state.status)) {
             this.play();
+        } else {
+            this.elements.mimicButton.focus();
         }
     }
 
@@ -190,6 +183,7 @@ export default class DoExerciseCard {
         }
 
         this.elements.mimicButton.disabled = false;
+        this.elements.mimicButton.focus();
 
         this.updateStatus("ready");
         this.updateMimicButtonColor();
@@ -244,6 +238,7 @@ export default class DoExerciseCard {
             this.state.clickedAction = "play"
         }
 
+        this.setStartTime();
         this.play();
     }
 
@@ -267,7 +262,6 @@ export default class DoExerciseCard {
         }
 
         if (this.state.nowPlaying === this.props.mediaItem.mediaUrl) {
-            this.setStartTime();
             this.playModel("Only");
             return;
         }
@@ -618,7 +612,6 @@ export default class DoExerciseCard {
         if (this.state.status === "recording") {
             this.elements.mediaRecorder.stop();
 
-            this.setStartTime();
             this.playModel("Second");
             return;
         }
@@ -627,7 +620,6 @@ export default class DoExerciseCard {
             return;
         }
 
-        this.setStartTime();
         this.playModel("First");
     }
 
@@ -677,6 +669,7 @@ export default class DoExerciseCard {
         this.elements.statusRow.classList.add(
             "text-" + config.statusColor[this.state.status]
         );
+
         this.elements.statusRow.innerText = this.state.statusText;
     }
 
