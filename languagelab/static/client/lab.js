@@ -187,7 +187,7 @@ export default class Lab {
         this.setState({
             "status": input.status,
             "statusText": input.statusText
-        })
+        });
     }
 
     /**

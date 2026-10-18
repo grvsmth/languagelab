@@ -19,7 +19,6 @@ export default class LessonCard {
 
     /** Call toggleLesson in the lab element, passing the lesson id */
     toggleLesson() {
-        console.log("togglelesson", this.props);
         this.props.toggleLesson(this.props.lesson.id);
     }
 
